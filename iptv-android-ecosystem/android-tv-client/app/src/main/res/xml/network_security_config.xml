@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  IPTV providers overwhelmingly serve playlists and streams over plain HTTP, so
+  cleartext must be allowed for media. The AuraStream backend itself should be
+  deployed behind HTTPS in production (configure auraApiBaseUrl accordingly).
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>

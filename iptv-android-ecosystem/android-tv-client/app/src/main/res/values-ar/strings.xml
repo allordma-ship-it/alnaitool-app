@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Startup -->
+    <string name="startup_connecting">جارٍ الاتصال بسحابة AuraStream…</string>
+    <string name="startup_syncing">جارٍ مزامنة قوائم التشغيل…</string>
+    <string name="startup_error_title">تعذّر الاتصال</string>
+    <string name="retry">إعادة المحاولة</string>
+    <string name="back">رجوع</string>
+
+    <!-- Activation / pairing -->
+    <string name="activation_title">اربط هذا التلفاز</string>
+    <string name="activation_steps">1. امسح رمز QR بهاتفك أو افتح البوابة في المتصفح.\n2. أدخل عنوان MAC ومفتاح الجهاز الظاهرين هنا.\n3. أضف رابط M3U أو ارفع ملف قائمة أو أدخل بيانات Xtream Codes.</string>
+    <string name="mac_address">عنوان MAC</string>
+    <string name="device_key">مفتاح الجهاز</string>
+    <string name="activation_scan">امسح الرمز لإعداد هذا التلفاز</string>
+    <string name="activation_check_now">تحقّق الآن</string>
+    <string name="activation_waiting">في انتظار قائمة تشغيل…</string>
+    <string name="license">الترخيص</string>
+    <string name="license_trial_days">فترة تجريبية · متبقٍ %1$d يوم</string>
+    <string name="license_active">الترخيص مفعّل</string>
+    <string name="license_expired">انتهت الفترة التجريبية – يرجى التفعيل</string>
+    <string name="conflict_title">هذا الجهاز مسجّل مسبقًا</string>
+    <string name="conflict_message">تم ربط عنوان MAC هذا من قبل (مثلًا قبل إعادة التثبيت). ستؤدي إعادة الربط إلى إنشاء مفتاح جهاز جديد وحذف القوائم المخزّنة له، لذا ستحتاج إلى إضافتها مجددًا من البوابة.</string>
+    <string name="conflict_repair">إعادة ربط الجهاز</string>
+
+    <!-- Import -->
+    <string name="import_connecting">جارٍ الاتصال بالمزوّد…</string>
+    <string name="import_downloading">جارٍ تنزيل القائمة…</string>
+    <string name="import_live">استيراد القنوات</string>
+    <string name="import_movies">استيراد الأفلام</string>
+    <string name="import_series">استيراد المسلسلات</string>
+    <string name="import_epg">تحميل دليل البرامج</string>
+
+    <!-- Home -->
+    <string name="section_live">البث المباشر</string>
+    <string name="section_movies">الأفلام</string>
+    <string name="section_series">المسلسلات</string>
+    <string name="section_epg">دليل البرامج</string>
+    <string name="section_settings">الإعدادات</string>
+    <string name="items_count">%1$d عنوان</string>
+    <string name="continue_watching">متابعة المشاهدة</string>
+    <string name="refresh">تحديث</string>
+    <string name="refreshing">جارٍ التحديث…</string>
+
+    <!-- Live TV -->
+    <string name="categories">الفئات</string>
+    <string name="category_favorites">المفضّلة</string>
+    <string name="category_all">كل القنوات</string>
+    <string name="channels_count">%1$d قناة</string>
+    <string name="empty_category">لا يوجد محتوى بعد</string>
+    <string name="empty_live_title">لا توجد قنوات مباشرة</string>
+    <string name="empty_live_message">أضف قائمة تشغيل من بوابة الويب ثم حدّث.</string>
+    <string name="preview_hint">اختر قناة لمعاينتها هنا. اضغط OK مرة أخرى للعرض بملء الشاشة.</string>
+    <string name="fullscreen">ملء الشاشة</string>
+    <string name="favorite">المفضّلة</string>
+    <string name="epg_now">الآن</string>
+    <string name="epg_next">التالي</string>
+    <string name="no_epg">لا توجد معلومات عن البرامج</string>
+
+    <!-- PIN -->
+    <string name="pin_hint">أدخل رمز PIN المكوّن من 4 أرقام (الافتراضي 0000)</string>
+    <string name="pin_wrong">رمز PIN خاطئ، حاول مجددًا</string>
+    <string name="pin_enter_for">فتح «%1$s»</string>
+    <string name="pin_lock_category">قفل «%1$s»</string>
+    <string name="pin_unlock_category">إزالة القفل عن «%1$s»</string>
+    <string name="pin_current">أدخل رمز PIN الحالي</string>
+    <string name="pin_new">أدخل رمز PIN الجديد</string>
+    <string name="delete">حذف</string>
+
+    <!-- Player -->
+    <string name="play">تشغيل</string>
+    <string name="pause">إيقاف مؤقت</string>
+    <string name="resume">استئناف</string>
+    <string name="rewind">رجوع 10 ثوانٍ</string>
+    <string name="forward">تقديم 10 ثوانٍ</string>
+    <string name="channel_prev">القناة السابقة</string>
+    <string name="channel_next">القناة التالية</string>
+    <string name="channel_list">القنوات</string>
+    <string name="next_episode">الحلقة التالية</string>
+    <string name="audio_track">الصوت</string>
+    <string name="subtitles">الترجمة</string>
+    <string name="subtitles_off">إيقاف</string>
+    <string name="aspect_fit">ملاءمة</string>
+    <string name="aspect_fill">تعبئة</string>
+    <string name="aspect_zoom">تكبير</string>
+    <string name="playback_failed">فشل التشغيل</string>
+    <string name="player_not_found">هذا العنصر لم يعد متاحًا</string>
+
+    <!-- VOD -->
+    <string name="search_hint">بحث…</string>
+    <string name="no_plot">لا يتوفر وصف.</string>
+    <string name="add_favorite">إضافة إلى المفضّلة</string>
+    <string name="remove_favorite">إزالة من المفضّلة</string>
+    <string name="seasons">المواسم</string>
+    <string name="season_n">الموسم %1$d</string>
+    <string name="no_episodes">لم يتم العثور على حلقات</string>
+
+    <!-- EPG -->
+    <string name="no_epg_channels">لا توجد بيانات دليل</string>
+    <string name="no_epg_channels_hint">قائمتك لا توفّر معرّفات EPG لهذه القنوات، أو لم يتم إعداد مصدر XMLTV.</string>
+
+    <!-- Settings -->
+    <string name="settings_playlists">قوائم التشغيل</string>
+    <string name="settings_refresh_now">إعادة تحميل القائمة الآن</string>
+    <string name="settings_refresh_now_hint">ينزّل أحدث قائمة ودليل برامج</string>
+    <string name="settings_refresh_epg">إعادة تحميل دليل البرامج</string>
+    <string name="settings_playback">التشغيل</string>
+    <string name="settings_stream_format">صيغة البث المباشر المفضّلة</string>
+    <string name="settings_aspect">نسبة العرض</string>
+    <string name="settings_auto_recovery">الاستعادة التلقائية للبث</string>
+    <string name="settings_auto_recovery_hint">يعيد الاتصال ويبدّل بين TS ⇄ HLS عند فشل البث</string>
+    <string name="settings_user_agent">وكيل المستخدم HTTP</string>
+    <string name="settings_general">عام</string>
+    <string name="settings_change_pin">رمز الرقابة الأبوية</string>
+    <string name="settings_change_pin_hint">اضغط مطولًا على فئة لقفلها أو فتحها</string>
+    <string name="settings_language">اللغة</string>
+    <string name="language_system">لغة النظام</string>
+    <string name="settings_device">هذا الجهاز</string>
+    <string name="settings_scan_to_manage">امسح الرمز لإدارة القوائم من هاتفك</string>
+    <string name="source_file">ملف مرفوع</string>
+    <string name="save">حفظ</string>
+    <string name="reset_default">استعادة</string>
+</resources>

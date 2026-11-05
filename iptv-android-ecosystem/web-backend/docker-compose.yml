@@ -1,0 +1,31 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: aura
+      POSTGRES_PASSWORD: aura
+      POSTGRES_DB: aurastream
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aura -d aurastream"]
+      interval: 5s
+      retries: 10
+
+  api:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgres://aura:aura@db:5432/aurastream
+      PUBLIC_PORTAL_URL: ${PUBLIC_PORTAL_URL:-http://localhost:8080}
+      APP_SECRET: ${APP_SECRET:?set APP_SECRET (>= 32 random chars)}
+      ADMIN_TOKEN: ${ADMIN_TOKEN:-}
+      TRUST_PROXY: ${TRUST_PROXY:-false}
+    ports:
+      - "8080:8080"
+
+volumes:
+  pgdata:

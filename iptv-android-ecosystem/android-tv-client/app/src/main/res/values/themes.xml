@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- AppCompat parent is required for per-app locales; all UI is drawn with Compose. -->
+    <style name="Theme.AuraStream" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowBackground">@color/aura_canvas</item>
+        <item name="android:statusBarColor">@color/aura_canvas</item>
+        <item name="android:navigationBarColor">@color/aura_canvas</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="colorPrimary">@color/aura_neon</item>
+        <item name="colorAccent">@color/aura_neon</item>
+    </style>
+</resources>

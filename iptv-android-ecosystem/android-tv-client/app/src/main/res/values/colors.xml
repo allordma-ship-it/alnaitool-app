@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="aura_canvas">#FF080A0F</color>
+    <color name="aura_surface">#FF151A23</color>
+    <color name="aura_neon">#FF00E5FF</color>
+</resources>
