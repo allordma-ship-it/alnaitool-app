@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en" dir="ltr" class="bg-canvas">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#080A0F" />
+  <meta name="color-scheme" content="dark" />
+  <title>AuraStream Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+  <script src="/tw-config.js"></script>
+  <style>
+    body { background: #080A0F; color: #E8EDF5; }
+    .field { width: 100%; border-radius: .75rem; background: #0E1219; border: 1px solid #263042; padding: .8rem 1rem; color: #E8EDF5; outline: none; transition: box-shadow .15s, border-color .15s; }
+    .field:focus { border-color: #00E5FF; box-shadow: 0 0 0 3px rgba(0,229,255,.25); }
+    .field::placeholder { color: #5B6680; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .04em; }
+    .tab[aria-selected="true"] { background: #00E5FF; color: #080A0F; }
+    .btn-primary { background: #00E5FF; color: #080A0F; font-weight: 600; border-radius: .75rem; padding: .85rem 1.25rem; transition: transform .1s, box-shadow .15s, opacity .15s; }
+    .btn-primary:hover { box-shadow: 0 0 24px rgba(0,229,255,.4); }
+    .btn-primary:active { transform: scale(.98); }
+    .btn-primary:disabled { opacity: .5; cursor: not-allowed; }
+    .hidden-important { display: none !important; }
+  </style>
+</head>
+<body class="min-h-screen font-sans antialiased">
+  <div class="pointer-events-none fixed inset-x-0 top-0 h-72 bg-gradient-to-b from-cyan-500/10 to-transparent"></div>
+
+  <main class="relative mx-auto w-full max-w-xl px-4 pb-16 pt-8 sm:pt-12">
+    <header class="mb-8 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="grid h-11 w-11 place-items-center rounded-xl bg-surface shadow-neon">
+          <svg viewBox="0 0 24 24" class="h-6 w-6 text-neon" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="5" width="20" height="13" rx="2"/><path d="M8 21h8M10 9l5 3-5 3z" fill="currentColor"/></svg>
+        </div>
+        <div>
+          <h1 class="text-lg font-bold tracking-tight">AuraStream</h1>
+          <p class="text-xs text-muted" data-i18n="tagline">Remote playlist manager</p>
+        </div>
+      </div>
+      <button id="langToggle" type="button" class="rounded-lg border border-line px-3 py-1.5 text-sm text-muted hover:text-white">العربية</button>
+    </header>
+
+    <!-- Toast -->
+    <div id="toast" role="status" aria-live="polite" class="hidden-important fixed inset-x-4 bottom-6 z-50 mx-auto max-w-md rounded-xl border px-4 py-3 text-sm shadow-lg"></div>
+
+    <!-- Step 1: device login -->
+    <section id="loginCard" class="rounded-2xl border border-line bg-surface p-5 sm:p-6">
+      <h2 class="text-base font-semibold" data-i18n="connectTitle">Connect your TV</h2>
+      <p class="mt-1 text-sm text-muted" data-i18n="connectHint">Enter the MAC address and Device Key shown on your TV screen, or scan the QR code.</p>
+      <form id="loginForm" class="mt-5 space-y-4" novalidate>
+        <label class="block">
+          <span class="mb-1.5 block text-sm font-medium" data-i18n="macLabel">MAC address</span>
+          <input id="mac" name="mac" class="field mono uppercase" dir="ltr" inputmode="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="00:1A:2B:3C:4D:5E" maxlength="17" required />
+        </label>
+        <label class="block">
+          <span class="mb-1.5 block text-sm font-medium" data-i18n="keyLabel">Device Key</span>
+          <input id="deviceKey" name="deviceKey" class="field mono text-lg tracking-[.5em]" dir="ltr" inputmode="numeric" autocomplete="one-time-code" pattern="\d{6}" maxlength="6" placeholder="••••••" required />
+        </label>
+        <button id="loginBtn" type="submit" class="btn-primary w-full" data-i18n="connectBtn">Connect</button>
+      </form>
+    </section>
+
+    <!-- Step 2: playlist management -->
+    <section id="manageCard" class="hidden-important space-y-6">
+      <div class="flex items-center justify-between gap-3 rounded-2xl border border-line bg-surface p-4">
+        <div class="min-w-0">
+          <p class="text-xs text-muted" data-i18n="connectedAs">Connected device</p>
+          <p id="deviceMac" class="mono truncate text-sm font-semibold" dir="ltr"></p>
+        </div>
+        <span id="licenseBadge" class="shrink-0 rounded-full px-3 py-1 text-xs font-semibold"></span>
+        <button id="logoutBtn" type="button" class="shrink-0 text-sm text-muted underline-offset-4 hover:text-white hover:underline" data-i18n="logout">Sign out</button>
+      </div>
+
+      <div class="rounded-2xl border border-line bg-surface p-5 sm:p-6">
+        <h2 class="text-base font-semibold" data-i18n="addTitle">Add a playlist</h2>
+        <div role="tablist" class="mt-4 grid grid-cols-3 gap-1 rounded-xl bg-canvas p-1 text-sm">
+          <button role="tab" class="tab rounded-lg py-2 font-medium" aria-selected="true" data-tab="m3u" data-i18n="tabUrl">M3U URL</button>
+          <button role="tab" class="tab rounded-lg py-2 font-medium" aria-selected="false" data-tab="file" data-i18n="tabFile">File</button>
+          <button role="tab" class="tab rounded-lg py-2 font-medium" aria-selected="false" data-tab="xtream" data-i18n="tabXtream">Xtream Codes</button>
+        </div>
+
+        <form id="m3uForm" data-panel="m3u" class="mt-5 space-y-4" novalidate>
+          <input name="name" class="field" maxlength="80" data-i18n-placeholder="namePh" placeholder="Playlist name (optional)" />
+          <input name="sourceUrl" class="field" dir="ltr" type="url" inputmode="url" placeholder="https://provider.tv/playlist.m3u8" required />
+          <input name="epgUrl" class="field" dir="ltr" type="url" inputmode="url" data-i18n-placeholder="epgPh" placeholder="XMLTV EPG URL (optional)" />
+          <button type="submit" class="btn-primary w-full" data-i18n="save">Send to TV</button>
+        </form>
+
+        <form id="fileForm" data-panel="file" class="hidden-important mt-5 space-y-4" novalidate>
+          <input name="name" class="field" maxlength="80" data-i18n-placeholder="namePh" placeholder="Playlist name (optional)" />
+          <label id="dropZone" class="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-line bg-canvas px-4 py-8 text-center hover:border-neon">
+            <svg viewBox="0 0 24 24" class="h-8 w-8 text-neon" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 16V4m0 0-4 4m4-4 4 4M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+            <span id="fileLabel" class="text-sm text-muted" data-i18n="fileHint">Tap to choose an .m3u / .m3u8 file</span>
+            <input id="fileInput" name="file" type="file" accept=".m3u,.m3u8,audio/x-mpegurl,application/vnd.apple.mpegurl,text/plain" class="sr-only" />
+          </label>
+          <div id="uploadProgress" class="hidden-important h-1.5 overflow-hidden rounded-full bg-canvas"><div class="h-full w-0 bg-neon transition-all"></div></div>
+          <button type="submit" class="btn-primary w-full" data-i18n="upload">Upload to TV</button>
+        </form>
+
+        <form id="xtreamForm" data-panel="xtream" class="hidden-important mt-5 space-y-4" novalidate>
+          <input name="name" class="field" maxlength="80" data-i18n-placeholder="namePh" placeholder="Playlist name (optional)" />
+          <input name="host" class="field" dir="ltr" inputmode="url" autocomplete="off" spellcheck="false" placeholder="http://line.provider.tv:8080" required />
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <input name="username" class="field" dir="ltr" autocomplete="off" autocapitalize="off" spellcheck="false" data-i18n-placeholder="userPh" placeholder="Username" required />
+            <input name="password" class="field" dir="ltr" type="password" autocomplete="new-password" data-i18n-placeholder="passPh" placeholder="Password" required />
+          </div>
+          <button type="submit" class="btn-primary w-full" data-i18n="save">Send to TV</button>
+        </form>
+      </div>
+
+      <div class="rounded-2xl border border-line bg-surface p-5 sm:p-6">
+        <div class="flex items-center justify-between">
+          <h2 class="text-base font-semibold" data-i18n="listTitle">Playlists on this TV</h2>
+          <button id="refreshBtn" type="button" class="text-sm text-neon" data-i18n="refresh">Refresh</button>
+        </div>
+        <ul id="playlistList" class="mt-4 divide-y divide-line"></ul>
+        <p id="emptyState" class="mt-4 text-sm text-muted" data-i18n="empty">No playlists yet. Add one above – your TV picks it up on the next refresh.</p>
+      </div>
+
+      <p class="text-center text-xs text-muted" data-i18n="syncHint">On the TV open Settings → Refresh playlists, or restart the app, to load changes immediately.</p>
+    </section>
+  </main>
+
+  <template id="playlistItem">
+    <li class="flex items-center gap-3 py-3">
+      <span class="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-canvas text-xs font-bold text-neon" data-slot="type"></span>
+      <div class="min-w-0 flex-1">
+        <p class="truncate font-medium" data-slot="name"></p>
+        <p class="truncate text-xs text-muted" dir="ltr" data-slot="meta"></p>
+      </div>
+      <button type="button" class="shrink-0 rounded-lg px-3 py-1.5 text-sm text-red-300 hover:bg-red-500/10" data-slot="delete" data-i18n="delete">Delete</button>
+    </li>
+  </template>
+
+  <script src="/app.js"></script>
+</body>
+</html>
