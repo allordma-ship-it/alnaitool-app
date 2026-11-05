@@ -5,6 +5,7 @@ import androidx.compose.animation.core.spring
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,16 +32,20 @@ object AuraFocus {
     const val FOCUSED_SCALE = 1.06f
     val RingWidth = 3.dp
 
+    @Composable
     fun shape(shape: Shape = Shape): ClickableSurfaceShape = ClickableSurfaceDefaults.shape(shape = shape)
 
+    @Composable
     fun scale(focused: Float = FOCUSED_SCALE): ClickableSurfaceScale =
         ClickableSurfaceDefaults.scale(scale = 1f, focusedScale = focused, pressedScale = focused - 0.03f)
 
+    @Composable
     fun border(shape: Shape = Shape, width: Dp = RingWidth): ClickableSurfaceBorder = ClickableSurfaceDefaults.border(
         focusedBorder = Border(border = BorderStroke(width, AuraColors.NeonCyan), shape = shape),
         pressedBorder = Border(border = BorderStroke(width, AuraColors.NeonCyan), shape = shape),
     )
 
+    @Composable
     fun colors(
         container: Color = AuraColors.Surface,
         focusedContainer: Color = AuraColors.SurfaceHighest,
