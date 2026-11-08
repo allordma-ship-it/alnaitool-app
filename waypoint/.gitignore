@@ -5,3 +5,4 @@ mobile/build/
 mobile/.flutter-plugins
 mobile/.flutter-plugins-dependencies
 mobile/pubspec.lock.bak
+dump.rdb

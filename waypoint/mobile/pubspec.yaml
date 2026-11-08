@@ -1,0 +1,31 @@
+name: waypoint
+description: WayPoint - long-distance carpooling and ride sharing.
+publish_to: "none"
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.5.0 <4.0.0"
+  flutter: ">=3.24.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  flutter_riverpod: ^2.6.1
+  go_router: ^14.8.1
+  dio: ^5.7.0
+  flutter_secure_storage: ^9.2.2
+  flutter_map: ^7.0.2
+  latlong2: ^0.9.1
+  intl: any
+  flutter_stripe: ^11.4.0
+  url_launcher: ^6.3.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
