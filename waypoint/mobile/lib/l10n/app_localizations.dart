@@ -110,6 +110,36 @@ abstract class AppLocalizations {
   /// **'Your companion on the road — share the ride, split the cost.'**
   String get tagline;
 
+  /// No description provided for @serverAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Server address'**
+  String get serverAddress;
+
+  /// No description provided for @serverAddressHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. http://192.168.1.10:8080'**
+  String get serverAddressHint;
+
+  /// No description provided for @testConnection.
+  ///
+  /// In en, this message translates to:
+  /// **'Test connection'**
+  String get testConnection;
+
+  /// No description provided for @connectionOk.
+  ///
+  /// In en, this message translates to:
+  /// **'Connected to the server.'**
+  String get connectionOk;
+
+  /// No description provided for @connectionFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not reach the server. Check the address and that phone and server are on the same network.'**
+  String get connectionFailed;
+
   /// No description provided for @phoneHint.
   ///
   /// In en, this message translates to:

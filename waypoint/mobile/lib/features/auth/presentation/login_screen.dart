@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/l10n/l10n.dart';
+import '../../../core/widgets/server_settings_dialog.dart';
 import '../../../core/widgets/common.dart';
 import 'auth_controller.dart';
 
@@ -66,6 +67,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     return Scaffold(
       appBar: AppBar(
         actions: [
+          IconButton(
+            tooltip: l.serverAddress,
+            icon: const Icon(Icons.dns_outlined),
+            onPressed: () => showServerSettings(context),
+          ),
           TextButton.icon(
             icon: const Icon(Icons.translate),
             label: Text(localeDisplayName(other)),

@@ -15,6 +15,22 @@ class AppLocalizationsAr extends AppLocalizations {
   String get tagline => 'رفيقك على الطريق — شارك الرحلة وتقاسم التكلفة.';
 
   @override
+  String get serverAddress => 'عنوان الخادم';
+
+  @override
+  String get serverAddressHint => 'مثال: http://192.168.1.10:8080';
+
+  @override
+  String get testConnection => 'اختبار الاتصال';
+
+  @override
+  String get connectionOk => 'تم الاتصال بالخادم بنجاح.';
+
+  @override
+  String get connectionFailed =>
+      'تعذّر الوصول إلى الخادم. تأكد من العنوان ومن أن الهاتف والخادم على نفس الشبكة.';
+
+  @override
   String get phoneHint => '+963 9XX XXX XXX';
 
   @override

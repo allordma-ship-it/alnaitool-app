@@ -5,7 +5,9 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../core/config/app_config.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/models/models.dart';
+import '../../../core/config/server_url.dart';
 import '../../../core/widgets/common.dart';
+import '../../../core/widgets/server_settings_dialog.dart';
 import '../../auth/data/auth_repository_impl.dart';
 import '../../auth/presentation/auth_controller.dart';
 
@@ -228,6 +230,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with WidgetsBindi
                     ),
                   ],
                 ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.dns_outlined),
+                title: Text(l.serverAddress),
+                subtitle: Text(ref.watch(serverUrlProvider), textDirection: TextDirection.ltr),
+                onTap: () => showServerSettings(context),
               ),
             ),
             const SizedBox(height: 24),

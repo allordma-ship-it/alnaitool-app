@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../config/env.dart';
+import '../config/server_url.dart';
 import 'api_exception.dart';
 import 'token_storage.dart';
 
@@ -18,7 +18,7 @@ final sessionExpiredProvider = Provider<StreamController<void>>((ref) {
 
 final apiClientProvider = Provider<ApiClient>((ref) {
   return ApiClient(
-    baseUrl: '${Env.apiBaseUrl}/v1',
+    baseUrl: '${ref.watch(serverUrlProvider)}/v1',
     tokens: ref.watch(tokenStorageProvider),
     onSessionExpired: () => ref.read(sessionExpiredProvider).add(null),
   );

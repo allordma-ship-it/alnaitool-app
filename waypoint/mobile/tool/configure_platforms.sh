@@ -45,6 +45,8 @@ DEEP_LINK = """            <intent-filter>
         </activity>"""
 
 def manifest(s):
+    # Home-screen name shown under the icon.
+    s = re.sub(r'android:label="[^"]*"', 'android:label="ونيس"', s, count=1)
     if 'android:scheme="wanees"' not in s:
         s = s.replace("        </activity>", DEEP_LINK, 1)
     return s
@@ -88,6 +90,7 @@ URL_TYPES = """	<key>CFBundleDevelopmentRegion</key>
 </plist>"""
 
 def plist(s):
+    s = re.sub(r"(<key>CFBundleDisplayName</key>\s*<string>)[^<]*(</string>)", r"\1ونيس\2", s)
     if "CFBundleURLSchemes" in s:
         return s
     # Replace the template's development region; ours is set in URL_TYPES.

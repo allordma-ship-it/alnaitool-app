@@ -16,6 +16,22 @@ class AppLocalizationsEn extends AppLocalizations {
       'Your companion on the road — share the ride, split the cost.';
 
   @override
+  String get serverAddress => 'Server address';
+
+  @override
+  String get serverAddressHint => 'e.g. http://192.168.1.10:8080';
+
+  @override
+  String get testConnection => 'Test connection';
+
+  @override
+  String get connectionOk => 'Connected to the server.';
+
+  @override
+  String get connectionFailed =>
+      'Could not reach the server. Check the address and that phone and server are on the same network.';
+
+  @override
   String get phoneHint => '+963 9XX XXX XXX';
 
   @override

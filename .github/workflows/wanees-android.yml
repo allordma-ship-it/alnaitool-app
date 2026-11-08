@@ -1,0 +1,79 @@
+name: Wanees Android APK
+
+# Builds installable Android APKs for ونيس on every change to the app.
+# Download them from the run page: Actions → "Wanees Android APK" → Artifacts.
+on:
+  push:
+    paths:
+      - "waypoint/mobile/**"
+      - ".github/workflows/wanees-android.yml"
+  workflow_dispatch:
+    inputs:
+      api_url:
+        description: "Server address built into the app (can be changed later inside the app)"
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wanees-android-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: waypoint/mobile
+    env:
+      # Priority: manual input → repository variable WANEES_API_URL → LAN example.
+      API_BASE_URL: ${{ github.event.inputs.api_url || vars.WANEES_API_URL || 'http://192.168.1.10:8080' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: "3.47.9"
+          cache: true
+
+      - name: Generate Android project and apply native configuration
+        run: |
+          flutter create --org sy.wanees --project-name wanees --platforms=android .
+          ./tool/configure_platforms.sh
+
+      - name: Dependencies, analysis and tests
+        run: |
+          flutter pub get
+          flutter analyze
+          flutter test
+
+      # Test build: also talks to plain http:// servers (e.g. a laptop on the same Wi-Fi).
+      - name: Build test APK
+        run: flutter build apk --debug --dart-define=API_BASE_URL="$API_BASE_URL"
+
+      # Release build: optimized and smaller; Android only allows https:// servers.
+      - name: Build release APK
+        run: flutter build apk --release --dart-define=API_BASE_URL="$API_BASE_URL"
+
+      - name: Collect APKs
+        run: |
+          mkdir -p dist
+          cp build/app/outputs/flutter-apk/app-debug.apk dist/wanees-test.apk
+          cp build/app/outputs/flutter-apk/app-release.apk dist/wanees-release.apk
+          ls -lh dist
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wanees-android-apk
+          path: waypoint/mobile/dist/*.apk
+          retention-days: 30
+          if-no-files-found: error

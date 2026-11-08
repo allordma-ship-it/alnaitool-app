@@ -68,6 +68,9 @@ the button on the login screen), and the choice is saved on the device.
 
 ### Mobile app
 
+Arabic step-by-step install guide (server, APK download, installing on Android): [`INSTALL.ar.md`](INSTALL.ar.md).
+GitHub Actions builds `wanees-test.apk` and `wanees-release.apk` on every change to `mobile/` (`.github/workflows/wanees-android.yml`).
+
 ```bash
 make mobile-bootstrap                         # flutter create + native config + pub get
 make mobile-run                               # Android emulator → http://10.0.2.2:8080
