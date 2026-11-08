@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../core/l10n/l10n.dart';
 import '../../../core/models/models.dart';
 import '../../../core/widgets/common.dart';
 import '../../auth/data/auth_repository_impl.dart';
@@ -62,7 +63,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with WidgetsBindi
     try {
       final me = await ref.read(authRepositoryProvider).refreshPayoutStatus();
       ref.read(authControllerProvider.notifier).setMe(me);
-      if (mounted && me.payoutsEnabled) showInfo(context, 'Payouts are active');
+      if (mounted && me.payoutsEnabled) showInfo(context, context.l10n.payoutsActive);
     } catch (e) {
       if (mounted) showError(context, e);
     }
@@ -73,16 +74,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with WidgetsBindi
     final bio = await showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('About you'),
+        title: Text(ctx.l10n.aboutYou),
         content: TextField(
           controller: controller,
           maxLines: 4,
           maxLength: 1000,
-          decoration: const InputDecoration(hintText: 'Chatty? Music lover? Tell travellers about yourself.'),
+          decoration: InputDecoration(hintText: ctx.l10n.bioHint),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.pop(ctx, controller.text.trim()), child: const Text('Save')),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(ctx.l10n.cancel)),
+          FilledButton(onPressed: () => Navigator.pop(ctx, controller.text.trim()), child: Text(ctx.l10n.save)),
         ],
       ),
     );
@@ -100,10 +101,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with WidgetsBindi
   Widget build(BuildContext context) {
     final me = ref.watch(authControllerProvider).valueOrNull;
     final theme = Theme.of(context);
+    final l = context.l10n;
+    final locale = ref.watch(localeProvider);
     if (me == null) return const Scaffold(body: Center(child: CircularProgressIndicator()));
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Profile')),
+      appBar: AppBar(title: Text(l.profile)),
       body: RefreshIndicator(
         onRefresh: () => ref.read(authControllerProvider.notifier).reload(),
         child: ListView(
@@ -127,9 +130,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with WidgetsBindi
                       Row(
                         children: [
                           Icon(Icons.star_rounded, size: 18, color: theme.colorScheme.tertiary),
+                          const SizedBox(width: 4),
                           Text(me.ratingCount == 0
-                              ? ' No reviews yet'
-                              : ' ${me.rating.toStringAsFixed(1)} · ${me.ratingCount} reviews'),
+                              ? l.noReviewsYet
+                              : l.ratingSummary(me.rating.toStringAsFixed(1), me.ratingCount)),
                         ],
                       ),
                     ],
@@ -140,8 +144,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with WidgetsBindi
             const SizedBox(height: 16),
             Card(
               child: ListTile(
-                title: const Text('About you'),
-                subtitle: Text(me.bio.isEmpty ? 'Add a short bio' : me.bio),
+                title: Text(l.aboutYou),
+                subtitle: Text(me.bio.isEmpty ? l.addBio : me.bio),
                 trailing: const Icon(Icons.edit_outlined),
                 onTap: () => _editBio(me),
               ),
@@ -169,26 +173,49 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with WidgetsBindi
                           color: me.payoutsEnabled ? theme.colorScheme.secondary : theme.colorScheme.primary,
                         ),
                         const SizedBox(width: 8),
-                        Text('Payouts', style: theme.textTheme.titleMedium),
+                        Text(l.payouts, style: theme.textTheme.titleMedium),
                       ],
                     ),
                     const SizedBox(height: 8),
-                    Text(
-                      me.payoutsEnabled
-                          ? 'You can receive payments for your rides. Money is released 24 hours after each trip.'
-                          : 'Add your bank details to get paid when you offer rides.',
-                    ),
+                    Text(me.payoutsEnabled ? l.payoutsActiveBody : l.payoutsSetupBody),
                     const SizedBox(height: 12),
                     if (!me.payoutsEnabled)
                       FilledButton(
                         onPressed: _busy ? null : _startOnboarding,
-                        child: const Text('Set up payouts'),
+                        child: Text(l.setUpPayouts),
                       )
                     else
                       OutlinedButton(
                         onPressed: _busy ? null : _startOnboarding,
-                        child: const Text('Manage payout details'),
+                        child: Text(l.managePayouts),
                       ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Icons.translate, color: theme.colorScheme.primary),
+                        const SizedBox(width: 8),
+                        Text(l.language, style: theme.textTheme.titleMedium),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    SegmentedButton<Locale>(
+                      segments: [
+                        for (final loc in appLocales)
+                          ButtonSegment(value: loc, label: Text(localeDisplayName(loc))),
+                      ],
+                      selected: {locale},
+                      onSelectionChanged: (s) => ref.read(localeProvider.notifier).setLocale(s.first),
+                    ),
                   ],
                 ),
               ),
@@ -196,7 +223,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with WidgetsBindi
             const SizedBox(height: 24),
             OutlinedButton.icon(
               icon: const Icon(Icons.logout),
-              label: const Text('Log out'),
+              label: Text(l.logOut),
               onPressed: () => ref.read(authControllerProvider.notifier).logout(),
             ),
           ],

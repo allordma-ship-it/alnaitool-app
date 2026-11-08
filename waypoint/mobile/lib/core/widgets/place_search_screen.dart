@@ -4,8 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../geo/geocoding_repository.dart';
+import '../l10n/error_text.dart';
+import '../l10n/l10n.dart';
 import '../models/models.dart';
-import '../network/api_exception.dart';
 
 /// Full-screen place autocomplete. Pops with the selected [Place].
 class PlaceSearchScreen extends ConsumerStatefulWidget {
@@ -69,7 +70,7 @@ class _PlaceSearchScreenState extends ConsumerState<PlaceSearchScreen> {
     } catch (e) {
       if (!mounted || seq != _requestSeq) return;
       setState(() {
-        _error = errorMessage(e);
+        _error = localizedError(context.l10n, e);
         _loading = false;
       });
     }
@@ -98,7 +99,7 @@ class _PlaceSearchScreenState extends ConsumerState<PlaceSearchScreen> {
               onChanged: _onChanged,
               onSubmitted: _search,
               decoration: InputDecoration(
-                hintText: 'City, address or station',
+                hintText: context.l10n.placeSearchHint,
                 prefixIcon: const Icon(Icons.search),
                 suffixIcon: _controller.text.isEmpty
                     ? null

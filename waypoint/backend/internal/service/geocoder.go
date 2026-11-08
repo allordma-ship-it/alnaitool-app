@@ -71,15 +71,16 @@ func (g *Geocoder) Search(ctx context.Context, query string, near *domain.LatLng
 	if limit <= 0 || limit > 15 {
 		limit = 8
 	}
-	switch lang {
-	case "de", "en", "fr", "it":
-	default:
-		lang = "en"
-	}
 	params := url.Values{}
 	params.Set("q", query)
 	params.Set("limit", strconv.Itoa(limit))
-	params.Set("lang", lang)
+	// Photon translates names only into these languages. For any other
+	// language (e.g. Arabic) the parameter is omitted so places come back
+	// with their local names ("Stuttgart", "München") rather than English.
+	switch lang {
+	case "de", "en", "fr", "it":
+		params.Set("lang", lang)
+	}
 	if near != nil && near.Valid() {
 		params.Set("lat", strconv.FormatFloat(near.Lat, 'f', 3, 64))
 		params.Set("lon", strconv.FormatFloat(near.Lng, 'f', 3, 64))

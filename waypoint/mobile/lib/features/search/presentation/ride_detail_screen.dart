@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
 
+import '../../../core/l10n/l10n.dart';
 import '../../../core/models/models.dart';
-import '../../../core/network/api_exception.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/common.dart';
@@ -61,8 +61,6 @@ class _RideDetailScreenState extends ConsumerState<RideDetailScreen> {
       ref.invalidate(rideDetailProvider(ride.id));
       context.go('/trips');
       unawaitedPush(context, '/bookings/${booking.id}');
-    } on ApiException catch (e) {
-      if (mounted) showError(context, e);
     } catch (e) {
       if (mounted) showError(context, e);
     } finally {
@@ -75,7 +73,7 @@ class _RideDetailScreenState extends ConsumerState<RideDetailScreen> {
     final detail = ref.watch(rideDetailProvider(widget.args.rideId));
     final me = ref.watch(authControllerProvider).valueOrNull;
     return Scaffold(
-      appBar: AppBar(title: const Text('Ride details')),
+      appBar: AppBar(title: Text(context.l10n.rideDetails)),
       body: AsyncView(
         value: detail,
         onRetry: () => ref.invalidate(rideDetailProvider(widget.args.rideId)),
@@ -86,6 +84,7 @@ class _RideDetailScreenState extends ConsumerState<RideDetailScreen> {
 
   Widget _body(BuildContext context, RideDetail d, {required bool isOwnRide}) {
     final theme = Theme.of(context);
+    final l = context.l10n;
     final ride = d.ride;
     final match = widget.args.match;
     final seg = match?.segment;
@@ -106,15 +105,19 @@ class _RideDetailScreenState extends ConsumerState<RideDetailScreen> {
           toTime: formatTime(seg?.dropoffEta ?? ride.arrivalAt),
           toName: widget.args.query?.to.name ?? ride.destination.name,
           middle: formatDuration(
+            l,
             (seg?.dropoffEta ?? ride.arrivalAt).difference(seg?.pickupEta ?? ride.departureAt).inSeconds,
           ),
         ),
         if (seg != null) ...[
           const SizedBox(height: 8),
           Text(
-            'Driver travels ${ride.origin.name} → ${ride.destination.name}. '
-            'Meeting point ${formatDistance(seg.pickupDistanceM)} from your start, '
-            'drop-off ${formatDistance(seg.dropoffDistanceM)} from your destination.',
+            l.driverTravels(
+              ride.origin.name,
+              ride.destination.name,
+              formatDistance(l, seg.pickupDistanceM),
+              formatDistance(l, seg.dropoffDistanceM),
+            ),
             style: theme.textTheme.bodySmall,
           ),
         ],
@@ -127,13 +130,13 @@ class _RideDetailScreenState extends ConsumerState<RideDetailScreen> {
               point: seg?.pickup ?? ride.origin.location,
               icon: Icons.trip_origin,
               color: AppTheme.accent,
-              tooltip: 'Pickup',
+              tooltip: l.pickup,
             ),
             MapPin(
               point: seg?.dropoff ?? ride.destination.location,
               icon: Icons.place,
               color: AppTheme.danger,
-              tooltip: 'Drop-off',
+              tooltip: l.dropoff,
             ),
           ],
         ),
@@ -161,24 +164,24 @@ class _RideDetailScreenState extends ConsumerState<RideDetailScreen> {
           spacing: 8,
           runSpacing: 8,
           children: [
-            _pref(ride.preferences.instantBooking, Icons.bolt, 'Instant booking', 'Driver approves requests'),
-            _pref(ride.preferences.maxTwoBack, Icons.airline_seat_recline_normal, 'Max. 2 in the back', '3 in the back'),
-            _pref(ride.preferences.allowPets, Icons.pets, 'Pets welcome', 'No pets'),
-            _pref(ride.preferences.allowSmoking, Icons.smoking_rooms, 'Smoking allowed', 'No smoking'),
+            _pref(ride.preferences.instantBooking, Icons.bolt, l.instantBooking, l.prefApproval),
+            _pref(ride.preferences.maxTwoBack, Icons.airline_seat_recline_normal, l.prefMaxTwoBack, l.prefThreeBack),
+            _pref(ride.preferences.allowPets, Icons.pets, l.prefPets, l.prefNoPets),
+            _pref(ride.preferences.allowSmoking, Icons.smoking_rooms, l.prefSmoking, l.prefNoSmoking),
           ],
         ),
         const SizedBox(height: 20),
         if (isOwnRide)
-          const EmptyView(icon: Icons.drive_eta, title: 'This is your ride')
+          EmptyView(icon: Icons.drive_eta, title: l.ownRide)
         else if (ride.status != RideStatus.scheduled || maxSeats < 1)
           EmptyView(
             icon: Icons.event_busy,
-            title: ride.status == RideStatus.cancelled ? 'This ride was cancelled' : 'This ride is full',
+            title: ride.status == RideStatus.cancelled ? l.rideWasCancelled : l.rideFull,
           )
         else ...[
           Row(
             children: [
-              Text('Seats', style: theme.textTheme.titleMedium),
+              Text(l.seats, style: theme.textTheme.titleMedium),
               const Spacer(),
               IconButton(
                 onPressed: seats > 1 ? () => setState(() => _seats = seats - 1) : null,
@@ -191,9 +194,9 @@ class _RideDetailScreenState extends ConsumerState<RideDetailScreen> {
               ),
             ],
           ),
-          _priceRow(context, '$seats × ${formatMoney(pricePerSeat, ride.currency)}', pricePerSeat * seats, ride.currency),
+          _priceRow(context, l.seatsTimesPrice(seats, formatMoney(pricePerSeat, ride.currency)), pricePerSeat * seats, ride.currency),
           Text(
-            'A service fee is added at checkout. Your card is only charged after the trip.',
+            l.feeNotice,
             style: theme.textTheme.bodySmall,
           ),
           const SizedBox(height: 12),
@@ -201,14 +204,14 @@ class _RideDetailScreenState extends ConsumerState<RideDetailScreen> {
             controller: _message,
             maxLength: 500,
             maxLines: 2,
-            decoration: const InputDecoration(labelText: 'Message to the driver (optional)'),
+            decoration: InputDecoration(labelText: l.messageToDriver),
           ),
           const SizedBox(height: 8),
           FilledButton(
             onPressed: _booking ? null : () => _book(d),
             child: _booking
                 ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2))
-                : Text(ride.preferences.instantBooking ? 'Book' : 'Request to book'),
+                : Text(ride.preferences.instantBooking ? l.book : l.requestToBook),
           ),
         ],
         const SizedBox(height: 24),

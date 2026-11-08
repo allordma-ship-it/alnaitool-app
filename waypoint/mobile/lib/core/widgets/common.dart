@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../l10n/error_text.dart';
+import '../l10n/l10n.dart';
 import '../models/models.dart';
-import '../network/api_exception.dart';
 
 /// Renders an [AsyncValue] with loading and retryable error states.
 class AsyncView<T> extends StatelessWidget {
@@ -17,7 +18,7 @@ class AsyncView<T> extends StatelessWidget {
     return value.when(
       data: data,
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => ErrorView(message: errorMessage(e), onRetry: onRetry),
+      error: (e, _) => ErrorView(message: localizedError(context.l10n, e), onRetry: onRetry),
     );
   }
 }
@@ -42,7 +43,7 @@ class ErrorView extends StatelessWidget {
             Text(message, textAlign: TextAlign.center),
             if (onRetry != null) ...[
               const SizedBox(height: 16),
-              OutlinedButton.icon(onPressed: onRetry, icon: const Icon(Icons.refresh), label: const Text('Retry')),
+              OutlinedButton.icon(onPressed: onRetry, icon: const Icon(Icons.refresh), label: Text(context.l10n.retry)),
             ],
           ],
         ),
@@ -106,9 +107,14 @@ class ProfileTile extends StatelessWidget {
         children: [
           Icon(Icons.star_rounded, size: 18, color: theme.colorScheme.tertiary),
           const SizedBox(width: 2),
-          Text(profile.ratingCount == 0
-              ? 'New member'
-              : '${profile.rating.toStringAsFixed(1)} · ${profile.ratingCount} reviews'),
+          Flexible(
+            child: Text(
+              profile.ratingCount == 0
+                  ? context.l10n.newMember
+                  : context.l10n.ratingSummary(profile.rating.toStringAsFixed(1), profile.ratingCount),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
           if (subtitle != null) ...[const Text(' · '), Flexible(child: Text(subtitle!, overflow: TextOverflow.ellipsis))],
         ],
       ),
@@ -180,7 +186,7 @@ class TripTimeline extends StatelessWidget {
               width: 52,
               child: middle == null ? null : Text(middle!, style: theme.textTheme.labelSmall),
             ),
-            Container(margin: const EdgeInsets.only(left: 5), width: 2, height: 24, color: theme.colorScheme.primary),
+            Container(margin: const EdgeInsetsDirectional.only(start: 5), width: 2, height: 24, color: theme.colorScheme.primary),
           ],
         ),
         row(toTime, toName),
@@ -193,7 +199,7 @@ class TripTimeline extends StatelessWidget {
 void showError(BuildContext context, Object error) {
   ScaffoldMessenger.of(context)
     ..hideCurrentSnackBar()
-    ..showSnackBar(SnackBar(content: Text(errorMessage(error)), behavior: SnackBarBehavior.floating));
+    ..showSnackBar(SnackBar(content: Text(localizedError(context.l10n, error)), behavior: SnackBarBehavior.floating));
 }
 
 /// Shows a snackbar with an info message.

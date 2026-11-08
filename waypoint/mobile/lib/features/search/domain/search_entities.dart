@@ -3,13 +3,12 @@ import 'package:latlong2/latlong.dart';
 import '../../../core/models/models.dart';
 
 enum SearchSort {
-  departure('departure', 'Earliest'),
-  price('price', 'Cheapest'),
-  proximity('proximity', 'Closest');
+  departure('departure'),
+  price('price'),
+  proximity('proximity');
 
-  const SearchSort(this.apiValue, this.label);
+  const SearchSort(this.apiValue);
   final String apiValue;
-  final String label;
 }
 
 /// A passenger's search request. Value-equal so it can key providers.

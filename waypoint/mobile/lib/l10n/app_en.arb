@@ -1,0 +1,429 @@
+{
+  "@@locale": "en",
+  "appTitle": "WayPoint",
+  "tagline": "Share the ride, split the cost.",
+  "retry": "Retry",
+  "cancel": "Cancel",
+  "back": "Back",
+  "save": "Save",
+  "submit": "Submit",
+  "later": "Later",
+  "required": "Required",
+  "language": "Language",
+  "firstName": "First name",
+  "lastName": "Last name",
+  "phoneOptional": "Phone (optional)",
+  "email": "Email",
+  "password": "Password",
+  "invalidEmail": "Enter a valid email",
+  "passwordTooShort": "At least 8 characters",
+  "createAccount": "Create account",
+  "logIn": "Log in",
+  "haveAccount": "Already a member? Log in",
+  "noAccount": "New here? Create an account",
+  "navSearch": "Search",
+  "navPublish": "Publish",
+  "navTrips": "Trips",
+  "navProfile": "Profile",
+  "searchTitle": "Where are you going?",
+  "leavingFrom": "Leaving from",
+  "goingTo": "Going to",
+  "swap": "Swap",
+  "date": "Date",
+  "search": "Search",
+  "howItWorks": "How it works",
+  "hintMatching": "We match you with drivers whose route passes near your start and destination — even if they travel further.",
+  "hintEscrow": "Your payment is held securely and only released to the driver after the trip.",
+  "hintCancel": "Free cancellation until 24 hours before pickup.",
+  "placeSearchHint": "City, address or station",
+  "routeFromTo": "{from} → {to}",
+  "@routeFromTo": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "passengersCount": "{count, plural, =1{1 passenger} other{{count} passengers}}",
+  "@passengersCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sortEarliest": "Earliest",
+  "sortCheapest": "Cheapest",
+  "sortClosest": "Closest",
+  "noRidesTitle": "No rides yet for this day",
+  "noRidesSubtitle": "Try another date or a nearby city.",
+  "searchNextDay": "Search the next day",
+  "toPickup": "{distance} to pickup",
+  "@toPickup": {
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+  "fromDropoff": "{distance} from drop-off",
+  "@fromDropoff": {
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+  "seatsLeft": "{count} left",
+  "@seatsLeft": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "rideDetails": "Ride details",
+  "driverTravels": "Driver travels {origin} → {destination}. Meeting point {pickup} from your start, drop-off {dropoff} from your destination.",
+  "@driverTravels": {
+    "placeholders": {
+      "origin": {
+        "type": "String"
+      },
+      "destination": {
+        "type": "String"
+      },
+      "pickup": {
+        "type": "String"
+      },
+      "dropoff": {
+        "type": "String"
+      }
+    }
+  },
+  "pickup": "Pickup",
+  "dropoff": "Drop-off",
+  "instantBooking": "Instant booking",
+  "prefApproval": "Driver approves requests",
+  "prefMaxTwoBack": "Max. 2 in the back",
+  "prefThreeBack": "3 in the back",
+  "prefPets": "Pets welcome",
+  "prefNoPets": "No pets",
+  "prefSmoking": "Smoking allowed",
+  "prefNoSmoking": "No smoking",
+  "ownRide": "This is your ride",
+  "rideWasCancelled": "This ride was cancelled",
+  "rideFull": "This ride is full",
+  "seats": "Seats",
+  "seatsTimesPrice": "{seats} × {price}",
+  "@seatsTimesPrice": {
+    "placeholders": {
+      "seats": {
+        "type": "int"
+      },
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "feeNotice": "A service fee is added at checkout. Your card is only charged after the trip.",
+  "messageToDriver": "Message to the driver (optional)",
+  "book": "Book",
+  "requestToBook": "Request to book",
+  "offerRide": "Offer a ride",
+  "departure": "Departure",
+  "destination": "Destination",
+  "distanceAbout": "{distance} · about {duration}",
+  "@distanceAbout": {
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      },
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "when": "When?",
+  "departureTooSoon": "Departure must be at least 30 minutes from now.",
+  "seatsOffered": "Seats offered",
+  "pricePerSeat": "Price per seat",
+  "recommendedPrice": "Recommended price — fair cost sharing for this distance",
+  "recommendedPriceIs": "Recommended: {price}",
+  "@recommendedPriceIs": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "proportionalPriceNote": "Passengers on part of your route pay a proportional price.",
+  "preferences": "Preferences",
+  "instantBookingSubtitle": "Passengers book without waiting for your approval",
+  "petsAllowed": "Pets allowed",
+  "smokingAllowed": "Smoking allowed",
+  "carLabel": "Car (e.g. blue VW Golf)",
+  "notesLabel": "Anything passengers should know?",
+  "publishRide": "Publish ride",
+  "ridePublished": "Your ride is published!",
+  "payoutsFirstTitle": "Set up payouts first",
+  "payoutsFirstBody": "To receive money from passengers, add your payout details. It only takes a few minutes.",
+  "setUpPayouts": "Set up payouts",
+  "yourTrips": "Your trips",
+  "asPassenger": "As passenger",
+  "asDriver": "As driver",
+  "noBookings": "No bookings yet",
+  "noBookingsSub": "Find a ride and travel together.",
+  "findRide": "Find a ride",
+  "upcoming": "Upcoming",
+  "history": "History",
+  "noRidesOffered": "No rides offered",
+  "noRidesOfferedSub": "Driving somewhere? Share your empty seats and your costs.",
+  "withDriver": "with {name}",
+  "@withDriver": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "rideScheduled": "Scheduled",
+  "rideOnTheRoad": "On the road",
+  "rideCompleted": "Completed",
+  "rideCancelled": "Cancelled",
+  "seatsBookedFree": "{booked} booked · {free} free",
+  "@seatsBookedFree": {
+    "placeholders": {
+      "booked": {
+        "type": "int"
+      },
+      "free": {
+        "type": "int"
+      }
+    }
+  },
+  "requestsCount": "{count, plural, =1{1 request} other{{count} requests}}",
+  "@requestsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "bsPaymentPending": "Awaiting payment",
+  "bsRequested": "Awaiting driver",
+  "bsConfirmed": "Confirmed",
+  "bsRejected": "Declined",
+  "bsCancelled": "Cancelled",
+  "bsCancelledByDriver": "Cancelled by driver",
+  "bsExpired": "Expired",
+  "bsCompleted": "Completed",
+  "yourBooking": "Your booking",
+  "seatsCount": "{count, plural, =1{1 seat} other{{count} seats}}",
+  "@seatsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "serviceFee": "Service fee",
+  "total": "Total",
+  "payPending": "Waiting for your payment authorization.",
+  "payAuthorized": "{amount} is reserved on your card and released to the driver after the trip.",
+  "@payAuthorized": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "payCaptured": "Charged {amount}.",
+  "@payCaptured": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "payVoided": "The hold on your card was released — you were not charged.",
+  "payRefunded": "Refunded {amount}.",
+  "@payRefunded": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "payFailed": "Your card was declined. Please try another payment method.",
+  "completePayment": "Complete payment",
+  "paymentAuthorized": "Payment authorized",
+  "refreshPaymentStatus": "Refresh payment status",
+  "confirmTrip": "Confirm the trip took place",
+  "driverPaid": "Thanks! The driver has been paid.",
+  "rateName": "Rate {name}",
+  "@rateName": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "cancelBooking": "Cancel booking",
+  "cancelBookingTitle": "Cancel this booking?",
+  "cancelLateBody": "Your pickup is less than 24 hours away. The driver will receive part of the seat price as compensation; the rest of the hold is released.",
+  "cancelFreeBody": "Your payment hold will be released in full.",
+  "bookingCancelled": "Booking cancelled",
+  "thanksReview": "Thanks for your review!",
+  "commentOptional": "Comment (optional)",
+  "yourRide": "Your ride",
+  "passengers": "Passengers",
+  "noPassengers": "No passengers yet.",
+  "pricePerSeatInfo": "{price} per seat · {free}/{total} seats free",
+  "@pricePerSeatInfo": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      },
+      "free": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "pickupYouReceive": "Pickup {time} · you receive {amount}",
+  "@pickupYouReceive": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "decline": "Decline",
+  "accept": "Accept",
+  "requestDeclined": "Request declined",
+  "passengerConfirmed": "Passenger confirmed",
+  "removePassengerTitle": "Remove {name}?",
+  "@removePassengerTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "removePassengerBody": "Their booking will be cancelled and their payment hold released.",
+  "remove": "Remove",
+  "removePassenger": "Remove passenger",
+  "passengerRemoved": "Passenger removed",
+  "reviewSaved": "Review saved",
+  "startRide": "Start ride",
+  "safeTrip": "Have a safe trip!",
+  "completeRide": "Complete ride & get paid",
+  "rideCompletedMsg": "Ride completed",
+  "cancelRide": "Cancel ride",
+  "cancelRideTitle": "Cancel this ride?",
+  "cancelRideBody": "All passengers will be notified and their payment holds released.",
+  "rideCancelledMsg": "Ride cancelled",
+  "profile": "Profile",
+  "noReviewsYet": "No reviews yet",
+  "newMember": "New member",
+  "ratingSummary": "{rating} · {count, plural, =1{1 review} other{{count} reviews}}",
+  "@ratingSummary": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "aboutYou": "About you",
+  "addBio": "Add a short bio",
+  "bioHint": "Chatty? Music lover? Tell travellers about yourself.",
+  "payouts": "Payouts",
+  "payoutsActiveBody": "You can receive payments for your rides. Money is released 24 hours after each trip.",
+  "payoutsSetupBody": "Add your bank details to get paid when you offer rides.",
+  "managePayouts": "Manage payout details",
+  "payoutsActive": "Payouts are active",
+  "logOut": "Log out",
+  "durationHM": "{h} h {m} min",
+  "@durationHM": {
+    "placeholders": {
+      "h": {
+        "type": "int"
+      },
+      "m": {
+        "type": "String"
+      }
+    }
+  },
+  "durationH": "{h} h",
+  "@durationH": {
+    "placeholders": {
+      "h": {
+        "type": "int"
+      }
+    }
+  },
+  "durationM": "{m} min",
+  "@durationM": {
+    "placeholders": {
+      "m": {
+        "type": "int"
+      }
+    }
+  },
+  "distanceKm": "{value} km",
+  "@distanceKm": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "distanceM": "{value} m",
+  "@distanceM": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "errOffline": "No connection to the server. Check your internet connection.",
+  "errTimeout": "The server took too long to respond. Please try again.",
+  "errUnauthorized": "Invalid email or password.",
+  "errNoSeats": "Not enough seats available on this part of the route.",
+  "errAlreadyBooked": "You already have an active booking on this ride.",
+  "errAlreadyReviewed": "You already reviewed this trip.",
+  "errConflict": "This action conflicts with existing data.",
+  "errInvalidState": "This action is no longer possible.",
+  "errPaymentRequired": "Payment setup is required first.",
+  "errUpstream": "A service is temporarily unavailable. Please try again.",
+  "errNotFound": "Not found.",
+  "errForbidden": "You are not allowed to do this.",
+  "errRateLimited": "Too many requests. Please wait a moment.",
+  "errEmailTaken": "This email is already registered.",
+  "errNoRoute": "No drivable route was found between these places.",
+  "errOwnRide": "You cannot book your own ride.",
+  "errRidePassed": "This ride has already passed your pickup point.",
+  "errTooFar": "This place is too far from the driver's route.",
+  "errPrice": "The price is outside the allowed range for this distance.",
+  "errDeparture": "Please choose a valid departure time.",
+  "errValidation": "Please check: {field}",
+  "@errValidation": {
+    "placeholders": {
+      "field": {
+        "type": "String"
+      }
+    }
+  },
+  "errGeneric": "Something went wrong. Please try again."
+}

@@ -33,6 +33,21 @@ changing the region.
   keys in `.env`, then `make stripe-listen` and copy the printed `whsec_…` into
   `STRIPE_WEBHOOK_SECRET`.
 
+### Language — Arabic first (العربية)
+
+The app's primary language is **Arabic** with a full right-to-left layout; English
+is available as a second language. Users switch under *Profile → Language* (or with
+the button on the login screen), and the choice is saved on the device.
+
+* Translations live in `mobile/lib/l10n/app_ar.arb` and `app_en.arb` (Flutter
+  `gen-l10n`, including Arabic plural forms such as مقعد واحد / مقعدان / 3 مقاعد).
+* Server errors are shown in the user's language. The app translates the API's
+  stable error codes and field names instead of displaying the English server text
+  (`lib/core/l10n/error_text.dart`).
+* Place search: the geocoder has no Arabic name data, so Arabic users see local
+  names (e.g. "München") rather than English ones.
+* To add a language, add `app_xx.arb` and append `Locale('xx')` to `appLocales`.
+
 ### Mobile app
 
 ```bash

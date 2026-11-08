@@ -4,6 +4,7 @@
 #   * flutter_stripe: FlutterFragmentActivity + AppCompat themes (Android), iOS 13+
 #   * waypoint:// deep-link scheme (Stripe 3DS return + Connect onboarding)
 #   * cleartext HTTP to the local API in debug builds only
+#   * Arabic as the primary iOS localization (system dialogs, RTL)
 # Idempotent: safe to run repeatedly.
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -60,7 +61,14 @@ def debug_manifest(s):
 patch("android/app/src/debug/AndroidManifest.xml", debug_manifest)
 
 # --- iOS -------------------------------------------------------------------
-URL_TYPES = """	<key>CFBundleURLTypes</key>
+URL_TYPES = """	<key>CFBundleDevelopmentRegion</key>
+	<string>ar</string>
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>ar</string>
+		<string>en</string>
+	</array>
+	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
 			<key>CFBundleURLName</key>
@@ -82,6 +90,8 @@ URL_TYPES = """	<key>CFBundleURLTypes</key>
 def plist(s):
     if "CFBundleURLSchemes" in s:
         return s
+    # Replace the template's development region; ours is set in URL_TYPES.
+    s = re.sub(r"\t<key>CFBundleDevelopmentRegion</key>\n\t<string>[^<]*</string>\n", "", s)
     return re.sub(r"</dict>\s*</plist>\s*$", URL_TYPES + "\n", s)
 patch("ios/Runner/Info.plist", plist)
 

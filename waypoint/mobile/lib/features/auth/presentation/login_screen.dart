@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/l10n/l10n.dart';
 import '../../../core/widgets/common.dart';
 import 'auth_controller.dart';
 
@@ -54,12 +55,24 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
   }
 
-  String? _required(String? v) => (v == null || v.trim().isEmpty) ? 'Required' : null;
+  String? _required(String? v) => (v == null || v.trim().isEmpty) ? context.l10n.required : null;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l = context.l10n;
+    final locale = ref.watch(localeProvider);
+    final other = appLocales.firstWhere((x) => x != locale);
     return Scaffold(
+      appBar: AppBar(
+        actions: [
+          TextButton.icon(
+            icon: const Icon(Icons.translate),
+            label: Text(localeDisplayName(other)),
+            onPressed: () => ref.read(localeProvider.notifier).setLocale(other),
+          ),
+        ],
+      ),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -74,10 +87,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     children: [
                       Icon(Icons.alt_route_rounded, size: 64, color: theme.colorScheme.primary),
                       const SizedBox(height: 12),
-                      Text('WayPoint', style: theme.textTheme.headlineMedium, textAlign: TextAlign.center),
+                      Text(l.appTitle, style: theme.textTheme.headlineMedium, textAlign: TextAlign.center),
                       const SizedBox(height: 4),
                       Text(
-                        'Share the ride, split the cost.',
+                        l.tagline,
                         style: theme.textTheme.bodyLarge,
                         textAlign: TextAlign.center,
                       ),
@@ -88,7 +101,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             Expanded(
                               child: TextFormField(
                                 controller: _firstName,
-                                decoration: const InputDecoration(labelText: 'First name'),
+                                decoration: InputDecoration(labelText: l.firstName),
                                 textCapitalization: TextCapitalization.words,
                                 autofillHints: const [AutofillHints.givenName],
                                 validator: _required,
@@ -98,7 +111,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             Expanded(
                               child: TextFormField(
                                 controller: _lastName,
-                                decoration: const InputDecoration(labelText: 'Last name'),
+                                decoration: InputDecoration(labelText: l.lastName),
                                 textCapitalization: TextCapitalization.words,
                                 autofillHints: const [AutofillHints.familyName],
                                 validator: _required,
@@ -109,7 +122,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         const SizedBox(height: 12),
                         TextFormField(
                           controller: _phone,
-                          decoration: const InputDecoration(labelText: 'Phone (optional)'),
+                          decoration: InputDecoration(labelText: l.phoneOptional),
                           keyboardType: TextInputType.phone,
                           autofillHints: const [AutofillHints.telephoneNumber],
                         ),
@@ -117,17 +130,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ],
                       TextFormField(
                         controller: _email,
-                        decoration: const InputDecoration(labelText: 'Email'),
+                        decoration: InputDecoration(labelText: l.email),
                         keyboardType: TextInputType.emailAddress,
                         autofillHints: const [AutofillHints.email],
-                        validator: (v) => (v == null || !v.contains('@')) ? 'Enter a valid email' : null,
+                        validator: (v) => (v == null || !v.contains('@')) ? l.invalidEmail : null,
                       ),
                       const SizedBox(height: 12),
                       TextFormField(
                         controller: _password,
                         obscureText: _obscure,
                         decoration: InputDecoration(
-                          labelText: 'Password',
+                          labelText: l.password,
                           suffixIcon: IconButton(
                             icon: Icon(_obscure ? Icons.visibility : Icons.visibility_off),
                             onPressed: () => setState(() => _obscure = !_obscure),
@@ -135,8 +148,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         ),
                         autofillHints: [_registerMode ? AutofillHints.newPassword : AutofillHints.password],
                         validator: (v) {
-                          if (v == null || v.isEmpty) return 'Required';
-                          if (_registerMode && v.length < 8) return 'At least 8 characters';
+                          if (v == null || v.isEmpty) return l.required;
+                          if (_registerMode && v.length < 8) return l.passwordTooShort;
                           return null;
                         },
                         onFieldSubmitted: (_) => _submit(),
@@ -146,12 +159,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         onPressed: _busy ? null : _submit,
                         child: _busy
                             ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2))
-                            : Text(_registerMode ? 'Create account' : 'Log in'),
+                            : Text(_registerMode ? l.createAccount : l.logIn),
                       ),
                       const SizedBox(height: 12),
                       TextButton(
                         onPressed: _busy ? null : () => setState(() => _registerMode = !_registerMode),
-                        child: Text(_registerMode ? 'Already a member? Log in' : 'New here? Create an account'),
+                        child: Text(_registerMode ? l.haveAccount : l.noAccount),
                       ),
                     ],
                   ),

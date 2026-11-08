@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/l10n/l10n.dart';
+import '../../../core/l10n/labels.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/common.dart';
@@ -38,27 +40,25 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
   }
 
   Future<void> _cancel(Booking b) async {
-    final message = b.lateCancellation
-        ? 'Your pickup is less than 24 hours away. The driver will receive part of the seat price '
-            'as compensation; the rest of the hold is released.'
-        : 'Your payment hold will be released in full.';
+    final l = context.l10n;
     final ok = await confirmAction(
       context,
-      title: 'Cancel this booking?',
-      message: message,
-      confirmLabel: 'Cancel booking',
+      title: l.cancelBookingTitle,
+      message: b.lateCancellation ? l.cancelLateBody : l.cancelFreeBody,
+      confirmLabel: l.cancelBooking,
       destructive: true,
     );
     if (!ok) return;
-    await _run(() => ref.read(bookingRepositoryProvider).cancel(b.id), success: 'Booking cancelled');
+    await _run(() => ref.read(bookingRepositoryProvider).cancel(b.id), success: l.bookingCancelled);
   }
 
   Future<void> _review(Booking b) async {
+    final thanks = context.l10n.thanksReview;
     final input = await showReviewDialog(context, name: b.driver.firstName);
     if (input == null) return;
     await _run(
       () => ref.read(bookingRepositoryProvider).review(b.id, rating: input.rating, comment: input.comment),
-      success: 'Thanks for your review!',
+      success: thanks,
     );
   }
 
@@ -66,7 +66,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
   Widget build(BuildContext context) {
     final booking = ref.watch(bookingProvider(widget.bookingId));
     return Scaffold(
-      appBar: AppBar(title: const Text('Your booking')),
+      appBar: AppBar(title: Text(context.l10n.yourBooking)),
       body: AsyncView(
         value: booking,
         onRetry: () => ref.invalidate(bookingProvider(widget.bookingId)),
@@ -80,6 +80,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
 
   Widget _body(BuildContext context, Booking b) {
     final theme = Theme.of(context);
+    final l = context.l10n;
     final payment = b.payment;
     final segment = sliceRoute(b.ride.route, b.pickupFraction, b.dropoffFraction);
     return ListView(
@@ -88,7 +89,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
         Row(
           children: [
             Expanded(child: Text(formatDay(b.pickupEta), style: theme.textTheme.headlineSmall)),
-            StatusChip(label: b.status.label, color: b.status.color),
+            StatusChip(label: b.status.label(l), color: b.status.color),
           ],
         ),
         const SizedBox(height: 16),
@@ -97,7 +98,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
           fromName: b.pickup.name,
           toTime: formatTime(b.dropoffEta),
           toName: b.dropoff.name,
-          middle: formatDuration(b.dropoffEta.difference(b.pickupEta).inSeconds),
+          middle: formatDuration(l, b.dropoffEta.difference(b.pickupEta).inSeconds),
         ),
         const SizedBox(height: 16),
         RouteMap(
@@ -105,8 +106,8 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
           highlight: segment,
           height: 200,
           pins: [
-            MapPin(point: b.pickup.location, icon: Icons.trip_origin, color: AppTheme.accent, tooltip: 'Pickup'),
-            MapPin(point: b.dropoff.location, icon: Icons.place, color: AppTheme.danger, tooltip: 'Drop-off'),
+            MapPin(point: b.pickup.location, icon: Icons.trip_origin, color: AppTheme.accent, tooltip: l.pickup),
+            MapPin(point: b.dropoff.location, icon: Icons.place, color: AppTheme.danger, tooltip: l.dropoff),
           ],
         ),
         const SizedBox(height: 16),
@@ -125,17 +126,17 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
             padding: const EdgeInsets.all(16),
             child: Column(
               children: [
-                _line(context, '${b.seats} seat${b.seats > 1 ? 's' : ''}', formatMoney(b.priceCents, b.currency)),
-                _line(context, 'Service fee', formatMoney(b.serviceFeeCents, b.currency)),
+                _line(context, l.seatsCount(b.seats), formatMoney(b.priceCents, b.currency)),
+                _line(context, l.serviceFee, formatMoney(b.serviceFeeCents, b.currency)),
                 const Divider(),
-                _line(context, 'Total', formatMoney(b.totalCents, b.currency), bold: true),
+                _line(context, l.total, formatMoney(b.totalCents, b.currency), bold: true),
                 if (payment != null) ...[
                   const SizedBox(height: 8),
                   Row(
                     children: [
                       Icon(Icons.lock_outline, size: 18, color: theme.colorScheme.primary),
                       const SizedBox(width: 6),
-                      Expanded(child: Text(_paymentExplanation(payment), style: theme.textTheme.bodySmall)),
+                      Expanded(child: Text(_paymentExplanation(l, payment), style: theme.textTheme.bodySmall)),
                     ],
                   ),
                 ],
@@ -147,54 +148,53 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
         if (payment != null && payment.needsAction && b.status == BookingStatus.paymentPending)
           FilledButton.icon(
             icon: const Icon(Icons.credit_card),
-            label: const Text('Complete payment'),
+            label: Text(l.completePayment),
             onPressed: _busy
                 ? null
-                : () => _run(() => ref.read(bookingFlowProvider).completePayment(b), success: 'Payment authorized'),
+                : () => _run(() => ref.read(bookingFlowProvider).completePayment(b), success: l.paymentAuthorized),
           ),
         if (b.status == BookingStatus.paymentPending && payment?.provider == 'stripe')
           TextButton(
             onPressed: _busy
                 ? null
                 : () => _run(() => ref.read(bookingRepositoryProvider).syncPayment(b.id)),
-            child: const Text('Refresh payment status'),
+            child: Text(l.refreshPaymentStatus),
           ),
         if (b.canConfirmTrip)
           FilledButton.icon(
             icon: const Icon(Icons.check_circle_outline),
-            label: const Text('Confirm the trip took place'),
+            label: Text(l.confirmTrip),
             onPressed: _busy
                 ? null
                 : () => _run(
                       () => ref.read(bookingRepositoryProvider).confirmTrip(b.id),
-                      success: 'Thanks! The driver has been paid.',
+                      success: l.driverPaid,
                     ),
           ),
         if (b.canReview)
           FilledButton.tonalIcon(
             icon: const Icon(Icons.star_outline),
-            label: Text('Rate ${b.driver.firstName}'),
+            label: Text(l.rateName(b.driver.firstName)),
             onPressed: _busy ? null : () => _review(b),
           ),
         if (b.status.isActive) ...[
           const SizedBox(height: 8),
           OutlinedButton(
             onPressed: _busy ? null : () => _cancel(b),
-            child: const Text('Cancel booking'),
+            child: Text(l.cancelBooking),
           ),
         ],
       ],
     );
   }
 
-  String _paymentExplanation(PaymentInfo p) => switch (p.status) {
-        PaymentStatus.pending => 'Waiting for your payment authorization.',
-        PaymentStatus.authorized =>
-          '${formatMoney(p.amountCents, p.currency)} is reserved on your card and released to the driver after the trip.',
-        PaymentStatus.captured => 'Charged ${formatMoney(p.capturedCents, p.currency)}.',
-        PaymentStatus.voided => 'The hold on your card was released — you were not charged.',
-        PaymentStatus.refunded => 'Refunded ${formatMoney(p.refundedCents, p.currency)}.',
-        PaymentStatus.failed => 'Your card was declined. Please try another payment method.',
+  String _paymentExplanation(AppLocalizations l, PaymentInfo p) => switch (p.status) {
+        PaymentStatus.pending => l.payPending,
+        PaymentStatus.authorized => l.payAuthorized(formatMoney(p.amountCents, p.currency)),
+        PaymentStatus.captured => l.payCaptured(formatMoney(p.capturedCents, p.currency)),
+        PaymentStatus.voided => l.payVoided,
+        PaymentStatus.refunded => l.payRefunded(formatMoney(p.refundedCents, p.currency)),
+        PaymentStatus.failed => l.payFailed,
       };
 
   Widget _line(BuildContext context, String label, String value, {bool bold = false}) {

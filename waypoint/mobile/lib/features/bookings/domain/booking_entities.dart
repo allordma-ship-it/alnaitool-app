@@ -4,18 +4,17 @@ import '../../../core/models/models.dart';
 import '../../../core/theme/app_theme.dart';
 
 enum BookingStatus {
-  paymentPending('payment_pending', 'Awaiting payment'),
-  requested('requested', 'Awaiting driver'),
-  confirmed('confirmed', 'Confirmed'),
-  rejected('rejected', 'Declined'),
-  cancelledByPassenger('cancelled_by_passenger', 'Cancelled'),
-  cancelledByDriver('cancelled_by_driver', 'Cancelled by driver'),
-  expired('expired', 'Expired'),
-  completed('completed', 'Completed');
+  paymentPending('payment_pending'),
+  requested('requested'),
+  confirmed('confirmed'),
+  rejected('rejected'),
+  cancelledByPassenger('cancelled_by_passenger'),
+  cancelledByDriver('cancelled_by_driver'),
+  expired('expired'),
+  completed('completed');
 
-  const BookingStatus(this.apiValue, this.label);
+  const BookingStatus(this.apiValue);
   final String apiValue;
-  final String label;
 
   static BookingStatus parse(String s) =>
       BookingStatus.values.firstWhere((v) => v.apiValue == s, orElse: () => BookingStatus.expired);
@@ -31,16 +30,15 @@ enum BookingStatus {
 }
 
 enum PaymentStatus {
-  pending('pending', 'Payment pending'),
-  authorized('authorized', 'Held in escrow'),
-  captured('captured', 'Paid'),
-  voided('voided', 'Released'),
-  refunded('refunded', 'Refunded'),
-  failed('failed', 'Payment failed');
+  pending('pending'),
+  authorized('authorized'),
+  captured('captured'),
+  voided('voided'),
+  refunded('refunded'),
+  failed('failed');
 
-  const PaymentStatus(this.apiValue, this.label);
+  const PaymentStatus(this.apiValue);
   final String apiValue;
-  final String label;
 
   static PaymentStatus parse(String s) =>
       PaymentStatus.values.firstWhere((v) => v.apiValue == s, orElse: () => PaymentStatus.failed);

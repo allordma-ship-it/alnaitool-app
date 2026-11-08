@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/l10n/l10n.dart';
+
 /// Result of the review dialog.
 class ReviewInput {
   const ReviewInput(this.rating, this.comment);
@@ -36,7 +38,7 @@ class _ReviewDialogState extends State<_ReviewDialog> {
   Widget build(BuildContext context) {
     final color = Theme.of(context).colorScheme.tertiary;
     return AlertDialog(
-      title: Text('Rate ${widget.name}'),
+      title: Text(context.l10n.rateName(widget.name)),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -55,15 +57,15 @@ class _ReviewDialogState extends State<_ReviewDialog> {
             controller: _comment,
             maxLength: 1000,
             maxLines: 3,
-            decoration: const InputDecoration(labelText: 'Comment (optional)'),
+            decoration: InputDecoration(labelText: context.l10n.commentOptional),
           ),
         ],
       ),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+        TextButton(onPressed: () => Navigator.pop(context), child: Text(context.l10n.cancel)),
         FilledButton(
           onPressed: () => Navigator.pop(context, ReviewInput(_rating, _comment.text.trim())),
-          child: const Text('Submit'),
+          child: Text(context.l10n.submit),
         ),
       ],
     );
@@ -84,7 +86,7 @@ Future<bool> confirmAction(
       title: Text(title),
       content: Text(message),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Back')),
+        TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(ctx.l10n.back)),
         FilledButton(
           style: destructive ? FilledButton.styleFrom(backgroundColor: Theme.of(ctx).colorScheme.error) : null,
           onPressed: () => Navigator.pop(ctx, true),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/l10n/l10n.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/place_search_screen.dart';
 import '../domain/search_entities.dart';
@@ -16,6 +17,7 @@ class SearchScreen extends ConsumerWidget {
     final form = ref.watch(searchFormProvider);
     final ctrl = ref.read(searchFormProvider.notifier);
     final theme = Theme.of(context);
+    final l = context.l10n;
 
     Future<void> pickDate() async {
       final now = DateTime.now();
@@ -31,7 +33,7 @@ class SearchScreen extends ConsumerWidget {
     return Scaffold(
       body: CustomScrollView(
         slivers: [
-          const SliverAppBar.large(title: Text('Where are you going?')),
+          SliverAppBar.large(title: Text(l.searchTitle)),
           SliverPadding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             sliver: SliverList.list(
@@ -47,14 +49,14 @@ class SearchScreen extends ConsumerWidget {
                               child: Column(
                                 children: [
                                   PlaceField(
-                                    label: 'Leaving from',
+                                    label: l.leavingFrom,
                                     icon: Icons.trip_origin,
                                     value: form.from,
                                     onChanged: ctrl.setFrom,
                                   ),
                                   const SizedBox(height: 12),
                                   PlaceField(
-                                    label: 'Going to',
+                                    label: l.goingTo,
                                     icon: Icons.place,
                                     value: form.to,
                                     onChanged: ctrl.setTo,
@@ -63,7 +65,7 @@ class SearchScreen extends ConsumerWidget {
                               ),
                             ),
                             IconButton(
-                              tooltip: 'Swap',
+                              tooltip: l.swap,
                               onPressed: ctrl.swap,
                               icon: const Icon(Icons.swap_vert),
                             ),
@@ -77,9 +79,9 @@ class SearchScreen extends ConsumerWidget {
                                 borderRadius: BorderRadius.circular(12),
                                 onTap: pickDate,
                                 child: InputDecorator(
-                                  decoration: const InputDecoration(
-                                    prefixIcon: Icon(Icons.calendar_today_outlined),
-                                    labelText: 'Date',
+                                  decoration: InputDecoration(
+                                    prefixIcon: const Icon(Icons.calendar_today_outlined),
+                                    labelText: l.date,
                                   ),
                                   child: Text(formatDay(form.date)),
                                 ),
@@ -92,7 +94,7 @@ class SearchScreen extends ConsumerWidget {
                         const SizedBox(height: 20),
                         FilledButton.icon(
                           icon: const Icon(Icons.search),
-                          label: const Text('Search'),
+                          label: Text(l.search),
                           onPressed: form.isComplete
                               ? () => context.push(
                                     '/search/results',
@@ -110,21 +112,11 @@ class SearchScreen extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 24),
-                Text('How it works', style: theme.textTheme.titleMedium),
+                Text(l.howItWorks, style: theme.textTheme.titleMedium),
                 const SizedBox(height: 8),
-                const _Hint(
-                  icon: Icons.alt_route,
-                  text: 'We match you with drivers whose route passes near your start and destination — '
-                      'even if they travel further.',
-                ),
-                const _Hint(
-                  icon: Icons.lock_outline,
-                  text: 'Your payment is held securely and only released to the driver after the trip.',
-                ),
-                const _Hint(
-                  icon: Icons.event_busy,
-                  text: 'Free cancellation until 24 hours before pickup.',
-                ),
+                _Hint(icon: Icons.alt_route, text: l.hintMatching),
+                _Hint(icon: Icons.lock_outline, text: l.hintEscrow),
+                _Hint(icon: Icons.event_busy, text: l.hintCancel),
               ],
             ),
           ),

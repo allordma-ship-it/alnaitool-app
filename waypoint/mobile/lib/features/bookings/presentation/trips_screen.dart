@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/l10n/l10n.dart';
+import '../../../core/l10n/labels.dart';
 import '../../../core/models/models.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/formatters.dart';
@@ -20,8 +22,8 @@ class TripsScreen extends StatelessWidget {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Your trips'),
-          bottom: const TabBar(tabs: [Tab(text: 'As passenger'), Tab(text: 'As driver')]),
+          title: Text(context.l10n.yourTrips),
+          bottom: TabBar(tabs: [Tab(text: context.l10n.asPassenger), Tab(text: context.l10n.asDriver)]),
         ),
         body: const TabBarView(children: [_PassengerTab(), _DriverTab()]),
       ),
@@ -47,9 +49,9 @@ class _PassengerTab extends ConsumerWidget {
                 const SizedBox(height: 80),
                 EmptyView(
                   icon: Icons.luggage_outlined,
-                  title: 'No bookings yet',
-                  subtitle: 'Find a ride and travel together.',
-                  action: FilledButton.tonal(onPressed: () => context.go('/search'), child: const Text('Find a ride')),
+                  title: context.l10n.noBookings,
+                  subtitle: context.l10n.noBookingsSub,
+                  action: FilledButton.tonal(onPressed: () => context.go('/search'), child: Text(context.l10n.findRide)),
                 ),
               ],
             );
@@ -62,11 +64,11 @@ class _PassengerTab extends ConsumerWidget {
             padding: const EdgeInsets.all(16),
             children: [
               if (upcoming.isNotEmpty) ...[
-                const _SectionTitle('Upcoming'),
+                _SectionTitle(context.l10n.upcoming),
                 for (final b in upcoming) _BookingCard(booking: b),
               ],
               if (past.isNotEmpty) ...[
-                const _SectionTitle('History'),
+                _SectionTitle(context.l10n.history),
                 for (final b in past) _BookingCard(booking: b),
               ],
             ],
@@ -100,9 +102,9 @@ class _DriverTab extends ConsumerWidget {
                 const SizedBox(height: 80),
                 EmptyView(
                   icon: Icons.directions_car_outlined,
-                  title: 'No rides offered',
-                  subtitle: 'Driving somewhere? Share your empty seats and your costs.',
-                  action: FilledButton.tonal(onPressed: () => context.go('/publish'), child: const Text('Offer a ride')),
+                  title: context.l10n.noRidesOffered,
+                  subtitle: context.l10n.noRidesOfferedSub,
+                  action: FilledButton.tonal(onPressed: () => context.go('/publish'), child: Text(context.l10n.offerRide)),
                 ),
               ],
             );
@@ -111,11 +113,11 @@ class _DriverTab extends ConsumerWidget {
             padding: const EdgeInsets.all(16),
             children: [
               if (rides.isNotEmpty) ...[
-                const _SectionTitle('Upcoming'),
+                _SectionTitle(context.l10n.upcoming),
                 for (final r in rides) _DriverRideCard(detail: r),
               ],
               if (history.isNotEmpty) ...[
-                const _SectionTitle('History'),
+                _SectionTitle(context.l10n.history),
                 for (final r in history) _DriverRideCard(detail: r),
               ],
             ],
@@ -161,7 +163,7 @@ class _BookingCard extends StatelessWidget {
                   children: [
                     Text(formatDay(b.pickupEta), style: Theme.of(context).textTheme.titleSmall),
                     const Spacer(),
-                    StatusChip(label: b.status.label, color: b.status.color),
+                    StatusChip(label: b.status.label(context.l10n), color: b.status.color),
                   ],
                 ),
                 const SizedBox(height: 12),
@@ -174,7 +176,7 @@ class _BookingCard extends StatelessWidget {
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    Expanded(child: Text('with ${b.driver.displayName}')),
+                    Expanded(child: Text(context.l10n.withDriver(b.driver.displayName))),
                     Text(formatMoney(b.totalCents, b.currency), style: Theme.of(context).textTheme.titleMedium),
                   ],
                 ),
@@ -195,11 +197,12 @@ class _DriverRideCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final r = detail.ride;
-    final (label, color) = switch (r.status) {
-      RideStatus.scheduled => ('Scheduled', AppTheme.brand),
-      RideStatus.inProgress => ('On the road', AppTheme.warning),
-      RideStatus.completed => ('Completed', AppTheme.accent),
-      RideStatus.cancelled => ('Cancelled', AppTheme.danger),
+    final label = r.status.label(context.l10n);
+    final color = switch (r.status) {
+      RideStatus.scheduled => AppTheme.brand,
+      RideStatus.inProgress => AppTheme.warning,
+      RideStatus.completed => AppTheme.accent,
+      RideStatus.cancelled => AppTheme.danger,
     };
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
@@ -231,11 +234,11 @@ class _DriverRideCard extends StatelessWidget {
                   children: [
                     Icon(Icons.event_seat_outlined, size: 18, color: Theme.of(context).colorScheme.primary),
                     const SizedBox(width: 4),
-                    Text('${detail.confirmedSeats} booked · ${detail.seatsAvailable} free'),
+                    Text(context.l10n.seatsBookedFree(detail.confirmedSeats, detail.seatsAvailable)),
                     const Spacer(),
                     if (detail.pendingRequests > 0)
                       StatusChip(
-                        label: '${detail.pendingRequests} request${detail.pendingRequests > 1 ? 's' : ''}',
+                        label: context.l10n.requestsCount(detail.pendingRequests),
                         color: AppTheme.warning,
                       ),
                   ],

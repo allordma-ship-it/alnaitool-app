@@ -1,5 +1,7 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:waypoint/core/l10n/l10n.dart';
 import 'package:waypoint/core/models/models.dart';
 import 'package:waypoint/core/utils/formatters.dart';
 import 'package:waypoint/core/widgets/route_map.dart';
@@ -141,10 +143,20 @@ void main() {
     expect(sliceRoute(route, 0, 1), route);
   });
 
-  test('formatters', () {
-    expect(formatDuration(8400), '2 h 20 min');
-    expect(formatDuration(1800), '30 min');
-    expect(formatDistance(850), '850 m');
-    expect(formatDistance(231000), '231 km');
+  test('formatters (English)', () {
+    final l = lookupAppLocalizations(const Locale('en'));
+    expect(formatDuration(l, 8400), '2 h 20 min');
+    expect(formatDuration(l, 1800), '30 min');
+    expect(formatDistance(l, 850), '850 m');
+    expect(formatDistance(l, 231000), '231 km');
+  });
+
+  test('formatters (Arabic)', () {
+    final l = lookupAppLocalizations(const Locale('ar'));
+    expect(formatDuration(l, 8400), '2 س 20 د');
+    expect(formatDuration(l, 3600), '1 ساعة');
+    expect(formatDistance(l, 231000), '231 كم');
+    expect(l.seatsCount(2), 'مقعدان');
+    expect(l.seatsCount(5), '5 مقاعد');
   });
 }

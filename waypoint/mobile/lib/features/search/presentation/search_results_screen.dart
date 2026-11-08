@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/l10n/l10n.dart';
+import '../../../core/l10n/labels.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/common.dart';
 import '../domain/search_entities.dart';
@@ -24,15 +26,16 @@ class _SearchResultsScreenState extends ConsumerState<SearchResultsScreen> {
   Widget build(BuildContext context) {
     final results = ref.watch(searchResultsProvider(_query));
     final theme = Theme.of(context);
+    final l = context.l10n;
 
     return Scaffold(
       appBar: AppBar(
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('${_query.from.name} → ${_query.to.name}', overflow: TextOverflow.ellipsis),
+            Text(l.routeFromTo(_query.from.name, _query.to.name), overflow: TextOverflow.ellipsis),
             Text(
-              '${formatDay(_query.date)} · ${_query.seats} passenger${_query.seats > 1 ? 's' : ''}',
+              '${formatDay(_query.date)} · ${l.passengersCount(_query.seats)}',
               style: theme.textTheme.bodySmall,
             ),
           ],
@@ -50,7 +53,7 @@ class _SearchResultsScreenState extends ConsumerState<SearchResultsScreen> {
                   Padding(
                     padding: const EdgeInsets.only(right: 8),
                     child: ChoiceChip(
-                      label: Text(s.label),
+                      label: Text(s.label(l)),
                       selected: _query.sort == s,
                       onSelected: (_) => setState(() => _query = _query.copyWith(sort: s)),
                     ),
@@ -71,13 +74,13 @@ class _SearchResultsScreenState extends ConsumerState<SearchResultsScreen> {
                         const SizedBox(height: 80),
                         EmptyView(
                           icon: Icons.directions_car_outlined,
-                          title: 'No rides yet for this day',
-                          subtitle: 'Try another date or a nearby city.',
+                          title: l.noRidesTitle,
+                          subtitle: l.noRidesSubtitle,
                           action: OutlinedButton(
                             onPressed: () => setState(
                               () => _query = _query.copyWith(date: _query.date.add(const Duration(days: 1))),
                             ),
-                            child: const Text('Search the next day'),
+                            child: Text(l.searchNextDay),
                           ),
                         ),
                       ],
@@ -114,6 +117,7 @@ class _RideMatchCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l = context.l10n;
     final seg = match.segment;
     final duration = seg.dropoffEta.difference(seg.pickupEta).inSeconds;
     return Card(
@@ -134,7 +138,7 @@ class _RideMatchCard extends StatelessWidget {
                       fromName: match.ride.origin.name,
                       toTime: formatTime(seg.dropoffEta),
                       toName: match.ride.destination.name,
-                      middle: formatDuration(duration),
+                      middle: formatDuration(l, duration),
                     ),
                   ),
                   Text(
@@ -148,8 +152,8 @@ class _RideMatchCard extends StatelessWidget {
                 spacing: 12,
                 runSpacing: 4,
                 children: [
-                  _Detour(icon: Icons.directions_walk, label: '${formatDistance(seg.pickupDistanceM)} to pickup'),
-                  _Detour(icon: Icons.flag_outlined, label: '${formatDistance(seg.dropoffDistanceM)} from drop-off'),
+                  _Detour(icon: Icons.directions_walk, label: l.toPickup(formatDistance(l, seg.pickupDistanceM))),
+                  _Detour(icon: Icons.flag_outlined, label: l.fromDropoff(formatDistance(l, seg.dropoffDistanceM))),
                 ],
               ),
               const Divider(height: 24),
@@ -160,11 +164,11 @@ class _RideMatchCard extends StatelessWidget {
                   children: [
                     if (match.ride.preferences.instantBooking)
                       Tooltip(
-                        message: 'Instant booking',
+                        message: l.instantBooking,
                         child: Icon(Icons.bolt, color: theme.colorScheme.secondary),
                       ),
                     const SizedBox(width: 4),
-                    Text('${match.seatsAvailable} left'),
+                    Text(l.seatsLeft(match.seatsAvailable)),
                   ],
                 ),
               ),

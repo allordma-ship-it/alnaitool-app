@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/l10n/error_text.dart';
+import '../../../core/l10n/l10n.dart';
 import '../../../core/network/api_exception.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/formatters.dart';
@@ -19,7 +21,7 @@ class PublishScreen extends ConsumerWidget {
       final ride = await ref.read(publishControllerProvider.notifier).submit();
       ref.invalidate(myRidesProvider(true));
       if (!context.mounted) return;
-      showInfo(context, 'Your ride is published!');
+      showInfo(context, context.l10n.ridePublished);
       ref.invalidate(publishControllerProvider);
       context.go('/trips');
       final router = GoRouter.of(context);
@@ -30,18 +32,16 @@ class PublishScreen extends ConsumerWidget {
         await showDialog<void>(
           context: context,
           builder: (ctx) => AlertDialog(
-            title: const Text('Set up payouts first'),
-            content: const Text(
-              'To receive money from passengers, add your payout details. It only takes a few minutes.',
-            ),
+            title: Text(ctx.l10n.payoutsFirstTitle),
+            content: Text(ctx.l10n.payoutsFirstBody),
             actions: [
-              TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Later')),
+              TextButton(onPressed: () => Navigator.pop(ctx), child: Text(ctx.l10n.later)),
               FilledButton(
                 onPressed: () {
                   Navigator.pop(ctx);
                   context.go('/profile');
                 },
-                child: const Text('Set up payouts'),
+                child: Text(ctx.l10n.setUpPayouts),
               ),
             ],
           ),
@@ -60,19 +60,20 @@ class PublishScreen extends ConsumerWidget {
     final c = ref.read(publishControllerProvider.notifier);
     final theme = Theme.of(context);
     final preview = s.preview;
+    final l = context.l10n;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Offer a ride')),
+      appBar: AppBar(title: Text(l.offerRide)),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          PlaceField(label: 'Departure', icon: Icons.trip_origin, value: s.origin, onChanged: c.setOrigin),
+          PlaceField(label: l.departure, icon: Icons.trip_origin, value: s.origin, onChanged: c.setOrigin),
           const SizedBox(height: 12),
-          PlaceField(label: 'Destination', icon: Icons.place, value: s.destination, onChanged: c.setDestination),
+          PlaceField(label: l.destination, icon: Icons.place, value: s.destination, onChanged: c.setDestination),
           const SizedBox(height: 16),
           if (s.previewLoading) const LinearProgressIndicator(),
           if (s.previewError != null)
-            ErrorView(message: errorMessage(s.previewError!), onRetry: c.retryPreview),
+            ErrorView(message: localizedError(l, s.previewError!), onRetry: c.retryPreview),
           if (preview != null) ...[
             RouteMap(
               route: preview.route,
@@ -86,12 +87,12 @@ class PublishScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              '${formatDistance(preview.distanceM)} · about ${formatDuration(preview.durationS)}',
+              l.distanceAbout(formatDistance(l, preview.distanceM), formatDuration(l, preview.durationS)),
               style: theme.textTheme.bodyMedium,
             ),
           ],
           const SizedBox(height: 20),
-          Text('When?', style: theme.textTheme.titleMedium),
+          Text(l.when, style: theme.textTheme.titleMedium),
           const SizedBox(height: 8),
           Row(
             children: [
@@ -128,14 +129,14 @@ class PublishScreen extends ConsumerWidget {
             Padding(
               padding: const EdgeInsets.only(top: 6),
               child: Text(
-                'Departure must be at least 30 minutes from now.',
+                l.departureTooSoon,
                 style: TextStyle(color: theme.colorScheme.error),
               ),
             ),
           const SizedBox(height: 20),
           Row(
             children: [
-              Text('Seats offered', style: theme.textTheme.titleMedium),
+              Text(l.seatsOffered, style: theme.textTheme.titleMedium),
               const Spacer(),
               IconButton(
                 onPressed: s.seats > 1 ? () => c.setSeats(s.seats - 1) : null,
@@ -150,7 +151,7 @@ class PublishScreen extends ConsumerWidget {
           ),
           if (preview != null && s.priceCents != null) ...[
             const SizedBox(height: 12),
-            Text('Price per seat', style: theme.textTheme.titleMedium),
+            Text(l.pricePerSeat, style: theme.textTheme.titleMedium),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -174,42 +175,42 @@ class PublishScreen extends ConsumerWidget {
             Center(
               child: Text(
                 s.priceCents == preview.suggestedPriceCents
-                    ? 'Recommended price — fair cost sharing for this distance'
-                    : 'Recommended: ${formatMoney(preview.suggestedPriceCents, 'EUR')}',
+                    ? l.recommendedPrice
+                    : l.recommendedPriceIs(formatMoney(preview.suggestedPriceCents, 'EUR')),
                 style: theme.textTheme.bodySmall,
               ),
             ),
             Center(
               child: Text(
-                'Passengers on part of your route pay a proportional price.',
+                l.proportionalPriceNote,
                 style: theme.textTheme.bodySmall,
               ),
             ),
           ],
           const SizedBox(height: 20),
-          Text('Preferences', style: theme.textTheme.titleMedium),
+          Text(l.preferences, style: theme.textTheme.titleMedium),
           SwitchListTile(
             contentPadding: EdgeInsets.zero,
-            title: const Text('Instant booking'),
-            subtitle: const Text('Passengers book without waiting for your approval'),
+            title: Text(l.instantBooking),
+            subtitle: Text(l.instantBookingSubtitle),
             value: s.preferences.instantBooking,
             onChanged: (v) => c.setPreferences(s.preferences.copyWith(instantBooking: v)),
           ),
           SwitchListTile(
             contentPadding: EdgeInsets.zero,
-            title: const Text('Max. 2 in the back'),
+            title: Text(l.prefMaxTwoBack),
             value: s.preferences.maxTwoBack,
             onChanged: (v) => c.setPreferences(s.preferences.copyWith(maxTwoBack: v)),
           ),
           SwitchListTile(
             contentPadding: EdgeInsets.zero,
-            title: const Text('Pets allowed'),
+            title: Text(l.petsAllowed),
             value: s.preferences.allowPets,
             onChanged: (v) => c.setPreferences(s.preferences.copyWith(allowPets: v)),
           ),
           SwitchListTile(
             contentPadding: EdgeInsets.zero,
-            title: const Text('Smoking allowed'),
+            title: Text(l.smokingAllowed),
             value: s.preferences.allowSmoking,
             onChanged: (v) => c.setPreferences(s.preferences.copyWith(allowSmoking: v)),
           ),
@@ -217,7 +218,7 @@ class PublishScreen extends ConsumerWidget {
           TextFormField(
             initialValue: s.vehicle,
             maxLength: 200,
-            decoration: const InputDecoration(labelText: 'Car (e.g. blue VW Golf)'),
+            decoration: InputDecoration(labelText: l.carLabel),
             onChanged: c.setVehicle,
           ),
           const SizedBox(height: 8),
@@ -225,7 +226,7 @@ class PublishScreen extends ConsumerWidget {
             initialValue: s.notes,
             maxLength: 2000,
             maxLines: 3,
-            decoration: const InputDecoration(labelText: 'Anything passengers should know?'),
+            decoration: InputDecoration(labelText: l.notesLabel),
             onChanged: c.setNotes,
           ),
           const SizedBox(height: 16),
@@ -233,7 +234,7 @@ class PublishScreen extends ConsumerWidget {
             onPressed: s.canSubmit ? () => _submit(context, ref) : null,
             child: s.submitting
                 ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2))
-                : const Text('Publish ride'),
+                : Text(l.publishRide),
           ),
           const SizedBox(height: 24),
         ],
