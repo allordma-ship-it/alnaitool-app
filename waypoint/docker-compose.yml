@@ -1,0 +1,134 @@
+name: waypoint
+
+x-osrm-image: &osrm-image ghcr.io/project-osrm/osrm-backend:v5.27.1
+
+services:
+  postgres:
+    image: postgis/postgis:16-3.4
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-waypoint}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-waypoint}
+      POSTGRES_DB: ${POSTGRES_DB:-waypoint}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-waypoint} -d ${POSTGRES_DB:-waypoint}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    image: redis:7.4-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes", "--maxmemory-policy", "noeviction"]
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  # --- Routing engine (OSRM, MLD pipeline) ------------------------------------
+  # One-off jobs download an OpenStreetMap extract and preprocess it into the
+  # shared volume; both are no-ops once the data exists (see `make osrm-reset`).
+  osrm-download:
+    image: curlimages/curl:8.10.1
+    user: "0:0"
+    environment:
+      OSRM_PBF_URL: ${OSRM_PBF_URL:-https://download.geofabrik.de/europe/germany/baden-wuerttemberg-latest.osm.pbf}
+    volumes:
+      - osrmdata:/data
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        set -e
+        if [ -s /data/region.osm.pbf ]; then echo "OSM extract present"; exit 0; fi
+        echo "Downloading $$OSRM_PBF_URL"
+        curl -fL --retry 5 -o /data/region.osm.pbf.part "$$OSRM_PBF_URL"
+        mv /data/region.osm.pbf.part /data/region.osm.pbf
+
+  osrm-prepare:
+    image: *osrm-image
+    depends_on:
+      osrm-download:
+        condition: service_completed_successfully
+    volumes:
+      - osrmdata:/data
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        set -e
+        if [ -f /data/region.osrm.mldgr ]; then echo "OSRM data prepared"; exit 0; fi
+        osrm-extract -p /opt/car.lua /data/region.osm.pbf
+        osrm-partition /data/region.osrm
+        osrm-customize /data/region.osrm
+
+  osrm:
+    image: *osrm-image
+    restart: unless-stopped
+    depends_on:
+      osrm-prepare:
+        condition: service_completed_successfully
+    command: ["osrm-routed", "--algorithm", "mld", "--max-viaroute-size", "50", "/data/region.osrm"]
+    ports:
+      - "${OSRM_PORT:-5000}:5000"
+    volumes:
+      - osrmdata:/data
+
+  # --- API ----------------------------------------------------------------------
+  api:
+    build:
+      context: ./backend
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:-waypoint}:${POSTGRES_PASSWORD:-waypoint}@postgres:5432/${POSTGRES_DB:-waypoint}?sslmode=disable
+      REDIS_URL: redis://redis:6379/0
+      ROUTING_BASE_URL: ${ROUTING_BASE_URL:-http://osrm:5000}
+      HTTP_ADDR: ":8080"
+    ports:
+      - "${API_PORT:-8080}:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      osrm:
+        condition: service_started
+
+  # --- Local development tools (docker compose --profile tools up) -----------
+  adminer:
+    image: adminer:4.8.1
+    profiles: ["tools"]
+    ports:
+      - "${ADMINER_PORT:-8081}:8080"
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+    depends_on:
+      - postgres
+
+  # Forwards Stripe test-mode webhooks to the API (docker compose --profile stripe up).
+  stripe-cli:
+    image: stripe/stripe-cli:v1.21.8
+    profiles: ["stripe"]
+    environment:
+      STRIPE_API_KEY: ${STRIPE_SECRET_KEY:-}
+    command:
+      - listen
+      - --forward-to
+      - api:8080/v1/webhooks/stripe
+      - --events
+      - payment_intent.amount_capturable_updated,payment_intent.succeeded,payment_intent.canceled,payment_intent.payment_failed,charge.refunded,account.updated
+    depends_on:
+      - api
+
+volumes:
+  pgdata:
+  redisdata:
+  osrmdata:

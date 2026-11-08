@@ -1,0 +1,11 @@
+DROP TABLE IF EXISTS reviews;
+DROP TABLE IF EXISTS stripe_events;
+DROP TABLE IF EXISTS payment_events;
+DROP TABLE IF EXISTS payments;
+DROP TYPE IF EXISTS payment_status;
+DROP TABLE IF EXISTS bookings;
+DROP TYPE IF EXISTS booking_status;
+DROP TABLE IF EXISTS rides;
+DROP TYPE IF EXISTS ride_status;
+DROP TABLE IF EXISTS users;
+DROP FUNCTION IF EXISTS set_updated_at();
