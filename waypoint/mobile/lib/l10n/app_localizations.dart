@@ -140,6 +140,12 @@ abstract class AppLocalizations {
   /// **'Could not reach the server. Check the address and that phone and server are on the same network.'**
   String get connectionFailed;
 
+  /// No description provided for @driverRoute.
+  ///
+  /// In en, this message translates to:
+  /// **'Driver\'s trip: {route}'**
+  String driverRoute(String route);
+
   /// No description provided for @phoneHint.
   ///
   /// In en, this message translates to:
@@ -419,7 +425,7 @@ abstract class AppLocalizations {
   /// No description provided for @routeFromTo.
   ///
   /// In en, this message translates to:
-  /// **'{from} → {to}'**
+  /// **'{from} – {to}'**
   String routeFromTo(String from, String to);
 
   /// No description provided for @passengersCount.
@@ -491,7 +497,7 @@ abstract class AppLocalizations {
   /// No description provided for @driverTravels.
   ///
   /// In en, this message translates to:
-  /// **'Driver travels {origin} → {destination}. Meeting point {pickup} from your start, drop-off {dropoff} from your destination.'**
+  /// **'Driver travels from {origin} to {destination}. Meeting point {pickup} from your start, drop-off {dropoff} from your destination.'**
   String driverTravels(
       String origin, String destination, String pickup, String dropoff);
 

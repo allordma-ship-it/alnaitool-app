@@ -32,6 +32,11 @@ class AppLocalizationsEn extends AppLocalizations {
       'Could not reach the server. Check the address and that phone and server are on the same network.';
 
   @override
+  String driverRoute(String route) {
+    return 'Driver\'s trip: $route';
+  }
+
+  @override
   String get phoneHint => '+963 9XX XXX XXX';
 
   @override
@@ -181,7 +186,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String routeFromTo(String from, String to) {
-    return '$from → $to';
+    return '$from – $to';
   }
 
   @override
@@ -234,7 +239,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String driverTravels(
       String origin, String destination, String pickup, String dropoff) {
-    return 'Driver travels $origin → $destination. Meeting point $pickup from your start, drop-off $dropoff from your destination.';
+    return 'Driver travels from $origin to $destination. Meeting point $pickup from your start, drop-off $dropoff from your destination.';
   }
 
   @override

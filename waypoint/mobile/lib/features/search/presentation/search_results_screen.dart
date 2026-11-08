@@ -92,6 +92,7 @@ class _SearchResultsScreenState extends ConsumerState<SearchResultsScreen> {
                     separatorBuilder: (_, __) => const SizedBox(height: 12),
                     itemBuilder: (context, i) => _RideMatchCard(
                       match: matches[i],
+                      query: _query,
                       onTap: () => context.push(
                         '/rides/${matches[i].ride.id}',
                         extra: RideDetailArgs(rideId: matches[i].ride.id, match: matches[i], query: _query),
@@ -109,9 +110,10 @@ class _SearchResultsScreenState extends ConsumerState<SearchResultsScreen> {
 }
 
 class _RideMatchCard extends StatelessWidget {
-  const _RideMatchCard({required this.match, required this.onTap});
+  const _RideMatchCard({required this.match, required this.query, required this.onTap});
 
   final RideMatch match;
+  final SearchQuery query;
   final VoidCallback onTap;
 
   @override
@@ -135,9 +137,10 @@ class _RideMatchCard extends StatelessWidget {
                   Expanded(
                     child: TripTimeline(
                       fromTime: formatTime(seg.pickupEta),
-                      fromName: match.ride.origin.name,
+                      // The passenger's own segment; the driver's full trip is shown below.
+                      fromName: query.from.name,
                       toTime: formatTime(seg.dropoffEta),
-                      toName: match.ride.destination.name,
+                      toName: query.to.name,
                       middle: formatDuration(l, duration),
                     ),
                   ),
@@ -148,6 +151,11 @@ class _RideMatchCard extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 8),
+              Text(
+                l.driverRoute(l.routeFromTo(match.ride.origin.name, match.ride.destination.name)),
+                style: theme.textTheme.bodySmall,
+              ),
+              const SizedBox(height: 4),
               Wrap(
                 spacing: 12,
                 runSpacing: 4,

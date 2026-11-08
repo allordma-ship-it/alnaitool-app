@@ -128,7 +128,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
             child: Column(
               children: [
                 _line(context, l.seatsCount(b.seats), formatMoney(b.priceCents, b.currency)),
-                _line(context, l.serviceFee, formatMoney(b.serviceFeeCents, b.currency)),
+                if (b.serviceFeeCents > 0) _line(context, l.serviceFee, formatMoney(b.serviceFeeCents, b.currency)),
                 const Divider(),
                 _line(context, l.total, formatMoney(b.totalCents, b.currency), bold: true),
                 if (payment != null) ...[

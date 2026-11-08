@@ -31,6 +31,11 @@ class AppLocalizationsAr extends AppLocalizations {
       'تعذّر الوصول إلى الخادم. تأكد من العنوان ومن أن الهاتف والخادم على نفس الشبكة.';
 
   @override
+  String driverRoute(String route) {
+    return 'رحلة السائق: $route';
+  }
+
+  @override
   String get phoneHint => '+963 9XX XXX XXX';
 
   @override
@@ -180,7 +185,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String routeFromTo(String from, String to) {
-    return '$from ← $to';
+    return 'من $from إلى $to';
   }
 
   @override

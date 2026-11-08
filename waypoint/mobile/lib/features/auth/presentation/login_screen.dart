@@ -91,7 +91,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Icon(Icons.alt_route_rounded, size: 64, color: theme.colorScheme.primary),
+                      Center(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(22),
+                          child: Image.asset('assets/icon/icon.png', width: 88, height: 88),
+                        ),
+                      ),
                       const SizedBox(height: 12),
                       Text(l.appTitle, style: theme.textTheme.headlineMedium, textAlign: TextAlign.center),
                       const SizedBox(height: 4),

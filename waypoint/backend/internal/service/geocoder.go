@@ -103,7 +103,26 @@ func (g *Geocoder) Search(ctx context.Context, query string, near *domain.LatLng
 	}
 	req.Header.Set("User-Agent", g.userAgent)
 	req.Header.Set("Accept", "application/json")
-	resp, err := g.http.Do(req)
+	// GET is idempotent: retry transient network failures and 5xx/429 a few times.
+	var resp *http.Response
+	for attempt := 0; attempt < 3; attempt++ {
+		if attempt > 0 {
+			select {
+			case <-ctx.Done():
+				return nil, ctx.Err()
+			case <-time.After(time.Duration(attempt) * 300 * time.Millisecond):
+			}
+		}
+		resp, err = g.http.Do(req.Clone(ctx))
+		if err == nil && resp.StatusCode < 500 && resp.StatusCode != http.StatusTooManyRequests {
+			break
+		}
+		if err == nil {
+			resp.Body.Close()
+			err = fmt.Errorf("status %d", resp.StatusCode)
+		}
+		g.log.Warn("geocoder attempt failed", "attempt", attempt+1, "err", err)
+	}
 	if err != nil {
 		return nil, fmt.Errorf("%w: geocoder: %v", domain.ErrUpstream, err)
 	}

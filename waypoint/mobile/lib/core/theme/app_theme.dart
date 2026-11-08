@@ -19,7 +19,7 @@ class AppTheme {
       error: danger,
       brightness: brightness,
     );
-    final base = ThemeData(useMaterial3: true, colorScheme: scheme, brightness: brightness);
+    final base = ThemeData(useMaterial3: true, colorScheme: scheme, brightness: brightness, fontFamily: 'Tajawal');
     return base.copyWith(
       scaffoldBackgroundColor: scheme.surface,
       appBarTheme: AppBarTheme(

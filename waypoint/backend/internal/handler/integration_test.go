@@ -392,7 +392,11 @@ func TestSyriaCashMarket(t *testing.T) {
 		t.Fatalf("suggested %d, want 90000 (900 SYP)", preview.Suggested)
 	}
 
-	departure := time.Now().Add(72 * time.Hour).UTC().Truncate(time.Minute)
+	// Fixed 08:00 Damascus time three days ahead, so pickups on the route fall on
+	// the same calendar day whatever time the test runs.
+	dl := mustLoc(t, "Asia/Damascus")
+	day := time.Now().In(dl).AddDate(0, 0, 3)
+	departure := time.Date(day.Year(), day.Month(), day.Day(), 8, 0, 0, 0, dl).UTC()
 	var ride struct {
 		ID       string `json:"id"`
 		Currency string `json:"currency"`
@@ -410,7 +414,7 @@ func TestSyriaCashMarket(t *testing.T) {
 	}
 
 	// Homs -> Hama is part of the route: pro-rated, rounded to 50 SYP, no fee.
-	date := departure.In(mustLoc(t, "Asia/Damascus")).Format("2006-01-02")
+	date := departure.In(dl).Format("2006-01-02")
 	var search struct {
 		Data []struct {
 			PricePerSeat int `json:"price_per_seat_cents"`

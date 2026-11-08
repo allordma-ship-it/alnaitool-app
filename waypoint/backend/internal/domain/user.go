@@ -50,10 +50,25 @@ type PublicProfile struct {
 
 // Public converts a user into its public profile.
 func (u *User) Public() PublicProfile {
-	initial := ""
-	if r := []rune(u.LastName); len(r) > 0 {
-		initial = string(r[0]) + "."
+	return PublicProfileFor(u)
+}
+
+// lastInitial returns the first letter of a family name, skipping the Arabic
+// definite article "ال" (الحلبي → ح.) so initials stay meaningful.
+func lastInitial(lastName string) string {
+	r := []rune(strings.TrimSpace(lastName))
+	if len(r) > 2 && r[0] == 'ا' && r[1] == 'ل' {
+		r = r[2:]
 	}
+	if len(r) == 0 {
+		return ""
+	}
+	return string(r[0]) + "."
+}
+
+// PublicProfileFor converts a user into its public profile.
+func PublicProfileFor(u *User) PublicProfile {
+	initial := lastInitial(u.LastName)
 	return PublicProfile{
 		ID:          u.ID,
 		FirstName:   u.FirstName,

@@ -33,9 +33,10 @@ String formatDistance(AppLocalizations l, num meters) {
 
 String formatTime(DateTime t) => DateFormat.Hm().format(t);
 
-String formatDay(DateTime t) => DateFormat('EEE, d MMM').format(t);
+/// "الاثنين، 9 تشرين الثاني" / "Mon, Nov 9" (locale-aware order and comma).
+String formatDay(DateTime t) => DateFormat.MMMEd().format(t);
 
-String formatDateTime(DateTime t) => DateFormat('EEE, d MMM · HH:mm').format(t);
+String formatDateTime(DateTime t) => '${DateFormat.MMMEd().format(t)} · ${DateFormat.Hm().format(t)}';
 
 /// Always ISO (Latin digits, fixed locale) — used for API parameters.
 String formatIsoDate(DateTime t) => DateFormat('yyyy-MM-dd', 'en').format(t);
