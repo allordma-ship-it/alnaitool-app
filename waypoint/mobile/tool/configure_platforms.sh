@@ -43,6 +43,47 @@ for styles in ["android/app/src/main/res/values/styles.xml", "android/app/src/ma
     patch(styles, lambda s: s.replace("@android:style/Theme.Light.NoTitleBar", "Theme.AppCompat.Light.NoActionBar")
                              .replace("@android:style/Theme.Black.NoTitleBar", "Theme.AppCompat.NoActionBar"))
 
+# flutter_stripe release builds: the Stripe SDK references Google's non-public
+# Tap&Pay library (push provisioning, unused here). Keep R8 from failing on the
+# missing classes and skip release lint, which would try to resolve that library.
+PROGUARD = """# Stripe push provisioning (needs Google's private Tap&Pay SDK; not used by Wanees)
+-dontwarn com.stripe.android.pushProvisioning.PushProvisioningActivity$g
+-dontwarn com.stripe.android.pushProvisioning.PushProvisioningActivityStarter$Args
+-dontwarn com.stripe.android.pushProvisioning.PushProvisioningActivityStarter$Error
+-dontwarn com.stripe.android.pushProvisioning.PushProvisioningActivityStarter
+-dontwarn com.stripe.android.pushProvisioning.PushProvisioningEphemeralKeyProvider
+-dontwarn com.stripe.android.pushProvisioning.**
+-dontwarn com.reactnativestripesdk.pushprovisioning.**
+"""
+rules = root / "android/app/proguard-rules.pro"
+if (root / "android/app").exists():
+    existing = rules.read_text() if rules.exists() else ""
+    if "pushProvisioning" not in existing:
+        rules.write_text(existing + PROGUARD)
+        print("patched: android/app/proguard-rules.pro")
+
+def gradle_kts(s):
+    if "proguard-rules.pro" not in s:
+        s = s.replace(
+            '            signingConfig = signingConfigs.getByName("debug")\n',
+            '            signingConfig = signingConfigs.getByName("debug")\n'
+            '            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")\n', 1)
+    if "checkReleaseBuilds" not in s:
+        s = s.replace("    buildTypes {", "    lint {\n        checkReleaseBuilds = false\n    }\n\n    buildTypes {", 1)
+    return s
+patch("android/app/build.gradle.kts", gradle_kts)
+
+def gradle_groovy(s):
+    if "proguard-rules.pro" not in s:
+        s = s.replace(
+            '            signingConfig = signingConfigs.debug\n',
+            '            signingConfig = signingConfigs.debug\n'
+            "            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'\n", 1)
+    if "checkReleaseBuilds" not in s:
+        s = s.replace("    buildTypes {", "    lintOptions {\n        checkReleaseBuilds false\n    }\n\n    buildTypes {", 1)
+    return s
+patch("android/app/build.gradle", gradle_groovy)
+
 DEEP_LINK = """            <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>

@@ -34,9 +34,9 @@
 
 1. افتح المستودع على GitHub ثم تبويب **Actions**.
 2. اختر **Wanees Android APK** ثم آخر تشغيل ناجح (علامة ✓ خضراء).
-3. في أسفل الصفحة، تحت **Artifacts**، حمّل `wanees-android-apk`. هو ملف ZIP يحتوي على:
-   - `wanees-test.apk`: للتجربة، ويعمل مع خادم على كمبيوترك (`http://...`).
-   - `wanees-release.apk`: النسخة النهائية، وتعمل فقط مع خادم `https://...`.
+3. في أسفل الصفحة، تحت **Artifacts**، ستجد ملفين مضغوطين (ZIP):
+   - `wanees-test-apk`: للتجربة، ويعمل مع خادم على كمبيوترك (`http://...`).
+   - `wanees-release-apk`: النسخة النهائية، وتعمل فقط مع خادم `https://...`.
 
 لبناء نسخة بعنوان خادم معيّن: افتح **Actions ← Wanees Android APK ← Run workflow**، واكتب العنوان في الحقل.
 
