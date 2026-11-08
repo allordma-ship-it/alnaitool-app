@@ -32,9 +32,9 @@ jobs:
       # Priority: manual input → repository variable WANEES_API_URL → LAN example.
       API_BASE_URL: ${{ github.event.inputs.api_url || vars.WANEES_API_URL || 'http://192.168.1.10:8080' }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: "17"

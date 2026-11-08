@@ -25,6 +25,13 @@ def patch(path, fn):
         p.write_text(new)
         print(f"patched: {path}")
 
+# --- Template leftovers ----------------------------------------------------
+# `flutter create` adds a counter-app sample test referencing `MyApp`.
+sample = root / "test" / "widget_test.dart"
+if sample.exists() and "MyApp" in sample.read_text():
+    sample.unlink()
+    print("removed: test/widget_test.dart (flutter create sample)")
+
 # --- Android ---------------------------------------------------------------
 for main in root.glob("android/app/src/main/kotlin/**/MainActivity.kt"):
     patch(main.as_posix(), lambda s: re.sub(
