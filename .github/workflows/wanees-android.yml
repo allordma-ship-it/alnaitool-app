@@ -50,7 +50,8 @@ jobs:
 
       - name: Generate Android project, native configuration and app icon
         run: |
-          flutter create --org sy.wanees --project-name wanees --platforms=android .
+          # iOS files are generated too (no Mac needed) so the icon tool can write both.
+          flutter create --org sy.wanees --project-name wanees --platforms=android,ios .
           ./tool/configure_platforms.sh
           flutter pub get
           dart run flutter_launcher_icons
