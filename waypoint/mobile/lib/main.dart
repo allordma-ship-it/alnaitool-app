@@ -10,11 +10,11 @@ import 'core/theme/app_theme.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting();
-  runApp(const ProviderScope(child: WayPointApp()));
+  runApp(const ProviderScope(child: WaneesApp()));
 }
 
-class WayPointApp extends ConsumerWidget {
-  const WayPointApp({super.key});
+class WaneesApp extends ConsumerWidget {
+  const WaneesApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

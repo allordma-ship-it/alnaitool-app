@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/config/app_config.dart';
 import '../../../core/models/models.dart';
 import '../../../core/network/api_client.dart';
 import '../../../core/utils/formatters.dart';
@@ -8,9 +9,12 @@ import '../domain/search_repository.dart';
 
 /// REST implementation of [SearchRepository].
 class SearchRepositoryImpl implements SearchRepository {
-  const SearchRepositoryImpl(this._api);
+  const SearchRepositoryImpl(this._api, {required this.timezone});
 
   final ApiClient _api;
+
+  /// The market's IANA zone: the search day is interpreted in local (Syrian) time.
+  final String timezone;
 
   @override
   Future<List<RideMatch>> search(SearchQuery q) {
@@ -22,7 +26,7 @@ class SearchRepositoryImpl implements SearchRepository {
         'to_lat': q.to.location.latitude,
         'to_lng': q.to.location.longitude,
         'date': formatIsoDate(q.date),
-        'tz': _timeZoneName(),
+        'tz': timezone,
         'seats': q.seats,
         'sort': q.sort.apiValue,
       },
@@ -33,18 +37,8 @@ class SearchRepositoryImpl implements SearchRepository {
   @override
   Future<RideDetail> ride(String rideId) =>
       _api.get('/rides/$rideId', parse: (d) => RideDetail.fromJson(asMap(d)));
-
-  /// The device's IANA zone is not exposed by Dart; fall back to a fixed-offset
-  /// Etc/GMT zone that has the same offset (sign is inverted by POSIX convention).
-  static String _timeZoneName() {
-    final offset = DateTime.now().timeZoneOffset;
-    if (offset.inMinutes % 60 != 0) return 'UTC';
-    final hours = offset.inHours;
-    if (hours == 0) return 'UTC';
-    return hours > 0 ? 'Etc/GMT-$hours' : 'Etc/GMT+${-hours}';
-  }
 }
 
 final searchRepositoryProvider = Provider<SearchRepository>(
-  (ref) => SearchRepositoryImpl(ref.watch(apiClientProvider)),
+  (ref) => SearchRepositoryImpl(ref.watch(apiClientProvider), timezone: ref.watch(appConfigProvider).timezone),
 );

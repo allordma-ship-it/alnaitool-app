@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/config/app_config.dart';
 import '../../../core/l10n/error_text.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/network/api_exception.dart';
@@ -61,6 +62,8 @@ class PublishScreen extends ConsumerWidget {
     final theme = Theme.of(context);
     final preview = s.preview;
     final l = context.l10n;
+    final config = ref.watch(appConfigProvider);
+    final step = config.priceStepMinor;
 
     return Scaffold(
       appBar: AppBar(title: Text(l.offerRide)),
@@ -156,18 +159,18 @@ class PublishScreen extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 IconButton.filledTonal(
-                  onPressed: s.priceCents! > preview.minPriceCents ? () => c.adjustPrice(-50) : null,
+                  onPressed: s.priceCents! > preview.minPriceCents ? () => c.adjustPrice(-step) : null,
                   icon: const Icon(Icons.remove),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
                   child: Text(
-                    formatMoney(s.priceCents!, 'EUR'),
+                    formatMoney(s.priceCents!, config.currency),
                     style: theme.textTheme.displaySmall?.copyWith(fontWeight: FontWeight.w700),
                   ),
                 ),
                 IconButton.filledTonal(
-                  onPressed: s.priceCents! < preview.maxPriceCents ? () => c.adjustPrice(50) : null,
+                  onPressed: s.priceCents! < preview.maxPriceCents ? () => c.adjustPrice(step) : null,
                   icon: const Icon(Icons.add),
                 ),
               ],
@@ -176,7 +179,7 @@ class PublishScreen extends ConsumerWidget {
               child: Text(
                 s.priceCents == preview.suggestedPriceCents
                     ? l.recommendedPrice
-                    : l.recommendedPriceIs(formatMoney(preview.suggestedPriceCents, 'EUR')),
+                    : l.recommendedPriceIs(formatMoney(preview.suggestedPriceCents, config.currency)),
                 style: theme.textTheme.bodySmall,
               ),
             ),

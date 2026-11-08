@@ -1,12 +1,13 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:waypoint/core/l10n/l10n.dart';
-import 'package:waypoint/core/models/models.dart';
-import 'package:waypoint/core/utils/formatters.dart';
-import 'package:waypoint/core/widgets/route_map.dart';
-import 'package:waypoint/features/bookings/domain/booking_entities.dart';
-import 'package:waypoint/features/search/domain/search_entities.dart';
+import 'package:wanees/core/l10n/l10n.dart';
+import 'package:wanees/core/models/models.dart';
+import 'package:wanees/core/utils/formatters.dart';
+import 'package:wanees/core/widgets/route_map.dart';
+import 'package:wanees/features/bookings/domain/booking_entities.dart';
+import 'package:wanees/features/search/domain/search_entities.dart';
 
 Map<String, dynamic> _rideJson() => {
       'id': 'r1',
@@ -149,6 +150,11 @@ void main() {
     expect(formatDuration(l, 1800), '30 min');
     expect(formatDistance(l, 850), '850 m');
     expect(formatDistance(l, 231000), '231 km');
+  });
+
+  test('Syrian pound formatting', () {
+    Intl.withLocale('ar', () => expect(formatMoney(90000, 'SYP'), '900 ل.س'));
+    Intl.withLocale('en', () => expect(formatMoney(1250000, 'SYP'), '12,500 SYP'));
   });
 
   test('formatters (Arabic)', () {

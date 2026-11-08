@@ -1,4 +1,4 @@
-// Command server runs the WayPoint carpooling API.
+// Command server runs the Wanees (ونيس) carpooling API.
 package main
 
 import (
@@ -94,14 +94,21 @@ func run() error {
 	}
 
 	var gateway service.PaymentGateway
-	if cfg.PaymentProvider == "stripe" {
+	switch cfg.PaymentProvider {
+	case "stripe":
 		gateway = service.NewStripeGateway(cfg.StripeSecretKey, cfg.StripePublishableKey)
-	} else {
+	case "cash":
+		gateway = service.NewCashGateway()
+		log.Info("cash settlement: passengers pay drivers in person")
+	default:
 		gateway = service.NewSimulatedGateway()
 		log.Warn("using SIMULATED payment gateway - no real money moves")
 	}
 
 	pricing := service.Pricing{
+		Currency:      cfg.DefaultCurrency,
+		StepMinor:     cfg.PriceStepMinor,
+		MinSeatMinor:  cfg.MinSeatPriceMinor,
 		FeeBps:        cfg.PlatformFeeBps,
 		FeeFixedCents: cfg.PlatformFeeFixedCents,
 		CentsPerKm:    cfg.PriceCentsPerKm,
@@ -115,7 +122,7 @@ func run() error {
 	}, log)
 	rideSvc := service.NewRideService(store, rc, routing, pricing, escrow, bookingSvc, log)
 	matcher := service.NewSpatialMatcher(store, rc, pricing, log)
-	geocoder := service.NewGeocoder(cfg.GeocoderBaseURL, cfg.GeocoderUserAgent, rc, log)
+	geocoder := service.NewGeocoder(cfg.GeocoderBaseURL, cfg.GeocoderUserAgent, cfg.GeocoderBBox, rc, log)
 
 	webhookSecret := ""
 	if cfg.PaymentProvider == "stripe" {
@@ -136,6 +143,15 @@ func run() error {
 		AllowedOrigins: cfg.AllowedOrigins,
 		TrustProxy:     cfg.TrustProxy,
 		RatePerMinute:  cfg.RateLimitPerMinute,
+		Market: handler.MarketConfig{
+			Country:         cfg.Country,
+			Currency:        cfg.DefaultCurrency,
+			Timezone:        cfg.DefaultTimezone,
+			PaymentProvider: gateway.Name(),
+			PayoutsRequired: escrow.RequiresConnectedAccount(),
+			PriceStepMinor:  cfg.PriceStepMinor,
+			ServiceFeeBps:   cfg.PlatformFeeBps,
+		},
 	})
 
 	worker := service.NewWorker(service.WorkerConfig{

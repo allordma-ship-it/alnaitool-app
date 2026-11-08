@@ -42,7 +42,7 @@ func TestAvailableSeatsSegmentAware(t *testing.T) {
 }
 
 func TestSegmentPricing(t *testing.T) {
-	p := Pricing{FeeBps: 1000, FeeFixedCents: 50, CentsPerKm: 7}
+	p := Pricing{FeeBps: 1000, FeeFixedCents: 50, CentsPerKm: 7, StepMinor: 50, MinSeatMinor: 200}
 	if got := p.SegmentPrice(2000, 0, 1); got != 2000 {
 		t.Fatalf("full route price = %d", got)
 	}

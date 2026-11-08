@@ -637,3 +637,72 @@ func (g *SimulatedGateway) OnboardingLink(_ context.Context, _, _, returnURL str
 func (g *SimulatedGateway) GetAccount(_ context.Context, accountID string) (*ConnectedAccount, error) {
 	return &ConnectedAccount{ID: accountID, PayoutsEnabled: true, ChargesEnabled: true, DetailsDone: true}, nil
 }
+
+// ---------------------------------------------------------------------------
+// Cash settlement (production gateway for markets without card acquiring).
+// ---------------------------------------------------------------------------
+
+// CashGateway settles bookings in cash, paid by the passenger to the driver
+// during the trip. No money moves through the platform: a "hold" is a seat
+// reservation, "capture" marks the trip completed and "cancel" releases it.
+// It is stateless, so it survives restarts and scales horizontally.
+type CashGateway struct{}
+
+// NewCashGateway builds the cash gateway.
+func NewCashGateway() *CashGateway { return &CashGateway{} }
+
+// Name implements PaymentGateway.
+func (CashGateway) Name() string { return "cash" }
+
+// PublishableKey implements PaymentGateway.
+func (CashGateway) PublishableKey() string { return "" }
+
+var errCashUnsupported = errors.New("not applicable to cash settlement")
+
+// CreateCustomer implements PaymentGateway.
+func (CashGateway) CreateCustomer(context.Context, string, string, string) (string, error) {
+	return "", errCashUnsupported
+}
+
+// CreateHold implements PaymentGateway: the reservation is effective immediately.
+func (CashGateway) CreateHold(_ context.Context, req HoldRequest) (*Intent, error) {
+	id := "cash_" + strings.ReplaceAll(uuid.NewString(), "-", "")
+	return &Intent{ID: id, Status: IntentRequiresCapture, Amount: req.AmountCents,
+		AmountCapturable: req.AmountCents, Metadata: req.Metadata}, nil
+}
+
+// RenewHold implements PaymentGateway (cash reservations never expire).
+func (CashGateway) RenewHold(_ context.Context, oldIntentID string, req HoldRequest) (*Intent, error) {
+	return &Intent{ID: oldIntentID, Status: IntentRequiresCapture, Amount: req.AmountCents, AmountCapturable: req.AmountCents}, nil
+}
+
+// GetIntent implements PaymentGateway. State lives in the payments table; an
+// outstanding cash reservation is always "authorized".
+func (CashGateway) GetIntent(_ context.Context, id string) (*Intent, error) {
+	return &Intent{ID: id, Status: IntentRequiresCapture}, nil
+}
+
+// Capture implements PaymentGateway (trip completed, cash paid to the driver).
+func (CashGateway) Capture(_ context.Context, id string, amountCents, _ int, _ string) (*Intent, error) {
+	return &Intent{ID: id, Status: IntentSucceeded, AmountReceived: amountCents}, nil
+}
+
+// Cancel implements PaymentGateway (reservation released).
+func (CashGateway) Cancel(_ context.Context, id string, _ string) (*Intent, error) {
+	return &Intent{ID: id, Status: IntentCanceled}, nil
+}
+
+// CreateConnectedAccount implements PaymentGateway.
+func (CashGateway) CreateConnectedAccount(context.Context, string, string, string) (string, error) {
+	return "", errCashUnsupported
+}
+
+// OnboardingLink implements PaymentGateway.
+func (CashGateway) OnboardingLink(context.Context, string, string, string) (string, error) {
+	return "", errCashUnsupported
+}
+
+// GetAccount implements PaymentGateway: drivers are paid directly, always "enabled".
+func (CashGateway) GetAccount(_ context.Context, accountID string) (*ConnectedAccount, error) {
+	return &ConnectedAccount{ID: accountID, PayoutsEnabled: true, ChargesEnabled: true, DetailsDone: true}, nil
+}

@@ -78,6 +78,9 @@ func (s *UserService) StartPayoutOnboarding(ctx context.Context, userID uuid.UUI
 	if len(country) != 2 {
 		return nil, domain.NewValidationError("country", "must be an ISO-3166 alpha-2 code")
 	}
+	if !s.escrow.RequiresConnectedAccount() {
+		return nil, domain.NewValidationError("payouts", "not required: passengers pay drivers directly")
+	}
 	u, err := s.store.Users.GetByID(ctx, userID)
 	if err != nil {
 		return nil, err

@@ -138,15 +138,10 @@ func (in *PublishRideInput) Validate(now time.Time) error {
 	if in.SeatsTotal < 1 || in.SeatsTotal > 8 {
 		return NewValidationError("seats_total", "must be between 1 and 8")
 	}
-	if in.PricePerSeatCents < 100 || in.PricePerSeatCents > 50000 {
-		return NewValidationError("price_per_seat_cents", "must be between 100 and 50000")
-	}
-	in.Currency = strings.ToUpper(strings.TrimSpace(in.Currency))
-	if in.Currency == "" {
-		in.Currency = "EUR"
-	}
-	if len(in.Currency) != 3 {
-		return NewValidationError("currency", "must be an ISO-4217 code")
+	// Distance-based bounds are enforced by the pricing service; this only
+	// rejects nonsensical values. Currency is set by the server (market config).
+	if in.PricePerSeatCents <= 0 || in.PricePerSeatCents > 1_000_000_000 {
+		return NewValidationError("price_per_seat_cents", "must be a positive amount")
 	}
 	in.VehicleDescription = strings.TrimSpace(in.VehicleDescription)
 	if len(in.VehicleDescription) > 200 {

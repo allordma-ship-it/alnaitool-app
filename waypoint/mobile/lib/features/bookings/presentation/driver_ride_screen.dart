@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/config/app_config.dart';
 import '../../../core/l10n/error_text.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/l10n/labels.dart';
@@ -233,7 +234,7 @@ class _DriverRideScreenState extends ConsumerState<DriverRideScreen> {
           padding: const EdgeInsets.only(top: 8),
           child: FilledButton.tonalIcon(
             icon: const Icon(Icons.flag),
-            label: Text(l.completeRide),
+            label: Text(ref.read(appConfigProvider).isCash ? l.completeRideCash : l.completeRide),
             onPressed: _busy ? null : () => _run(() => repo.complete(ride.id), success: l.rideCompletedMsg),
           ),
         ),

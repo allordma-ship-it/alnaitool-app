@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
 
+import '../../../core/config/app_config.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/models/models.dart';
 import '../../../core/theme/app_theme.dart';
@@ -196,7 +197,7 @@ class _RideDetailScreenState extends ConsumerState<RideDetailScreen> {
           ),
           _priceRow(context, l.seatsTimesPrice(seats, formatMoney(pricePerSeat, ride.currency)), pricePerSeat * seats, ride.currency),
           Text(
-            l.feeNotice,
+            ref.watch(appConfigProvider).isCash ? l.feeNoticeCash : l.feeNotice,
             style: theme.textTheme.bodySmall,
           ),
           const SizedBox(height: 12),

@@ -16,12 +16,18 @@ type RideHandler struct {
 	rides    *service.RideService
 	matcher  *service.SpatialMatcher
 	geocoder *service.Geocoder
+	defaultZ *time.Location
 	log      *slog.Logger
 }
 
 // NewRideHandler builds the handler.
-func NewRideHandler(rides *service.RideService, matcher *service.SpatialMatcher, geocoder *service.Geocoder, log *slog.Logger) *RideHandler {
-	return &RideHandler{rides: rides, matcher: matcher, geocoder: geocoder, log: log}
+func NewRideHandler(rides *service.RideService, matcher *service.SpatialMatcher, geocoder *service.Geocoder,
+	defaultTimezone string, log *slog.Logger) *RideHandler {
+	loc, err := time.LoadLocation(defaultTimezone)
+	if err != nil || defaultTimezone == "" {
+		loc = time.UTC
+	}
+	return &RideHandler{rides: rides, matcher: matcher, geocoder: geocoder, defaultZ: loc, log: log}
 }
 
 func parseFloat(r *http.Request, key string) (float64, error) {
@@ -50,7 +56,7 @@ func parseLatLng(r *http.Request, prefix string) (domain.LatLng, error) {
 
 // Search handles GET /v1/rides/search
 //
-//	?from_lat&from_lng&to_lat&to_lng&date=YYYY-MM-DD&tz=Europe/Berlin&seats=1&radius_m=15000&sort=departure|price|proximity
+//	?from_lat&from_lng&to_lat&to_lng&date=YYYY-MM-DD&tz=Asia/Damascus&seats=1&radius_m=15000&sort=departure|price|proximity
 func (h *RideHandler) Search(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
 	from, err := parseLatLng(r, "from")
@@ -63,7 +69,7 @@ func (h *RideHandler) Search(w http.ResponseWriter, r *http.Request) {
 		respondError(w, r, h.log, err)
 		return
 	}
-	loc := time.UTC
+	loc := h.defaultZ // the market's zone when the client sends none
 	if tz := q.Get("tz"); tz != "" {
 		if loc, err = time.LoadLocation(tz); err != nil {
 			respondError(w, r, h.log, domain.NewValidationError("tz", "must be an IANA time zone"))

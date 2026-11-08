@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/config/app_config.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/place_search_screen.dart';
@@ -18,6 +19,7 @@ class SearchScreen extends ConsumerWidget {
     final ctrl = ref.read(searchFormProvider.notifier);
     final theme = Theme.of(context);
     final l = context.l10n;
+    final cash = ref.watch(appConfigProvider).isCash;
 
     Future<void> pickDate() async {
       final now = DateTime.now();
@@ -115,8 +117,11 @@ class SearchScreen extends ConsumerWidget {
                 Text(l.howItWorks, style: theme.textTheme.titleMedium),
                 const SizedBox(height: 8),
                 _Hint(icon: Icons.alt_route, text: l.hintMatching),
-                _Hint(icon: Icons.lock_outline, text: l.hintEscrow),
-                _Hint(icon: Icons.event_busy, text: l.hintCancel),
+                _Hint(
+                  icon: cash ? Icons.payments_outlined : Icons.lock_outline,
+                  text: cash ? l.hintCash : l.hintEscrow,
+                ),
+                _Hint(icon: Icons.event_busy, text: cash ? l.hintCancelCash : l.hintCancel),
               ],
             ),
           ),

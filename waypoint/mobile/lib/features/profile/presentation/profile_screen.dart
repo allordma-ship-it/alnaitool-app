@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../core/config/app_config.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/models/models.dart';
 import '../../../core/widgets/common.dart';
@@ -103,6 +104,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with WidgetsBindi
     final theme = Theme.of(context);
     final l = context.l10n;
     final locale = ref.watch(localeProvider);
+    final config = ref.watch(appConfigProvider);
     if (me == null) return const Scaffold(body: Center(child: CircularProgressIndicator()));
 
     return Scaffold(
@@ -160,39 +162,48 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with WidgetsBindi
               ),
             ),
             const SizedBox(height: 12),
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(
-                          me.payoutsEnabled ? Icons.verified : Icons.account_balance_outlined,
-                          color: me.payoutsEnabled ? theme.colorScheme.secondary : theme.colorScheme.primary,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(l.payouts, style: theme.textTheme.titleMedium),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Text(me.payoutsEnabled ? l.payoutsActiveBody : l.payoutsSetupBody),
-                    const SizedBox(height: 12),
-                    if (!me.payoutsEnabled)
-                      FilledButton(
-                        onPressed: _busy ? null : _startOnboarding,
-                        child: Text(l.setUpPayouts),
-                      )
-                    else
-                      OutlinedButton(
-                        onPressed: _busy ? null : _startOnboarding,
-                        child: Text(l.managePayouts),
+            if (!config.payoutsRequired)
+              Card(
+                child: ListTile(
+                  leading: Icon(Icons.payments_outlined, color: theme.colorScheme.primary),
+                  title: Text(l.cashPaymentTitle),
+                  subtitle: Text(l.cashPaymentBody),
+                ),
+              )
+            else
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            me.payoutsEnabled ? Icons.verified : Icons.account_balance_outlined,
+                            color: me.payoutsEnabled ? theme.colorScheme.secondary : theme.colorScheme.primary,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(l.payouts, style: theme.textTheme.titleMedium),
+                        ],
                       ),
-                  ],
+                      const SizedBox(height: 8),
+                      Text(me.payoutsEnabled ? l.payoutsActiveBody : l.payoutsSetupBody),
+                      const SizedBox(height: 12),
+                      if (!me.payoutsEnabled)
+                        FilledButton(
+                          onPressed: _busy ? null : _startOnboarding,
+                          child: Text(l.setUpPayouts),
+                        )
+                      else
+                        OutlinedButton(
+                          onPressed: _busy ? null : _startOnboarding,
+                          child: Text(l.managePayouts),
+                        ),
+                    ],
+                  ),
                 ),
               ),
-            ),
             const SizedBox(height: 12),
             Card(
               child: Padding(
@@ -210,8 +221,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with WidgetsBindi
                     const SizedBox(height: 12),
                     SegmentedButton<Locale>(
                       segments: [
-                        for (final loc in appLocales)
-                          ButtonSegment(value: loc, label: Text(localeDisplayName(loc))),
+                        for (final loc in appLocales) ButtonSegment(value: loc, label: Text(localeDisplayName(loc))),
                       ],
                       selected: {locale},
                       onSelectionChanged: (s) => ref.read(localeProvider.notifier).setLocale(s.first),

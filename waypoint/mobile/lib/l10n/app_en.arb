@@ -1,7 +1,33 @@
 {
   "@@locale": "en",
-  "appTitle": "WayPoint",
-  "tagline": "Share the ride, split the cost.",
+  "appTitle": "Wanees",
+  "tagline": "Your companion on the road — share the ride, split the cost.",
+  "phoneHint": "+963 9XX XXX XXX",
+  "hintCash": "Pay the driver in cash during the trip — no card needed.",
+  "hintCancelCash": "Free cancellation — please cancel early if your plans change.",
+  "feeNoticeCash": "You pay the driver in cash during the trip.",
+  "payCashDue": "Pay {amount} in cash to the driver.",
+  "@payCashDue": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "payCashPaid": "Paid {amount} in cash.",
+  "@payCashPaid": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "payCashReleased": "Reservation released.",
+  "cancelFreeBodyCash": "You can cancel for free. Please cancel early so someone else can take the seat.",
+  "tripConfirmedThanks": "Thanks for confirming the trip!",
+  "completeRideCash": "Complete ride",
+  "cashPaymentTitle": "Cash payment",
+  "cashPaymentBody": "Passengers pay you in cash during the trip. No bank account needed.",
   "retry": "Retry",
   "cancel": "Cancel",
   "back": "Back",

@@ -7,20 +7,28 @@ import (
 )
 
 // Pricing computes segment prices, platform fees and price suggestions.
+// All amounts are in minor units of Currency (e.g. piastres for SYP, cents for EUR).
 type Pricing struct {
+	Currency      string
 	FeeBps        int // service fee in basis points of the seat price
 	FeeFixedCents int // fixed service fee per booking
-	CentsPerKm    int // reference cost-sharing rate used for suggestions
+	CentsPerKm    int // reference cost-sharing rate per seat-kilometre
+	StepMinor     int // prices are rounded to multiples of this (e.g. 50 SYP = 5000)
+	MinSeatMinor  int // lowest price for any seat or segment
 }
 
-const (
-	priceStepCents     = 50
-	minSegmentPriceCts = 200
-	fractionEpsilon    = 1e-9
-)
+const fractionEpsilon = 1e-9
 
-func roundToStep(cents float64, step int) int {
-	return int(math.Round(cents/float64(step))) * step
+func (p Pricing) step() int {
+	if p.StepMinor <= 0 {
+		return 1
+	}
+	return p.StepMinor
+}
+
+func (p Pricing) round(v float64) int {
+	s := p.step()
+	return int(math.Round(v/float64(s))) * s
 }
 
 // SuggestedPrice returns the recommended per-seat price and the allowed bounds
@@ -28,18 +36,9 @@ func roundToStep(cents float64, step int) int {
 func (p Pricing) SuggestedPrice(distanceM int) (suggested, minPrice, maxPrice int) {
 	km := float64(distanceM) / 1000
 	base := km * float64(p.CentsPerKm)
-	suggested = roundToStep(base, priceStepCents)
-	if suggested < 200 {
-		suggested = 200
-	}
-	minPrice = roundToStep(base*0.6, priceStepCents)
-	if minPrice < 100 {
-		minPrice = 100
-	}
-	maxPrice = roundToStep(base*1.4, priceStepCents)
-	if maxPrice < suggested {
-		maxPrice = suggested
-	}
+	suggested = max(p.round(base), p.MinSeatMinor)
+	minPrice = max(p.round(base*0.6), p.step(), p.MinSeatMinor/2)
+	maxPrice = max(p.round(base*1.4), suggested)
 	return suggested, minPrice, maxPrice
 }
 
@@ -52,18 +51,9 @@ func (p Pricing) SegmentPrice(fullPriceCents int, pickupFraction, dropoffFractio
 	if frac < 0 {
 		frac = 0
 	}
-	price := roundToStep(float64(fullPriceCents)*frac, priceStepCents)
-	floor := minSegmentPriceCts
-	if fullPriceCents < floor {
-		floor = fullPriceCents
-	}
-	if price < floor {
-		price = floor
-	}
-	if price > fullPriceCents {
-		price = fullPriceCents
-	}
-	return price
+	price := p.round(float64(fullPriceCents) * frac)
+	floor := min(p.MinSeatMinor, fullPriceCents)
+	return min(max(price, floor), fullPriceCents)
 }
 
 // ServiceFee is the platform fee charged to the passenger on top of the seat price.
@@ -91,13 +81,7 @@ func AvailableSeats(total int, bookings []domain.SeatInterval, from, to float64)
 				occupied += b.Seats
 			}
 		}
-		if occupied > maxOccupied {
-			maxOccupied = occupied
-		}
+		maxOccupied = max(maxOccupied, occupied)
 	}
-	free := total - maxOccupied
-	if free < 0 {
-		return 0
-	}
-	return free
+	return max(total-maxOccupied, 0)
 }

@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Applies native configuration required by WayPoint's plugins after
+# Applies native configuration required by Wanees' plugins after
 # `flutter create` has generated the android/ and ios/ folders:
 #   * flutter_stripe: FlutterFragmentActivity + AppCompat themes (Android), iOS 13+
-#   * waypoint:// deep-link scheme (Stripe 3DS return + Connect onboarding)
+#   * wanees:// deep-link scheme (Stripe 3DS return + Connect onboarding)
 #   * cleartext HTTP to the local API in debug builds only
 #   * Arabic as the primary iOS localization (system dialogs, RTL)
 # Idempotent: safe to run repeatedly.
@@ -40,12 +40,12 @@ DEEP_LINK = """            <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
-                <data android:scheme="waypoint"/>
+                <data android:scheme="wanees"/>
             </intent-filter>
         </activity>"""
 
 def manifest(s):
-    if 'android:scheme="waypoint"' not in s:
+    if 'android:scheme="wanees"' not in s:
         s = s.replace("        </activity>", DEEP_LINK, 1)
     return s
 patch("android/app/src/main/AndroidManifest.xml", manifest)
@@ -72,10 +72,10 @@ URL_TYPES = """	<key>CFBundleDevelopmentRegion</key>
 	<array>
 		<dict>
 			<key>CFBundleURLName</key>
-			<string>com.waypoint.waypoint</string>
+			<string>sy.wanees.app</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>waypoint</string>
+				<string>wanees</string>
 			</array>
 		</dict>
 	</array>

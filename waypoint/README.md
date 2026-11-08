@@ -1,8 +1,26 @@
-# WayPoint — Carpooling & Ride-Sharing Platform
+# ونيس · Wanees — Carpooling for Syria
 
-WayPoint lets drivers publish long-distance trips and lets passengers book seats on
-**any part** of a driver's route. Payments sit in escrow and are released to the
-driver after the trip.
+**ونيس** ("companion") lets drivers publish trips between Syrian cities and lets
+passengers book seats on **any part** of a driver's route — e.g. Homs → Hama on a
+Damascus → Aleppo ride. The app is Arabic-first (RTL), prices are in Syrian pounds
+and passengers pay the driver **in cash** during the trip.
+
+## Syria configuration
+
+| Setting | Default | Why |
+| --- | --- | --- |
+| `PAYMENT_PROVIDER` | `cash` | Card acquiring (Stripe) is not available in Syria. Seats are reserved instantly and settled in cash; the payment record tracks *reserved → completed / released*. Late cancellations are free (nothing can be withheld). |
+| `PLATFORM_FEE_*` | `0` | Fees cannot be collected in cash; the server refuses to start otherwise. |
+| `DEFAULT_CURRENCY` | `SYP` | New Syrian pound (1 new = 100 old, since January 2026). Amounts are stored in piastres (1 SYP = 100). The app shows "900 ل.س". |
+| `PRICE_CENTS_PER_KM` | `250` (2.50 SYP/km per seat) | Damascus → Aleppo ≈ 900 SYP per seat. **Adjust to current fuel prices.** |
+| `PRICE_STEP_MINOR` / `MIN_SEAT_PRICE_MINOR` | 50 SYP / 100 SYP | Prices are rounded to 50 SYP; no seat is cheaper than 100 SYP. |
+| `DEFAULT_TIMEZONE` | `Asia/Damascus` | The search day is interpreted in Syrian time. |
+| `OSRM_PBF_URL` | Geofabrik `asia/syria-latest.osm.pbf` | Road network for routing. |
+| `GEOCODER_BBOX` | Syria's bounding box | Place search only returns Syrian places, with their local (Arabic) names. |
+
+The app reads these values from `GET /v1/config`, so nothing is hard-coded on the
+phone. Stripe card escrow (documented below) remains available for other markets with
+`PAYMENT_PROVIDER=stripe`.
 
 | Layer | Technology |
 | --- | --- |
@@ -57,7 +75,7 @@ make mobile-run API_URL=http://192.168.1.20:8080   # physical device on your LAN
 ```
 
 `tool/configure_platforms.sh` applies what `flutter_stripe` needs
-(`FlutterFragmentActivity`, AppCompat themes, iOS 13), registers the `waypoint://`
+(`FlutterFragmentActivity`, AppCompat themes, iOS 13), registers the `wanees://`
 deep-link scheme and allows cleartext HTTP to the local API in **debug builds only**.
 Map tiles come from `MAP_TILE_URL` (defaults to tile.openstreetmap.org — use your own
 tile server or a provider for production traffic).

@@ -101,14 +101,86 @@ abstract class AppLocalizations {
   /// No description provided for @appTitle.
   ///
   /// In en, this message translates to:
-  /// **'WayPoint'**
+  /// **'Wanees'**
   String get appTitle;
 
   /// No description provided for @tagline.
   ///
   /// In en, this message translates to:
-  /// **'Share the ride, split the cost.'**
+  /// **'Your companion on the road — share the ride, split the cost.'**
   String get tagline;
+
+  /// No description provided for @phoneHint.
+  ///
+  /// In en, this message translates to:
+  /// **'+963 9XX XXX XXX'**
+  String get phoneHint;
+
+  /// No description provided for @hintCash.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay the driver in cash during the trip — no card needed.'**
+  String get hintCash;
+
+  /// No description provided for @hintCancelCash.
+  ///
+  /// In en, this message translates to:
+  /// **'Free cancellation — please cancel early if your plans change.'**
+  String get hintCancelCash;
+
+  /// No description provided for @feeNoticeCash.
+  ///
+  /// In en, this message translates to:
+  /// **'You pay the driver in cash during the trip.'**
+  String get feeNoticeCash;
+
+  /// No description provided for @payCashDue.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay {amount} in cash to the driver.'**
+  String payCashDue(String amount);
+
+  /// No description provided for @payCashPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid {amount} in cash.'**
+  String payCashPaid(String amount);
+
+  /// No description provided for @payCashReleased.
+  ///
+  /// In en, this message translates to:
+  /// **'Reservation released.'**
+  String get payCashReleased;
+
+  /// No description provided for @cancelFreeBodyCash.
+  ///
+  /// In en, this message translates to:
+  /// **'You can cancel for free. Please cancel early so someone else can take the seat.'**
+  String get cancelFreeBodyCash;
+
+  /// No description provided for @tripConfirmedThanks.
+  ///
+  /// In en, this message translates to:
+  /// **'Thanks for confirming the trip!'**
+  String get tripConfirmedThanks;
+
+  /// No description provided for @completeRideCash.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete ride'**
+  String get completeRideCash;
+
+  /// No description provided for @cashPaymentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash payment'**
+  String get cashPaymentTitle;
+
+  /// No description provided for @cashPaymentBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Passengers pay you in cash during the trip. No bank account needed.'**
+  String get cashPaymentBody;
 
   /// No description provided for @retry.
   ///

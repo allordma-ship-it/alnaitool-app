@@ -39,7 +39,7 @@ class PublishRideInput {
     required this.seatsTotal,
     required this.pricePerSeatCents,
     required this.preferences,
-    this.currency = 'EUR',
+    this.currency = 'SYP',
     this.vehicleDescription = '',
     this.notes = '',
   });

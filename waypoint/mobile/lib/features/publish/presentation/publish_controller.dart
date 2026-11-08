@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/config/app_config.dart';
 import '../../../core/models/models.dart';
 import '../data/publish_repository_impl.dart';
 import '../domain/publish_entities.dart';
@@ -149,6 +150,7 @@ class PublishController extends AutoDisposeNotifier<PublishState> {
               preferences: s.preferences,
               vehicleDescription: s.vehicle.trim(),
               notes: s.notes.trim(),
+              currency: ref.read(appConfigProvider).currency,
             ),
           );
     } finally {

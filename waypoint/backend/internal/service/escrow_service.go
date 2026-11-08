@@ -37,6 +37,11 @@ func NewEscrowService(store *postgres.Store, gw PaymentGateway, log *slog.Logger
 // Provider returns the payment provider name.
 func (e *EscrowService) Provider() string { return e.gw.Name() }
 
+// IsCash reports whether passengers pay the driver in cash during the trip.
+// The escrow record then tracks the reservation: "authorized" = seat reserved,
+// "captured" = trip completed, "voided" = reservation released.
+func (e *EscrowService) IsCash() bool { return e.gw.Name() == "cash" }
+
 // RequiresConnectedAccount reports whether drivers must onboard before publishing.
 func (e *EscrowService) RequiresConnectedAccount() bool { return e.gw.Name() == "stripe" }
 
@@ -95,7 +100,7 @@ func (e *EscrowService) OpenHold(ctx context.Context, b *domain.Booking, passeng
 		AmountCents:    b.TotalCents,
 		FeeCents:       b.ServiceFeeCents,
 		Currency:       b.Currency,
-		Description:    fmt.Sprintf("WayPoint ride %s (%d seat(s))", b.RideID, b.Seats),
+		Description:    fmt.Sprintf("Wanees ride %s (%d seat(s))", b.RideID, b.Seats),
 		Metadata: map[string]string{
 			"booking_id":   b.ID.String(),
 			"ride_id":      b.RideID.String(),
@@ -309,7 +314,7 @@ func (e *EscrowService) RenewLocked(ctx context.Context, tx *postgres.Store, p *
 		AmountCents:    p.AmountCents,
 		FeeCents:       p.FeeCents,
 		Currency:       p.Currency,
-		Description:    fmt.Sprintf("WayPoint ride %s (renewed hold)", b.RideID),
+		Description:    fmt.Sprintf("Wanees ride %s (renewed hold)", b.RideID),
 		Metadata:       map[string]string{"booking_id": b.ID.String(), "ride_id": b.RideID.String()},
 	}
 	if driver.StripeAccountID != nil {

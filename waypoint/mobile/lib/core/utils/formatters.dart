@@ -2,10 +2,16 @@ import 'package:intl/intl.dart';
 
 import '../l10n/l10n.dart';
 
-/// Formats integer minor units (cents) as a localized currency string.
+/// Formats integer minor units (cents, piastres) as a localized currency string.
+///
+/// The Syrian pound is written "900 ل.س" in Arabic and "900 SYP" in English;
+/// intl's default symbol for SYP ("£") would be confused with sterling.
 String formatMoney(int cents, String currency) {
-  final f = NumberFormat.simpleCurrency(name: currency);
-  return f.format(cents / 100);
+  if (currency == 'SYP') {
+    final amount = NumberFormat.decimalPattern().format((cents / 100).round());
+    return Intl.getCurrentLocale().startsWith('ar') ? '$amount ل.س' : '$amount SYP';
+  }
+  return NumberFormat.simpleCurrency(name: currency).format(cents / 100);
 }
 
 /// "2 h 35 min" / "2 س 35 د" style duration.

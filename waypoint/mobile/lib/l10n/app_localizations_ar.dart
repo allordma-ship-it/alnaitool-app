@@ -9,10 +9,54 @@ class AppLocalizationsAr extends AppLocalizations {
   AppLocalizationsAr([String locale = 'ar']) : super(locale);
 
   @override
-  String get appTitle => 'وايبوينت';
+  String get appTitle => 'ونيس';
 
   @override
-  String get tagline => 'شارك الرحلة وتقاسم التكلفة.';
+  String get tagline => 'رفيقك على الطريق — شارك الرحلة وتقاسم التكلفة.';
+
+  @override
+  String get phoneHint => '+963 9XX XXX XXX';
+
+  @override
+  String get hintCash =>
+      'تدفع للسائق نقداً أثناء الرحلة — لا حاجة لبطاقة مصرفية.';
+
+  @override
+  String get hintCancelCash =>
+      'الإلغاء مجاني — يُرجى الإلغاء مبكراً إذا تغيّرت خططك.';
+
+  @override
+  String get feeNoticeCash => 'تدفع المبلغ للسائق نقداً أثناء الرحلة.';
+
+  @override
+  String payCashDue(String amount) {
+    return 'ادفع $amount نقداً للسائق.';
+  }
+
+  @override
+  String payCashPaid(String amount) {
+    return 'تم دفع $amount نقداً.';
+  }
+
+  @override
+  String get payCashReleased => 'أُلغي الحجز.';
+
+  @override
+  String get cancelFreeBodyCash =>
+      'يمكنك الإلغاء مجاناً. يُرجى الإلغاء مبكراً ليتمكن غيرك من حجز المقعد.';
+
+  @override
+  String get tripConfirmedThanks => 'شكراً لتأكيدك الرحلة!';
+
+  @override
+  String get completeRideCash => 'أنهِ الرحلة';
+
+  @override
+  String get cashPaymentTitle => 'الدفع نقداً';
+
+  @override
+  String get cashPaymentBody =>
+      'يدفع لك الركاب نقداً أثناء الرحلة. لا حاجة لحساب مصرفي.';
 
   @override
   String get retry => 'إعادة المحاولة';

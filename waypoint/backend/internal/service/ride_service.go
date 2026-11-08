@@ -97,6 +97,7 @@ func (s *RideService) Publish(ctx context.Context, driverID uuid.UUID, in domain
 	if err := in.Validate(s.now()); err != nil {
 		return nil, err
 	}
+	in.Currency = s.pricing.Currency
 	driver, err := s.store.Users.GetByID(ctx, driverID)
 	if err != nil {
 		return nil, err

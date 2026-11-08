@@ -344,8 +344,9 @@ func (s *BookingService) CancelByPassenger(ctx context.Context, passengerID, boo
 		if !b.Status.CanTransitionTo(domain.BookingCancelledByPassenger) {
 			return fmt.Errorf("%w: booking is %s", domain.ErrInvalidTransition, b.Status)
 		}
+		// Compensation needs funds held by the platform; cash bookings cancel freely.
 		late := b.Status == domain.BookingConfirmed && b.PickupETA.Sub(s.now()) < s.policy.LateWindow
-		if !late || s.policy.LatePercent == 0 {
+		if !late || s.policy.LatePercent == 0 || s.escrow.IsCash() {
 			return s.closeWithVoidLocked(ctx, tx, b, domain.BookingCancelledByPassenger, "cancelled by passenger")
 		}
 		p, err := tx.Payments.LockByBooking(ctx, bookingID)
@@ -646,6 +647,9 @@ func (s *BookingService) expireEach(ctx context.Context, ids []uuid.UUID, expect
 
 // RenewAgeingHolds re-authorizes holds older than maxAge before the card network drops them.
 func (s *BookingService) RenewAgeingHolds(ctx context.Context, maxAge time.Duration) (int, error) {
+	if s.escrow.IsCash() {
+		return 0, nil // cash reservations do not expire
+	}
 	ids, err := s.store.Payments.ListAuthorizedBefore(ctx, s.now().Add(-maxAge), 50)
 	if err != nil {
 		return 0, err

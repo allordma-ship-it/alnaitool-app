@@ -1,4 +1,4 @@
--- WayPoint initial schema: users, rides (PostGIS routes), bookings, escrow payments, reviews.
+-- Wanees initial schema: users, rides (PostGIS routes), bookings, escrow payments, reviews.
 
 CREATE EXTENSION IF NOT EXISTS postgis;
 CREATE EXTENSION IF NOT EXISTS citext;

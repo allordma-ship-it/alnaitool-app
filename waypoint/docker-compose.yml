@@ -1,4 +1,4 @@
-name: waypoint
+name: wanees
 
 x-osrm-image: &osrm-image ghcr.io/project-osrm/osrm-backend:v5.27.1
 
@@ -7,15 +7,15 @@ services:
     image: postgis/postgis:16-3.4
     restart: unless-stopped
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-waypoint}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-waypoint}
-      POSTGRES_DB: ${POSTGRES_DB:-waypoint}
+      POSTGRES_USER: ${POSTGRES_USER:-wanees}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-wanees}
+      POSTGRES_DB: ${POSTGRES_DB:-wanees}
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-waypoint} -d ${POSTGRES_DB:-waypoint}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-wanees} -d ${POSTGRES_DB:-wanees}"]
       interval: 5s
       timeout: 3s
       retries: 20
@@ -41,7 +41,7 @@ services:
     image: curlimages/curl:8.10.1
     user: "0:0"
     environment:
-      OSRM_PBF_URL: ${OSRM_PBF_URL:-https://download.geofabrik.de/europe/germany/baden-wuerttemberg-latest.osm.pbf}
+      OSRM_PBF_URL: ${OSRM_PBF_URL:-https://download.geofabrik.de/asia/syria-latest.osm.pbf}
     volumes:
       - osrmdata:/data
     entrypoint: ["/bin/sh", "-c"]
@@ -88,7 +88,7 @@ services:
     restart: unless-stopped
     env_file: .env
     environment:
-      DATABASE_URL: postgres://${POSTGRES_USER:-waypoint}:${POSTGRES_PASSWORD:-waypoint}@postgres:5432/${POSTGRES_DB:-waypoint}?sslmode=disable
+      DATABASE_URL: postgres://${POSTGRES_USER:-wanees}:${POSTGRES_PASSWORD:-wanees}@postgres:5432/${POSTGRES_DB:-wanees}?sslmode=disable
       REDIS_URL: redis://redis:6379/0
       ROUTING_BASE_URL: ${ROUTING_BASE_URL:-http://osrm:5000}
       HTTP_ADDR: ":8080"

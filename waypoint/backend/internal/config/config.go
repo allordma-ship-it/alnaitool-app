@@ -32,7 +32,7 @@ type Config struct {
 	GeocoderBaseURL   string
 	GeocoderUserAgent string
 
-	PaymentProvider      string // stripe | simulated
+	PaymentProvider      string // cash | stripe | simulated
 	StripeSecretKey      string
 	StripePublishableKey string
 	StripeWebhookSecret  string
@@ -42,6 +42,13 @@ type Config struct {
 	PlatformFeeBps        int
 	PlatformFeeFixedCents int
 	PriceCentsPerKm       int
+	PriceStepMinor        int
+	MinSeatPriceMinor     int
+
+	Country         string
+	DefaultCurrency string
+	DefaultTimezone string
+	GeocoderBBox    string
 
 	RateLimitPerMinute int
 	WorkerInterval     time.Duration
@@ -73,18 +80,26 @@ func Load() (*Config, error) {
 		RoutingTimeout:  getduration("ROUTING_TIMEOUT", 10*time.Second),
 
 		GeocoderBaseURL:   strings.TrimRight(getenv("GEOCODER_BASE_URL", "https://photon.komoot.io"), "/"),
-		GeocoderUserAgent: getenv("GEOCODER_USER_AGENT", "WayPoint/1.0 (self-hosted carpooling backend)"),
+		GeocoderUserAgent: getenv("GEOCODER_USER_AGENT", "Wanees/1.0 (self-hosted carpooling backend)"),
 
-		PaymentProvider:      strings.ToLower(getenv("PAYMENT_PROVIDER", "simulated")),
+		PaymentProvider:      strings.ToLower(getenv("PAYMENT_PROVIDER", "cash")),
 		StripeSecretKey:      os.Getenv("STRIPE_SECRET_KEY"),
 		StripePublishableKey: os.Getenv("STRIPE_PUBLISHABLE_KEY"),
 		StripeWebhookSecret:  os.Getenv("STRIPE_WEBHOOK_SECRET"),
-		StripeConnectReturn:  getenv("STRIPE_CONNECT_RETURN_URL", "waypoint://payouts/return"),
-		StripeConnectRefresh: getenv("STRIPE_CONNECT_REFRESH_URL", "waypoint://payouts/refresh"),
+		StripeConnectReturn:  getenv("STRIPE_CONNECT_RETURN_URL", "wanees://payouts/return"),
+		StripeConnectRefresh: getenv("STRIPE_CONNECT_REFRESH_URL", "wanees://payouts/refresh"),
 
-		PlatformFeeBps:        getint("PLATFORM_FEE_BPS", 1000),
-		PlatformFeeFixedCents: getint("PLATFORM_FEE_FIXED_CENTS", 50),
-		PriceCentsPerKm:       getint("PRICE_CENTS_PER_KM", 8),
+		PlatformFeeBps:        getint("PLATFORM_FEE_BPS", 0),
+		PlatformFeeFixedCents: getint("PLATFORM_FEE_FIXED_CENTS", 0),
+		PriceCentsPerKm:       getint("PRICE_CENTS_PER_KM", 250),
+		PriceStepMinor:        getint("PRICE_STEP_MINOR", 5000),
+		MinSeatPriceMinor:     getint("MIN_SEAT_PRICE_MINOR", 10000),
+
+		Country:         strings.ToUpper(getenv("COUNTRY", "SY")),
+		DefaultCurrency: strings.ToUpper(getenv("DEFAULT_CURRENCY", "SYP")),
+		DefaultTimezone: getenv("DEFAULT_TIMEZONE", "Asia/Damascus"),
+		// minLon,minLat,maxLon,maxLat — Syria by default; empty disables the bias.
+		GeocoderBBox: getenv("GEOCODER_BBOX", "35.5,32.3,42.4,37.4"),
 
 		RateLimitPerMinute: getint("RATE_LIMIT_PER_MINUTE", 120),
 		WorkerInterval:     getduration("WORKER_INTERVAL", time.Minute),
@@ -111,6 +126,7 @@ func (c *Config) validate() error {
 		errs = append(errs, fmt.Errorf("ROUTING_PROVIDER must be osrm or valhalla, got %q", c.RoutingProvider))
 	}
 	switch c.PaymentProvider {
+	case "cash":
 	case "simulated":
 		if c.IsProduction() {
 			errs = append(errs, errors.New("PAYMENT_PROVIDER=simulated is not allowed in production"))
@@ -123,7 +139,19 @@ func (c *Config) validate() error {
 			errs = append(errs, errors.New("STRIPE_WEBHOOK_SECRET is required when PAYMENT_PROVIDER=stripe"))
 		}
 	default:
-		errs = append(errs, fmt.Errorf("PAYMENT_PROVIDER must be stripe or simulated, got %q", c.PaymentProvider))
+		errs = append(errs, fmt.Errorf("PAYMENT_PROVIDER must be cash, stripe or simulated, got %q", c.PaymentProvider))
+	}
+	if _, err := time.LoadLocation(c.DefaultTimezone); err != nil {
+		errs = append(errs, fmt.Errorf("DEFAULT_TIMEZONE: %w", err))
+	}
+	if len(c.DefaultCurrency) != 3 {
+		errs = append(errs, errors.New("DEFAULT_CURRENCY must be an ISO-4217 code"))
+	}
+	if c.PriceStepMinor <= 0 || c.MinSeatPriceMinor <= 0 || c.PriceCentsPerKm <= 0 {
+		errs = append(errs, errors.New("PRICE_CENTS_PER_KM, PRICE_STEP_MINOR and MIN_SEAT_PRICE_MINOR must be positive"))
+	}
+	if c.PaymentProvider == "cash" && (c.PlatformFeeBps != 0 || c.PlatformFeeFixedCents != 0) {
+		errs = append(errs, errors.New("PLATFORM_FEE_* must be 0 with PAYMENT_PROVIDER=cash (fees cannot be collected in cash)"))
 	}
 	if c.PlatformFeeBps < 0 || c.PlatformFeeBps > 5000 {
 		errs = append(errs, errors.New("PLATFORM_FEE_BPS must be between 0 and 5000"))

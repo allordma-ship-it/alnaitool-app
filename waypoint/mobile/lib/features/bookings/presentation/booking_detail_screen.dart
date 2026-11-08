@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/config/app_config.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/l10n/labels.dart';
 import '../../../core/theme/app_theme.dart';
@@ -44,7 +45,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
     final ok = await confirmAction(
       context,
       title: l.cancelBookingTitle,
-      message: b.lateCancellation ? l.cancelLateBody : l.cancelFreeBody,
+      message: _isCash(b) ? l.cancelFreeBodyCash : (b.lateCancellation ? l.cancelLateBody : l.cancelFreeBody),
       confirmLabel: l.cancelBooking,
       destructive: true,
     );
@@ -134,7 +135,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
                   const SizedBox(height: 8),
                   Row(
                     children: [
-                      Icon(Icons.lock_outline, size: 18, color: theme.colorScheme.primary),
+                      Icon(_isCash(b) ? Icons.payments_outlined : Icons.lock_outline, size: 18, color: theme.colorScheme.primary),
                       const SizedBox(width: 6),
                       Expanded(child: Text(_paymentExplanation(l, payment), style: theme.textTheme.bodySmall)),
                     ],
@@ -168,7 +169,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
                 ? null
                 : () => _run(
                       () => ref.read(bookingRepositoryProvider).confirmTrip(b.id),
-                      success: l.driverPaid,
+                      success: _isCash(b) ? l.tripConfirmedThanks : l.driverPaid,
                     ),
           ),
         if (b.canReview)
@@ -188,14 +189,22 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
     );
   }
 
-  String _paymentExplanation(AppLocalizations l, PaymentInfo p) => switch (p.status) {
+  bool _isCash(Booking b) => (b.payment?.provider ?? ref.read(appConfigProvider).paymentProvider) == 'cash';
+
+  String _paymentExplanation(AppLocalizations l, PaymentInfo p) => p.provider == 'cash'
+      ? switch (p.status) {
+          PaymentStatus.captured => l.payCashPaid(formatMoney(p.capturedCents, p.currency)),
+          PaymentStatus.voided || PaymentStatus.failed || PaymentStatus.refunded => l.payCashReleased,
+          _ => l.payCashDue(formatMoney(p.amountCents, p.currency)),
+        }
+      : switch (p.status) {
         PaymentStatus.pending => l.payPending,
         PaymentStatus.authorized => l.payAuthorized(formatMoney(p.amountCents, p.currency)),
         PaymentStatus.captured => l.payCaptured(formatMoney(p.capturedCents, p.currency)),
         PaymentStatus.voided => l.payVoided,
         PaymentStatus.refunded => l.payRefunded(formatMoney(p.refundedCents, p.currency)),
         PaymentStatus.failed => l.payFailed,
-      };
+        };
 
   Widget _line(BuildContext context, String label, String value, {bool bold = false}) {
     final style = bold

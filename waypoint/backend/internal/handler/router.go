@@ -17,6 +17,18 @@ import (
 	"github.com/allordma-ship-it/alnaitool-app/waypoint/backend/internal/service"
 )
 
+// MarketConfig is the public, per-deployment market configuration served at
+// GET /v1/config so clients never hard-code currency or payment behaviour.
+type MarketConfig struct {
+	Country         string `json:"country"`
+	Currency        string `json:"currency"`
+	Timezone        string `json:"timezone"`
+	PaymentProvider string `json:"payment_provider"`
+	PayoutsRequired bool   `json:"payouts_required"`
+	PriceStepMinor  int    `json:"price_step_minor"`
+	ServiceFeeBps   int    `json:"service_fee_bps"`
+}
+
 // RouterDeps are the dependencies needed to mount the API.
 type RouterDeps struct {
 	Log            *slog.Logger
@@ -33,6 +45,7 @@ type RouterDeps struct {
 	AllowedOrigins []string
 	TrustProxy     bool
 	RatePerMinute  int
+	Market         MarketConfig
 }
 
 func isNotFound(err error) bool { return errors.Is(err, domain.ErrNotFound) }
@@ -51,7 +64,7 @@ func NewRouter(d RouterDeps) http.Handler {
 	r.Use(chimw.Timeout(30 * time.Second))
 
 	authH := NewAuthHandler(d.Auth, d.Users, d.Log)
-	rideH := NewRideHandler(d.Rides, d.Matcher, d.Geocoder, d.Log)
+	rideH := NewRideHandler(d.Rides, d.Matcher, d.Geocoder, d.Market.Timezone, d.Log)
 	bookH := NewBookingHandler(d.Bookings, d.Log)
 	hookH := NewWebhookHandler(d.WebhookSecret, d.Store, d.Bookings, d.Escrow, d.Users, d.Log)
 
@@ -81,6 +94,9 @@ func NewRouter(d RouterDeps) http.Handler {
 
 	r.Route("/v1", func(v1 chi.Router) {
 		v1.Post("/webhooks/stripe", hookH.Stripe)
+		v1.Get("/config", func(w http.ResponseWriter, _ *http.Request) {
+			writeJSON(w, http.StatusOK, d.Market)
+		})
 
 		// Credential endpoints get a tight per-IP limit against brute force.
 		v1.Group(func(g chi.Router) {

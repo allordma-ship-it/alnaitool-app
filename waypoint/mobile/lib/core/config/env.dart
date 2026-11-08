@@ -2,7 +2,7 @@
 class Env {
   const Env._();
 
-  /// Base URL of the WayPoint API (without the `/v1` suffix).
+  /// Base URL of the Wanees API (without the `/v1` suffix).
   /// Android emulators reach the host machine at 10.0.2.2.
   static const String apiBaseUrl = String.fromEnvironment(
     'API_BASE_URL',
@@ -17,11 +17,11 @@ class Env {
   );
 
   /// Package identifier sent to tile servers as User-Agent.
-  static const String userAgentPackage = 'com.waypoint.waypoint';
+  static const String userAgentPackage = 'sy.wanees.app';
 
   /// Stripe merchant display name shown in the payment sheet.
-  static const String merchantName = 'WayPoint';
+  static const String merchantName = 'Wanees';
 
   /// Return URL scheme used for Stripe redirects (3DS) and Connect onboarding.
-  static const String urlScheme = 'waypoint';
+  static const String urlScheme = 'wanees';
 }

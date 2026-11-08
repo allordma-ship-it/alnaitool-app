@@ -57,7 +57,15 @@ func polyline6(pts [][2]float64) string {
 	return sb.String()
 }
 
-func fakeOSRM(t *testing.T) *httptest.Server {
+// Damascus -> Homs -> Hama -> Aleppo, roughly following the M5.
+var m5 = [][2]float64{
+	{33.5138, 36.2765}, {33.7000, 36.5500}, {34.2000, 36.7000}, {34.7324, 36.7137},
+	{35.1318, 36.7578}, {35.6000, 36.8000}, {36.2021, 37.1343},
+}
+
+func fakeOSRM(t *testing.T) *httptest.Server { return fakeOSRMRoute(t, a8, 231000, 8400) }
+
+func fakeOSRMRoute(t *testing.T, route [][2]float64, distance, duration float64) *httptest.Server {
 	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if !strings.HasPrefix(r.URL.Path, "/route/v1/driving/") {
 			http.NotFound(w, r)
@@ -66,7 +74,7 @@ func fakeOSRM(t *testing.T) *httptest.Server {
 		_ = json.NewEncoder(w).Encode(map[string]any{
 			"code": "Ok",
 			"routes": []map[string]any{{
-				"geometry": polyline6(a8), "distance": 231000.0, "duration": 8400.0,
+				"geometry": polyline6(route), "distance": distance, "duration": duration,
 			}},
 		})
 	}))
@@ -143,11 +151,15 @@ func TestEndToEndRideSharing(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer rc.Close()
+	// Registrations share the per-IP auth limit (10/min); reset it between runs.
+	if err := rc.Delete(ctx, "rl:auth:ip:127.0.0.1"); err != nil {
+		t.Fatal(err)
+	}
 
 	osrm := fakeOSRM(t)
 	defer osrm.Close()
 	routing, _ := service.NewRoutingClient("osrm", osrm.URL, 5*time.Second)
-	pricing := service.Pricing{FeeBps: 1000, FeeFixedCents: 50, CentsPerKm: 8}
+	pricing := service.Pricing{Currency: "EUR", FeeBps: 1000, FeeFixedCents: 50, CentsPerKm: 8, StepMinor: 50, MinSeatMinor: 200}
 	escrow := service.NewEscrowService(store, service.NewSimulatedGateway(), log)
 	authSvc := service.NewAuthService(store, rc, strings.Repeat("s", 40), 15*time.Minute, time.Hour)
 	users := service.NewUserService(store, escrow, "app://r", "app://ok")
@@ -156,7 +168,7 @@ func TestEndToEndRideSharing(t *testing.T) {
 	srv := httptest.NewServer(handler.NewRouter(handler.RouterDeps{
 		Log: log, Store: store, Cache: rc, Auth: authSvc, Users: users, Rides: rides, Bookings: bookings,
 		Escrow: escrow, Matcher: service.NewSpatialMatcher(store, rc, pricing, log),
-		Geocoder: service.NewGeocoder("http://127.0.0.1:1", "test", rc, log), AllowedOrigins: []string{"*"}, RatePerMinute: 10000,
+		Geocoder: service.NewGeocoder("http://127.0.0.1:1", "test", "", rc, log), AllowedOrigins: []string{"*"}, RatePerMinute: 10000,
 	}))
 	defer srv.Close()
 
@@ -308,4 +320,160 @@ func TestEndToEndRideSharing(t *testing.T) {
 	if events != 3 { // created(pending) -> authorized -> captured
 		t.Fatalf("expected 3 escrow events, got %d", events)
 	}
+}
+
+// TestSyriaCashMarket runs the Syrian configuration: SYP pricing in 50-pound
+// steps, no platform fee, and cash settlement between passenger and driver.
+func TestSyriaCashMarket(t *testing.T) {
+	dbURL, redisURL := os.Getenv("TEST_DATABASE_URL"), os.Getenv("TEST_REDIS_URL")
+	if dbURL == "" || redisURL == "" {
+		t.Skip("TEST_DATABASE_URL and TEST_REDIS_URL are required")
+	}
+	ctx := context.Background()
+	log := slog.New(slog.NewTextHandler(io.Discard, nil))
+	pool, err := postgres.Connect(ctx, dbURL, 10)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer pool.Close()
+	if err := postgres.Migrate(ctx, pool); err != nil {
+		t.Fatal(err)
+	}
+	store := postgres.NewStore(pool)
+	rc, err := cache.Connect(ctx, redisURL)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer rc.Close()
+	// Registrations share the per-IP auth limit (10/min); reset it between runs.
+	if err := rc.Delete(ctx, "rl:auth:ip:127.0.0.1"); err != nil {
+		t.Fatal(err)
+	}
+
+	osrm := fakeOSRMRoute(t, m5, 356000, 15000)
+	defer osrm.Close()
+	routing, _ := service.NewRoutingClient("osrm", osrm.URL, 5*time.Second)
+	// 2.50 SYP per seat-km, rounded to 50 SYP, minimum 100 SYP (amounts in piastres).
+	pricing := service.Pricing{Currency: "SYP", CentsPerKm: 250, StepMinor: 5000, MinSeatMinor: 10000}
+	escrow := service.NewEscrowService(store, service.NewCashGateway(), log)
+	authSvc := service.NewAuthService(store, rc, strings.Repeat("s", 40), 15*time.Minute, time.Hour)
+	users := service.NewUserService(store, escrow, "app://r", "app://ok")
+	bookings := service.NewBookingService(store, rc, escrow, pricing, service.CancellationPolicy{LateWindow: 24 * time.Hour, LatePercent: 50}, log)
+	rides := service.NewRideService(store, rc, routing, pricing, escrow, bookings, log)
+	market := handler.MarketConfig{Country: "SY", Currency: "SYP", Timezone: "Asia/Damascus", PaymentProvider: "cash", PriceStepMinor: 5000}
+	srv := httptest.NewServer(handler.NewRouter(handler.RouterDeps{
+		Log: log, Store: store, Cache: rc, Auth: authSvc, Users: users, Rides: rides, Bookings: bookings,
+		Escrow: escrow, Matcher: service.NewSpatialMatcher(store, rc, pricing, log),
+		Geocoder: service.NewGeocoder("http://127.0.0.1:1", "test", "", rc, log), AllowedOrigins: []string{"*"},
+		RatePerMinute: 10000, Market: market,
+	}))
+	defer srv.Close()
+
+	anon := &client{t: t, base: srv.URL}
+	var cfg handler.MarketConfig
+	anon.do("GET", "/v1/config", nil, 200, &cfg)
+	if cfg != market {
+		t.Fatalf("config = %+v", cfg)
+	}
+
+	driver := register(t, srv.URL, "سامر")
+	passenger := register(t, srv.URL, "ليلى")
+
+	// Drivers need no payout onboarding with cash.
+	driver.do("POST", "/v1/me/payouts/onboarding", map[string]any{"country": "SY"}, 422, nil)
+
+	damascus := map[string]float64{"lat": 33.5138, "lng": 36.2765}
+	aleppo := map[string]float64{"lat": 36.2021, "lng": 37.1343}
+	var preview struct {
+		Suggested int `json:"suggested_price_cents"`
+	}
+	driver.do("POST", "/v1/rides/preview", map[string]any{"origin": damascus, "destination": aleppo}, 200, &preview)
+	if preview.Suggested != 90000 { // 356 km × 2.5 = 890 SYP, rounded to the 50-SYP step
+		t.Fatalf("suggested %d, want 90000 (900 SYP)", preview.Suggested)
+	}
+
+	departure := time.Now().Add(72 * time.Hour).UTC().Truncate(time.Minute)
+	var ride struct {
+		ID       string `json:"id"`
+		Currency string `json:"currency"`
+	}
+	driver.do("POST", "/v1/rides", map[string]any{
+		"origin":               map[string]any{"name": "دمشق", "location": damascus},
+		"destination":          map[string]any{"name": "حلب", "location": aleppo},
+		"departure_at":         departure,
+		"seats_total":          3,
+		"price_per_seat_cents": 90000,
+		"preferences":          map[string]bool{"instant_booking": true},
+	}, 201, &ride)
+	if ride.Currency != "SYP" {
+		t.Fatalf("ride currency %q", ride.Currency)
+	}
+
+	// Homs -> Hama is part of the route: pro-rated, rounded to 50 SYP, no fee.
+	date := departure.In(mustLoc(t, "Asia/Damascus")).Format("2006-01-02")
+	var search struct {
+		Data []struct {
+			PricePerSeat int `json:"price_per_seat_cents"`
+		} `json:"data"`
+	}
+	passenger.do("GET", fmt.Sprintf("/v1/rides/search?from_lat=34.73&from_lng=36.71&to_lat=35.13&to_lng=36.75&date=%s", date), nil, 200, &search)
+	if len(search.Data) != 1 || search.Data[0].PricePerSeat%5000 != 0 || search.Data[0].PricePerSeat >= 90000 {
+		t.Fatalf("Homs->Hama search: %+v", search)
+	}
+
+	type bookingResp struct {
+		ID      string `json:"id"`
+		Status  string `json:"status"`
+		Price   int    `json:"price_cents"`
+		Fee     int    `json:"service_fee_cents"`
+		Total   int    `json:"total_cents"`
+		Payment struct {
+			Provider string `json:"provider"`
+			Status   string `json:"status"`
+			Captured int    `json:"captured_cents"`
+		} `json:"payment"`
+	}
+	place := func(name string, lat, lng float64) map[string]any {
+		return map[string]any{"name": name, "location": map[string]float64{"lat": lat, "lng": lng}}
+	}
+	var b bookingResp
+	passenger.do("POST", "/v1/rides/"+ride.ID+"/bookings", map[string]any{
+		"seats": 1, "pickup": place("حمص", 34.7324, 36.7137), "dropoff": place("حماة", 35.1318, 36.7578),
+	}, 201, &b)
+	if b.Status != "confirmed" || b.Payment.Provider != "cash" || b.Payment.Status != "authorized" || b.Fee != 0 || b.Total != b.Price {
+		t.Fatalf("cash booking: %+v", b)
+	}
+
+	// Late cancellation with cash never charges anything.
+	if _, err := pool.Exec(ctx, `UPDATE bookings SET pickup_eta = NOW() + INTERVAL '2 hours' WHERE id = $1`, b.ID); err != nil {
+		t.Fatal(err)
+	}
+	passenger.do("POST", "/v1/bookings/"+b.ID+"/cancel", nil, 200, &b)
+	if b.Status != "cancelled_by_passenger" || b.Payment.Status != "voided" || b.Payment.Captured != 0 {
+		t.Fatalf("cash late cancel: %+v", b)
+	}
+
+	// Rebook and complete the trip: the reservation is marked as paid in cash.
+	passenger.do("POST", "/v1/rides/"+ride.ID+"/bookings", map[string]any{
+		"seats": 2, "pickup": place("دمشق", 33.5138, 36.2765), "dropoff": place("حلب", 36.2021, 37.1343),
+	}, 201, &b)
+	if b.Price != 180000 {
+		t.Fatalf("2 seats full route = %d, want 180000", b.Price)
+	}
+	if _, err := pool.Exec(ctx, `UPDATE rides SET departure_at = NOW() - INTERVAL '6 hours', arrival_at = NOW() - INTERVAL '1 hour' WHERE id = $1`, ride.ID); err != nil {
+		t.Fatal(err)
+	}
+	driver.do("POST", "/v1/rides/"+ride.ID+"/complete", nil, 200, nil)
+	passenger.do("GET", "/v1/bookings/"+b.ID, nil, 200, &b)
+	if b.Status != "completed" || b.Payment.Status != "captured" || b.Payment.Captured != 180000 {
+		t.Fatalf("cash completion: %+v", b)
+	}
+}
+
+func mustLoc(t *testing.T, name string) *time.Location {
+	loc, err := time.LoadLocation(name)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return loc
 }

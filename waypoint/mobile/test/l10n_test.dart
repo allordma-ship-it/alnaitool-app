@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:waypoint/core/l10n/error_text.dart';
-import 'package:waypoint/core/l10n/l10n.dart';
-import 'package:waypoint/core/network/api_exception.dart';
-import 'package:waypoint/features/search/presentation/search_screen.dart';
+import 'package:wanees/core/l10n/error_text.dart';
+import 'package:wanees/core/l10n/l10n.dart';
+import 'package:wanees/core/network/api_exception.dart';
+import 'package:wanees/features/search/presentation/search_screen.dart';
 
 Widget _app(Locale locale, Widget home) => ProviderScope(
       child: MaterialApp(

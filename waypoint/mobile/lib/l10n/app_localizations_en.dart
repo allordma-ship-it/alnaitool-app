@@ -9,10 +9,55 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appTitle => 'WayPoint';
+  String get appTitle => 'Wanees';
 
   @override
-  String get tagline => 'Share the ride, split the cost.';
+  String get tagline =>
+      'Your companion on the road — share the ride, split the cost.';
+
+  @override
+  String get phoneHint => '+963 9XX XXX XXX';
+
+  @override
+  String get hintCash =>
+      'Pay the driver in cash during the trip — no card needed.';
+
+  @override
+  String get hintCancelCash =>
+      'Free cancellation — please cancel early if your plans change.';
+
+  @override
+  String get feeNoticeCash => 'You pay the driver in cash during the trip.';
+
+  @override
+  String payCashDue(String amount) {
+    return 'Pay $amount in cash to the driver.';
+  }
+
+  @override
+  String payCashPaid(String amount) {
+    return 'Paid $amount in cash.';
+  }
+
+  @override
+  String get payCashReleased => 'Reservation released.';
+
+  @override
+  String get cancelFreeBodyCash =>
+      'You can cancel for free. Please cancel early so someone else can take the seat.';
+
+  @override
+  String get tripConfirmedThanks => 'Thanks for confirming the trip!';
+
+  @override
+  String get completeRideCash => 'Complete ride';
+
+  @override
+  String get cashPaymentTitle => 'Cash payment';
+
+  @override
+  String get cashPaymentBody =>
+      'Passengers pay you in cash during the trip. No bank account needed.';
 
   @override
   String get retry => 'Retry';

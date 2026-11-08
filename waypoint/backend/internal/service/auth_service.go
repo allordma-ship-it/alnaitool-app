@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	tokenIssuer = "waypoint"
+	tokenIssuer = "wanees"
 	typeAccess  = "access"
 	typeRefresh = "refresh"
 	bcryptCost  = 12
@@ -54,7 +54,7 @@ type AuthService struct {
 
 // NewAuthService builds the auth service.
 func NewAuthService(store *postgres.Store, c *cache.Cache, secret string, accessTTL, refreshTTL time.Duration) *AuthService {
-	dummy, _ := bcrypt.GenerateFromPassword([]byte("waypoint-timing-equalizer"), bcryptCost)
+	dummy, _ := bcrypt.GenerateFromPassword([]byte("wanees-timing-equalizer"), bcryptCost)
 	return &AuthService{store: store, cache: c, secret: []byte(secret), accessTTL: accessTTL, refreshTTL: refreshTTL, dummyHash: dummy}
 }
 

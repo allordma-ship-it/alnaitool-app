@@ -28,6 +28,7 @@ type GeocodeResult struct {
 
 // Geocoder resolves free-text place queries using a Photon (OSM) server, with Redis caching.
 type Geocoder struct {
+	bbox      string // minLon,minLat,maxLon,maxLat restricting results to the market
 	baseURL   string
 	userAgent string
 	http      *http.Client
@@ -36,8 +37,8 @@ type Geocoder struct {
 }
 
 // NewGeocoder builds the geocoder.
-func NewGeocoder(baseURL, userAgent string, c *cache.Cache, log *slog.Logger) *Geocoder {
-	return &Geocoder{baseURL: baseURL, userAgent: userAgent, http: &http.Client{Timeout: 6 * time.Second}, cache: c, log: log}
+func NewGeocoder(baseURL, userAgent, bbox string, c *cache.Cache, log *slog.Logger) *Geocoder {
+	return &Geocoder{bbox: bbox, baseURL: baseURL, userAgent: userAgent, http: &http.Client{Timeout: 6 * time.Second}, cache: c, log: log}
 }
 
 type photonResponse struct {
@@ -80,6 +81,9 @@ func (g *Geocoder) Search(ctx context.Context, query string, near *domain.LatLng
 	switch lang {
 	case "de", "en", "fr", "it":
 		params.Set("lang", lang)
+	}
+	if g.bbox != "" {
+		params.Set("bbox", g.bbox)
 	}
 	if near != nil && near.Valid() {
 		params.Set("lat", strconv.FormatFloat(near.Lat, 'f', 3, 64))

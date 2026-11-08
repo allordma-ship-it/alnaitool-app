@@ -122,7 +122,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         const SizedBox(height: 12),
                         TextFormField(
                           controller: _phone,
-                          decoration: InputDecoration(labelText: l.phoneOptional),
+                          decoration: InputDecoration(labelText: l.phoneOptional, hintText: l.phoneHint),
                           keyboardType: TextInputType.phone,
                           autofillHints: const [AutofillHints.telephoneNumber],
                         ),

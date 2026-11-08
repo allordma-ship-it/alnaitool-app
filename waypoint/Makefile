@@ -52,7 +52,7 @@ osrm-reset: ## Re-download and re-process the OSM extract (after changing OSRM_P
 
 .PHONY: psql
 psql: ## Open a psql shell
-	$(COMPOSE) exec postgres psql -U $${POSTGRES_USER:-waypoint} $${POSTGRES_DB:-waypoint}
+	$(COMPOSE) exec postgres psql -U $${POSTGRES_USER:-wanees} $${POSTGRES_DB:-wanees}
 
 .PHONY: redis-cli
 redis-cli: ## Open a redis-cli shell
@@ -66,7 +66,7 @@ run: .env ## Run the API locally against compose datastores
 
 .PHONY: build
 build: ## Build the API binary into backend/bin
-	go -C $(BACKEND) build -trimpath -o bin/waypoint-api ./cmd/server
+	go -C $(BACKEND) build -trimpath -o bin/wanees-api ./cmd/server
 
 .PHONY: fmt
 fmt: ## Format Go code
@@ -85,18 +85,18 @@ test: ## Run backend unit tests
 test-integration: .env ## Run end-to-end tests against the compose PostGIS + Redis
 	$(COMPOSE) up -d postgres redis
 	$(COMPOSE) exec -T postgres sh -c 'until pg_isready -q; do sleep 1; done'
-	$(COMPOSE) exec -T postgres psql -U $${POSTGRES_USER:-waypoint} -d postgres -tc \
-		"SELECT 1 FROM pg_database WHERE datname='waypoint_test'" | grep -q 1 || \
-		$(COMPOSE) exec -T postgres psql -U $${POSTGRES_USER:-waypoint} -d postgres -c 'CREATE DATABASE waypoint_test'
+	$(COMPOSE) exec -T postgres psql -U $${POSTGRES_USER:-wanees} -d postgres -tc \
+		"SELECT 1 FROM pg_database WHERE datname='wanees_test'" | grep -q 1 || \
+		$(COMPOSE) exec -T postgres psql -U $${POSTGRES_USER:-wanees} -d postgres -c 'CREATE DATABASE wanees_test'
 	set -a && source .env && set +a && \
-		TEST_DATABASE_URL=postgres://$${POSTGRES_USER}:$${POSTGRES_PASSWORD}@localhost:$${POSTGRES_PORT:-5432}/waypoint_test?sslmode=disable \
+		TEST_DATABASE_URL=postgres://$${POSTGRES_USER}:$${POSTGRES_PASSWORD}@localhost:$${POSTGRES_PORT:-5432}/wanees_test?sslmode=disable \
 		TEST_REDIS_URL=redis://localhost:$${REDIS_PORT:-6379}/15 \
 		go -C $(BACKEND) test -tags integration -count=1 ./internal/handler/
 
 # --- Mobile -------------------------------------------------------------------
 .PHONY: mobile-bootstrap
 mobile-bootstrap: ## Generate Flutter platform folders and fetch packages
-	cd $(MOBILE) && flutter create --org com.waypoint --project-name waypoint --platforms=android,ios .
+	cd $(MOBILE) && flutter create --org sy.wanees --project-name wanees --platforms=android,ios .
 	cd $(MOBILE) && ./tool/configure_platforms.sh
 	cd $(MOBILE) && flutter pub get
 

@@ -24,7 +24,7 @@ final apiClientProvider = Provider<ApiClient>((ref) {
   );
 });
 
-/// HTTP client for the WayPoint API with bearer auth and transparent,
+/// HTTP client for the Wanees API with bearer auth and transparent,
 /// single-flight refresh-token rotation on 401 responses.
 class ApiClient {
   ApiClient({
