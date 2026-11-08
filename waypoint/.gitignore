@@ -6,3 +6,7 @@ mobile/.flutter-plugins
 mobile/.flutter-plugins-dependencies
 mobile/pubspec.lock.bak
 dump.rdb
+*.jks
+*.keystore
+key.properties
+backups/

@@ -1,0 +1,19 @@
+# Public entry point for Wanees: automatic HTTPS (Let's Encrypt) in front of the API.
+# DOMAIN is set in .env, e.g. api.wanees.sy or 203.0.113.7.sslip.io.
+{$DOMAIN} {
+	encode zstd gzip
+
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		-Server
+	}
+
+	reverse_proxy api:8080 {
+		health_uri /healthz
+	}
+
+	log {
+		output stdout
+		format console
+	}
+}

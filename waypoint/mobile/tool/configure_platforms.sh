@@ -70,7 +70,33 @@ def gradle_kts(s):
             '            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")\n', 1)
     if "checkReleaseBuilds" not in s:
         s = s.replace("    buildTypes {", "    lint {\n        checkReleaseBuilds = false\n    }\n\n    buildTypes {", 1)
+    # Stable signing key from the environment (CI secrets). Without it the
+    # builds fall back to the per-machine debug key.
+    if "WANEES_KEYSTORE_FILE" not in s:
+        s = s.replace("    lint {", SIGNING_KTS + "\n    lint {", 1)
+        s = s.replace(
+            '            signingConfig = signingConfigs.getByName("debug")\n',
+            '            signingConfig = if (waneesKeystore != null) signingConfigs.getByName("release") '
+            'else signingConfigs.getByName("debug")\n', 1)
+        s = s.replace("    buildTypes {\n",
+                      "    buildTypes {\n"
+                      "        getByName(\"debug\") {\n"
+                      "            if (waneesKeystore != null) signingConfig = signingConfigs.getByName(\"release\")\n"
+                      "        }\n", 1)
+        s = s.replace("android {\n", 'val waneesKeystore: String? = System.getenv("WANEES_KEYSTORE_FILE")\n\nandroid {\n', 1)
     return s
+
+SIGNING_KTS = """    signingConfigs {
+        create("release") {
+            if (waneesKeystore != null) {
+                storeFile = file(waneesKeystore!!)
+                storePassword = System.getenv("WANEES_KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("WANEES_KEY_ALIAS")
+                keyPassword = System.getenv("WANEES_KEY_PASSWORD")
+            }
+        }
+    }
+"""
 patch("android/app/build.gradle.kts", gradle_kts)
 
 def gradle_groovy(s):

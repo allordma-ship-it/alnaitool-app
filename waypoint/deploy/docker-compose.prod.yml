@@ -1,0 +1,66 @@
+# Production overrides: only Caddy (ports 80/443) is reachable from the internet.
+# Usage (from the waypoint/ folder):
+#   docker compose -f docker-compose.yml -f deploy/docker-compose.prod.yml up -d --build
+services:
+  postgres:
+    restart: always
+    ports: !reset []
+
+  redis:
+    restart: always
+    ports: !reset []
+
+  osrm:
+    restart: always
+    ports: !reset []
+
+  api:
+    restart: always
+    ports: !reset []
+    environment:
+      APP_ENV: production
+      TRUST_PROXY: "true"
+
+  caddy:
+    image: caddy:2.8-alpine
+    restart: always
+    environment:
+      DOMAIN: ${DOMAIN:?set DOMAIN in .env}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - api
+
+  # Nightly compressed database backups into ./backups, keeping 14 days.
+  backup:
+    image: postgis/postgis:16-3.4
+    restart: always
+    environment:
+      PGHOST: postgres
+      PGUSER: ${POSTGRES_USER:-wanees}
+      PGPASSWORD: ${POSTGRES_PASSWORD:-wanees}
+      PGDATABASE: ${POSTGRES_DB:-wanees}
+    volumes:
+      - ./backups:/backups
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        while true; do
+          until pg_isready -q; do sleep 5; done
+          f=/backups/wanees-$$(date +%Y-%m-%d).sql.gz
+          pg_dump --no-owner | gzip > "$$f.tmp" && mv "$$f.tmp" "$$f" && echo "backup written: $$f"
+          find /backups -name 'wanees-*.sql.gz' -mtime +14 -delete
+          sleep 86400
+        done
+    depends_on:
+      - postgres
+
+volumes:
+  caddy_data:
+  caddy_config:

@@ -50,6 +50,14 @@ osrm-reset: ## Re-download and re-process the OSM extract (after changing OSRM_P
 	$(COMPOSE) run --rm --entrypoint sh osrm-prepare -c 'rm -f /data/region.*'
 	$(COMPOSE) up -d osrm
 
+.PHONY: deploy
+deploy: ## Set up / update the production server (run on the VPS; optional DOMAIN=api.example.com)
+	sudo ./deploy/setup-server.sh $(DOMAIN)
+
+.PHONY: prod-logs
+prod-logs: ## Follow production API and HTTPS proxy logs
+	$(COMPOSE) -f docker-compose.yml -f deploy/docker-compose.prod.yml logs -f api caddy
+
 .PHONY: psql
 psql: ## Open a psql shell
 	$(COMPOSE) exec postgres psql -U $${POSTGRES_USER:-wanees} $${POSTGRES_DB:-wanees}
@@ -99,6 +107,7 @@ mobile-bootstrap: ## Generate Flutter platform folders and fetch packages
 	cd $(MOBILE) && flutter create --org sy.wanees --project-name wanees --platforms=android,ios .
 	cd $(MOBILE) && ./tool/configure_platforms.sh
 	cd $(MOBILE) && flutter pub get
+	cd $(MOBILE) && dart run flutter_launcher_icons
 
 .PHONY: mobile-run
 mobile-run: ## Run the app (API_URL defaults to the Android emulator host alias)

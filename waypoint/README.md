@@ -68,7 +68,7 @@ the button on the login screen), and the choice is saved on the device.
 
 ### Mobile app
 
-Arabic step-by-step install guide (server, APK download, installing on Android): [`INSTALL.ar.md`](INSTALL.ar.md).
+Arabic guides: [`SERVER.ar.md`](SERVER.ar.md) (production server on a VPS with HTTPS, one script: `deploy/setup-server.sh`) and [`INSTALL.ar.md`](INSTALL.ar.md) (APK download and installation).
 GitHub Actions builds `wanees-test.apk` and `wanees-release.apk` on every change to `mobile/` (`.github/workflows/wanees-android.yml`).
 
 ```bash
