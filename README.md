@@ -25,7 +25,13 @@ optimiert für das **Lenovo Idea Tab Pro mit Lenovo Tab Pen Plus**.
 | Gesten | Zwei-Finger-Tipp = Rückgängig, Drei-Finger-Tipp = Wiederholen, Pinch-Zoom, Wischen mit Schwung |
 | Stifttest | Einstellungen → „Stifttest“ zeigt live, was der Stift meldet (Typ, Druck, Neigung, Tasten) |
 
-## Auf dem Tablet installieren
+## Android-App (APK)
+
+Jeder Push baut über `.github/workflows/android.yml` ein signiertes APK (Capacitor) und veröffentlicht es
+unter **Releases** (`alnai-notes-v1.0.<Nr>`). Auf dem Tablet herunterladen, öffnen, „Aus dieser Quelle installieren“ erlauben.
+Alle APKs sind mit demselben Schlüssel (`android/keystore/`) signiert – neue Versionen installieren sich als Update, die Notizen bleiben erhalten.
+
+## Als Web-App installieren (Alternative)
 
 1. Die veröffentlichte Seite (GitHub Pages, siehe unten) in **Chrome** auf dem Idea Tab Pro öffnen.
 2. Menü ⋮ → **„App installieren“** bzw. „Zum Startbildschirm hinzufügen“.
