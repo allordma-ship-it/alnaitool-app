@@ -46,9 +46,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          TAG="v1.0.${{ github.run_number }}"
+          TAG="alnai-notes-v1.0.${{ github.run_number }}"
           gh release create "$TAG" AlnaiNotes-*.apk \
             --target "${{ github.sha }}" \
-            --title "Alnai Notes $TAG" \
+            --title "Alnai Notes 1.0.${{ github.run_number }}" \
             --notes "APK für Android-Tablets (getestet für Lenovo Idea Tab Pro + Pen Plus). Herunterladen, öffnen, Installation aus unbekannten Quellen erlauben." \
             --latest
