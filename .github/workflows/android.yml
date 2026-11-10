@@ -1,0 +1,54 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [main, 'ccr-*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+      - run: npx cap sync android
+      - name: Build release APK
+        working-directory: android
+        env:
+          VERSION_CODE: ${{ github.run_number }}
+          VERSION_NAME: 1.0.${{ github.run_number }}
+        run: |
+          chmod +x gradlew
+          ./gradlew --no-daemon assembleRelease
+          cp app/build/outputs/apk/release/app-release.apk "$GITHUB_WORKSPACE/AlnaiNotes-1.0.${{ github.run_number }}.apk"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: AlnaiNotes-apk
+          path: AlnaiNotes-*.apk
+      - name: Publish as GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="v1.0.${{ github.run_number }}"
+          gh release create "$TAG" AlnaiNotes-*.apk \
+            --target "${{ github.sha }}" \
+            --title "Alnai Notes $TAG" \
+            --notes "APK für Android-Tablets (getestet für Lenovo Idea Tab Pro + Pen Plus). Herunterladen, öffnen, Installation aus unbekannten Quellen erlauben." \
+            --latest

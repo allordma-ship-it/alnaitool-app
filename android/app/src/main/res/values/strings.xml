@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Alnai Notes</string>
+    <string name="title_activity_main">Alnai Notes</string>
+    <string name="package_name">app.alnai.notes</string>
+    <string name="custom_url_scheme">app.alnai.notes</string>
+</resources>

@@ -3,6 +3,7 @@ import { applyLang } from './i18n';
 import { Library } from './library';
 import { Editor } from './editor';
 import type { DocMeta } from './types';
+import { Capacitor } from '@capacitor/core';
 
 applyLang();
 const app = document.getElementById('app')!;
@@ -34,6 +35,7 @@ function openDoc(doc: DocMeta) {
 
 showLibrary();
 
-if ('serviceWorker' in navigator && import.meta.env.PROD) {
+// The Android app ships its files inside the APK, so only the web version needs a service worker.
+if ('serviceWorker' in navigator && import.meta.env.PROD && !Capacitor.isNativePlatform()) {
   window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
 }

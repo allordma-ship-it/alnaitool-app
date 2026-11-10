@@ -3,6 +3,7 @@ import type { DocMeta, PageData, Stroke } from './types';
 import { getFile } from './db';
 import { drawTemplate, HIGHLIGHT_ALPHA, widthAt, inkColorForPaper } from './ink';
 import { settings } from './settings';
+import { Capacitor } from '@capacitor/core';
 
 type Map2 = (x: number, y: number) => { x: number; y: number };
 
@@ -112,7 +113,26 @@ export async function exportDocToPdf(meta: DocMeta, pages: PageData[]): Promise<
   return out.save();
 }
 
+function toBase64(bytes: Uint8Array): string {
+  let bin = '';
+  for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+  return btoa(bin);
+}
+
+/** Inside the Android app: write to the cache dir and open the system share sheet (save to Files, Drive, mail…). */
+async function shareNative(bytes: Uint8Array, filename: string) {
+  const { Filesystem, Directory } = await import('@capacitor/filesystem');
+  const { Share } = await import('@capacitor/share');
+  const { uri } = await Filesystem.writeFile({ path: filename, data: toBase64(bytes), directory: Directory.Cache });
+  try {
+    await Share.share({ title: filename, files: [uri], dialogTitle: filename });
+  } catch (e) {
+    if (!/cancel/i.test(String(e))) throw e;
+  }
+}
+
 export async function shareOrDownload(bytes: Uint8Array, filename: string) {
+  if (Capacitor.isNativePlatform()) return shareNative(bytes, filename);
   const blob = new Blob([bytes as BlobPart], { type: 'application/pdf' });
   const file = new File([blob], filename, { type: 'application/pdf' });
   const nav = navigator as Navigator & { canShare?: (d: ShareData) => boolean };

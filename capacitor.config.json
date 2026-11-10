@@ -1,0 +1,10 @@
+{
+  "appId": "app.alnai.notes",
+  "appName": "Alnai Notes",
+  "webDir": "dist",
+  "android": {
+    "allowMixedContent": false,
+    "captureInput": true,
+    "webContentsDebuggingEnabled": false
+  }
+}
