@@ -38,3 +38,33 @@ describe('geometry', () => {
     expect(s.bbox[1]).toBe(line().bbox[1] + 7);
   });
 });
+
+import { straightenStroke } from '../src/geometry';
+
+describe('straightenStroke', () => {
+  const wobbly = (n: number, f: (i: number) => [number, number]) =>
+    Array.from({ length: n }, (_, i) => [...f(i), 0.5]).flat();
+
+  it('flattens a slightly wobbly, slightly tilted highlight to a horizontal line', () => {
+    const out = straightenStroke(wobbly(40, (i) => [100 + i * 4, 200 + i * 0.1 + Math.sin(i) * 1.5]), 'highlighter')!;
+    const ys = out.filter((_, i) => i % 3 === 1);
+    expect(Math.max(...ys) - Math.min(...ys)).toBeLessThan(1e-9);
+    expect(out[0]).toBeCloseTo(100);
+    expect(out.at(-3)).toBeCloseTo(256);
+  });
+
+  it('straightens a pen underline but leaves handwriting alone', () => {
+    expect(straightenStroke(wobbly(30, (i) => [50 + i * 3, 300 + Math.sin(i / 2)]), 'pen')).not.toBeNull();
+    // a wave (like a written word) is not a line
+    expect(straightenStroke(wobbly(30, (i) => [50 + i * 3, 300 + Math.sin(i / 2) * 9]), 'pen')).toBeNull();
+    // a vertical pen stroke (e.g. alif, l) is never touched
+    expect(straightenStroke(wobbly(30, (i) => [50, 300 + i * 2]), 'pen')).toBeNull();
+    // short dashes stay as drawn
+    expect(straightenStroke(wobbly(5, (i) => [50 + i * 3, 300]), 'pen')).toBeNull();
+  });
+
+  it('keeps a diagonal highlight diagonal but straight', () => {
+    const out = straightenStroke(wobbly(30, (i) => [i * 3, i * 3 + Math.sin(i)]), 'highlighter')!;
+    expect(out.at(-2)! - out[1]).toBeGreaterThan(60);
+  });
+});

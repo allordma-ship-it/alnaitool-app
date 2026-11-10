@@ -81,6 +81,8 @@ export function openSettings(onChange: () => void) {
     select('secondButton', settings.secondButton, actions, (v) => { settings.secondButton = v; changed(); }),
     toggle('pressure', settings.pressure, (v) => { settings.pressure = v; changed(); }),
     toggle('twoFingerUndo', settings.twoFingerUndo, (v) => { settings.twoFingerUndo = v; changed(); }),
+    toggle('straighten', settings.straighten, (v) => { settings.straighten = v; changed(); }),
+    toggle('holdBubble', settings.holdBubble, (v) => { settings.holdBubble = v; changed(); }),
     penTester(),
     h('p', { class: 'hint' }, t('storageWarn')),
     h('div', { class: 'actions' }, h('button', { value: 'ok', class: 'primary' }, 'OK')),

@@ -120,6 +120,14 @@ const dict = {
   original: { ar: 'ملف PDF الأصلي (بدون تعليقات)', de: 'Original-PDF (ohne Notizen)', en: 'Original PDF (no annotations)' },
   noText: { ar: 'لا يوجد نص مكتوب في هذا المستند', de: 'Kein getippter Text im Dokument', en: 'No typed text in this document' },
   preparing: { ar: 'جارٍ التجهيز…', de: 'Wird vorbereitet…', en: 'Preparing…' },
+  straighten: { ar: 'تقويم التظليل والخط تحت الكلمات تلقائياً', de: 'Markierungen und Unterstreichungen automatisch begradigen', en: 'Straighten highlights and underlines automatically' },
+  holdBubble: { ar: 'تثبيت القلم ثانيتين يفتح فقاعة ملاحظة', de: 'Stift 2 Sekunden halten öffnet eine Notizblase', en: 'Holding the pen for 2 seconds opens a note bubble' },
+  bubbleHint: {
+    ar: 'اكتب بالقلم داخل الفقاعة · للكتابة بلوحة المفاتيح أو لحذفها: أداة النص T ثم انقر عليها',
+    de: 'Mit dem Stift in die Blase schreiben · Tippen oder Löschen: Textwerkzeug T, dann antippen',
+    en: 'Write inside the bubble with the pen · to type or delete: text tool T, then tap it',
+  },
+  deleteText: { ar: 'حذف هذا النص / الفقاعة', de: 'Diesen Text / diese Blase löschen', en: 'Delete this text / bubble' },
   fitWidth: { ar: 'ملاءمة العرض', de: 'Breite anpassen', en: 'Fit width' },
 } as const;
 

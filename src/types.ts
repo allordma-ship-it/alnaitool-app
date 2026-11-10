@@ -23,6 +23,8 @@ export interface TextBox {
   size: number;
   color: string;
   bold?: boolean;
+  /** note bubble: tail points at (ax, ay); h = minimum inner height so there is room to handwrite */
+  bubble?: { ax: number; ay: number; h: number };
 }
 
 export type PageBackground =

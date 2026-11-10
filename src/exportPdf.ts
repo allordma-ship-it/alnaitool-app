@@ -3,7 +3,7 @@ import type { DocMeta, PageData, Stroke, TextBox } from './types';
 import { getFile } from './db';
 import { drawTemplate, HIGHLIGHT_ALPHA, widthAt, inkColorForPaper } from './ink';
 import { settings } from './settings';
-import { drawTextBox, textHeight } from './text';
+import { drawTextBox, textHeight, drawBubble, bubbleRect } from './text';
 import { canvasToBytes } from './render';
 
 type Map2 = (x: number, y: number) => { x: number; y: number };
@@ -89,7 +89,7 @@ function templateAdapter(page: PDFPage, h: number) {
  * Typed text is embedded as a crisp image: the browser shapes Arabic and mixed-direction text correctly,
  * which a PDF library without a shaping engine cannot.
  */
-async function drawTexts(out: PDFDocument, page: PDFPage, texts: TextBox[], map: Map2, colorFor: (c: string) => string) {
+async function drawTexts(out: PDFDocument, page: PDFPage, texts: TextBox[], map: Map2, bubbleColor: (c: string) => string, colorFor: (c: string) => string) {
   const S = 3;
   for (const tb of texts) {
     const hgt = textHeight(tb);
@@ -100,11 +100,31 @@ async function drawTexts(out: PDFDocument, page: PDFPage, texts: TextBox[], map:
     c.height = Math.ceil((hgt + pad * 2) * S);
     const ctx = c.getContext('2d')!;
     ctx.setTransform(S, 0, 0, S, (pad - tb.x) * S, (pad - tb.y) * S);
-    drawTextBox(ctx, tb, colorFor(tb.color));
+    drawTextBox(ctx, tb, (tb.bubble ? bubbleColor : colorFor)(tb.color));
     const img = await out.embedPng(await canvasToBytes(c));
     // corners in our page space → PDF space (also correct on rotated PDF pages for 0°)
     const bl = map(tb.x - pad, tb.y + hgt + pad);
     page.drawImage(img, { x: bl.x, y: bl.y, width: tb.w + pad * 2, height: hgt + pad * 2 });
+  }
+}
+
+/** Note bubbles go under the ink (so handwriting inside them stays visible), also as images. */
+async function drawBubbles(out: PDFDocument, page: PDFPage, texts: TextBox[], map: Map2) {
+  const S = 3;
+  for (const tb of texts) {
+    if (!tb.bubble) continue;
+    const [bx, by, bw, bh] = bubbleRect(tb);
+    const x0 = Math.min(bx, tb.bubble.ax) - 4, y0 = Math.min(by, tb.bubble.ay) - 4;
+    const x1 = Math.max(bx + bw, tb.bubble.ax) + 4, y1 = Math.max(by + bh, tb.bubble.ay) + 4;
+    const c = document.createElement('canvas');
+    c.width = Math.ceil((x1 - x0) * S);
+    c.height = Math.ceil((y1 - y0) * S);
+    const ctx = c.getContext('2d')!;
+    ctx.setTransform(S, 0, 0, S, -x0 * S, -y0 * S);
+    drawBubble(ctx, tb);
+    const img = await out.embedPng(await canvasToBytes(c));
+    const bl = map(x0, y1);
+    page.drawImage(img, { x: bl.x, y: bl.y, width: x1 - x0, height: y1 - y0 });
   }
 }
 
@@ -138,8 +158,9 @@ export async function exportDocToPdf(meta: DocMeta, pages: PageData[]): Promise<
       map = (x, y) => ({ x, y: pd.h - y });
       colorFor = (c) => inkColorForPaper(pd.bg, c);
     }
+    if (pd.texts?.length) await drawBubbles(out, page, pd.texts, map);
     drawInk(page, pd.strokes, map, colorFor);
-    if (pd.texts?.length) await drawTexts(out, page, pd.texts, map, colorFor);
+    if (pd.texts?.length) await drawTexts(out, page, pd.texts, map, (c) => c, colorFor);
   }
   out.setTitle(meta.title);
   out.setProducer('Alnai Notes');

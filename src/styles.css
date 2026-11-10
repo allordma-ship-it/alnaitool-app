@@ -127,6 +127,8 @@ button { cursor: pointer; }
   background: rgb(33 86 209 / .06); outline: 1.5px dashed var(--accent); outline-offset: 3px; border-radius: 1px;
   touch-action: auto; user-select: text; -webkit-user-select: text; white-space: pre-wrap; overflow-wrap: break-word;
 }
+.text-edit.bubble-edit { background: #fff6bf; outline: 1px solid #d9a400; outline-offset: 7px; border-radius: 2px; }
+.icon-btn.danger { color: var(--danger); }
 .menu-item { display: flex; align-items: center; gap: 12px; text-align: start; }
 .hw-result { width: 100%; height: auto; min-height: 90px; padding: 10px; font-size: 16px; line-height: 1.5; resize: vertical; }
 .hw-dialog { width: min(520px, calc(100vw - 32px)); }

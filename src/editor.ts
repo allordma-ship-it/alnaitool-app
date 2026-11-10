@@ -3,10 +3,11 @@ import { A4, uid } from './types';
 import { getPages, putDoc, putPages, deletePages, deleteFile } from './db';
 import { drawStrokes, drawTemplate, drawPenSegments, drawHighlighterPath, inkColorForPaper, drawStroke } from './ink';
 import { drawPageContent, displayStroke, imageBitmapFor, clearImageCache, renderPageToCanvas } from './render';
-import { drawTextBox, textBoxHit, fontOf, LINE_HEIGHT, isRtl } from './text';
+import { drawTextBox, textBoxHit, fontOf, LINE_HEIGHT, isRtl, drawBubble, boxHeight, BUBBLE_PAD } from './text';
 import { openShareDialog } from './share';
 import { convertHandwriting } from './handwriting';
-import { makeStroke, strokeHit, eraseFromStroke, lassoSelects, translateStroke, unionBBox } from './geometry';
+import { makeStroke, strokeHit, eraseFromStroke, lassoSelects, translateStroke, unionBBox, straightenStroke } from './geometry';
+import { findFreeSpot } from './freeSpace';
 import { settings, saveSettings, type ButtonAction } from './settings';
 import { pdfForDoc, renderPdfPage, closePdf } from './pdf';
 import { openSettings } from './settingsDialog';
@@ -71,6 +72,7 @@ export class Editor {
   private fitMode: 'width' | 'page' | null = 'width';
   private editing: { page: number; tb: TextBox; orig: TextBox | null; el: HTMLTextAreaElement } | null = null;
   private readBtn!: HTMLButtonElement;
+  private hold: { id: number; cx: number; cy: number; timer: number } | null = null;
   private mode: Mode = { kind: 'idle' };
   private touches = new Map<number, { x: number; y: number; sx: number; sy: number }>();
   private ignoredTouches = new Set<number>();
@@ -274,7 +276,14 @@ export class Editor {
         b.addEventListener('click', () => { settings.textSize = sz; saveSettings(); this.restyleEditing(); this.renderOptions(); });
         sizes.append(b);
       }
-      bar.append(swatches, sizes, h('span', { class: 'hint' }, t('textHint')));
+      bar.append(swatches, sizes);
+      if (this.editing) {
+        const del = h('button', { class: 'icon-btn danger', title: t('deleteText'), 'aria-label': t('deleteText') });
+        del.innerHTML = icons.trash;
+        del.addEventListener('click', () => this.deleteEditing());
+        bar.append(del);
+      }
+      bar.append(h('span', { class: 'hint' }, t('textHint')));
     } else {
       bar.append(h('span', { class: 'hint' }, t('lassoHint')));
     }
@@ -658,6 +667,7 @@ export class Editor {
         width: settings.widths[tool], pts: [x, y, p], settled: 1, lastP: p,
       };
       this.drawWet([]);
+      this.armHold(e, page, x, y);
     } else if (tool === 'eraser') {
       this.clearSelection();
       this.mode = { kind: 'erase', id: e.pointerId, page, before: this.pages[page].strokes, changed: false };
@@ -759,17 +769,65 @@ export class Editor {
     this.clearCanvas(ctx);
     this.wetTransform(ctx, page);
     const moved = { ...tb, x: tb.x + d[0], y: tb.y + d[1] };
-    drawTextBox(ctx, moved, inkColorForPaper(this.pages[page].bg, tb.color));
+    drawBubble(ctx, moved);
+    drawTextBox(ctx, moved, tb.bubble ? tb.color : inkColorForPaper(this.pages[page].bg, tb.color));
     ctx.setLineDash([5 / this.cam.s, 4 / this.cam.s]);
     ctx.lineWidth = 1.2 / this.cam.s;
     ctx.strokeStyle = '#2156d1';
-    ctx.strokeRect(moved.x - 3, moved.y - 2, moved.w + 6, Math.max(tb.size * LINE_HEIGHT, 0) + 4);
+    if (!tb.bubble) ctx.strokeRect(moved.x - 3, moved.y - 2, moved.w + 6, boxHeight(tb) + 4);
     ctx.setLineDash([]);
+  }
+
+  // ---------------------------------------------------------------- hold → note bubble
+  private armHold(e: PointerEvent, page: number, x: number, y: number) {
+    this.clearHold();
+    if (!settings.holdBubble) return;
+    this.hold = {
+      id: e.pointerId, cx: e.clientX, cy: e.clientY,
+      timer: window.setTimeout(() => this.fireHold(page, x, y), 2000),
+    };
+  }
+
+  private clearHold() {
+    if (this.hold) clearTimeout(this.hold.timer);
+    this.hold = null;
+  }
+
+  /** The pen rested on one spot for two seconds: drop the dot it drew and open a note bubble there. */
+  private fireHold(page: number, x: number, y: number) {
+    this.hold = null;
+    if (this.mode.kind !== 'ink') return;
+    this.cancelMode();
+    navigator.vibrate?.(20);
+    const p = this.pages[page];
+    const l = this.layout[page];
+    const { s, tx, ty } = this.cam;
+    const visible: [number, number, number, number] = [-tx / s - l.x, -ty / s - l.y, (this.vw - tx) / s - l.x, (this.vh - 70 - ty) / s - l.y];
+    // try a wide bubble and a narrow one that fits page margins; keep whichever lands closer and freer
+    const bg = this.views.get(page)?.bg;
+    const fits = ([[150, 62], [104, 96]] as const).map(([w, hh]) => ({
+      w, hh, spot: findFreeSpot(p, bg, x, y, w + BUBBLE_PAD * 2, hh + BUBBLE_PAD * 2, visible),
+    }));
+    const { w: W, hh: H, spot } = fits.reduce((a, b) => (b.spot.score < a.spot.score - 25 ? b : a));
+    const tb: TextBox = {
+      id: uid(), x: spot.x + BUBBLE_PAD, y: spot.y + BUBBLE_PAD, w: W, text: '', size: 12, color: '#1a1a2e',
+      bubble: { ax: x, ay: y, h: H },
+    };
+    this.commitTexts(page, [...(p.texts ?? []), tb]);
+    // the only free spot may be off screen: bring the bubble into view
+    const top = (l.y + spot.y) * s + ty, bottom = (l.y + spot.y + H + BUBBLE_PAD * 2) * s + ty;
+    if (bottom > this.vh - 70) this.cam.ty -= bottom - (this.vh - 70);
+    else if (top < 8) this.cam.ty += 8 - top;
+    this.clampCamera();
+    this.applyCamera();
+    toast(t('bubbleHint'));
   }
 
   private extendInk(e: PointerEvent) {
     const m = this.mode;
     if (m.kind !== 'ink') return;
+    // a resting pen still jitters by a few pixels; real movement cancels the hold
+    if (this.hold && Math.hypot(e.clientX - this.hold.cx, e.clientY - this.hold.cy) > 8) this.clearHold();
     const last = this.lastProcessedTs.get(e.pointerId) ?? 0;
     const events = e.getCoalescedEvents?.() ?? [];
     const list = events.length ? events : [e];
@@ -920,6 +978,7 @@ export class Editor {
   }
 
   private onUp(e: PointerEvent, cancelled: boolean) {
+    if (this.hold?.id === e.pointerId) this.clearHold();
     if (this.ignoredTouches.delete(e.pointerId)) return;
     if (e.pointerType === 'pen') this.lastPenContact = performance.now();
 
@@ -1018,8 +1077,13 @@ export class Editor {
     ta.addEventListener('keydown', (e) => { if (e.key === 'Escape') ta.blur(); });
     v.el.append(ta);
     this.editing = { page, tb, orig: isNew ? null : tb, el: ta };
+    if (tb.bubble) {
+      ta.classList.add('bubble-edit');
+      ta.style.minHeight = `${tb.bubble.h}px`;
+    }
     this.restyleEditing(false);
     this.renderInk(page);
+    if (this.tool === 'text') this.renderOptions();
     ta.focus({ preventScroll: true });
     ta.setSelectionRange(ta.value.length, ta.value.length);
     this.growEditing();
@@ -1042,7 +1106,7 @@ export class Editor {
     Object.assign(ed.el.style, {
       left: `${tb.x}px`, top: `${tb.y}px`, width: `${tb.w}px`,
       font: fontOf(tb.size, tb.bold), lineHeight: String(LINE_HEIGHT),
-      color: inkColorForPaper(this.pages[ed.page].bg, tb.color),
+      color: tb.bubble ? tb.color : inkColorForPaper(this.pages[ed.page].bg, tb.color),
     });
     this.growEditing();
   }
@@ -1057,11 +1121,22 @@ export class Editor {
     const before = p.texts ?? [];
     const next: TextBox = { ...ed.tb, text };
     let after = before;
-    if (!text) after = before.filter((tb) => tb.id !== ed.tb.id);
-    else if (!ed.orig) after = [...before, next];
+    // an empty bubble stays (it may hold handwriting); an empty plain text box is removed
+    if (!text && !ed.tb.bubble) {
+      if (ed.orig) after = before.filter((tb) => tb.id !== ed.tb.id);
+    } else if (!ed.orig) after = [...before, next];
     else if (JSON.stringify(ed.orig) !== JSON.stringify(next)) after = before.map((tb) => (tb.id === next.id ? next : tb));
-    if (after !== before && (after.length !== before.length || text)) this.commitTexts(ed.page, after);
+    if (after !== before) this.commitTexts(ed.page, after);
     else this.renderInk(ed.page);
+    if (this.tool === 'text') this.renderOptions();
+  }
+
+  private deleteEditing() {
+    const ed = this.editing;
+    if (!ed) return;
+    ed.el.value = '';
+    ed.tb = { ...ed.tb, bubble: undefined };
+    this.finishEditing();
   }
 
   private commitTexts(page: number, after: TextBox[]) {
@@ -1074,6 +1149,7 @@ export class Editor {
   }
 
   private cancelMode() {
+    this.clearHold();
     const m = this.mode;
     this.mode = { kind: 'idle' };
     this.clearCanvas(this.wctx);
@@ -1087,7 +1163,9 @@ export class Editor {
 
   private commitInk(m: Extract<Mode, { kind: 'ink' }>) {
     const page = this.pages[m.page];
-    const stroke = makeStroke(m.tool, settings.colors[m.tool], m.width, m.pts);
+    // highlights and underlines snap to a clean straight line
+    const straight = settings.straighten ? straightenStroke(m.pts, m.tool) : null;
+    const stroke = makeStroke(m.tool, settings.colors[m.tool], m.width, straight ?? m.pts);
     const before = page.strokes;
     const after = [...before, stroke];
     page.strokes = after;

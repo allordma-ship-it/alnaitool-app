@@ -20,6 +20,10 @@ export interface Settings {
   textSize: number;
   /** language used for handwriting recognition */
   hwLang: Lang | null;
+  /** straighten highlights and underlines automatically */
+  straighten: boolean;
+  /** holding the pen still opens a note bubble */
+  holdBubble: boolean;
 }
 
 const DEFAULTS: Settings = {
@@ -36,6 +40,8 @@ const DEFAULTS: Settings = {
   textColor: '#1a1a2e',
   textSize: 16,
   hwLang: null,
+  straighten: true,
+  holdBubble: true,
   palette: ['#1a1a2e', '#2156d1', '#d62839', '#1f8a4c', '#8e44ad', '#f39c12', '#ffe14d', '#7fe0ff'],
 };
 

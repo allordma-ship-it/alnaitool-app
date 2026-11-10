@@ -1,7 +1,7 @@
 import type { DocMeta, PageData, Stroke } from './types';
 import { getFile } from './db';
 import { drawStrokes, drawTemplate, inkColorForPaper } from './ink';
-import { drawTextBox } from './text';
+import { drawTextBox, drawBubble } from './text';
 import { pdfForDoc, renderPdfPage } from './pdf';
 import { settings } from './settings';
 
@@ -33,10 +33,12 @@ export function displayStroke(p: PageData, s: Stroke): Stroke {
 /** Ink + typed text of a page; ctx already carries the page→pixel transform. */
 export function drawPageContent(ctx: CanvasRenderingContext2D, p: PageData, exclude?: Set<string>) {
   const strokes = (exclude ? p.strokes.filter((s) => !exclude.has(s.id)) : p.strokes).map((s) => displayStroke(p, s));
+  // note bubbles sit under the ink, so you can handwrite inside them
+  for (const tb of p.texts ?? []) if (tb.bubble && !exclude?.has(tb.id)) drawBubble(ctx, tb);
   drawStrokes(ctx, strokes, settings.pressure);
   for (const tb of p.texts ?? []) {
     if (exclude?.has(tb.id)) continue;
-    drawTextBox(ctx, tb, inkColorForPaper(p.bg, tb.color));
+    drawTextBox(ctx, tb, tb.bubble ? tb.color : inkColorForPaper(p.bg, tb.color));
   }
 }
 

@@ -79,6 +79,52 @@ export function drawTextBox(ctx: CanvasRenderingContext2D, tb: TextBox, color = 
   ctx.restore();
 }
 
+export const BUBBLE_PAD = 7;
+
+/** Inner height of a box: bubbles keep a minimum so there is room to handwrite inside. */
+export function boxHeight(tb: TextBox): number {
+  const th = tb.text ? textHeight(tb) : tb.size * LINE_HEIGHT;
+  return tb.bubble ? Math.max(tb.bubble.h, th) : th;
+}
+
+/** Outer rectangle of a note bubble: [x, y, w, h]. */
+export function bubbleRect(tb: TextBox): [number, number, number, number] {
+  return [tb.x - BUBBLE_PAD, tb.y - BUBBLE_PAD, tb.w + BUBBLE_PAD * 2, boxHeight(tb) + BUBBLE_PAD * 2];
+}
+
+/** Speech-bubble background with a tail pointing at the anchored word. */
+export function drawBubble(ctx: CanvasRenderingContext2D, tb: TextBox) {
+  if (!tb.bubble) return;
+  const [x, y, w, h] = bubbleRect(tb);
+  const { ax, ay } = tb.bubble;
+  const qx = Math.max(x, Math.min(x + w, ax)), qy = Math.max(y, Math.min(y + h, ay));
+  const fill = '#fff6bf', edge = '#d9a400';
+  ctx.save();
+  ctx.lineJoin = 'round';
+  ctx.lineWidth = 1;
+  ctx.fillStyle = fill;
+  ctx.strokeStyle = edge;
+  // thin leader from the word to the bubble: stays readable even when it crosses text
+  if (qx !== ax || qy !== ay) {
+    ctx.beginPath();
+    ctx.moveTo(ax, ay);
+    ctx.lineTo(qx, qy);
+    ctx.lineWidth = 1.3;
+    ctx.stroke();
+    ctx.lineWidth = 1;
+  }
+  ctx.beginPath();
+  ctx.roundRect(x, y, w, h, 7);
+  ctx.fill();
+  ctx.stroke();
+  ctx.fillStyle = edge;
+  ctx.beginPath();
+  ctx.arc(ax, ay, 1.8, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+}
+
 export function textBoxHit(tb: TextBox, x: number, y: number, pad = 4): boolean {
-  return x >= tb.x - pad && x <= tb.x + tb.w + pad && y >= tb.y - pad && y <= tb.y + Math.max(textHeight(tb), tb.size * LINE_HEIGHT) + pad;
+  if (tb.bubble) pad += BUBBLE_PAD;
+  return x >= tb.x - pad && x <= tb.x + tb.w + pad && y >= tb.y - pad && y <= tb.y + boxHeight(tb) + pad;
 }

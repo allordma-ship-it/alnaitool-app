@@ -13,6 +13,8 @@ optimiert für das **Lenovo Idea Tab Pro mit Lenovo Tab Pen Plus**.
 - **Teilen / Umwandeln**: PDF mit Notizen, PNG (aktuelle Seite oder alle), Textdatei, Original-PDF – über das Android-Teilen-Menü
 - Werkzeuge: Stift (druckempfindlich), Textmarker, Radierer (ganze Striche oder präzise), Lasso, **Text** (Tastatur, Arabisch von rechts nach links)
 - **Handschrift → Text** (nur Android-App): Schrift mit dem Lasso einkreisen → „In Text umwandeln“. On-Device-Erkennung (ML Kit) für Arabisch, Deutsch, Englisch; das Sprachmodell wird beim ersten Mal geladen
+- **Automatisch begradigen**: Markierungen und Unterstreichungen werden zu sauberen geraden Linien (Handschrift bleibt unverändert)
+- **Notizblase**: Stift 2 Sekunden auf ein Wort halten → eine Blase erscheint an der nächsten freien Stelle, mit Linie zum Wort; mit dem Stift hineinschreiben oder mit dem Textwerkzeug tippen
 - Rückgängig/Wiederholen, Seiten hinzufügen/löschen, Arabisch / Deutsch / Englisch
 - Läuft offline, Daten bleiben auf dem Gerät (IndexedDB)
 

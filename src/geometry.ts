@@ -112,3 +112,37 @@ export function unionBBox(strokes: Stroke[]): [number, number, number, number] |
   }
   return [a, b, c, d];
 }
+
+/**
+ * If a stroke is "meant" to be a straight line, returns straightened points, else null.
+ * Highlighter: any direction, snapped to horizontal/vertical when close.
+ * Pen: only near-horizontal lines (underlines), so handwriting itself is never altered.
+ */
+export function straightenStroke(pts: number[], tool: Stroke['tool']): number[] | null {
+  const n = pts.length / 3;
+  if (n < 3) return null;
+  let ax = pts[0], ay = pts[1], bx = pts[(n - 1) * 3], by = pts[(n - 1) * 3 + 1];
+  const len = Math.hypot(bx - ax, by - ay);
+  if (len < (tool === 'pen' ? 28 : 14)) return null;
+  // reject scribbles and curves: path barely longer than the chord, and no point far from it
+  let path = 0, maxDev = 0, sumY = 0, sumX = 0, sumP = 0;
+  for (let i = 0; i < n; i++) {
+    const x = pts[i * 3], y = pts[i * 3 + 1];
+    if (i) path += Math.hypot(x - pts[(i - 1) * 3], y - pts[(i - 1) * 3 + 1]);
+    maxDev = Math.max(maxDev, Math.abs((bx - ax) * (ay - y) - (ax - x) * (by - ay)) / len);
+    sumX += x; sumY += y; sumP += pts[i * 3 + 2];
+  }
+  const tolerance = tool === 'pen' ? Math.max(2.5, len * 0.05) : Math.max(5, len * 0.12);
+  if (path > len * (tool === 'pen' ? 1.12 : 1.3) || maxDev > tolerance) return null;
+  const angle = Math.abs(Math.atan2(by - ay, bx - ax));
+  const deg = (Math.min(angle, Math.PI - angle) * 180) / Math.PI; // 0 = horizontal, 90 = vertical
+  if (deg < 12) ay = by = sumY / n;
+  else if (tool === 'pen') return null;
+  else if (deg > 80) ax = bx = sumX / n;
+  // resample so erasing and selecting still work along the whole line
+  const steps = Math.max(2, Math.ceil(len / 5));
+  const p = tool === 'pen' ? sumP / n : 0.5;
+  const out: number[] = [];
+  for (let i = 0; i <= steps; i++) out.push(ax + ((bx - ax) * i) / steps, ay + ((by - ay) * i) / steps, p);
+  return out;
+}
