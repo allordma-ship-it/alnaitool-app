@@ -1,6 +1,6 @@
 {
   "appId": "app.alnai.notes",
-  "appName": "QalamFlow",
+  "appName": "Alnai Notes",
   "webDir": "dist",
   "android": {
     "allowMixedContent": false,

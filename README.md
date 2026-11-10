@@ -1,4 +1,4 @@
-# QalamFlow Studio
+# Alnai Notes
 
 Handschriftliche Notizen und PDF-Annotation als offline-fähige Web-App (PWA) –
 optimiert für das **Lenovo Idea Tab Pro mit Lenovo Tab Pen Plus**.
@@ -18,7 +18,7 @@ optimiert für das **Lenovo Idea Tab Pro mit Lenovo Tab Pen Plus**.
 - Rückgängig/Wiederholen, Seiten hinzufügen/löschen, Arabisch / Deutsch / Englisch
 - Läuft offline, Daten bleiben auf dem Gerät (IndexedDB)
 
-## Studio-Funktionen (QalamFlow)
+## Studio-Funktionen
 
 - **Design**: dunkles Navy-Design mit Cyan-Akzenten (helles Design in den Einstellungen), schwebende Werkzeugleiste, Live-Anzeige von Druck/Neigung des Pen Plus
 - **QalamNote** (Seitenleiste): Ausschneide-Werkzeug – einen Satz unterstreichen schneidet den ganzen Absatz aus (Bild + Text aus dem PDF), oder einen Bereich umrahmen; eigene Notiz/Lernfrage pro Ausschnitt; Sprung zurück zur Quelle (auch dokumentübergreifend)

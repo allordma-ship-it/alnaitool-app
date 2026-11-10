@@ -163,6 +163,6 @@ export async function exportDocToPdf(meta: DocMeta, pages: PageData[]): Promise<
     if (pd.texts?.length) await drawTexts(out, page, pd.texts, map, (c) => c, colorFor);
   }
   out.setTitle(meta.title);
-  out.setProducer('QalamFlow Studio');
+  out.setProducer('Alnai Notes');
   return out.save();
 }

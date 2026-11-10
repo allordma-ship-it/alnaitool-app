@@ -1,6 +1,6 @@
 {
-  "name": "QalamFlow Studio",
-  "short_name": "QalamFlow",
+  "name": "Alnai Notes",
+  "short_name": "Alnai Notes",
   "description": "Handwritten notes and PDF annotation for tablets with an active pen.",
   "start_url": "./",
   "scope": "./",

@@ -1,7 +1,7 @@
 import { settings } from './settings';
 
 const dict = {
-  appName: { ar: 'QalamFlow Studio', de: 'QalamFlow Studio', en: 'QalamFlow Studio' },
+  appName: { ar: 'Alnai Notes', de: 'Alnai Notes', en: 'Alnai Notes' },
   tagline: {
     ar: 'دفتر وقارئ PDF مُعاير لقلم Lenovo Tab Pen Plus',
     de: 'Notizbuch & PDF-Reader, abgestimmt auf den Lenovo Tab Pen Plus',
