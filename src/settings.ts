@@ -16,6 +16,10 @@ export interface Settings {
   colors: Record<InkTool, string>;
   widths: Record<InkTool, number>;
   palette: string[];
+  textColor: string;
+  textSize: number;
+  /** language used for handwriting recognition */
+  hwLang: Lang | null;
 }
 
 const DEFAULTS: Settings = {
@@ -29,6 +33,9 @@ const DEFAULTS: Settings = {
   eraserSize: 12,
   colors: { pen: '#1a1a2e', highlighter: '#ffe14d' },
   widths: { pen: 2, highlighter: 14 },
+  textColor: '#1a1a2e',
+  textSize: 16,
+  hwLang: null,
   palette: ['#1a1a2e', '#2156d1', '#d62839', '#1f8a4c', '#8e44ad', '#f39c12', '#ffe14d', '#7fe0ff'],
 };
 

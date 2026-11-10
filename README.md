@@ -7,11 +7,14 @@ optimiert für das **Lenovo Idea Tab Pro mit Lenovo Tab Pen Plus**.
 
 ## Funktionen
 
-- **Notizbücher** mit Vorlagen (leer, liniert, kariert, Punktraster, Cornell) und Papierfarben (weiß, creme, dunkel)
-- **PDF importieren**, mit Stift und Textmarker annotieren, **als PDF exportieren** (Vektor-Tinte, teilbar über das Android-Teilen-Menü)
-- Werkzeuge: Stift (druckempfindlich), Textmarker (liegt unter der Tinte), Radierer (ganze Striche oder präzise), Lasso (verschieben, duplizieren, umfärben, löschen)
+- **Notizbücher** mit Vorlagen (leer, liniert, kariert, Punktraster, Cornell) und Papierfarben; bei arabischer Oberfläche liegt der Rand rechts
+- **Import**: PDF, Bilder (mehrere Bilder → ein Dokument), Word (`.docx`, Text/Überschriften/Listen/Tabellen als Text), Text (`.txt`, `.md`)
+- **Lesemodus**: nichts zeichnet, Stift und Finger blättern; Anpassen an Breite oder ganze Seite (passt sich beim Drehen an)
+- **Teilen / Umwandeln**: PDF mit Notizen, PNG (aktuelle Seite oder alle), Textdatei, Original-PDF – über das Android-Teilen-Menü
+- Werkzeuge: Stift (druckempfindlich), Textmarker, Radierer (ganze Striche oder präzise), Lasso, **Text** (Tastatur, Arabisch von rechts nach links)
+- **Handschrift → Text** (nur Android-App): Schrift mit dem Lasso einkreisen → „In Text umwandeln“. On-Device-Erkennung (ML Kit) für Arabisch, Deutsch, Englisch; das Sprachmodell wird beim ersten Mal geladen
 - Rückgängig/Wiederholen, Seiten hinzufügen/löschen, Arabisch / Deutsch / Englisch
-- Läuft komplett offline, Daten bleiben auf dem Gerät (IndexedDB)
+- Läuft offline, Daten bleiben auf dem Gerät (IndexedDB)
 
 ## Stift-Unterstützung (Pen Plus)
 

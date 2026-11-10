@@ -1,6 +1,8 @@
-import { listDocs, putDoc, putPages, putFile, deleteDoc } from './db';
+import { listDocs, putDoc, putPages, deleteDoc, getPages } from './db';
 import { A4, uid, type DocMeta, type PageData, type Template, type PaperColor } from './types';
-import { loadPdf, pdfPageSizes, destroyPdf, renderPdfPage } from './pdf';
+import { importFiles } from './importFiles';
+import { convertDoc, shareFiles } from './share';
+import { settings } from './settings';
 import { drawTemplate } from './ink';
 import { openSettings } from './settingsDialog';
 import { icons } from './icons';
@@ -22,9 +24,12 @@ export class Library {
       b.addEventListener('click', fn);
       return b;
     };
-    const fileInput = h('input', { type: 'file', accept: 'application/pdf,.pdf', multiple: true, hidden: true });
+    const fileInput = h('input', {
+      type: 'file', multiple: true, hidden: true,
+      accept: 'application/pdf,image/*,text/plain,text/markdown,.pdf,.docx,.txt,.md,application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    });
     fileInput.addEventListener('change', async () => {
-      for (const f of fileInput.files ?? []) await this.importPdf(f);
+      await this.import([...(fileInput.files ?? [])]);
       fileInput.value = '';
     });
     const search = h('input', { type: 'search', class: 'search', placeholder: t('search') });
@@ -38,7 +43,7 @@ export class Library {
         h('h1', {}, t('appName')),
         search,
         btn(icons.plus, t('newNotebook'), () => this.newNotebookDialog(), 'primary'),
-        btn(icons.file, t('importPdf'), () => fileInput.click()),
+        btn(icons.file, t('importFile'), () => fileInput.click()),
         settingsBtn,
         fileInput,
       ),
@@ -48,7 +53,7 @@ export class Library {
     this.root.addEventListener('dragover', (e) => e.preventDefault());
     this.root.addEventListener('drop', async (e) => {
       e.preventDefault();
-      for (const f of e.dataTransfer?.files ?? []) if (f.type === 'application/pdf') await this.importPdf(f);
+      await this.import([...(e.dataTransfer?.files ?? [])]);
     });
     await this.refresh();
   }
@@ -63,7 +68,7 @@ export class Library {
     for (const d of docs) {
       const thumb = h('div', { class: 'thumb' });
       if (d.thumb) thumb.append(h('img', { src: d.thumb, alt: '' }));
-      else thumb.innerHTML = d.kind === 'pdf' ? icons.file : icons.pen;
+      else thumb.innerHTML = d.kind === 'pdf' ? icons.file : d.kind === 'images' ? icons.image : icons.pen;
       const more = h('button', { class: 'icon-btn more', 'aria-label': '…' });
       more.innerHTML = icons.more;
       more.addEventListener('click', (e) => { e.stopPropagation(); this.docMenu(d); });
@@ -84,12 +89,21 @@ export class Library {
   private docMenu(d: DocMeta) {
     const form = h('form', { method: 'dialog', class: 'menu' },
       h('h2', {}, d.title),
+      h('button', { value: 'share' }, t('share')),
       h('button', { value: 'rename' }, t('rename')),
       h('button', { value: 'delete', class: 'danger' }, t('delete')),
       h('button', { value: 'cancel' }, t('cancel')),
     );
     modal(form).closed.then(async (v) => {
-      if (v === 'rename') {
+      if (v === 'share') {
+        toast(t('preparing'));
+        try {
+          await shareFiles(await convertDoc(d, await getPages(d.pageIds), 'pdf'), d.title);
+        } catch (err) {
+          console.error(err);
+          toast(String(err));
+        }
+      } else if (v === 'rename') {
         const name = prompt(t('title'), d.title)?.trim();
         if (name) { d.title = name; await putDoc(d); }
       } else if (v === 'delete' && confirm(t('confirmDelete'))) {
@@ -106,7 +120,7 @@ export class Library {
       const c = h('canvas', { width: 90, height: 127 });
       const ctx = c.getContext('2d')!;
       ctx.scale(90 / A4.w, 127 / A4.h);
-      drawTemplate(ctx, A4.w, A4.h, tp, pp);
+      drawTemplate(ctx, A4.w, A4.h, tp, pp, settings.lang === 'ar');
       return c;
     };
     const tplRow = h('div', { class: 'tpl-row' });
@@ -142,7 +156,7 @@ export class Library {
     );
     modal(form).closed.then(async (v) => {
       if (v !== 'create') return;
-      const page: PageData = { id: uid(), w: A4.w, h: A4.h, bg: { kind: 'template', template, paper }, strokes: [] };
+      const page: PageData = { id: uid(), w: A4.w, h: A4.h, bg: { kind: 'template', template, paper, rtl: settings.lang === 'ar' }, strokes: [] };
       const now = Date.now();
       const doc: DocMeta = {
         id: uid(), title: title.value.trim() || t('untitled'), kind: 'notebook',
@@ -154,34 +168,13 @@ export class Library {
     });
   }
 
-  async importPdf(file: File) {
+  async import(files: File[]) {
+    if (!files.length) return;
     toast(t('loading'));
-    try {
-      const buf = await file.arrayBuffer();
-      const pdf = await loadPdf(buf);
-      const sizes = await pdfPageSizes(pdf);
-      let thumb: string | undefined;
-      try {
-        const c = document.createElement('canvas');
-        await renderPdfPage(pdf, 1, c, 240 / sizes[0].w);
-        thumb = c.toDataURL('image/jpeg', 0.75);
-      } catch { /* thumbnail is optional */ }
-      destroyPdf(pdf);
-      const id = uid();
-      const pages: PageData[] = sizes.map((s, i) => ({ id: uid(), w: s.w, h: s.h, bg: { kind: 'pdf', pdfPage: i + 1 }, strokes: [] }));
-      const now = Date.now();
-      const doc: DocMeta = {
-        id, title: file.name.replace(/\.pdf$/i, ''), kind: 'pdf', createdAt: now, updatedAt: now,
-        pageIds: pages.map((p) => p.id), template: 'blank', paper: 'white', thumb,
-      };
-      await putFile(id, buf);
-      await putPages(pages);
-      await putDoc(doc);
-      await this.refresh();
-      return doc;
-    } catch (err) {
-      console.error(err);
-      toast(t('pdfError'));
-    }
+    const { docs, failed, unsupported } = await importFiles(files);
+    await this.refresh();
+    if (unsupported.length) toast(`${t('unsupported')}`);
+    else if (failed.length) toast(`${t('fileError')}: ${failed.join(', ')}`);
+    else if (docs.length === 1) this.openDoc(docs[0]);
   }
 }

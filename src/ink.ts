@@ -102,8 +102,11 @@ export function drawTemplate(
   h: number,
   template: Template,
   paper: PaperColor,
+  rtl = false,
 ) {
   const c = PAPER[paper];
+  // Arabic notebooks: margin on the right-hand side
+  const mx = (x: number) => (rtl ? w - x : x);
   ctx.fillStyle = c.bg;
   ctx.fillRect(0, 0, w, h);
   ctx.strokeStyle = c.line;
@@ -115,19 +118,19 @@ export function drawTemplate(
     const bottom = template === 'cornell' ? h - 130 : h - 36;
     ctx.beginPath();
     for (let y = top; y < bottom; y += gap) {
-      ctx.moveTo(template === 'cornell' ? 150 : 36, y);
-      ctx.lineTo(w - 36, y);
+      ctx.moveTo(mx(template === 'cornell' ? 150 : 36), y);
+      ctx.lineTo(mx(w - 36), y);
     }
     ctx.stroke();
     ctx.strokeStyle = c.strong;
     ctx.lineWidth = 1;
     ctx.beginPath();
     if (template === 'cornell') {
-      ctx.moveTo(140, 60); ctx.lineTo(140, h - 130);
+      ctx.moveTo(mx(140), 60); ctx.lineTo(mx(140), h - 130);
       ctx.moveTo(24, 60); ctx.lineTo(w - 24, 60);
       ctx.moveTo(24, h - 130); ctx.lineTo(w - 24, h - 130);
     } else {
-      ctx.moveTo(72, 24); ctx.lineTo(72, h - 24);
+      ctx.moveTo(mx(72), 24); ctx.lineTo(mx(72), h - 24);
     }
     ctx.stroke();
   } else if (template === 'grid') {

@@ -1,9 +1,10 @@
 import { PDFDocument, rgb, LineCapStyle, BlendMode, type PDFPage } from 'pdf-lib';
-import type { DocMeta, PageData, Stroke } from './types';
+import type { DocMeta, PageData, Stroke, TextBox } from './types';
 import { getFile } from './db';
 import { drawTemplate, HIGHLIGHT_ALPHA, widthAt, inkColorForPaper } from './ink';
 import { settings } from './settings';
-import { Capacitor } from '@capacitor/core';
+import { drawTextBox, textHeight } from './text';
+import { canvasToBytes } from './render';
 
 type Map2 = (x: number, y: number) => { x: number; y: number };
 
@@ -84,6 +85,29 @@ function templateAdapter(page: PDFPage, h: number) {
   return ad;
 }
 
+/**
+ * Typed text is embedded as a crisp image: the browser shapes Arabic and mixed-direction text correctly,
+ * which a PDF library without a shaping engine cannot.
+ */
+async function drawTexts(out: PDFDocument, page: PDFPage, texts: TextBox[], map: Map2, colorFor: (c: string) => string) {
+  const S = 3;
+  for (const tb of texts) {
+    const hgt = textHeight(tb);
+    if (!tb.text.trim() || hgt <= 0) continue;
+    const pad = 2;
+    const c = document.createElement('canvas');
+    c.width = Math.ceil((tb.w + pad * 2) * S);
+    c.height = Math.ceil((hgt + pad * 2) * S);
+    const ctx = c.getContext('2d')!;
+    ctx.setTransform(S, 0, 0, S, (pad - tb.x) * S, (pad - tb.y) * S);
+    drawTextBox(ctx, tb, colorFor(tb.color));
+    const img = await out.embedPng(await canvasToBytes(c));
+    // corners in our page space → PDF space (also correct on rotated PDF pages for 0°)
+    const bl = map(tb.x - pad, tb.y + hgt + pad);
+    page.drawImage(img, { x: bl.x, y: bl.y, width: tb.w + pad * 2, height: hgt + pad * 2 });
+  }
+}
+
 export async function exportDocToPdf(meta: DocMeta, pages: PageData[]): Promise<Uint8Array> {
   const out = await PDFDocument.create();
   let src: PDFDocument | null = null;
@@ -99,54 +123,25 @@ export async function exportDocToPdf(meta: DocMeta, pages: PageData[]): Promise<
       [page] = await out.copyPages(src, [pd.bg.pdfPage - 1]);
       out.addPage(page);
       map = pageMapper(page);
+    } else if (pd.bg.kind === 'image') {
+      page = out.addPage([pd.w, pd.h]);
+      const buf = await getFile(pd.bg.fileId);
+      if (buf) {
+        const img = pd.bg.mime === 'image/png' ? await out.embedPng(buf) : await out.embedJpg(buf);
+        page.drawImage(img, { x: 0, y: 0, width: pd.w, height: pd.h });
+      }
+      map = (x, y) => ({ x, y: pd.h - y });
     } else {
       page = out.addPage([pd.w, pd.h]);
-      const bg = pd.bg.kind === 'template' ? pd.bg : { template: 'blank' as const, paper: 'white' as const };
-      drawTemplate(templateAdapter(page, pd.h), pd.w, pd.h, bg.template, bg.paper);
+      const bg = pd.bg.kind === 'template' ? pd.bg : { template: 'blank' as const, paper: 'white' as const, rtl: false };
+      drawTemplate(templateAdapter(page, pd.h), pd.w, pd.h, bg.template, bg.paper, bg.rtl);
       map = (x, y) => ({ x, y: pd.h - y });
       colorFor = (c) => inkColorForPaper(pd.bg, c);
     }
     drawInk(page, pd.strokes, map, colorFor);
+    if (pd.texts?.length) await drawTexts(out, page, pd.texts, map, colorFor);
   }
   out.setTitle(meta.title);
   out.setProducer('Alnai Notes');
   return out.save();
-}
-
-function toBase64(bytes: Uint8Array): string {
-  let bin = '';
-  for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
-  return btoa(bin);
-}
-
-/** Inside the Android app: write to the cache dir and open the system share sheet (save to Files, Drive, mail…). */
-async function shareNative(bytes: Uint8Array, filename: string) {
-  const { Filesystem, Directory } = await import('@capacitor/filesystem');
-  const { Share } = await import('@capacitor/share');
-  const { uri } = await Filesystem.writeFile({ path: filename, data: toBase64(bytes), directory: Directory.Cache });
-  try {
-    await Share.share({ title: filename, files: [uri], dialogTitle: filename });
-  } catch (e) {
-    if (!/cancel/i.test(String(e))) throw e;
-  }
-}
-
-export async function shareOrDownload(bytes: Uint8Array, filename: string) {
-  if (Capacitor.isNativePlatform()) return shareNative(bytes, filename);
-  const blob = new Blob([bytes as BlobPart], { type: 'application/pdf' });
-  const file = new File([blob], filename, { type: 'application/pdf' });
-  const nav = navigator as Navigator & { canShare?: (d: ShareData) => boolean };
-  if (nav.canShare?.({ files: [file] })) {
-    try {
-      await nav.share({ files: [file], title: filename });
-      return;
-    } catch (e) {
-      if ((e as DOMException).name === 'AbortError') return;
-    }
-  }
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = filename;
-  a.click();
-  setTimeout(() => URL.revokeObjectURL(a.href), 10_000);
 }

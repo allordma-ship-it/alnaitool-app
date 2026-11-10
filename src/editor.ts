@@ -1,11 +1,14 @@
-import type { DocMeta, PageData, Stroke, Tool, InkTool } from './types';
+import type { DocMeta, PageData, Stroke, Tool, InkTool, TextBox } from './types';
 import { A4, uid } from './types';
-import { getPages, putDoc, putPages, deletePages } from './db';
+import { getPages, putDoc, putPages, deletePages, deleteFile } from './db';
 import { drawStrokes, drawTemplate, drawPenSegments, drawHighlighterPath, inkColorForPaper, drawStroke } from './ink';
+import { drawPageContent, displayStroke, imageBitmapFor, clearImageCache, renderPageToCanvas } from './render';
+import { drawTextBox, textBoxHit, fontOf, LINE_HEIGHT, isRtl } from './text';
+import { openShareDialog } from './share';
+import { convertHandwriting } from './handwriting';
 import { makeStroke, strokeHit, eraseFromStroke, lassoSelects, translateStroke, unionBBox } from './geometry';
 import { settings, saveSettings, type ButtonAction } from './settings';
 import { pdfForDoc, renderPdfPage, closePdf } from './pdf';
-import { exportDocToPdf, shareOrDownload } from './exportPdf';
 import { openSettings } from './settingsDialog';
 import { icons } from './icons';
 import { t } from './i18n';
@@ -24,7 +27,7 @@ interface PageView {
   scale: number;
   bgJob: { cancelled: boolean };
 }
-interface HistoryEntry { pageId: string; before: Stroke[]; after: Stroke[] }
+interface HistoryEntry { pageId: string; before: Stroke[]; after: Stroke[]; tBefore?: TextBox[]; tAfter?: TextBox[] }
 
 type Mode =
   | { kind: 'idle' }
@@ -32,6 +35,7 @@ type Mode =
   | { kind: 'erase'; id: number; page: number; before: Stroke[]; changed: boolean }
   | { kind: 'lasso'; id: number; page: number; poly: number[] }
   | { kind: 'move'; id: number; page: number; start: [number, number]; d: [number, number]; before: Stroke[]; moving: Stroke[] }
+  | { kind: 'text'; id: number; page: number; start: [number, number]; hit: TextBox | null; d: [number, number]; moved: boolean }
   | { kind: 'pan'; id: number; last: [number, number] };
 
 let penSeen = (() => {
@@ -63,6 +67,10 @@ export class Editor {
   private vh = 0;
 
   private tool: Tool = 'pen';
+  private reading = false;
+  private fitMode: 'width' | 'page' | null = 'width';
+  private editing: { page: number; tb: TextBox; orig: TextBox | null; el: HTMLTextAreaElement } | null = null;
+  private readBtn!: HTMLButtonElement;
   private mode: Mode = { kind: 'idle' };
   private touches = new Map<number, { x: number; y: number; sx: number; sy: number }>();
   private ignoredTouches = new Set<number>();
@@ -138,16 +146,21 @@ export class Editor {
     this.pageLabel.addEventListener('click', () => this.fitWidth());
 
     const title = h('div', { class: 'doc-title' }, this.meta.title);
+    this.readBtn = btn(icons.book, t('readingMode'), () => this.setReading(!this.reading), 'read-toggle');
+    this.readBtn.append(h('span', {}, t('readingMode')));
+    const backBtn = btn(icons.back, t('back'), () => this.close(), 'back-btn');
     this.toolbar = h('div', { class: 'toolbar' },
-      btn(icons.back, t('back'), () => this.close()),
+      backBtn,
       title,
-      h('div', { class: 'tool-group' }, toolBtn('pen'), toolBtn('highlighter'), toolBtn('eraser'), toolBtn('lasso')),
+      this.readBtn,
+      h('div', { class: 'tool-group edit-only' }, toolBtn('pen'), toolBtn('highlighter'), toolBtn('eraser'), toolBtn('lasso'), toolBtn('text')),
       h('div', { class: 'spacer' }),
-      btn(icons.undo, t('undo'), () => this.undo()),
-      btn(icons.redo, t('redo'), () => this.redo()),
-      btn(icons.plus, t('addPage'), () => this.addPage()),
-      btn(icons.trash, t('deletePage'), () => this.deleteCurrentPage()),
-      btn(icons.share, t('exportPdf'), () => this.exportPdf()),
+      btn(icons.undo, t('undo'), () => this.undo(), 'edit-only'),
+      btn(icons.redo, t('redo'), () => this.redo(), 'edit-only'),
+      btn(icons.plus, t('addPage'), () => this.addPage(), 'edit-only'),
+      btn(icons.trash, t('deletePage'), () => this.deleteCurrentPage(), 'edit-only'),
+      btn(icons.fit, t('fitScreen'), () => this.toggleFit()),
+      btn(icons.share, t('share'), () => this.share()),
       btn(icons.settings, t('settings'), () => openSettings(() => this.onSettingsChanged())),
     );
     this.optionsBar = h('div', { class: 'options-bar' });
@@ -155,6 +168,10 @@ export class Editor {
 
     this.root.append(this.toolbar, this.optionsBar, this.viewport, this.selBar, this.pageLabel);
     this.setTool('pen');
+    this.setReading(this.meta.reading ?? false, true);
+    // keep the keyboard open while changing text size/colour
+    for (const type of ['pointerdown', 'mousedown'])
+      this.optionsBar.addEventListener(type, (e) => { if (this.editing) e.preventDefault(); });
 
     const vp = this.viewport;
     const on = <K extends keyof HTMLElementEventMap>(el: EventTarget, type: K | string, fn: (e: never) => void, opts?: AddEventListenerOptions) => {
@@ -175,7 +192,24 @@ export class Editor {
     on(window, 'pagehide', () => void this.flush());
   }
 
+  private setReading(on: boolean, initial = false) {
+    this.finishEditing();
+    this.reading = on;
+    this.root.classList.toggle('reading', on);
+    this.readBtn.classList.toggle('active', on);
+    this.clearSelection();
+    this.clearPred();
+    if (!initial) {
+      this.meta.reading = on;
+      this.metaDirty = true;
+      clearTimeout(this.saveTimer);
+      this.saveTimer = window.setTimeout(() => void this.flush(), 800);
+      requestAnimationFrame(() => this.resize());
+    }
+  }
+
   private setTool(tool: Tool) {
+    this.finishEditing();
     this.tool = tool;
     if (tool !== 'lasso') this.clearSelection();
     for (const b of this.toolbar.querySelectorAll<HTMLButtonElement>('[data-tool]'))
@@ -226,8 +260,23 @@ export class Editor {
         wg.append(b);
       }
       bar.append(modes, wg);
+    } else if (tool === 'text') {
+      const swatches = h('div', { class: 'swatches' });
+      for (const c of settings.palette.slice(0, 6)) {
+        const sw = h('button', { class: 'swatch', style: `--c:${c}`, 'aria-label': c });
+        if (c.toLowerCase() === settings.textColor.toLowerCase()) sw.classList.add('active');
+        sw.addEventListener('click', () => { settings.textColor = c; saveSettings(); this.restyleEditing(); this.renderOptions(); });
+        swatches.append(sw);
+      }
+      const sizes = h('div', { class: 'seg' });
+      for (const sz of [12, 16, 22, 32]) {
+        const b = h('button', { class: settings.textSize === sz ? 'active' : '', style: `font-size:${10 + sz / 4}px` }, 'Aa');
+        b.addEventListener('click', () => { settings.textSize = sz; saveSettings(); this.restyleEditing(); this.renderOptions(); });
+        sizes.append(b);
+      }
+      bar.append(swatches, sizes, h('span', { class: 'hint' }, t('textHint')));
     } else {
-      bar.append(h('span', { class: 'hint' }, t('lasso')));
+      bar.append(h('span', { class: 'hint' }, t('lassoHint')));
     }
   }
 
@@ -256,22 +305,56 @@ export class Editor {
 
   private resize() {
     const r = this.viewport.getBoundingClientRect();
+    const prevW = this.vw;
     this.vw = r.width;
     this.vh = r.height;
     for (const c of [this.wet, this.pred]) {
       c.width = Math.round(r.width * this.dpr);
       c.height = Math.round(r.height * this.dpr);
     }
+    if (this.fitMode && Math.abs(r.width - prevW) > 1) return this.fitMode === 'page' ? this.fitPage() : this.fitWidth();
     this.clampCamera();
     this.applyCamera();
+    this.keepEditingVisible();
+  }
+
+  /** When the on-screen keyboard shrinks the viewport, scroll the text being typed back into view. */
+  private keepEditingVisible() {
+    if (!this.editing) return;
+    const r = this.editing.el.getBoundingClientRect();
+    const vr = this.viewport.getBoundingClientRect();
+    if (r.bottom > vr.bottom - 12) {
+      this.cam.ty -= r.bottom - vr.bottom + 28;
+      this.applyCamera();
+    }
   }
 
   private fitScale() {
     return Math.max(0.1, (this.vw - 24) / this.contentW);
   }
 
+  /** Whole page visible at once. */
+  fitPage() {
+    const i = this.currentPage();
+    const l = this.layout[i];
+    if (!l) return;
+    this.fitMode = 'page';
+    this.cam.s = Math.max(0.1, Math.min((this.vw - 24) / l.w, (this.vh - 24) / l.h));
+    this.cam.tx = (this.vw - this.contentW * this.cam.s) / 2;
+    this.cam.ty = (this.vh - l.h * this.cam.s) / 2 - l.y * this.cam.s;
+    this.clampCamera();
+    this.applyCamera();
+  }
+
+  private toggleFit() {
+    if (this.fitMode === 'width') this.fitPage();
+    else this.fitWidth();
+    toast(t(this.fitMode === 'page' ? 'fitPage' : 'fitWidth'));
+  }
+
   fitWidth() {
     const center = this.currentPage();
+    this.fitMode = 'width';
     this.cam.s = this.fitScale();
     this.cam.ty = 12 - (this.layout[center]?.y ?? 0) * this.cam.s;
     this.clampCamera();
@@ -400,12 +483,21 @@ export class Editor {
       pdfForDoc(this.meta.id)
         .then((doc) => renderPdfPage(doc, no, v.bg, sc, job))
         .catch(() => { if (!job.cancelled) toast(t('pdfError')); });
+    } else if (p.bg.kind === 'image') {
+      imageBitmapFor(p.bg.fileId, p.bg.mime)
+        .then((bmp) => {
+          if (job.cancelled) return;
+          v.bg.width = Math.round(p.w * sc);
+          v.bg.height = Math.round(p.h * sc);
+          v.bg.getContext('2d')!.drawImage(bmp, 0, 0, v.bg.width, v.bg.height);
+        })
+        .catch(() => { if (!job.cancelled) toast(t('fileError')); });
     } else {
       v.bg.width = Math.round(p.w * sc);
       v.bg.height = Math.round(p.h * sc);
       const ctx = v.bg.getContext('2d')!;
       ctx.setTransform(sc, 0, 0, sc, 0, 0);
-      drawTemplate(ctx, p.w, p.h, p.bg.template, p.bg.paper);
+      drawTemplate(ctx, p.w, p.h, p.bg.template, p.bg.paper, p.bg.rtl);
     }
   }
 
@@ -423,8 +515,8 @@ export class Editor {
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, W, H);
     ctx.setTransform(sc, 0, 0, sc, 0, 0);
-    const strokes = (exclude ? p.strokes.filter((s) => !exclude.has(s.id)) : p.strokes).map((s) => this.display(p, s));
-    drawStrokes(ctx, strokes, settings.pressure);
+    if (this.editing?.page === i) (exclude ??= new Set()).add(this.editing.tb.id);
+    drawPageContent(ctx, p, exclude);
   }
 
   private scheduleInk(i: number) {
@@ -437,8 +529,7 @@ export class Editor {
   }
 
   private display(p: PageData, s: Stroke): Stroke {
-    const c = inkColorForPaper(p.bg, s.color);
-    return c === s.color ? s : { ...s, color: c };
+    return displayStroke(p, s);
   }
 
   // ---------------------------------------------------------------- input
@@ -467,7 +558,19 @@ export class Editor {
   }
 
   private onDown(e: PointerEvent) {
+    if ((e.target as HTMLElement).closest?.('textarea')) return;
+    if (this.editing) {
+      // a tap outside the text box finishes typing
+      this.finishEditing();
+      return;
+    }
     cancelAnimationFrame(this.fling);
+    if (this.reading && e.pointerType !== 'touch') {
+      // reading mode: pen and mouse scroll, nothing draws
+      this.mode = { kind: 'pan', id: e.pointerId, last: [e.clientX, e.clientY] };
+      this.viewport.setPointerCapture(e.pointerId);
+      return;
+    }
     if (e.pointerType === 'pen') {
       if (!penSeen) {
         penSeen = true;
@@ -498,7 +601,7 @@ export class Editor {
       if (!this.gesture) this.gesture = { t0: performance.now(), max: 0, moved: 0 };
       this.gesture.max = Math.max(this.gesture.max, this.touches.size);
 
-      if (!this.penOnly() && this.touches.size === 1) {
+      if (!this.penOnly() && !this.reading && this.touches.size === 1) {
         this.startTool(e);
         return;
       }
@@ -573,6 +676,11 @@ export class Editor {
         this.clearSelection();
         this.mode = { kind: 'lasso', id: e.pointerId, page, poly: [x, y] };
       }
+    } else if (tool === 'text') {
+      this.clearSelection();
+      const texts = this.pages[page].texts ?? [];
+      const hit = [...texts].reverse().find((tb) => textBoxHit(tb, x, y, 6 / this.cam.s)) ?? null;
+      this.mode = { kind: 'text', id: e.pointerId, page, start: [x, y], hit, d: [0, 0], moved: false };
     }
   }
 
@@ -635,7 +743,28 @@ export class Editor {
       const [x, y] = this.local(e, m.page);
       m.d = [x - m.start[0], y - m.start[1]];
       this.drawMoving();
+    } else if (m.kind === 'text') {
+      const [x, y] = this.local(e, m.page);
+      m.d = [x - m.start[0], y - m.start[1]];
+      if (m.hit && !m.moved && Math.hypot(m.d[0], m.d[1]) * this.cam.s > 6) {
+        m.moved = true;
+        this.renderInk(m.page, new Set([m.hit.id]));
+      }
+      if (m.hit && m.moved) this.drawMovingText(m.page, m.hit, m.d);
     }
+  }
+
+  private drawMovingText(page: number, tb: TextBox, d: [number, number]) {
+    const ctx = this.wctx;
+    this.clearCanvas(ctx);
+    this.wetTransform(ctx, page);
+    const moved = { ...tb, x: tb.x + d[0], y: tb.y + d[1] };
+    drawTextBox(ctx, moved, inkColorForPaper(this.pages[page].bg, tb.color));
+    ctx.setLineDash([5 / this.cam.s, 4 / this.cam.s]);
+    ctx.lineWidth = 1.2 / this.cam.s;
+    ctx.strokeStyle = '#2156d1';
+    ctx.strokeRect(moved.x - 3, moved.y - 2, moved.w + 6, Math.max(tb.size * LINE_HEIGHT, 0) + 4);
+    ctx.setLineDash([]);
   }
 
   private extendInk(e: PointerEvent) {
@@ -709,6 +838,7 @@ export class Editor {
   }
 
   private hover(e: PointerEvent) {
+    if (this.reading) return;
     const a = this.buttonAction(e);
     const tool = a && a !== 'none' ? a : this.tool;
     if (tool === 'eraser') this.drawEraserCursor(e.clientX, e.clientY);
@@ -773,6 +903,7 @@ export class Editor {
       const d = Math.max(10, Math.hypot(a.x - b.x, a.y - b.y));
       const pz = this.gesture.pinch;
       const r = this.viewport.getBoundingClientRect();
+      this.fitMode = null;
       this.cam.s = Math.min(MAX_SCALE, Math.max(this.fitScale() * 0.4, pz.s0 * (d / pz.d0)));
       this.cam.tx = mx - r.left - pz.wx * this.cam.s;
       this.cam.ty = my - r.top - pz.wy * this.cam.s;
@@ -847,9 +978,99 @@ export class Editor {
         this.setSelection(m.page, new Set(m.moving.map((s) => s.id)));
         return;
       }
+      case 'text': {
+        this.clearCanvas(this.wctx);
+        const texts = this.pages[m.page].texts ?? [];
+        if (m.hit && m.moved) {
+          const hit = m.hit;
+          this.commitTexts(m.page, texts.map((tb) => (tb.id === hit.id ? { ...tb, x: tb.x + m.d[0], y: tb.y + m.d[1] } : tb)));
+        } else if (m.hit) this.editText(m.page, m.hit, false);
+        else this.editText(m.page, this.newTextBox(m.page, m.start[0], m.start[1]), true);
+        return;
+      }
       case 'pan':
         return;
     }
+  }
+
+  // ---------------------------------------------------------------- typed text
+  private newTextBox(page: number, x: number, y: number): TextBox {
+    const p = this.pages[page];
+    const size = settings.textSize;
+    const rtl = settings.lang === 'ar';
+    // Arabic: the box grows leftwards from where you tapped
+    const w = Math.max(140, Math.min(400, rtl ? x - 16 : p.w - x - 16));
+    const bx = Math.max(4, Math.min(p.w - w - 4, rtl ? x - w : x));
+    return { id: uid(), x: bx, y: y - (size * LINE_HEIGHT) / 2, w, text: '', size, color: settings.textColor };
+  }
+
+  private editText(page: number, tb: TextBox, isNew: boolean) {
+    const v = this.views.get(page);
+    if (!v) return;
+    const ta = h('textarea', { class: 'text-edit', dir: 'auto', rows: 1, spellcheck: 'false', autocapitalize: 'sentences' });
+    ta.value = tb.text;
+    if (!tb.text && settings.lang === 'ar') ta.dir = 'rtl';
+    ta.addEventListener('input', () => {
+      if (ta.value) ta.dir = isRtl(ta.value) ? 'rtl' : 'ltr';
+      this.growEditing();
+    });
+    ta.addEventListener('blur', () => this.finishEditing());
+    ta.addEventListener('keydown', (e) => { if (e.key === 'Escape') ta.blur(); });
+    v.el.append(ta);
+    this.editing = { page, tb, orig: isNew ? null : tb, el: ta };
+    this.restyleEditing(false);
+    this.renderInk(page);
+    ta.focus({ preventScroll: true });
+    ta.setSelectionRange(ta.value.length, ta.value.length);
+    this.growEditing();
+  }
+
+  private growEditing() {
+    const ta = this.editing?.el;
+    if (!ta) return;
+    ta.style.height = 'auto';
+    ta.style.height = `${ta.scrollHeight}px`;
+    this.keepEditingVisible();
+  }
+
+  /** Apply the current size/colour from the options bar to the box being typed. */
+  private restyleEditing(fromOptions = true) {
+    const ed = this.editing;
+    if (!ed) return;
+    if (fromOptions) ed.tb = { ...ed.tb, size: settings.textSize, color: settings.textColor };
+    const tb = ed.tb;
+    Object.assign(ed.el.style, {
+      left: `${tb.x}px`, top: `${tb.y}px`, width: `${tb.w}px`,
+      font: fontOf(tb.size, tb.bold), lineHeight: String(LINE_HEIGHT),
+      color: inkColorForPaper(this.pages[ed.page].bg, tb.color),
+    });
+    this.growEditing();
+  }
+
+  private finishEditing() {
+    const ed = this.editing;
+    if (!ed) return;
+    this.editing = null;
+    const text = ed.el.value.replace(/\s+$/, '');
+    ed.el.remove();
+    const p = this.pages[ed.page];
+    const before = p.texts ?? [];
+    const next: TextBox = { ...ed.tb, text };
+    let after = before;
+    if (!text) after = before.filter((tb) => tb.id !== ed.tb.id);
+    else if (!ed.orig) after = [...before, next];
+    else if (JSON.stringify(ed.orig) !== JSON.stringify(next)) after = before.map((tb) => (tb.id === next.id ? next : tb));
+    if (after !== before && (after.length !== before.length || text)) this.commitTexts(ed.page, after);
+    else this.renderInk(ed.page);
+  }
+
+  private commitTexts(page: number, after: TextBox[]) {
+    const p = this.pages[page];
+    const before = p.texts ?? [];
+    p.texts = after;
+    this.renderInk(page);
+    this.pushHistory({ pageId: p.id, before: p.strokes, after: p.strokes, tBefore: before, tAfter: after });
+    this.markDirty(p.id);
   }
 
   private cancelMode() {
@@ -861,7 +1082,7 @@ export class Editor {
       this.pages[m.page].strokes = m.before;
       this.renderInk(m.page);
     }
-    if (m.kind === 'move') this.renderInk(m.page);
+    if (m.kind === 'move' || m.kind === 'text') this.renderInk(m.page);
   }
 
   private commitInk(m: Extract<Mode, { kind: 'ink' }>) {
@@ -924,6 +1145,7 @@ export class Editor {
     this.selBar.append(
       mk(icons.trash, t('delete'), () => this.selectionDelete()),
       mk(icons.copy, t('duplicate'), () => this.selectionDuplicate()),
+      mk(icons.toText, t('toText'), () => void this.selectionToText()),
     );
     for (const c of settings.palette.slice(0, 6)) {
       const sw = h('button', { class: 'swatch', style: `--c:${c}`, 'aria-label': c });
@@ -980,6 +1202,32 @@ export class Editor {
     this.setSelection(sel.page, new Set(copies.map((s) => s.id)));
   }
 
+  /** Handwriting → typed text (on-device recognition in the Android app). */
+  private async selectionToText() {
+    const sel = this.selection;
+    if (!sel) return;
+    const page = sel.page;
+    const p = this.pages[page];
+    const strokes = p.strokes.filter((s) => sel.ids.has(s.id) && s.tool === 'pen');
+    const bb = unionBBox(strokes);
+    if (!bb) return;
+    const res = await convertHandwriting(strokes);
+    if (!res || this.pages[page] !== p) return;
+    const w = Math.max(160, Math.min(bb[2] - bb[0] + 24, p.w - 8));
+    const x = Math.max(4, Math.min(p.w - w - 4, isRtl(res.text) ? bb[2] - w : bb[0]));
+    const tb: TextBox = { id: uid(), x, y: bb[1], w, text: res.text, size: res.size, color: strokes[0].color };
+    const before = p.strokes, tBefore = p.texts ?? [];
+    const ids = new Set(strokes.map((s) => s.id));
+    const after = res.replace ? before.filter((s) => !ids.has(s.id)) : before;
+    const tAfter = [...tBefore, tb];
+    p.strokes = after;
+    p.texts = tAfter;
+    this.clearSelection();
+    this.renderInk(page);
+    this.pushHistory({ pageId: p.id, before, after, tBefore, tAfter });
+    this.markDirty(p.id);
+  }
+
   private selectionRecolor(color: string) {
     const sel = this.selection;
     if (!sel) return;
@@ -1008,11 +1256,14 @@ export class Editor {
 
   private step(from: HistoryEntry[], to: HistoryEntry[], which: 'before' | 'after'): void {
     if (this.mode.kind !== 'idle' && this.mode.kind !== 'pan') return;
+    this.finishEditing();
     const e = from.pop();
     if (!e) return;
     const i = this.pages.findIndex((p) => p.id === e.pageId);
     if (i < 0) return this.step(from, to, which);
     this.pages[i].strokes = e[which];
+    const texts = which === 'before' ? e.tBefore : e.tAfter;
+    if (texts) this.pages[i].texts = texts;
     to.push(e);
     this.clearSelection();
     this.renderInk(i);
@@ -1052,7 +1303,7 @@ export class Editor {
       id: uid(),
       w: ref?.bg.kind === 'template' ? ref.w : A4.w,
       h: ref?.bg.kind === 'template' ? ref.h : A4.h,
-      bg: { kind: 'template', template: this.meta.template, paper: this.meta.paper },
+      bg: { kind: 'template', template: this.meta.template, paper: this.meta.paper, rtl: settings.lang === 'ar' },
       strokes: [],
     };
     this.pages.splice(cur + 1, 0, page);
@@ -1078,19 +1329,18 @@ export class Editor {
     this.applyCamera();
     this.metaDirty = true;
     await deletePages([removed.id]);
+    if (removed.bg.kind === 'image') {
+      const fid = removed.bg.fileId;
+      this.meta.fileIds = (this.meta.fileIds ?? []).filter((f) => f !== fid);
+      await deleteFile(fid);
+    }
     await this.flush();
   }
 
-  private async exportPdf() {
-    toast(t('exporting'));
-    try {
-      await this.flush();
-      const bytes = await exportDocToPdf(this.meta, this.pages);
-      await shareOrDownload(bytes, `${this.meta.title.replace(/[\\/:*?"<>|]+/g, '_') || 'notes'}.pdf`);
-    } catch (err) {
-      console.error(err);
-      toast(String(err));
-    }
+  private async share() {
+    this.finishEditing();
+    await this.flush();
+    openShareDialog(this.meta, this.pages, this.currentPage());
   }
 
   // ---------------------------------------------------------------- misc input
@@ -1099,6 +1349,7 @@ export class Editor {
     if (e.ctrlKey || e.metaKey) {
       const r = this.viewport.getBoundingClientRect();
       const [wx, wy] = this.screenToWorld(e.clientX, e.clientY);
+      this.fitMode = null;
       this.cam.s *= Math.exp(-e.deltaY * 0.0025);
       this.cam.s = Math.min(MAX_SCALE, Math.max(this.fitScale() * 0.4, this.cam.s));
       this.cam.tx = e.clientX - r.left - wx * this.cam.s;
@@ -1136,8 +1387,8 @@ export class Editor {
     if (mod && e.key.toLowerCase() === 'z') { e.preventDefault(); e.shiftKey ? this.redo() : this.undo(); }
     else if (mod && e.key.toLowerCase() === 'y') { e.preventDefault(); this.redo(); }
     else if (!mod) {
-      const map: Record<string, Tool> = { p: 'pen', h: 'highlighter', e: 'eraser', l: 'lasso' };
-      if (map[e.key]) this.setTool(map[e.key]);
+      const map: Record<string, Tool> = { p: 'pen', h: 'highlighter', e: 'eraser', l: 'lasso', t: 'text' };
+      if (map[e.key] && !this.reading) this.setTool(map[e.key]);
       if ((e.key === 'Delete' || e.key === 'Backspace') && this.selection) this.selectionDelete();
     }
   }
@@ -1146,27 +1397,13 @@ export class Editor {
   private async makeThumb(): Promise<string | undefined> {
     const p = this.pages[0];
     if (!p) return;
-    const W = 240, sc = W / p.w;
-    const c = document.createElement('canvas');
-    c.width = W;
-    c.height = Math.round(p.h * sc);
-    const ctx = c.getContext('2d')!;
-    if (p.bg.kind === 'pdf') {
-      const tmp = document.createElement('canvas');
-      await renderPdfPage(await pdfForDoc(this.meta.id), p.bg.pdfPage, tmp, sc);
-      ctx.drawImage(tmp, 0, 0, c.width, c.height);
-    } else {
-      ctx.setTransform(sc, 0, 0, sc, 0, 0);
-      drawTemplate(ctx, p.w, p.h, p.bg.template, p.bg.paper);
-    }
-    ctx.setTransform(sc, 0, 0, sc, 0, 0);
-    drawStrokes(ctx, p.strokes.map((s) => this.display(p, s)), settings.pressure);
-    return c.toDataURL('image/jpeg', 0.75);
+    return (await renderPageToCanvas(this.meta, p, 240 / p.w)).toDataURL('image/jpeg', 0.75);
   }
 
   async close() {
     if (this.closed) return;
     this.closed = true;
+    this.finishEditing();
     try {
       this.meta.thumb = (await this.makeThumb()) ?? this.meta.thumb;
       this.metaDirty = true;
@@ -1178,6 +1415,7 @@ export class Editor {
     cancelAnimationFrame(this.fling);
     for (const v of this.views.values()) v.bgJob.cancelled = true;
     closePdf(this.meta.id);
+    clearImageCache();
     this.root.remove();
     this.onClose();
   }

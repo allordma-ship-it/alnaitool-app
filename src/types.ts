@@ -1,4 +1,4 @@
-export type Tool = 'pen' | 'highlighter' | 'eraser' | 'lasso';
+export type Tool = 'pen' | 'highlighter' | 'eraser' | 'lasso' | 'text';
 export type InkTool = 'pen' | 'highlighter';
 export type Template = 'blank' | 'lined' | 'grid' | 'dots' | 'cornell';
 export type PaperColor = 'white' | 'cream' | 'dark';
@@ -13,9 +13,22 @@ export interface Stroke {
   bbox: [number, number, number, number];
 }
 
+/** A typed text box in page coordinates. Lines wrap at `w`; direction follows the text itself. */
+export interface TextBox {
+  id: string;
+  x: number;
+  y: number;
+  w: number;
+  text: string;
+  size: number;
+  color: string;
+  bold?: boolean;
+}
+
 export type PageBackground =
-  | { kind: 'template'; template: Template; paper: PaperColor }
-  | { kind: 'pdf'; pdfPage: number };
+  | { kind: 'template'; template: Template; paper: PaperColor; rtl?: boolean }
+  | { kind: 'pdf'; pdfPage: number }
+  | { kind: 'image'; fileId: string; mime: string };
 
 export interface PageData {
   id: string;
@@ -23,12 +36,13 @@ export interface PageData {
   h: number;
   bg: PageBackground;
   strokes: Stroke[];
+  texts?: TextBox[];
 }
 
 export interface DocMeta {
   id: string;
   title: string;
-  kind: 'notebook' | 'pdf';
+  kind: 'notebook' | 'pdf' | 'images';
   createdAt: number;
   updatedAt: number;
   pageIds: string[];
@@ -37,6 +51,10 @@ export interface DocMeta {
   template: Template;
   paper: PaperColor;
   lastPage?: number;
+  /** extra stored files (image pages) to delete with the document */
+  fileIds?: string[];
+  /** open in reading mode (no drawing) */
+  reading?: boolean;
 }
 
 export const A4 = { w: 595.28, h: 841.89 };

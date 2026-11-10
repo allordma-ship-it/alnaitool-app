@@ -54,6 +54,10 @@ export async function deleteDoc(doc: DocMeta) {
     tx.objectStore('docs').delete(doc.id),
     ...doc.pageIds.map((id) => tx.objectStore('pages').delete(id)),
     tx.objectStore('files').delete(doc.id),
+    ...(doc.fileIds ?? []).map((id) => tx.objectStore('files').delete(id)),
     tx.done,
   ]);
+}
+export async function deleteFile(id: string) {
+  await (await db()).delete('files', id);
 }

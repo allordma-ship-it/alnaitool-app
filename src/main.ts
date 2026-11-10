@@ -12,6 +12,7 @@ const app = document.getElementById('app')!;
 void navigator.storage?.persist?.();
 
 let library: Library;
+let editor: Editor | null = null;
 
 function showLibrary() {
   library = new Library(openDoc);
@@ -23,6 +24,7 @@ function openDoc(doc: DocMeta) {
   // Android back gesture closes the document instead of leaving the app.
   const onPop = () => void ed.close();
   const ed = new Editor(doc, () => {
+    editor = null;
     window.removeEventListener('popstate', onPop);
     if (history.state?.doc) history.back();
     showLibrary();
@@ -30,7 +32,20 @@ function openDoc(doc: DocMeta) {
   app.replaceChildren(ed.root);
   history.pushState({ doc: doc.id }, '', '');
   window.addEventListener('popstate', onPop);
+  editor = ed;
   void ed.open();
+}
+
+// Android system back: close the top dialog, then the document, then leave the app.
+if (Capacitor.isNativePlatform()) {
+  void import('@capacitor/app').then(({ App }) =>
+    App.addListener('backButton', () => {
+      const dialogs = document.querySelectorAll<HTMLDialogElement>('dialog[open]');
+      if (dialogs.length) dialogs[dialogs.length - 1].close('cancel');
+      else if (editor) void editor.close();
+      else void App.exitApp();
+    }),
+  );
 }
 
 showLibrary();

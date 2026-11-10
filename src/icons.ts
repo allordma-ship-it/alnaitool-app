@@ -17,5 +17,9 @@ export const icons = {
   copy: s('<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/>'),
   fit: s('<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>'),
   more: s('<circle cx="5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="19" cy="12" r="1.2"/>'),
+  book: s('<path d="M12 6c-2-1.5-5-2-8-1.5v13c3-.5 6 0 8 1.5 2-1.5 5-2 8-1.5v-13c-3-.5-6 0-8 1.5z"/><path d="M12 6v13"/>'),
+  text: s('<path d="M5 6V4h14v2M12 4v16M9 20h6"/>'),
+  toText: s('<path d="M3 15c2-4 3-4 4-1s2 3 4-1"/><path d="M13 12h3M15 10l2 2-2 2"/><path d="M18 8V7h4v1M20 7v10M19 17h2"/>'),
+  image: s('<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M4 18l5-5 4 4 3-3 4 4"/>'),
   pages: s('<rect x="4" y="3" width="12" height="15" rx="1.5"/><path d="M8 21h10a2 2 0 0 0 2-2V7"/>'),
 };

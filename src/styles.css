@@ -11,6 +11,11 @@
   --desk: #c9ced8;
   --radius: 12px;
   color-scheme: light;
+  /* Android status/navigation bars: Capacitor injects --safe-area-inset-*, browsers provide env() */
+  --sat: var(--safe-area-inset-top, env(safe-area-inset-top, 0px));
+  --sab: var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px));
+  --sal: var(--safe-area-inset-left, env(safe-area-inset-left, 0px));
+  --sar: var(--safe-area-inset-right, env(safe-area-inset-right, 0px));
 }
 @media (prefers-color-scheme: dark) {
   :root {
@@ -38,7 +43,13 @@ html, body {
   -webkit-tap-highlight-color: transparent;
   overscroll-behavior: none;
 }
-#app { height: 100%; }
+#app {
+  height: 100%;
+  /* keep everything clear of the system bars; the strip behind the status bar takes the toolbar colour */
+  padding: var(--sat) var(--sar) 0 var(--sal);
+  background: var(--surface);
+}
+#app > * { background: var(--bg); }
 button, input, select { font: inherit; color: inherit; }
 button { cursor: pointer; }
 [hidden] { display: none !important; }
@@ -50,7 +61,7 @@ button { cursor: pointer; }
 }
 .icon-btn:hover { background: var(--surface-2); }
 .icon-btn.active { background: var(--accent-soft); color: var(--accent); }
-[dir='rtl'] .toolbar > .icon-btn:first-child svg { transform: scaleX(-1); }
+[dir='rtl'] .back-btn svg { transform: scaleX(-1); }
 
 .btn {
   display: inline-flex; align-items: center; gap: 8px;
@@ -60,7 +71,7 @@ button { cursor: pointer; }
 .btn.primary, button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
 
 /* ---------------------------------------------------------------- library */
-.library { height: 100%; overflow: auto; padding: 0 16px 40px; }
+.library { height: 100%; overflow: auto; padding: 0 16px calc(40px + var(--sab)); }
 .lib-head {
   position: sticky; top: 0; z-index: 2;
   display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
@@ -98,7 +109,7 @@ button { cursor: pointer; }
 .editor { position: relative; height: 100%; display: flex; flex-direction: column; }
 .toolbar {
   display: flex; align-items: center; gap: 2px;
-  padding: 6px 8px; padding-top: max(6px, env(safe-area-inset-top));
+  padding: 6px 8px;
   background: var(--surface); border-bottom: 1px solid var(--line);
   overflow-x: auto; scrollbar-width: none; flex: none;
 }
@@ -107,6 +118,20 @@ button { cursor: pointer; }
   max-width: 22vw; padding: 0 8px; font-weight: 600;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 0 1 auto;
 }
+.back-btn { background: var(--surface-2); }
+.read-toggle { width: auto; padding: 0 12px; gap: 6px; display: inline-flex; align-items: center; white-space: nowrap; }
+.read-toggle span { font-size: 14px; }
+.editor.reading .edit-only, .editor.reading .options-bar { display: none; }
+.text-edit {
+  position: absolute; z-index: 2; margin: 0; padding: 0; border: 0; resize: none; overflow: hidden;
+  background: rgb(33 86 209 / .06); outline: 1.5px dashed var(--accent); outline-offset: 3px; border-radius: 1px;
+  touch-action: auto; user-select: text; -webkit-user-select: text; white-space: pre-wrap; overflow-wrap: break-word;
+}
+.menu-item { display: flex; align-items: center; gap: 12px; text-align: start; }
+.hw-result { width: 100%; height: auto; min-height: 90px; padding: 10px; font-size: 16px; line-height: 1.5; resize: vertical; }
+.hw-dialog { width: min(520px, calc(100vw - 32px)); }
+.actions { flex-wrap: wrap; }
+button:disabled { opacity: .45; }
 .tool-group { display: flex; gap: 2px; padding: 3px; border-radius: 12px; background: var(--surface-2); margin-inline: 6px; flex: none; }
 .spacer { flex: 1 1 0; }
 
@@ -157,7 +182,7 @@ button { cursor: pointer; }
 }
 .sel-bar .swatch { width: 26px; height: 26px; }
 .page-label {
-  position: absolute; bottom: max(14px, env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%);
+  position: absolute; bottom: calc(14px + var(--sab)); left: 50%; transform: translateX(-50%);
   padding: 6px 14px; border: 0; border-radius: 999px;
   background: rgb(20 23 29 / .72); color: #fff; font-variant-numeric: tabular-nums;
 }
@@ -209,7 +234,7 @@ button { cursor: pointer; }
 }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
-@media (max-width: 640px) {
-  .doc-title { display: none; }
+@media (max-width: 760px) {
+  .doc-title, .read-toggle span { display: none; }
   .lib-head h1 { flex-basis: 100%; }
 }
