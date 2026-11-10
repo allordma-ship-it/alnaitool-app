@@ -1,4 +1,4 @@
-import { listDocs, putDoc, putPages, deleteDoc, getPages } from './db';
+import { listDocs, putDoc, putPages, deleteDoc, getPages, listClips } from './db';
 import { A4, uid, type DocMeta, type PageData, type Template, type PaperColor } from './types';
 import { importFiles } from './importFiles';
 import { convertDoc, shareFiles } from './share';
@@ -12,6 +12,8 @@ import { h, modal, toast } from './ui';
 export class Library {
   root = h('div', { class: 'library' });
   private grid = h('div', { class: 'grid' });
+  private hero = h('section', { class: 'hero' });
+  private stats = h('div', { class: 'stats' });
   private query = '';
 
   constructor(private openDoc: (d: DocMeta) => void) {}
@@ -38,15 +40,21 @@ export class Library {
     settingsBtn.innerHTML = icons.settings;
     settingsBtn.addEventListener('click', () => openSettings(() => {}));
 
+    const mark = h('div', { class: 'brand-mark big', 'aria-hidden': 'true' });
+    mark.innerHTML = icons.pen;
     this.root.append(
       h('header', { class: 'lib-head' },
-        h('h1', {}, t('appName')),
-        search,
-        btn(icons.plus, t('newNotebook'), () => this.newNotebookDialog(), 'primary'),
-        btn(icons.file, t('importFile'), () => fileInput.click()),
-        settingsBtn,
+        h('div', { class: 'brand' }, mark, h('div', {}, h('h1', {}, t('appName')), h('p', { class: 'tagline' }, t('tagline')))),
+        h('div', { class: 'lib-actions' },
+          search,
+          btn(icons.plus, t('newNotebook'), () => this.newNotebookDialog(), 'primary'),
+          btn(icons.file, t('importFile'), () => fileInput.click()),
+          settingsBtn,
+        ),
         fileInput,
       ),
+      this.stats,
+      this.hero,
       this.grid,
     );
     // drag & drop PDFs (desktop)
@@ -59,10 +67,35 @@ export class Library {
   }
 
   async refresh() {
-    const docs = (await listDocs()).filter((d) => !this.query || d.title.toLowerCase().includes(this.query));
+    const all = await listDocs();
+    const clips = await listClips();
+    const docs = all.filter((d) => !this.query || d.title.toLowerCase().includes(this.query));
     this.grid.replaceChildren();
+    this.stats.replaceChildren(
+      h('span', { class: 'stat' }, h('b', {}, String(all.length)), ` ${t('documents')}`),
+      h('span', { class: 'stat' }, h('b', {}, String(clips.length)), ` ${t('clipsCount')}`),
+      h('span', { class: 'stat accent' }, 'Lenovo Idea Tab Pro · Pen Plus'),
+    );
+    this.hero.replaceChildren();
+    this.hero.hidden = !!this.query || !all.length;
+    if (!this.query && all[0]) {
+      const d = all[0];
+      const img = h('div', { class: 'hero-thumb' });
+      if (d.thumb) img.append(h('img', { src: d.thumb, alt: '' }));
+      const open = h('button', { class: 'btn primary' }, t('continueReading'));
+      this.hero.append(img, h('div', { class: 'hero-body' },
+        h('span', { class: `badge ${d.kind}` }, t(d.kind === 'pdf' ? 'kindPdf' : d.kind === 'images' ? 'kindImages' : 'kindNotebook')),
+        h('h2', {}, d.title),
+        h('p', {}, `${t('page')} ${(d.lastPage ?? 0) + 1} / ${d.pageIds.length} · ${new Date(d.updatedAt).toLocaleDateString(document.documentElement.lang)}`),
+        open,
+      ));
+      this.hero.onclick = () => this.openDoc(d);
+    }
     if (!docs.length) {
-      this.grid.append(h('p', { class: 'empty' }, t('empty')));
+      const empty = h('div', { class: 'empty' });
+      empty.innerHTML = icons.notebook;
+      empty.append(h('p', {}, t('empty')));
+      this.grid.append(empty);
       return;
     }
     for (const d of docs) {
@@ -74,9 +107,10 @@ export class Library {
       more.addEventListener('click', (e) => { e.stopPropagation(); this.docMenu(d); });
       const card = h('div', { class: 'card', tabindex: 0, role: 'button' },
         thumb,
+        h('span', { class: `badge ${d.kind}` }, t(d.kind === 'pdf' ? 'kindPdf' : d.kind === 'images' ? 'kindImages' : 'kindNotebook')),
         h('div', { class: 'card-meta' },
           h('div', { class: 'card-title' }, d.title),
-          h('div', { class: 'card-sub' }, `${d.kind === 'pdf' ? 'PDF · ' : ''}${d.pageIds.length} ${t('pages')} · ${new Date(d.updatedAt).toLocaleDateString(document.documentElement.lang)}`),
+          h('div', { class: 'card-sub' }, `${d.pageIds.length} ${t('pages')} · ${new Date(d.updatedAt).toLocaleDateString(document.documentElement.lang)}`),
         ),
         more,
       );

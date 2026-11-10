@@ -1,9 +1,9 @@
-# Alnai Notes
+# QalamFlow Studio
 
 Handschriftliche Notizen und PDF-Annotation als offline-fähige Web-App (PWA) –
 optimiert für das **Lenovo Idea Tab Pro mit Lenovo Tab Pen Plus**.
 
-تطبيق ملاحظات بخط اليد وتعليق على ملفات PDF، مصمَّم لجهاز Lenovo Idea Tab Pro مع قلم Pen Plus.
+تطبيق ملاحظات بخط اليد وقارئ PDF للدراسة، مصمَّم لجهاز Lenovo Idea Tab Pro مع قلم Pen Plus.
 
 ## Funktionen
 
@@ -17,6 +17,18 @@ optimiert für das **Lenovo Idea Tab Pro mit Lenovo Tab Pen Plus**.
 - **Notizblase**: Stift 2 Sekunden auf ein Wort halten → eine Blase erscheint an der nächsten freien Stelle, mit Linie zum Wort; mit dem Stift hineinschreiben oder mit dem Textwerkzeug tippen
 - Rückgängig/Wiederholen, Seiten hinzufügen/löschen, Arabisch / Deutsch / Englisch
 - Läuft offline, Daten bleiben auf dem Gerät (IndexedDB)
+
+## Studio-Funktionen (QalamFlow)
+
+- **Design**: dunkles Navy-Design mit Cyan-Akzenten (helles Design in den Einstellungen), schwebende Werkzeugleiste, Live-Anzeige von Druck/Neigung des Pen Plus
+- **QalamNote** (Seitenleiste): Ausschneide-Werkzeug – einen Satz unterstreichen schneidet den ganzen Absatz aus (Bild + Text aus dem PDF), oder einen Bereich umrahmen; eigene Notiz/Lernfrage pro Ausschnitt; Sprung zurück zur Quelle (auch dokumentübergreifend)
+- **Lernkarten** aus den Ausschnitten (Frage = deine Notiz, Rückseite = Ausschnitt), **Zusammenfassung als PDF**
+- **Sprachnotizen** (Mikrofon) mit Link zur aktuellen Seite
+- **Intelligente Formen**: Linie (rastet bei 0/45/90° ein), Rechteck, Kreis/Ellipse, Dreieck, Vieleck
+- **Laserpointer** (verblassende Spur, wird nicht gespeichert)
+- **Lineal**: mit einem Finger verschieben, mit zwei drehen; Stift an der Kante = gerade Linie
+- **Augenschonender Dunkelmodus** für PDFs/Bilder, **Doppelseiten-Ansicht**, Zoom- und Seitennavigation
+- Textmarker wird bei geneigtem Stift breiter (Keilspitze), einstellbare **Druckkurve**
 
 ## Stift-Unterstützung (Pen Plus)
 
@@ -64,10 +76,12 @@ Einmalig nötig: Repository → Settings → Pages → Source: **GitHub Actions*
 ```
 src/
   editor.ts          Seitenansicht, Kamera (Zoom/Pan), Stifteingabe, Werkzeuge, Undo
+  clips.ts           QalamNote: Ausschnitte, Seitenleiste, Lernkarten, Sprachnotizen, Zusammenfassung
+  ruler.ts           Lineal (verschieben, drehen, Kanten-Einrasten)
   ink.ts             Rendering der Striche und Seitenvorlagen
   geometry.ts        Treffertests, präzises Radieren, Lasso
   exportPdf.ts       PDF-Export mit pdf-lib
-  pdf.ts             PDF-Rendering mit pdf.js
+  pdf.ts             PDF-Rendering und Textzeilen/Absätze mit pdf.js
   library.ts         Bibliothek, neues Notizbuch, PDF-Import
   settingsDialog.ts  Einstellungen + Stifttest
   db.ts              Speicherung (IndexedDB)

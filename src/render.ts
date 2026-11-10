@@ -25,20 +25,35 @@ export function clearImageCache() {
   bitmaps.clear();
 }
 
-export function displayStroke(p: PageData, s: Stroke): Stroke {
-  const c = inkColorForPaper(p.bg, s.color);
+function luminance(hex: string) {
+  const m = /^#?([0-9a-f]{6})$/i.exec(hex);
+  if (!m) return 1;
+  const n = parseInt(m[1], 16);
+  return (0.2126 * ((n >> 16) & 255) + 0.7152 * ((n >> 8) & 255) + 0.0722 * (n & 255)) / 255;
+}
+
+/** In eye-care mode the page is shown inverted, so dark ink is shown light (on screen only). */
+export function screenColor(p: PageData, color: string, screen: boolean): string {
+  const c = inkColorForPaper(p.bg, color);
+  const darkPaper = p.bg.kind === 'template' && p.bg.paper === 'dark';
+  if (screen && settings.eyeCare && !darkPaper && luminance(c) < 0.32) return '#e2e8f0';
+  return c;
+}
+
+export function displayStroke(p: PageData, s: Stroke, screen = false): Stroke {
+  const c = screenColor(p, s.color, screen);
   return c === s.color ? s : { ...s, color: c };
 }
 
 /** Ink + typed text of a page; ctx already carries the page→pixel transform. */
-export function drawPageContent(ctx: CanvasRenderingContext2D, p: PageData, exclude?: Set<string>) {
-  const strokes = (exclude ? p.strokes.filter((s) => !exclude.has(s.id)) : p.strokes).map((s) => displayStroke(p, s));
+export function drawPageContent(ctx: CanvasRenderingContext2D, p: PageData, exclude?: Set<string>, screen = false) {
+  const strokes = (exclude ? p.strokes.filter((s) => !exclude.has(s.id)) : p.strokes).map((s) => displayStroke(p, s, screen));
   // note bubbles sit under the ink, so you can handwrite inside them
   for (const tb of p.texts ?? []) if (tb.bubble && !exclude?.has(tb.id)) drawBubble(ctx, tb);
   drawStrokes(ctx, strokes, settings.pressure);
   for (const tb of p.texts ?? []) {
     if (exclude?.has(tb.id)) continue;
-    drawTextBox(ctx, tb, tb.bubble ? tb.color : inkColorForPaper(p.bg, tb.color));
+    drawTextBox(ctx, tb, tb.bubble ? tb.color : screenColor(p, tb.color, screen));
   }
 }
 

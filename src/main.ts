@@ -1,11 +1,13 @@
 import './styles.css';
-import { applyLang } from './i18n';
+import { applyLang, applyTheme } from './i18n';
 import { Library } from './library';
 import { Editor } from './editor';
 import type { DocMeta } from './types';
+import { getDoc } from './db';
 import { Capacitor } from '@capacitor/core';
 
 applyLang();
+applyTheme();
 const app = document.getElementById('app')!;
 
 // Ask the browser not to evict our notes under storage pressure.
@@ -20,6 +22,13 @@ function showLibrary() {
   void library.mount();
 }
 
+async function openDocAt(docId: string, page: number) {
+  const doc = await getDoc(docId);
+  if (!doc) return;
+  doc.lastPage = page;
+  openDoc(doc);
+}
+
 function openDoc(doc: DocMeta) {
   // Android back gesture closes the document instead of leaving the app.
   const onPop = () => void ed.close();
@@ -28,7 +37,7 @@ function openDoc(doc: DocMeta) {
     window.removeEventListener('popstate', onPop);
     if (history.state?.doc) history.back();
     showLibrary();
-  });
+  }, (docId, page) => void openDocAt(docId, page));
   app.replaceChildren(ed.root);
   history.pushState({ doc: doc.id }, '', '');
   window.addEventListener('popstate', onPop);

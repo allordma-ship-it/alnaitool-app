@@ -1,4 +1,4 @@
-export type Tool = 'pen' | 'highlighter' | 'eraser' | 'lasso' | 'text';
+export type Tool = 'pen' | 'highlighter' | 'shape' | 'laser' | 'eraser' | 'lasso' | 'clip' | 'text';
 export type InkTool = 'pen' | 'highlighter';
 export type Template = 'blank' | 'lined' | 'grid' | 'dots' | 'cornell';
 export type PaperColor = 'white' | 'cream' | 'dark';
@@ -57,6 +57,31 @@ export interface DocMeta {
   fileIds?: string[];
   /** open in reading mode (no drawing) */
   reading?: boolean;
+}
+
+/**
+ * An entry in the QalamNote study notebook: a clipped region of a page (picture + any text found
+ * there) or a voice memo, always linked back to its source page.
+ */
+export interface Clip {
+  id: string;
+  kind: 'clip' | 'audio';
+  docId: string;
+  docTitle: string;
+  /** index into the document's pages */
+  page: number;
+  /** region in page coordinates [x0, y0, x1, y1] */
+  rect?: [number, number, number, number];
+  /** JPEG data URL of the clipped region */
+  image?: string;
+  /** text extracted from the PDF under the region */
+  text?: string;
+  /** the user's own note / flashcard question */
+  note: string;
+  audioId?: string;
+  audioMime?: string;
+  duration?: number;
+  createdAt: number;
 }
 
 export const A4 = { w: 595.28, h: 841.89 };

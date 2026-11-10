@@ -6,7 +6,9 @@ import { drawPageContent, displayStroke, imageBitmapFor, clearImageCache, render
 import { drawTextBox, textBoxHit, fontOf, LINE_HEIGHT, isRtl, drawBubble, boxHeight, BUBBLE_PAD } from './text';
 import { openShareDialog } from './share';
 import { convertHandwriting } from './handwriting';
-import { makeStroke, strokeHit, eraseFromStroke, lassoSelects, translateStroke, unionBBox, straightenStroke } from './geometry';
+import { makeStroke, strokeHit, eraseFromStroke, lassoSelects, translateStroke, unionBBox, straightenStroke, recognizeShape } from './geometry';
+import { Ruler, type Edge } from './ruler';
+import { NotesPanel, VoiceRecorder, clipFromStroke, clipFromRect, saveVoiceMemo, fmtTime } from './clips';
 import { findFreeSpot } from './freeSpace';
 import { settings, saveSettings, type ButtonAction } from './settings';
 import { pdfForDoc, renderPdfPage, closePdf } from './pdf';
@@ -32,7 +34,9 @@ interface HistoryEntry { pageId: string; before: Stroke[]; after: Stroke[]; tBef
 
 type Mode =
   | { kind: 'idle' }
-  | { kind: 'ink'; id: number; page: number; tool: InkTool; color: string; width: number; pts: number[]; settled: number; lastP: number; pen: boolean }
+  | { kind: 'ink'; id: number; page: number; tool: InkTool; color: string; width: number; pts: number[]; settled: number; lastP: number; pen: boolean; shape: boolean; edge: Edge | null; vr: DOMRect; tilt: number; tiltN: number }
+  | { kind: 'laser'; id: number }
+  | { kind: 'clip'; id: number; page: number; pts: number[] }
   | { kind: 'erase'; id: number; page: number; before: Stroke[]; changed: boolean }
   | { kind: 'lasso'; id: number; page: number; poly: number[] }
   | { kind: 'move'; id: number; page: number; start: [number, number]; d: [number, number]; before: Stroke[]; moving: Stroke[] }
@@ -51,7 +55,7 @@ export class Editor {
   private pred!: HTMLCanvasElement;
   private wctx!: CanvasRenderingContext2D;
   private pctx!: CanvasRenderingContext2D;
-  private toolbar!: HTMLDivElement;
+  private toolbar!: HTMLElement;
   private optionsBar!: HTMLDivElement;
   private selBar!: HTMLDivElement;
   private pageLabel!: HTMLButtonElement;
@@ -73,6 +77,24 @@ export class Editor {
   private editing: { page: number; tb: TextBox; orig: TextBox | null; el: HTMLTextAreaElement } | null = null;
   private readBtn!: HTMLButtonElement;
   private hold: { id: number; cx: number; cy: number; timer: number } | null = null;
+  private stage!: HTMLDivElement;
+  private dock!: HTMLDivElement;
+  private colorDot!: HTMLButtonElement;
+  private docSub!: HTMLDivElement;
+  private hud!: { el: HTMLDivElement; bar: HTMLElement; val: HTMLElement; tilt: HTMLElement; btn: HTMLElement };
+  private hudPending: PointerEvent | null = null;
+  private toggles: Record<string, HTMLButtonElement> = {};
+  private panel!: NotesPanel;
+  private ruler = new Ruler();
+  private rulerTouches = new Map<number, { x: number; y: number }>();
+  private laser!: HTMLCanvasElement;
+  private lctx!: CanvasRenderingContext2D;
+  private trail: { x: number; y: number; t: number; gap?: boolean }[] = [];
+  private laserLoop = 0;
+  private recorder = new VoiceRecorder();
+  private recBtn!: HTMLButtonElement;
+  private recTimer = 0;
+  private dockH = 60;
   private mode: Mode = { kind: 'idle' };
   private touches = new Map<number, { x: number; y: number; sx: number; sy: number }>();
   private ignoredTouches = new Set<number>();
@@ -95,7 +117,7 @@ export class Editor {
   private disposers: (() => void)[] = [];
   private closed = false;
 
-  constructor(private meta: DocMeta, private onClose: () => void) {
+  constructor(private meta: DocMeta, private onClose: () => void, private openDocAt?: (docId: string, page: number) => void) {
     this.root = h('div', { class: 'editor' });
   }
 
@@ -122,11 +144,13 @@ export class Editor {
     this.world = h('div', { class: 'world' });
     this.wet = h('canvas', { class: 'wet' });
     this.pred = h('canvas', { class: 'wet' });
+    this.laser = h('canvas', { class: 'wet' });
     this.selBox = h('div', { class: 'sel-box', hidden: true });
-    this.viewport.append(this.world, this.wet, this.pred);
+    this.viewport.append(this.world, this.wet, this.pred, this.laser);
     // desynchronized = low-latency front-buffer rendering on Chrome/Android
     this.wctx = this.wet.getContext('2d', { desynchronized: true })!;
     this.pctx = this.pred.getContext('2d', { desynchronized: true })!;
+    this.lctx = this.laser.getContext('2d', { desynchronized: true })!;
 
     const btn = (icon: string, title: string, on: () => void, cls = '') => {
       const b = h('button', { class: `icon-btn ${cls}`, title, 'aria-label': title });
@@ -134,7 +158,11 @@ export class Editor {
       b.addEventListener('click', on);
       return b;
     };
-
+    const labelled = (b: HTMLButtonElement, text: string) => {
+      b.classList.add('labelled');
+      b.append(h('span', {}, text));
+      return b;
+    };
     const toolBtn = (tool: Tool) => {
       const b = btn(icons[tool], t(tool), () => {
         if (this.tool === tool) this.optionsBar.classList.toggle('collapsed');
@@ -144,33 +172,96 @@ export class Editor {
       return b;
     };
 
-    this.pageLabel = h('button', { class: 'page-label', title: t('fitWidth'), dir: 'ltr' });
-    this.pageLabel.addEventListener('click', () => this.fitWidth());
+    // ---- header
+    const mark = h('div', { class: 'brand-mark', 'aria-hidden': 'true' });
+    mark.innerHTML = icons.pen;
+    this.docSub = h('div', { class: 'doc-sub' });
+    const hudBar = h('i');
+    this.hud = {
+      el: h('div', { class: 'hud', title: `${t('pressureLabel')} / ${t('tiltLabel')}` }),
+      bar: hudBar,
+      val: h('b', { dir: 'ltr' }, '—'),
+      tilt: h('b', { dir: 'ltr' }, '—'),
+      btn: h('span', { class: 'hud-btn' }),
+    };
+    this.hud.el.append(
+      h('span', { class: 'hud-pen' }, 'Pen Plus'),
+      h('span', { class: 'hud-k' }, t('pressureLabel')), h('span', { class: 'hud-meter' }, hudBar), this.hud.val,
+      h('span', { class: 'hud-k' }, t('tiltLabel')), this.hud.tilt, this.hud.btn,
+    );
+    this.hud.el.hidden = !settings.showHud;
 
-    const title = h('div', { class: 'doc-title' }, this.meta.title);
-    this.readBtn = btn(icons.book, t('readingMode'), () => this.setReading(!this.reading), 'read-toggle');
-    this.readBtn.append(h('span', {}, t('readingMode')));
+    this.readBtn = labelled(btn(icons.book, t('readingMode'), () => this.setReading(!this.reading), 'read-toggle'), t('readingMode'));
+    this.toggles.palm = btn(icons.palm, t('palmRejection'), () => this.togglePalm(), 'toggle');
+    this.toggles.spread = btn(icons.columns, t('spread'), () => this.toggleSpread(), 'toggle');
+    this.toggles.eye = btn(icons.moon, t('eyeCare'), () => this.toggleEyeCare(), 'toggle');
+    this.toggles.notes = labelled(btn(icons.notebook, t('notes'), () => this.toggleNotes(!settings.notesPanel), 'toggle notes-toggle'), 'QalamNote');
     const backBtn = btn(icons.back, t('back'), () => this.close(), 'back-btn');
-    this.toolbar = h('div', { class: 'toolbar' },
+    this.toolbar = h('header', { class: 'topbar' },
       backBtn,
-      title,
-      this.readBtn,
-      h('div', { class: 'tool-group edit-only' }, toolBtn('pen'), toolBtn('highlighter'), toolBtn('eraser'), toolBtn('lasso'), toolBtn('text')),
+      mark,
+      h('div', { class: 'doc-head' }, h('div', { class: 'doc-title' }, this.meta.title), this.docSub),
+      this.hud.el,
       h('div', { class: 'spacer' }),
-      btn(icons.undo, t('undo'), () => this.undo(), 'edit-only'),
-      btn(icons.redo, t('redo'), () => this.redo(), 'edit-only'),
-      btn(icons.plus, t('addPage'), () => this.addPage(), 'edit-only'),
-      btn(icons.trash, t('deletePage'), () => this.deleteCurrentPage(), 'edit-only'),
-      btn(icons.fit, t('fitScreen'), () => this.toggleFit()),
+      this.readBtn,
+      h('div', { class: 'toggle-group' }, this.toggles.palm, this.toggles.spread, this.toggles.eye),
+      this.toggles.notes,
       btn(icons.share, t('share'), () => this.share()),
       btn(icons.settings, t('settings'), () => openSettings(() => this.onSettingsChanged())),
     );
-    this.optionsBar = h('div', { class: 'options-bar' });
-    this.selBar = h('div', { class: 'sel-bar', hidden: true });
 
-    this.root.append(this.toolbar, this.optionsBar, this.viewport, this.selBar, this.pageLabel);
+    // ---- floating dock
+    this.colorDot = h('button', { class: 'color-dot', title: t('color'), 'aria-label': t('color') });
+    this.colorDot.addEventListener('click', () => this.optionsBar.classList.toggle('collapsed'));
+    this.recBtn = btn(icons.mic, t('record'), () => void this.toggleRecording(), 'rec-btn');
+    this.recBtn.append(h('span', { class: 'rec-time' }));
+    const rulerBtn = btn(icons.ruler, t('ruler'), () => this.toggleRuler(), 'ruler-btn');
+    this.dock = h('div', { class: 'dock' },
+      h('div', { class: 'tool-group' },
+        toolBtn('pen'), toolBtn('highlighter'), toolBtn('shape'), toolBtn('laser'),
+        toolBtn('eraser'), toolBtn('lasso'), toolBtn('clip'), toolBtn('text'),
+      ),
+      h('i', { class: 'sep' }), this.colorDot,
+      h('i', { class: 'sep' }), rulerBtn, this.recBtn,
+      h('i', { class: 'sep' }), btn(icons.undo, t('undo'), () => this.undo()), btn(icons.redo, t('redo'), () => this.redo()),
+    );
+    this.pageLabel = h('button', { class: 'page-label', title: t('fitWidth'), dir: 'ltr' });
+    this.pageLabel.addEventListener('click', () => this.fitWidth());
+    const nav = h('div', { class: 'nav-pill' },
+      btn(icons.prev, t('prevPage'), () => this.goPage(-1), 'flip-rtl'),
+      this.pageLabel,
+      btn(icons.next, t('nextPage'), () => this.goPage(1), 'flip-rtl'),
+      h('i', { class: 'sep' }),
+      btn(icons.zoomOut, t('zoomOut'), () => this.zoomBy(1 / 1.25)),
+      btn(icons.zoomIn, t('zoomIn'), () => this.zoomBy(1.25)),
+      btn(icons.fit, t('fitScreen'), () => this.toggleFit()),
+      h('i', { class: 'sep edit-only' }),
+      btn(icons.plus, t('addPage'), () => this.addPage(), 'edit-only'),
+      btn(icons.trash, t('deletePage'), () => this.deleteCurrentPage(), 'edit-only'),
+    );
+    this.optionsBar = h('div', { class: 'options-bar collapsed' });
+    this.selBar = h('div', { class: 'sel-bar', hidden: true });
+    const dockWrap = h('div', { class: 'dock-wrap' }, nav, this.dock);
+    this.stage = h('div', { class: 'stage' }, this.viewport, this.ruler.el, this.selBar, this.optionsBar, dockWrap);
+    // the dock wraps onto two rows on a portrait screen: keep the popover, toasts and page clamp above it
+    const ro = new ResizeObserver(() => {
+      this.dockH = dockWrap.offsetHeight;
+      document.documentElement.style.setProperty('--dock-h', `${this.dockH}px`);
+    });
+    ro.observe(dockWrap);
+    this.disposers.push(() => ro.disconnect());
+    this.panel = new NotesPanel({
+      meta: this.meta,
+      jump: (page, rect) => this.jumpTo(page, rect),
+      openDoc: (docId, page) => void this.openOther(docId, page),
+      close: () => this.toggleNotes(false),
+    });
+
+    this.root.append(this.toolbar, h('div', { class: 'workspace' }, this.stage, this.panel.root));
     this.setTool('pen');
     this.setReading(this.meta.reading ?? false, true);
+    this.applyToggles();
+    if (settings.notesPanel) void this.panel.refresh();
     // keep the keyboard open while changing text size/colour
     for (const type of ['pointerdown', 'mousedown'])
       this.optionsBar.addEventListener(type, (e) => { if (this.editing) e.preventDefault(); });
@@ -186,6 +277,8 @@ export class Editor {
     on(vp, 'pointerup', (e: PointerEvent) => this.onUp(e, false));
     on(vp, 'pointercancel', (e: PointerEvent) => this.onUp(e, true));
     on(vp, 'pointerleave', (e: PointerEvent) => { if (e.pointerType === 'pen') this.clearPred(); });
+    // the options popover gets out of the way once you start drawing (text keeps it: size, colour, delete)
+    on(vp, 'pointerdown', () => { if (!this.editing && this.tool !== 'text') this.optionsBar.classList.add('collapsed'); }, { capture: true });
     on(vp, 'contextmenu', (e: Event) => e.preventDefault());
     on(vp, 'wheel', (e: WheelEvent) => this.onWheel(e), { passive: false });
     on(window, 'resize', () => this.resize());
@@ -210,21 +303,112 @@ export class Editor {
     }
   }
 
+  private applyToggles() {
+    this.toggles.palm.classList.toggle('active', this.penOnly());
+    this.toggles.spread.classList.toggle('active', settings.spread === 'dual');
+    this.toggles.spread.innerHTML = settings.spread === 'dual' ? icons.columns : icons.single;
+    this.toggles.eye.classList.toggle('active', settings.eyeCare);
+    this.toggles.notes.classList.toggle('active', settings.notesPanel);
+    this.root.classList.toggle('eye-care', settings.eyeCare);
+    this.root.classList.toggle('with-notes', settings.notesPanel);
+    this.hud.el.hidden = !settings.showHud;
+  }
+
+  private togglePalm() {
+    settings.penOnly = this.penOnly() ? 'off' : 'on';
+    saveSettings();
+    this.applyToggles();
+    toast(`${t('palmRejection')}: ${t(this.penOnly() ? 'on' : 'off')}`);
+  }
+
+  private toggleSpread() {
+    const cur = this.currentPage();
+    settings.spread = settings.spread === 'dual' ? 'single' : 'dual';
+    saveSettings();
+    this.applyToggles();
+    this.relayout();
+    this.fitMode = settings.spread === 'dual' ? 'page' : 'width';
+    this.scrollToPage(cur);
+    if (this.fitMode === 'page') this.fitPage(); else this.fitWidth();
+  }
+
+  private toggleEyeCare() {
+    settings.eyeCare = !settings.eyeCare;
+    saveSettings();
+    this.applyToggles();
+    for (const i of this.views.keys()) this.renderInk(i);
+  }
+
+  private toggleNotes(on: boolean) {
+    settings.notesPanel = on;
+    saveSettings();
+    this.applyToggles();
+    if (on) void this.panel.refresh();
+    requestAnimationFrame(() => this.resize());
+  }
+
+  private toggleRuler() {
+    if (this.ruler.visible) this.ruler.hide();
+    else {
+      this.ruler.setScale(this.cam.s);
+      this.ruler.show(this.vw, this.vh);
+      toast(t('rulerHint'));
+    }
+    this.stage.querySelector('.ruler-btn')?.classList.toggle('active', this.ruler.visible);
+  }
+
+  private async toggleRecording() {
+    if (this.recorder.recording) {
+      clearInterval(this.recTimer);
+      this.recBtn.classList.remove('recording');
+      this.recBtn.title = t('record');
+      const res = await this.recorder.stop();
+      if (!res) return;
+      const clip = await saveVoiceMemo(this.meta, this.currentPage(), res);
+      if (!settings.notesPanel) this.toggleNotes(true);
+      void this.panel.refresh(clip.id);
+      toast(`${t('voiceMemo')} · ${fmtTime(res.duration)}`);
+      return;
+    }
+    try {
+      await this.recorder.start();
+    } catch (err) {
+      console.warn(err);
+      toast(t('micDenied'));
+      return;
+    }
+    this.recBtn.classList.add('recording');
+    this.recBtn.title = t('stopRecording');
+    const time = this.recBtn.querySelector('.rec-time')!;
+    const tick = () => (time.textContent = fmtTime(this.recorder.seconds));
+    tick();
+    this.recTimer = window.setInterval(tick, 500);
+  }
+
   private setTool(tool: Tool) {
     this.finishEditing();
     this.tool = tool;
     if (tool !== 'lasso') this.clearSelection();
-    for (const b of this.toolbar.querySelectorAll<HTMLButtonElement>('[data-tool]'))
+    for (const b of this.dock.querySelectorAll<HTMLButtonElement>('[data-tool]'))
       b.classList.toggle('active', b.dataset.tool === tool);
-    this.optionsBar.classList.remove('collapsed');
     this.renderOptions();
+    this.optionsBar.classList.toggle('collapsed', !['text', 'eraser', 'clip', 'laser', 'lasso', 'shape'].includes(tool));
+  }
+
+  private updateColorDot() {
+    const tool = this.tool;
+    const c = tool === 'pen' || tool === 'highlighter' || tool === 'shape' ? settings.colors[tool]
+      : tool === 'text' ? settings.textColor : tool === 'laser' ? '#f43f5e' : null;
+    this.colorDot.style.setProperty('--c', c ?? 'transparent');
+    this.colorDot.classList.toggle('none', !c);
   }
 
   private renderOptions() {
     const bar = this.optionsBar;
     bar.replaceChildren();
     const tool = this.tool;
-    if (tool === 'pen' || tool === 'highlighter') {
+    this.updateColorDot();
+    if (tool === 'pen' || tool === 'highlighter' || tool === 'shape') {
       const swatches = h('div', { class: 'swatches' });
       for (const c of settings.palette) {
         const sw = h('button', { class: 'swatch', style: `--c:${c}`, 'aria-label': c });
@@ -236,16 +420,18 @@ export class Editor {
       custom.addEventListener('input', () => { settings.colors[tool] = custom.value; saveSettings(); });
       custom.addEventListener('change', () => this.renderOptions());
       swatches.append(custom);
-      const widths = tool === 'pen' ? [1, 2, 3.5, 6] : [8, 14, 22];
+      const widths = tool === 'highlighter' ? [8, 14, 22] : [1, 2, 3.5, 6];
       const wg = h('div', { class: 'widths' });
       for (const w of widths) {
         const b = h('button', { class: 'width-btn', 'aria-label': `${w}` });
-        b.append(h('span', { style: `width:${Math.min(22, 3 + w * (tool === 'pen' ? 2.5 : 0.8))}px;height:${Math.min(22, 3 + w * (tool === 'pen' ? 2.5 : 0.8))}px;background:${settings.colors[tool]};${tool === 'highlighter' ? 'opacity:.5;border-radius:3px' : ''}` }));
+        const k = tool === 'highlighter' ? 0.8 : 2.5;
+        b.append(h('span', { style: `width:${Math.min(22, 3 + w * k)}px;height:${Math.min(22, 3 + w * k)}px;background:${settings.colors[tool]};${tool === 'highlighter' ? 'opacity:.5;border-radius:3px' : ''}` }));
         if (settings.widths[tool] === w) b.classList.add('active');
         b.addEventListener('click', () => { settings.widths[tool] = w; saveSettings(); this.renderOptions(); });
         wg.append(b);
       }
       bar.append(swatches, wg);
+      if (tool === 'shape') bar.append(h('span', { class: 'hint' }, t('shapeHint')));
     } else if (tool === 'eraser') {
       const modes = h('div', { class: 'seg' });
       for (const m of ['stroke', 'precise'] as const) {
@@ -285,24 +471,37 @@ export class Editor {
       }
       bar.append(h('span', { class: 'hint' }, t('textHint')));
     } else {
-      bar.append(h('span', { class: 'hint' }, t('lassoHint')));
+      const hint = tool === 'laser' ? 'laserHint' : tool === 'clip' ? 'clipHint' : 'lassoHint';
+      bar.append(h('span', { class: 'hint' }, t(hint)));
     }
   }
 
   private onSettingsChanged() {
     this.renderOptions();
+    this.applyToggles();
     for (const i of this.views.keys()) this.renderInk(i);
   }
 
   // ---------------------------------------------------------------- layout & camera
   private relayout() {
-    this.contentW = Math.max(...this.pages.map((p) => p.w), 100);
+    const dual = settings.spread === 'dual' && this.pages.length > 1;
+    // rows of one or two pages; a two-page row reads left → right
+    const rows: number[][] = [];
+    for (let i = 0; i < this.pages.length; i += dual ? 2 : 1) rows.push(dual ? [i, i + 1].filter((j) => j < this.pages.length) : [i]);
+    const rowW = (r: number[]) => r.reduce((sum, i) => sum + this.pages[i].w, 0) + GAP * (r.length - 1);
+    this.contentW = Math.max(...rows.map(rowW), 100);
     let y = 0;
-    this.layout = this.pages.map((p) => {
-      const l = { x: (this.contentW - p.w) / 2, y, w: p.w, h: p.h };
-      y += p.h + GAP;
-      return l;
-    });
+    this.layout = [];
+    for (const r of rows) {
+      let x = (this.contentW - rowW(r)) / 2;
+      const rh = Math.max(...r.map((i) => this.pages[i].h));
+      for (const i of r) {
+        const p = this.pages[i];
+        this.layout[i] = { x, y: y + (rh - p.h) / 2, w: p.w, h: p.h };
+        x += p.w + GAP;
+      }
+      y += rh + GAP;
+    }
     this.contentH = Math.max(y - GAP, 100);
     for (const [i, v] of this.views) {
       v.el.remove();
@@ -317,7 +516,7 @@ export class Editor {
     const prevW = this.vw;
     this.vw = r.width;
     this.vh = r.height;
-    for (const c of [this.wet, this.pred]) {
+    for (const c of [this.wet, this.pred, this.laser]) {
       c.width = Math.round(r.width * this.dpr);
       c.height = Math.round(r.height * this.dpr);
     }
@@ -348,9 +547,14 @@ export class Editor {
     const l = this.layout[i];
     if (!l) return;
     this.fitMode = 'page';
-    this.cam.s = Math.max(0.1, Math.min((this.vw - 24) / l.w, (this.vh - 24) / l.h));
+    // the whole row (both pages in a spread) must fit
+    const row = this.layout.filter((o) => o.y < l.y + l.h && o.y + o.h > l.y);
+    const top = Math.min(...row.map((o) => o.y)), bottom = Math.max(...row.map((o) => o.y + o.h));
+    const left = Math.min(...row.map((o) => o.x)), right = Math.max(...row.map((o) => o.x + o.w));
+    const bottomPad = this.dockH + 30;
+    this.cam.s = Math.max(0.1, Math.min((this.vw - 24) / (right - left), (this.vh - 24 - bottomPad) / (bottom - top)));
     this.cam.tx = (this.vw - this.contentW * this.cam.s) / 2;
-    this.cam.ty = (this.vh - l.h * this.cam.s) / 2 - l.y * this.cam.s;
+    this.cam.ty = (this.vh - bottomPad - (bottom - top) * this.cam.s) / 2 - top * this.cam.s;
     this.clampCamera();
     this.applyCamera();
   }
@@ -376,14 +580,16 @@ export class Editor {
     const cw = this.contentW * c.s, ch = this.contentH * c.s;
     if (cw <= this.vw) c.tx = (this.vw - cw) / 2;
     else c.tx = Math.min(24, Math.max(this.vw - cw - 24, c.tx));
-    const top = 12, bottom = this.vh - ch - 80;
-    if (ch + 92 <= this.vh) c.ty = top;
+    const pad = this.dockH + 36;
+    const top = 12, bottom = this.vh - ch - pad;
+    if (ch + pad + 12 <= this.vh) c.ty = top;
     else c.ty = Math.min(top, Math.max(bottom, c.ty));
   }
 
   private applyCamera() {
     const { s, tx, ty } = this.cam;
     this.world.style.transform = `translate3d(${tx}px,${ty}px,0) scale(${s})`;
+    this.ruler.setScale(s);
     this.scheduleUpdate();
     clearTimeout(this.rerenderTimer);
     this.rerenderTimer = window.setTimeout(() => this.rerenderForScale(), 180);
@@ -438,6 +644,8 @@ export class Editor {
     for (const i of keep) if (!this.views.has(i)) this.mount(i);
     const cur = this.currentPage();
     this.pageLabel.textContent = `${cur + 1} / ${this.pages.length}`;
+    const kind = t(this.meta.kind === 'pdf' ? 'kindPdf' : this.meta.kind === 'images' ? 'kindImages' : 'kindNotebook');
+    this.docSub.textContent = `${kind} · ${t('page')} ${cur + 1} / ${this.pages.length}`;
     if (this.meta.lastPage !== cur) {
       this.meta.lastPage = cur;
       this.metaDirty = true;
@@ -452,7 +660,9 @@ export class Editor {
 
   private mount(i: number) {
     const l = this.layout[i];
-    const el = h('div', { class: 'page', style: `left:${l.x}px;top:${l.y}px;width:${l.w}px;height:${l.h}px` });
+    const pg = this.pages[i];
+    const kind = pg.bg.kind === 'template' ? (pg.bg.paper === 'dark' ? 'paper-dark' : 'paper') : pg.bg.kind;
+    const el = h('div', { class: `page ${kind}`, style: `left:${l.x}px;top:${l.y}px;width:${l.w}px;height:${l.h}px` });
     const bg = h('canvas', { class: 'bg' });
     const ink = h('canvas', { class: 'ink' });
     el.append(bg, ink);
@@ -525,7 +735,7 @@ export class Editor {
     ctx.clearRect(0, 0, W, H);
     ctx.setTransform(sc, 0, 0, sc, 0, 0);
     if (this.editing?.page === i) (exclude ??= new Set()).add(this.editing.tb.id);
-    drawPageContent(ctx, p, exclude);
+    drawPageContent(ctx, p, exclude, true);
   }
 
   private scheduleInk(i: number) {
@@ -538,7 +748,7 @@ export class Editor {
   }
 
   private display(p: PageData, s: Stroke): Stroke {
-    return displayStroke(p, s);
+    return displayStroke(p, s, true);
   }
 
   // ---------------------------------------------------------------- input
@@ -568,6 +778,7 @@ export class Editor {
 
   private onDown(e: PointerEvent) {
     if ((e.target as HTMLElement).closest?.('textarea')) return;
+    if (e.pointerType === 'pen') this.queueHud(e);
     if (this.editing) {
       // a tap outside the text box finishes typing
       this.finishEditing();
@@ -599,6 +810,15 @@ export class Editor {
     }
 
     if (e.pointerType === 'touch') {
+      // fingers on the ruler move/rotate it (a second finger anywhere joins in to rotate)
+      if (this.ruler.visible && !this.touches.size && (this.rulerTouches.size || this.ruler.hit(...this.vpPoint(e)))) {
+        if (performance.now() - this.lastPenContact < 300) return;
+        const [x, y] = this.vpPoint(e);
+        this.rulerTouches.set(e.pointerId, { x, y });
+        this.viewport.setPointerCapture(e.pointerId);
+        this.ruler.begin([...this.rulerTouches.values()]);
+        return;
+      }
       const palm = (e.width > 45 && e.height > 45) || performance.now() - this.lastPenContact < 300 ||
         (this.mode.kind !== 'idle' && this.mode.kind !== 'pan' && this.isPenMode());
       if (palm) {
@@ -658,16 +878,32 @@ export class Editor {
     const [x, y] = this.local(e, page);
     this.lastProcessedTs.set(e.pointerId, e.timeStamp);
 
-    if (tool === 'pen' || tool === 'highlighter') {
+    if (tool === 'pen' || tool === 'highlighter' || tool === 'shape') {
       this.clearSelection();
-      const p = this.pressure(e, 0.5);
+      const shape = tool === 'shape';
+      const ink: InkTool = shape ? 'pen' : tool;
+      const p = shape ? 0.5 : this.pressure(e, 0.5);
+      const vr = this.viewport.getBoundingClientRect();
+      const width = settings.widths[tool];
+      // a stroke that starts against a ruler edge follows that edge
+      const edge = shape ? null : this.ruler.edgeNear(e.clientX - vr.left, e.clientY - vr.top);
       this.mode = {
-        kind: 'ink', id: e.pointerId, page, tool, pen: e.pointerType === 'pen',
-        color: inkColorForPaper(this.pages[page].bg, settings.colors[tool]),
-        width: settings.widths[tool], pts: [x, y, p], settled: 1, lastP: p,
+        kind: 'ink', id: e.pointerId, page, tool: ink, pen: e.pointerType === 'pen', shape, edge, vr,
+        color: this.display(this.pages[page], { color: settings.colors[tool] } as Stroke).color,
+        width, pts: [], settled: 1, lastP: p, tilt: 0, tiltN: 0,
       };
+      const [sx, sy] = this.inkPoint(e, this.mode);
+      this.mode.pts.push(sx, sy, p);
+      this.trackTilt(e, this.mode);
       this.drawWet([]);
-      this.armHold(e, page, x, y);
+      if (!shape && !edge) this.armHold(e, page, x, y);
+    } else if (tool === 'laser') {
+      this.clearSelection();
+      this.mode = { kind: 'laser', id: e.pointerId };
+      this.addLaser(e, true);
+    } else if (tool === 'clip') {
+      this.clearSelection();
+      this.mode = { kind: 'clip', id: e.pointerId, page, pts: [x, y, 0.5] };
     } else if (tool === 'eraser') {
       this.clearSelection();
       this.mode = { kind: 'erase', id: e.pointerId, page, before: this.pages[page].strokes, changed: false };
@@ -696,17 +932,117 @@ export class Editor {
 
   private pressure(e: PointerEvent, prev: number) {
     if (e.pointerType !== 'pen') return 0.5;
-    const raw = Math.max(0.05, Math.min(1, e.pressure || 0.05));
+    const raw = Math.pow(Math.max(0.05, Math.min(1, e.pressure || 0.05)), settings.pressureCurve);
     return prev * 0.35 + raw * 0.65;
+  }
+
+  private vpPoint(e: { clientX: number; clientY: number }): [number, number] {
+    const r = this.viewport.getBoundingClientRect();
+    return [e.clientX - r.left, e.clientY - r.top];
+  }
+
+  /** Page point for an ink event; snapped onto the ruler edge when drawing along it. */
+  private inkPoint(e: { clientX: number; clientY: number }, m: Extract<Mode, { kind: 'ink' }>): [number, number] {
+    if (!m.edge) return this.local(e, m.page);
+    const off = (m.width * this.cam.s) / 2 + 1;
+    const [sx, sy] = this.ruler.project(e.clientX - m.vr.left, e.clientY - m.vr.top, m.edge, off);
+    return this.local({ clientX: sx + m.vr.left, clientY: sy + m.vr.top }, m.page);
+  }
+
+  private static tiltOf(e: PointerEvent) {
+    const alt = (e as PointerEvent & { altitudeAngle?: number }).altitudeAngle;
+    if (typeof alt === 'number' && alt > 0 && alt < Math.PI / 2 - 1e-3) return 90 - (alt * 180) / Math.PI;
+    return Math.max(Math.abs(e.tiltX || 0), Math.abs(e.tiltY || 0));
+  }
+
+  private trackTilt(e: PointerEvent, m: Extract<Mode, { kind: 'ink' }>) {
+    if (e.pointerType !== 'pen') return;
+    m.tilt += Editor.tiltOf(e);
+    m.tiltN++;
+  }
+
+  /** Live pen readout in the header (batched to one update per frame). */
+  private queueHud(e: PointerEvent) {
+    if (!settings.showHud) return;
+    const first = !this.hudPending;
+    this.hudPending = e;
+    if (!first) return;
+    requestAnimationFrame(() => {
+      const ev = this.hudPending;
+      this.hudPending = null;
+      if (!ev) return;
+      const p = ev.buttons ? Math.max(0, Math.min(1, ev.pressure)) : 0;
+      this.hud.bar.style.width = `${Math.round(p * 100)}%`;
+      this.hud.val.textContent = ev.buttons ? `${Math.round(p * 4096)}` : '—';
+      this.hud.tilt.textContent = `${Math.round(Editor.tiltOf(ev))}°`;
+      const btn = this.buttonAction(ev);
+      this.hud.btn.classList.toggle('on', !!btn);
+      this.hud.btn.textContent = btn ? t(btn === 'none' ? 'none' : btn) : '';
+      this.hud.el.classList.add('live');
+    });
+  }
+
+  // ---------------------------------------------------------------- laser pointer
+  private addLaser(e: PointerEvent, gap = false) {
+    const list = e.getCoalescedEvents?.() ?? [];
+    for (const ce of list.length ? list : [e]) {
+      const [x, y] = this.vpPoint(ce);
+      this.trail.push({ x, y, t: performance.now(), gap });
+      gap = false;
+    }
+    if (!this.laserLoop) this.laserLoop = requestAnimationFrame(() => this.drawLaser());
+  }
+
+  private drawLaser() {
+    const LIFE = 700;
+    const now = performance.now();
+    const holding = this.mode.kind === 'laser';
+    this.trail = this.trail.filter((p) => now - p.t < LIFE);
+    const ctx = this.lctx;
+    this.clearCanvas(ctx);
+    ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    for (const [w, color, blur] of [[7, 'rgba(244,63,94,', 14], [2.4, 'rgba(255,241,242,', 0]] as const) {
+      ctx.shadowColor = '#f43f5e';
+      ctx.shadowBlur = blur;
+      ctx.lineWidth = w;
+      for (let i = 1; i < this.trail.length; i++) {
+        const a = this.trail[i - 1], b = this.trail[i];
+        if (b.gap) continue;
+        ctx.strokeStyle = `${color}${Math.max(0, 1 - (now - b.t) / LIFE).toFixed(3)})`;
+        ctx.beginPath();
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(b.x, b.y);
+        ctx.stroke();
+      }
+    }
+    const last = this.trail[this.trail.length - 1];
+    if (holding && last) {
+      ctx.shadowBlur = 18;
+      ctx.fillStyle = '#ff4d6d';
+      ctx.beginPath();
+      ctx.arc(last.x, last.y, 5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.shadowBlur = 0;
+    this.laserLoop = this.trail.length || holding ? requestAnimationFrame(() => this.drawLaser()) : 0;
   }
 
   /** pointerrawupdate: fires without waiting for the next frame → lowest latency for ink */
   private onRaw(e: PointerEvent) {
+    if (e.pointerType === 'pen') this.queueHud(e);
     const m = this.mode;
     if (m.kind === 'ink' && m.id === e.pointerId) this.extendInk(e);
   }
 
   private onMove(e: PointerEvent) {
+    if (this.rulerTouches.has(e.pointerId)) {
+      this.rulerTouches.set(e.pointerId, { x: this.vpPoint(e)[0], y: this.vpPoint(e)[1] });
+      this.ruler.update([...this.rulerTouches.values()]);
+      return;
+    }
+    if (e.pointerType === 'pen' && !('onpointerrawupdate' in window)) this.queueHud(e);
     if (e.pointerType === 'pen') {
       this.lastPenContact = e.buttons ? performance.now() : this.lastPenContact;
       if (this.mode.kind === 'idle') {
@@ -736,7 +1072,15 @@ export class Editor {
     }
     if (m.id !== e.pointerId) return;
     if (m.kind === 'ink') return this.extendInk(e);
+    if (m.kind === 'laser') return this.addLaser(e);
     const events = e.getCoalescedEvents?.() ?? [e];
+    if (m.kind === 'clip') {
+      for (const ce of events.length ? events : [e]) {
+        const [x, y] = this.local(ce, m.page);
+        m.pts.push(x, y, 0.5);
+      }
+      return this.drawClipGesture(m.page, m.pts);
+    }
     if (m.kind === 'erase') {
       for (const ce of events.length ? events : [e]) {
         const [x, y] = this.local(ce, m.page);
@@ -802,7 +1146,7 @@ export class Editor {
     const p = this.pages[page];
     const l = this.layout[page];
     const { s, tx, ty } = this.cam;
-    const visible: [number, number, number, number] = [-tx / s - l.x, -ty / s - l.y, (this.vw - tx) / s - l.x, (this.vh - 70 - ty) / s - l.y];
+    const visible: [number, number, number, number] = [-tx / s - l.x, -ty / s - l.y, (this.vw - tx) / s - l.x, (this.vh - this.dockH - 40 - ty) / s - l.y];
     // try a wide bubble and a narrow one that fits page margins; keep whichever lands closer and freer
     const bg = this.views.get(page)?.bg;
     const fits = ([[150, 62], [104, 96]] as const).map(([w, hh]) => ({
@@ -816,7 +1160,7 @@ export class Editor {
     this.commitTexts(page, [...(p.texts ?? []), tb]);
     // the only free spot may be off screen: bring the bubble into view
     const top = (l.y + spot.y) * s + ty, bottom = (l.y + spot.y + H + BUBBLE_PAD * 2) * s + ty;
-    if (bottom > this.vh - 70) this.cam.ty -= bottom - (this.vh - 70);
+    if (bottom > this.vh - this.dockH - 40) this.cam.ty -= bottom - (this.vh - this.dockH - 40);
     else if (top < 8) this.cam.ty += 8 - top;
     this.clampCamera();
     this.applyCamera();
@@ -834,9 +1178,10 @@ export class Editor {
     const minDist = 0.35 / this.cam.s;
     for (const ce of list) {
       if (ce.timeStamp <= last && list.length > 1) continue;
-      const [x, y] = this.local(ce, m.page);
+      const [x, y] = this.inkPoint(ce, m);
+      this.trackTilt(ce, m);
       const n = m.pts.length;
-      const p = this.pressure(ce, m.lastP);
+      const p = m.shape ? 0.5 : this.pressure(ce, m.lastP);
       m.lastP = p;
       if (Math.hypot(x - m.pts[n - 3], y - m.pts[n - 2]) < minDist) {
         m.pts[n - 1] = Math.max(m.pts[n - 1], p);
@@ -847,7 +1192,7 @@ export class Editor {
     this.lastProcessedTs.set(e.pointerId, list[list.length - 1].timeStamp);
     const predicted: number[] = [];
     for (const pe of (e.getPredictedEvents?.() ?? []).slice(0, 2)) {
-      const [x, y] = this.local(pe, m.page);
+      const [x, y] = this.inkPoint(pe, m);
       predicted.push(x, y, m.lastP);
     }
     this.drawWet(predicted);
@@ -900,7 +1245,110 @@ export class Editor {
     const a = this.buttonAction(e);
     const tool = a && a !== 'none' ? a : this.tool;
     if (tool === 'eraser') this.drawEraserCursor(e.clientX, e.clientY);
-    else this.clearPred();
+    else if (tool === 'laser') {
+      const [x, y] = this.vpPoint(e);
+      const ctx = this.pctx;
+      this.clearCanvas(ctx);
+      ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+      ctx.shadowColor = '#f43f5e';
+      ctx.shadowBlur = 10;
+      ctx.fillStyle = 'rgba(244,63,94,.55)';
+      ctx.beginPath();
+      ctx.arc(x, y, 4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+    } else this.clearPred();
+  }
+
+  private drawClipGesture(page: number, pts: number[]) {
+    const ctx = this.wctx;
+    this.clearCanvas(ctx);
+    this.wetTransform(ctx, page);
+    ctx.beginPath();
+    ctx.moveTo(pts[0], pts[1]);
+    for (let i = 3; i < pts.length; i += 3) ctx.lineTo(pts[i], pts[i + 1]);
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.shadowColor = '#06b6d4';
+    ctx.shadowBlur = 8;
+    ctx.setLineDash([7 / this.cam.s, 4 / this.cam.s]);
+    ctx.lineWidth = 2.6 / this.cam.s;
+    ctx.strokeStyle = '#06b6d4';
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.shadowBlur = 0;
+  }
+
+  private async finishClip(page: number, pts: number[]) {
+    try {
+      const clip = await clipFromStroke(this.meta, this.pages, page, pts);
+      this.clearCanvas(this.wctx);
+      if (!clip) return;
+      this.afterClip(clip.id, page, clip.rect);
+    } catch (err) {
+      console.error(err);
+      this.clearCanvas(this.wctx);
+      toast(String(err));
+    }
+  }
+
+  private afterClip(id: string, page: number, rect?: [number, number, number, number]) {
+    if (rect) this.flashRect(page, rect);
+    if (!settings.notesPanel) this.toggleNotes(true);
+    void this.panel.refresh(id);
+    toast(`${t('clipped')} ${page + 1}`);
+  }
+
+  /** Briefly outlines a region of a page (new clip, jump target). */
+  private flashRect(page: number, r: [number, number, number, number]) {
+    const v = this.views.get(page);
+    if (!v) return;
+    const el = h('div', { class: 'flash-rect', style: `left:${r[0]}px;top:${r[1]}px;width:${r[2] - r[0]}px;height:${r[3] - r[1]}px` });
+    v.el.append(el);
+    setTimeout(() => el.remove(), 2400);
+  }
+
+  private scrollToPage(i: number, rect?: [number, number, number, number]) {
+    const l = this.layout[i];
+    if (!l) return;
+    if (rect) this.cam.ty = this.vh * 0.38 - (l.y + (rect[1] + rect[3]) / 2) * this.cam.s;
+    else this.cam.ty = 12 - l.y * this.cam.s;
+    this.clampCamera();
+    this.applyCamera();
+  }
+
+  jumpTo(page: number, rect?: [number, number, number, number]) {
+    if (!this.layout[page]) return;
+    this.scrollToPage(page, rect);
+    if (rect) requestAnimationFrame(() => requestAnimationFrame(() => this.flashRect(page, rect)));
+  }
+
+  private async openOther(docId: string, page: number) {
+    if (!this.openDocAt) return;
+    const open = this.openDocAt;
+    await this.close();
+    open(docId, page);
+  }
+
+  private goPage(dir: 1 | -1) {
+    const cur = this.currentPage();
+    const step = settings.spread === 'dual' ? 2 : 1;
+    const next = Math.max(0, Math.min(this.pages.length - 1, cur + dir * step));
+    if (this.fitMode === 'page') {
+      this.scrollToPage(next);
+      this.fitPage();
+    } else this.scrollToPage(next);
+  }
+
+  private zoomBy(f: number) {
+    const cx = this.vw / 2, cy = this.vh / 2;
+    const wx = (cx - this.cam.tx) / this.cam.s, wy = (cy - this.cam.ty) / this.cam.s;
+    this.fitMode = null;
+    this.cam.s = Math.min(MAX_SCALE, Math.max(this.fitScale() * 0.4, this.cam.s * f));
+    this.cam.tx = cx - wx * this.cam.s;
+    this.cam.ty = cy - wy * this.cam.s;
+    this.clampCamera();
+    this.applyCamera();
   }
 
   private drawEraserCursor(cx: number, cy: number) {
@@ -978,6 +1426,10 @@ export class Editor {
   }
 
   private onUp(e: PointerEvent, cancelled: boolean) {
+    if (this.rulerTouches.delete(e.pointerId)) {
+      this.ruler.rebase([...this.rulerTouches.values()]);
+      return;
+    }
     if (this.hold?.id === e.pointerId) this.clearHold();
     if (this.ignoredTouches.delete(e.pointerId)) return;
     if (e.pointerType === 'pen') this.lastPenContact = performance.now();
@@ -1014,6 +1466,8 @@ export class Editor {
     }
     switch (m.kind) {
       case 'ink': return this.commitInk(m);
+      case 'laser': return;
+      case 'clip': return void this.finishClip(m.page, m.pts);
       case 'erase': {
         this.clearPred();
         if (m.changed) this.commit(m.page, m.before, this.pages[m.page].strokes, false);
@@ -1083,7 +1537,10 @@ export class Editor {
     }
     this.restyleEditing(false);
     this.renderInk(page);
-    if (this.tool === 'text') this.renderOptions();
+    if (this.tool === 'text') {
+      this.renderOptions();
+      this.optionsBar.classList.remove('collapsed');
+    }
     ta.focus({ preventScroll: true });
     ta.setSelectionRange(ta.value.length, ta.value.length);
     this.growEditing();
@@ -1151,6 +1608,10 @@ export class Editor {
   private cancelMode() {
     this.clearHold();
     const m = this.mode;
+    if (m.kind === 'laser') {
+      this.mode = { kind: 'idle' };
+      return;
+    }
     this.mode = { kind: 'idle' };
     this.clearCanvas(this.wctx);
     this.clearPred();
@@ -1163,15 +1624,23 @@ export class Editor {
 
   private commitInk(m: Extract<Mode, { kind: 'ink' }>) {
     const page = this.pages[m.page];
-    // highlights and underlines snap to a clean straight line
-    const straight = settings.straighten ? straightenStroke(m.pts, m.tool) : null;
-    const stroke = makeStroke(m.tool, settings.colors[m.tool], m.width, straight ?? m.pts);
+    let pts = m.pts;
+    let width = m.width;
+    if (m.shape) {
+      pts = recognizeShape(m.pts)?.pts ?? m.pts;
+    } else if (!m.edge && settings.straighten) {
+      // highlights and underlines snap to a clean straight line
+      pts = straightenStroke(m.pts, m.tool) ?? m.pts;
+    }
+    // chisel marker: a tilted pen lays down a wider highlight
+    if (m.tool === 'highlighter' && settings.tiltHighlighter && m.tiltN) width *= 1 + (Math.min(60, m.tilt / m.tiltN) / 90) * 0.85;
+    const stroke = makeStroke(m.tool, settings.colors[m.shape ? 'shape' : m.tool], width, pts);
     const before = page.strokes;
     const after = [...before, stroke];
     page.strokes = after;
     // draw just this stroke onto the page; highlighters need a full redraw to stay under ink
     const v = this.views.get(m.page);
-    if (v && m.tool === 'pen') {
+    if (v && m.tool === 'pen' && pts === m.pts) {
       const ctx = v.ink.getContext('2d')!;
       ctx.setTransform(v.scale, 0, 0, v.scale, 0, 0);
       drawStroke(ctx, this.display(page, stroke), settings.pressure);
@@ -1224,6 +1693,7 @@ export class Editor {
       mk(icons.trash, t('delete'), () => this.selectionDelete()),
       mk(icons.copy, t('duplicate'), () => this.selectionDuplicate()),
       mk(icons.toText, t('toText'), () => void this.selectionToText()),
+      mk(icons.clip, t('clip'), () => void this.selectionToClip()),
     );
     for (const c of settings.palette.slice(0, 6)) {
       const sw = h('button', { class: 'swatch', style: `--c:${c}`, 'aria-label': c });
@@ -1304,6 +1774,17 @@ export class Editor {
     this.renderInk(page);
     this.pushHistory({ pageId: p.id, before, after, tBefore, tAfter });
     this.markDirty(p.id);
+  }
+
+  private async selectionToClip() {
+    const sel = this.selection;
+    if (!sel) return;
+    const bb = unionBBox(this.pages[sel.page].strokes.filter((s) => sel.ids.has(s.id)));
+    if (!bb) return;
+    const page = sel.page;
+    this.clearSelection();
+    const clip = await clipFromRect(this.meta, this.pages, page, [bb[0] - 10, bb[1] - 10, bb[2] + 10, bb[3] + 10]);
+    this.afterClip(clip.id, page, clip.rect);
   }
 
   private selectionRecolor(color: string) {
@@ -1465,7 +1946,7 @@ export class Editor {
     if (mod && e.key.toLowerCase() === 'z') { e.preventDefault(); e.shiftKey ? this.redo() : this.undo(); }
     else if (mod && e.key.toLowerCase() === 'y') { e.preventDefault(); this.redo(); }
     else if (!mod) {
-      const map: Record<string, Tool> = { p: 'pen', h: 'highlighter', e: 'eraser', l: 'lasso', t: 'text' };
+      const map: Record<string, Tool> = { p: 'pen', h: 'highlighter', s: 'shape', k: 'laser', e: 'eraser', l: 'lasso', c: 'clip', t: 'text' };
       if (map[e.key] && !this.reading) this.setTool(map[e.key]);
       if ((e.key === 'Delete' || e.key === 'Backspace') && this.selection) this.selectionDelete();
     }
@@ -1482,6 +1963,9 @@ export class Editor {
     if (this.closed) return;
     this.closed = true;
     this.finishEditing();
+    if (this.recorder.recording) await this.toggleRecording();
+    cancelAnimationFrame(this.laserLoop);
+    this.panel.dispose();
     try {
       this.meta.thumb = (await this.makeThumb()) ?? this.meta.thumb;
       this.metaDirty = true;

@@ -1,7 +1,12 @@
 import { settings } from './settings';
 
 const dict = {
-  appName: { ar: 'Alnai Notes', de: 'Alnai Notes', en: 'Alnai Notes' },
+  appName: { ar: 'QalamFlow Studio', de: 'QalamFlow Studio', en: 'QalamFlow Studio' },
+  tagline: {
+    ar: 'دفتر وقارئ PDF مُعاير لقلم Lenovo Tab Pen Plus',
+    de: 'Notizbuch & PDF-Reader, abgestimmt auf den Lenovo Tab Pen Plus',
+    en: 'Notebook & PDF reader tuned for the Lenovo Tab Pen Plus',
+  },
   library: { ar: 'المكتبة', de: 'Bibliothek', en: 'Library' },
   newNotebook: { ar: 'دفتر جديد', de: 'Neues Notizbuch', en: 'New notebook' },
   importPdf: { ar: 'استيراد PDF', de: 'PDF importieren', en: 'Import PDF' },
@@ -128,6 +133,74 @@ const dict = {
     en: 'Write inside the bubble with the pen · to type or delete: text tool T, then tap it',
   },
   deleteText: { ar: 'حذف هذا النص / الفقاعة', de: 'Diesen Text / diese Blase löschen', en: 'Delete this text / bubble' },
+  shape: { ar: 'أشكال ذكية', de: 'Formen', en: 'Smart shapes' },
+  shapeHint: {
+    ar: 'ارسم خطاً أو سهماً أو مستطيلاً أو دائرة أو مثلثاً وسيتحوّل لشكل نظيف',
+    de: 'Linie, Pfeil, Rechteck, Kreis oder Dreieck zeichnen – wird zur sauberen Form',
+    en: 'Draw a line, arrow, rectangle, circle or triangle – it snaps to a clean shape',
+  },
+  laser: { ar: 'مؤشر ليزر', de: 'Laserpointer', en: 'Laser pointer' },
+  laserHint: { ar: 'للشرح والعرض: يختفي الأثر تلقائياً ولا يُحفظ', de: 'Zum Zeigen: Spur verblasst und wird nicht gespeichert', en: 'For presenting: the trail fades and is not saved' },
+  clip: { ar: 'اقتطاع إلى الدفتر', de: 'In Notizbuch ausschneiden', en: 'Clip to notebook' },
+  clipHint: {
+    ar: 'خطّ تحت جملة لاقتطاع فقرتها كاملة، أو ارسم إطاراً حول أي جزء — يُحفظ في QalamNote مع رابط للصفحة',
+    de: 'Satz unterstreichen = ganzen Absatz ausschneiden, oder einen Bereich umrahmen – landet in QalamNote mit Link zur Seite',
+    en: 'Underline a sentence to clip its whole paragraph, or frame any area – saved to QalamNote with a link back',
+  },
+  clipped: { ar: '🔗 تم الاقتطاع إلى QalamNote — صفحة', de: '🔗 In QalamNote ausgeschnitten — Seite', en: '🔗 Clipped to QalamNote — page' },
+  ruler: { ar: 'المسطرة', de: 'Lineal', en: 'Ruler' },
+  rulerHint: {
+    ar: 'اسحب المسطرة بإصبع، وأدرها بإصبعين. ارسم بالقلم على حافتها لخط مستقيم',
+    de: 'Mit einem Finger ziehen, mit zwei drehen. Mit dem Stift an der Kante entlang zeichnen',
+    en: 'Drag with one finger, rotate with two. Draw along its edge with the pen',
+  },
+  record: { ar: 'تسجيل ملاحظة صوتية', de: 'Sprachnotiz aufnehmen', en: 'Record voice memo' },
+  stopRecording: { ar: 'إيقاف التسجيل', de: 'Aufnahme beenden', en: 'Stop recording' },
+  micDenied: { ar: 'لا يمكن الوصول للميكروفون. اسمح بالإذن من إعدادات التطبيق.', de: 'Kein Zugriff aufs Mikrofon. Bitte in den App-Einstellungen erlauben.', en: 'No microphone access. Please allow it in the app settings.' },
+  voiceMemo: { ar: 'ملاحظة صوتية', de: 'Sprachnotiz', en: 'Voice memo' },
+  notes: { ar: 'دفتر QalamNote', de: 'QalamNote', en: 'QalamNote' },
+  notesEmpty: {
+    ar: 'لا توجد اقتطاعات بعد. اختر أداة الاقتطاع وخطّ تحت جملة في الصفحة.',
+    de: 'Noch nichts ausgeschnitten. Ausschneide-Werkzeug wählen und einen Satz unterstreichen.',
+    en: 'Nothing clipped yet. Pick the clip tool and underline a sentence.',
+  },
+  thisDoc: { ar: 'هذا المستند', de: 'Dieses Dokument', en: 'This document' },
+  allDocs: { ar: 'كل المستندات', de: 'Alle Dokumente', en: 'All documents' },
+  jumpToSource: { ar: 'انتقل إلى المصدر', de: 'Zur Quelle springen', en: 'Jump to source' },
+  notePlaceholder: { ar: 'ملاحظتك أو سؤال للمراجعة…', de: 'Deine Notiz oder Lernfrage…', en: 'Your note or study question…' },
+  flashcards: { ar: 'بطاقات الاستذكار', de: 'Lernkarten', en: 'Flashcards' },
+  flashcardFront: { ar: 'ماذا تتذكر عن هذا المقطع؟', de: 'Was weißt du über diesen Abschnitt?', en: 'What do you remember about this passage?' },
+  flip: { ar: 'اقلب البطاقة', de: 'Karte umdrehen', en: 'Flip card' },
+  nextCard: { ar: 'التالية', de: 'Weiter', en: 'Next' },
+  knewIt: { ar: 'عرفتها ✓', de: 'Gewusst ✓', en: 'Knew it ✓' },
+  again: { ar: 'مرة أخرى', de: 'Nochmal', en: 'Again' },
+  reviewDone: { ar: 'انتهت المراجعة 🎉', de: 'Wiederholung fertig 🎉', en: 'Review finished 🎉' },
+  exportSummary: { ar: 'تصدير الملخص PDF', de: 'Zusammenfassung als PDF', en: 'Export summary PDF' },
+  summaryTitle: { ar: 'ملخص الدراسة', de: 'Lernzusammenfassung', en: 'Study summary' },
+  eyeCare: { ar: 'وضع داكن مريح للعين', de: 'Augenschonender Dunkelmodus', en: 'Eye-care dark mode' },
+  spread: { ar: 'عرض صفحتين', de: 'Doppelseite', en: 'Two-page spread' },
+  palmRejection: { ar: 'عزل الكف', de: 'Handballen-Sperre', en: 'Palm lock' },
+  pressureCurve: { ar: 'منحنى الضغط', de: 'Druckkurve', en: 'Pressure curve' },
+  softer: { ar: 'أنعم', de: 'Weicher', en: 'Softer' },
+  firmer: { ar: 'أقسى', de: 'Fester', en: 'Firmer' },
+  tiltHighlighter: { ar: 'التظليل يتّسع مع ميلان القلم', de: 'Textmarker wird breiter, wenn der Stift geneigt ist', en: 'Highlighter widens when the pen is tilted' },
+  theme: { ar: 'المظهر', de: 'Design', en: 'Theme' },
+  themeDark: { ar: 'داكن', de: 'Dunkel', en: 'Dark' },
+  themeLight: { ar: 'فاتح', de: 'Hell', en: 'Light' },
+  showHud: { ar: 'مؤشر الضغط والميلان في الشريط العلوي', de: 'Druck- und Neigungsanzeige oben', en: 'Pressure and tilt indicator in the header' },
+  pressureLabel: { ar: 'الضغط', de: 'Druck', en: 'Pressure' },
+  tiltLabel: { ar: 'الميلان', de: 'Neigung', en: 'Tilt' },
+  prevPage: { ar: 'الصفحة السابقة', de: 'Vorherige Seite', en: 'Previous page' },
+  nextPage: { ar: 'الصفحة التالية', de: 'Nächste Seite', en: 'Next page' },
+  zoomIn: { ar: 'تكبير', de: 'Vergrößern', en: 'Zoom in' },
+  zoomOut: { ar: 'تصغير', de: 'Verkleinern', en: 'Zoom out' },
+  appearance: { ar: 'العرض', de: 'Ansicht', en: 'Display' },
+  documents: { ar: 'مستندات', de: 'Dokumente', en: 'documents' },
+  clipsCount: { ar: 'اقتطاعات', de: 'Ausschnitte', en: 'clips' },
+  continueReading: { ar: 'تابع من حيث توقفت', de: 'Weiterlesen', en: 'Continue where you left off' },
+  kindPdf: { ar: 'PDF', de: 'PDF', en: 'PDF' },
+  kindImages: { ar: 'صور', de: 'Bilder', en: 'Images' },
+  kindNotebook: { ar: 'دفتر', de: 'Notizbuch', en: 'Notebook' },
   fitWidth: { ar: 'ملاءمة العرض', de: 'Breite anpassen', en: 'Fit width' },
 } as const;
 
@@ -135,6 +208,11 @@ export type Key = keyof typeof dict;
 
 export function t(k: Key): string {
   return dict[k][settings.lang];
+}
+
+export function applyTheme() {
+  document.documentElement.dataset.theme = settings.theme;
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', settings.theme === 'dark' ? '#050811' : '#ffffff');
 }
 
 export function applyLang() {
