@@ -88,9 +88,47 @@ class ProtocolDatabaseTest {
             }
             step.caliper?.let { c ->
                 assertEquals("caliper needs 4 values: ${step.title.en}", 4, c.size)
-                assertTrue(c[0] in 0f..400f && c[2] in 0f..400f)
-                assertTrue(c[1] in 0f..300f && c[3] in 0f..300f)
+                assertTrue(c[0] in 0f..SVG_WIDTH && c[2] in 0f..SVG_WIDTH)
+                assertTrue(c[1] in 0f..SVG_HEIGHT && c[3] in 0f..SVG_HEIGHT)
             }
+        }
+    }
+
+    @Test
+    fun consoleStepsUseKnownControlsAndAreTranslated() {
+        val known = setOf("GAIN", "DEPTH", "FOCUS", "SCALE", "2D", "M-MODE", "COLOR", "PW", "CW", "TDI", "ZOOM",
+            "TRACKBALL", "FREEZE", "CALIPER", "STORE")
+        assertEquals(known, protocol.consoleControls.keys)
+        protocol.consoleControls.values.forEach { t ->
+            assertFalse(t.de.isNullOrBlank()); assertFalse(t.ar.isNullOrBlank())
+        }
+        protocol.allViews.forEach { v ->
+            assertTrue("no console steps for ${v.id}", v.machineControls.size >= 4)
+            v.machineControls.forEach { step ->
+                assertTrue("unknown control ${step.control}", step.control in known)
+                assertFalse(step.instruction.de.isNullOrBlank()); assertFalse(step.instruction.ar.isNullOrBlank())
+            }
+        }
+    }
+
+    @Test
+    fun everyViewHasEcgTimingAndTimingNote() {
+        protocol.allViews.forEach { v ->
+            assertTrue(v.ecg.beatMs > 0)
+            assertTrue("ES must follow ED in ${v.id}", v.ecg.esMs in (v.ecg.edMs + 1) until (v.ecg.edMs + v.ecg.beatMs))
+            val note = v.timingNote
+            assertTrue("timing note missing for ${v.id}", note != null && !note.de.isNullOrBlank() && !note.ar.isNullOrBlank())
+            v.referenceMeasurements.adult.forEach { m -> m.phases.forEach { assertTrue(it == "ED" || it == "ES") } }
+        }
+        assertTrue(protocol.allViews.sumOf { v -> v.referenceMeasurements.adult.count { it.phases.isNotEmpty() } } >= 20)
+    }
+
+    @Test
+    fun svgAssetsUseTheTextbookViewBox() {
+        protocol.allViews.forEach { v ->
+            val svg = File(assetsDir, v.svgAsset).readText()
+            assertTrue("${v.svgAsset} viewBox", svg.contains("viewBox=\"0 0 600 420\""))
+            assertTrue("${v.svgAsset} sector clip", svg.contains("clip-path=\"url(#sectorClip)\""))
         }
     }
 

@@ -6,9 +6,9 @@
     <string name="section_windows">النوافذ الصوتية</string>
     <string name="section_views">المقاطع القياسية</string>
     <string name="section_probe">وضعية المسبار والعلامة</string>
-    <string name="tab_svg">التشريح SVG</string>
-    <string name="tab_measurements">قياسات البالغين والأطفال</string>
-    <string name="tab_checklist">قائمة التحقق السريرية</string>
+    <string name="tab_svg">التشريح (SVG)</string>
+    <string name="tab_measurements">القياسات (ED/ES)</string>
+    <string name="tab_checklist">التحقق</string>
     <string name="loading_protocol">جارٍ تحميل قاعدة البروتوكول…</string>
     <string name="protocol_error">تعذّرت قراءة echo_protocol_full.json: %1$s</string>
     <string name="notch_label">العلامة عند الساعة %1$s</string>
@@ -46,8 +46,6 @@
         <item quantity="many">%d مقطعاً</item>
         <item quantity="other">%d مقطع</item>
     </plurals>
-    <string name="legend_chambers">الحجرات</string>
-    <string name="legend_septa">الحواجز</string>
     <string name="legend_valves">الصمامات</string>
     <string name="legend_notch">العلامة</string>
     <string name="player_simulated_note">مقطع تعليمي محاكى – ليس تسجيلاً لمريض</string>
@@ -77,4 +75,30 @@
         <item quantity="many">%d خطوة</item>
         <item quantity="other">%d خطوة</item>
     </plurals>
+    <string name="ecg_ed_label">ED · موجة R</string>
+    <string name="ecg_es_label">ES · نهاية T</string>
+    <string name="ecg_jump_ed">انتقل إلى ED (موجة R)</string>
+    <string name="ecg_jump_es">انتقل إلى ES (نهاية T)</string>
+    <string name="ecg_lead">الاشتقاق II</string>
+    <string name="ecg_systole">انقباض</string>
+    <string name="ecg_diastole">انبساط</string>
+    <string name="tab_console">لوحة الجهاز</string>
+    <string name="console_title">لوحة جهاز الإيكو</string>
+    <string name="console_step_of">الخطوة %1$d من %2$d</string>
+    <string name="console_function">الوظيفة</string>
+    <string name="console_for_view">في هذا المقطع</string>
+    <string name="console_not_used">ليست ضمن تسلسل هذا المقطع.</string>
+    <string name="console_next">الخطوة التالية</string>
+    <string name="console_restart">من البداية</string>
+    <string name="console_close">إغلاق</string>
+    <string name="console_sequence">تسلسل هذا المقطع</string>
+    <string name="console_hint">اضغط أي زر أو مقبض · اسحب المقبض جانبياً لتدويره</string>
+    <string name="zoom_hint">إصبعان للتكبير · اسحب للتحريك · نقرتان لإعادة الضبط</string>
+    <string name="zoom_reset">إعادة ضبط التكبير</string>
+    <string name="legend_myocardium">العضلة القلبية</string>
+    <string name="legend_oxygenated">مؤكسج</string>
+    <string name="legend_deoxygenated">غير مؤكسج</string>
+    <string name="legend_doppler">دوبلر</string>
+    <string name="phase_ed_hint">نهاية الانبساط · موجة R</string>
+    <string name="phase_es_hint">نهاية الانقباض · نهاية T</string>
 </resources>

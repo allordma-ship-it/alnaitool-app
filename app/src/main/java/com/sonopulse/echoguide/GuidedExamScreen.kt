@@ -1,8 +1,6 @@
 package com.sonopulse.echoguide
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,7 +8,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -45,29 +42,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import coil.ImageLoader
-import coil.compose.AsyncImage
-import coil.decode.SvgDecoder
-import coil.request.ImageRequest
-import kotlin.math.sqrt
-
-/** Measurement-caliper colour drawn over the anatomy diagram. */
-private val CaliperColor = Color(0xFFFF4D6D)
-
-/** Diagram coordinate space shared by all bundled SVGs. */
-private const val SVG_WIDTH = 400f
-private const val SVG_HEIGHT = 300f
 
 /** A flattened position in the exam: which view (1-based number) and which step inside it. */
 private data class GuidePosition(
@@ -187,12 +168,14 @@ private fun GuidedExamContent(protocol: EchoProtocol, language: AppLanguage, mod
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            DiagramWithCaliper(
+            ZoomableSvgDiagram(
                 svgAsset = view.svgAsset,
-                caliper = step.caliper,
-                contentDescription = view.title.get(language)
+                contentDescription = view.title.get(language),
+                caliper = step.caliper
             )
-            EchoCinePlayer(videoAssetPath = view.videoAsset, simulated = protocol.loopsSimulated)
+            val player = rememberEchoPlayer()
+            EchoCinePlayer(videoAssetPath = view.videoAsset, simulated = protocol.loopsSimulated, player = player)
+            EchoEcgStrip(player = player, timing = view.ecg, timingNote = view.timingNote?.get(language))
             Text(
                 text = stringResource(R.string.notch_label, view.notchClock) +
                     " · " + view.notchDescription.get(language),
@@ -374,68 +357,5 @@ private fun ViewNumberBadge(number: Int, color: Color) {
             style = MaterialTheme.typography.labelLarge,
             fontWeight = FontWeight.Bold
         )
-    }
-}
-
-/**
- * Anatomy diagram (4:3, same aspect as the 400x300 SVG viewBox) with an optional caliper line.
- * Neither layer is mirrored in RTL: the anatomy keeps its standard echo orientation.
- */
-@Composable
-private fun DiagramWithCaliper(svgAsset: String, caliper: List<Float>?, contentDescription: String) {
-    val context = LocalContext.current
-    val imageLoader = remember(context) {
-        ImageLoader.Builder(context.applicationContext)
-            .components { add(SvgDecoder.Factory()) }
-            .build()
-    }
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .aspectRatio(SVG_WIDTH / SVG_HEIGHT)
-            .clip(RoundedCornerShape(14.dp))
-            .background(MaterialTheme.colorScheme.background)
-            .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(14.dp))
-    ) {
-        AsyncImage(
-            model = ImageRequest.Builder(context)
-                .data("file:///android_asset/$svgAsset")
-                .decoderFactory(SvgDecoder.Factory())
-                .build(),
-            imageLoader = imageLoader,
-            contentDescription = contentDescription,
-            contentScale = ContentScale.FillBounds,
-            modifier = Modifier.fillMaxSize()
-        )
-        if (caliper != null && caliper.size == 4) {
-            Canvas(modifier = Modifier.fillMaxSize()) { drawCaliper(caliper) }
-        }
-    }
-}
-
-private fun DrawScope.drawCaliper(caliper: List<Float>) {
-    val sx = size.width / SVG_WIDTH
-    val sy = size.height / SVG_HEIGHT
-    val a = Offset(caliper[0] * sx, caliper[1] * sy)
-    val b = Offset(caliper[2] * sx, caliper[3] * sy)
-    val stroke = 2.5.dp.toPx()
-    drawLine(CaliperColor, a, b, strokeWidth = stroke, cap = StrokeCap.Round)
-    val dx = b.x - a.x
-    val dy = b.y - a.y
-    val length = sqrt(dx * dx + dy * dy)
-    if (length > 0f) {
-        // Perpendicular end ticks, like an echo machine caliper
-        val tick = 6.dp.toPx()
-        val px = -dy / length * tick
-        val py = dx / length * tick
-        listOf(a, b).forEach { p ->
-            drawLine(
-                CaliperColor,
-                Offset(p.x - px, p.y - py),
-                Offset(p.x + px, p.y + py),
-                strokeWidth = stroke,
-                cap = StrokeCap.Round
-            )
-        }
     }
 }

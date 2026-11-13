@@ -77,7 +77,9 @@ data class EchoProtocol(
     val title: LocalizedText,
     val references: List<String> = emptyList(),
     val disclaimer: LocalizedText,
-    val windows: List<AcousticWindow>
+    val windows: List<AcousticWindow>,
+    /** Function of every console key / knob, keyed by control id (e.g. "GAIN", "PW"). */
+    val consoleControls: Map<String, LocalizedText> = emptyMap()
 ) {
     val allViews: List<EchoView> get() = windows.flatMap { it.views }
 }
@@ -107,7 +109,30 @@ data class EchoView(
     val keyStructures: List<LocalizedText>,
     val referenceMeasurements: ReferenceMeasurements,
     val checklist: List<LocalizedText>,
-    val steps: List<GuideStep> = emptyList()
+    val steps: List<GuideStep> = emptyList(),
+    val ecg: EcgTiming = EcgTiming(),
+    val timingNote: LocalizedText? = null,
+    val machineControls: List<MachineControlStep> = emptyList()
+)
+
+/**
+ * Cardiac-cycle timing of a view's cine loop: beat length and the offsets of end-diastole
+ * (R-wave) and end-systole (T-wave end) inside each beat, all in milliseconds.
+ */
+@Immutable
+@Serializable
+data class EcgTiming(
+    val beatMs: Long = 833,
+    val edMs: Long = 0,
+    val esMs: Long = 325
+)
+
+/** One ordered step on the ultrasound console for a view. */
+@Immutable
+@Serializable
+data class MachineControlStep(
+    val control: String,
+    val instruction: LocalizedText
 )
 
 /**
@@ -136,7 +161,9 @@ data class ReferenceMeasurements(
 data class AdultMeasurement(
     val parameter: LocalizedText,
     val normal: LocalizedText,
-    val note: LocalizedText? = null
+    val note: LocalizedText? = null,
+    /** Cardiac phase(s) to freeze for this measurement: "ED" and/or "ES". */
+    val phases: List<String> = emptyList()
 )
 
 @Immutable

@@ -1,58 +1,122 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300">
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="420" viewBox="0 0 600 420">
   <title>Apical 2-Chamber &amp; 3-Chamber</title>
-  <rect x="0" y="0" width="400" height="300" fill="#0A0E14"/>
-  <path d="M110,40 L15.6,251.9 A232,232 0 0,0 204.4,251.9 Z" fill="#111A26" stroke="#2B3A50" stroke-width="1.2"/>
-  <path d="M290,40 L195.6,251.9 A232,232 0 0,0 384.4,251.9 Z" fill="#111A26" stroke="#2B3A50" stroke-width="1.2"/>
-  <path d="M110,62 Q66,110 66,190 L154,190 Q154,110 110,62 Z" fill="#00D2B8" fill-opacity="0.22" stroke="#00D2B8" stroke-width="1.6"/>
-  <text x="110" y="140" font-family="sans-serif" font-size="10" font-weight="bold" fill="#CBD5E1" text-anchor="middle">LV</text>
-  <text x="60" y="128" font-family="sans-serif" font-size="8" font-weight="normal" fill="#94A3B8" text-anchor="end">Inf</text>
-  <text x="160" y="128" font-family="sans-serif" font-size="8" font-weight="normal" fill="#94A3B8" text-anchor="start">Ant</text>
-  <line x1="68" y1="196" x2="152" y2="196" stroke="#FBBF24" stroke-width="3" stroke-linecap="round"/>
-  <text x="156" y="200" font-family="sans-serif" font-size="8" font-weight="normal" fill="#94A3B8" text-anchor="start">MV</text>
-  <ellipse cx="110" cy="236" rx="38" ry="28" fill="#00D2B8" fill-opacity="0.22" stroke="#00D2B8" stroke-width="1.6"/>
-  <text x="110" y="239" font-family="sans-serif" font-size="10" font-weight="bold" fill="#CBD5E1" text-anchor="middle">LA</text>
-  <path d="M146,222 Q168,214 170,232 Q160,246 146,240 Z" fill="#00D2B8" fill-opacity="0.15" stroke="#00D2B8" stroke-width="1.6"/>
-  <text x="176" y="256" font-family="sans-serif" font-size="10" font-weight="bold" fill="#CBD5E1" text-anchor="middle">LAA</text>
-  <text x="110" y="290" font-family="sans-serif" font-size="9" font-weight="bold" fill="#FF8A3D" text-anchor="middle">A2C · notch 1–2h</text>
-  <path d="M290,62 Q246,110 248,188 L300,190 Q332,110 290,62 Z" fill="#00D2B8" fill-opacity="0.22" stroke="#00D2B8" stroke-width="1.6"/>
-  <text x="282" y="140" font-family="sans-serif" font-size="10" font-weight="bold" fill="#CBD5E1" text-anchor="middle">LV</text>
-  <text x="242" y="128" font-family="sans-serif" font-size="8" font-weight="normal" fill="#94A3B8" text-anchor="end">InfLat</text>
-  <text x="326" y="110" font-family="sans-serif" font-size="8" font-weight="normal" fill="#94A3B8" text-anchor="start">AntSep</text>
-  <path d="M302,176 L346,190 L340,236 L300,218 Z" fill="#00D2B8" fill-opacity="0.22" stroke="#00D2B8" stroke-width="1.6"/>
-  <text x="326" y="214" font-family="sans-serif" font-size="10" font-weight="bold" fill="#CBD5E1" text-anchor="middle">Ao</text>
-  <path d="M306,182 Q314,196 304,206" fill="none" stroke="#FBBF24" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-  <line x1="250" y1="194" x2="298" y2="198" stroke="#FBBF24" stroke-width="3" stroke-linecap="round"/>
-  <ellipse cx="268" cy="238" rx="30" ry="24" fill="#00D2B8" fill-opacity="0.22" stroke="#00D2B8" stroke-width="1.6"/>
-  <text x="268" y="241" font-family="sans-serif" font-size="10" font-weight="bold" fill="#CBD5E1" text-anchor="middle">LA</text>
-  <text x="290" y="290" font-family="sans-serif" font-size="9" font-weight="bold" fill="#FF8A3D" text-anchor="middle">A3C · notch 10–11h</text>
-  <text x="200" y="60" font-family="sans-serif" font-size="8" font-weight="normal" fill="#94A3B8" text-anchor="middle">GLS −18 to −22 %</text>
-  <circle cx="122" cy="46" r="4" fill="#FF8A3D"/>
-  <circle cx="278" cy="46" r="4" fill="#FF8A3D"/>
-  <circle cx="34" cy="36" r="20" fill="#111824" stroke="#334155" stroke-width="1.2"/>
-  <line x1="34.0" y1="20.0" x2="34.0" y2="16.0" stroke="#475569" stroke-width="1"/>
-  <line x1="42.0" y1="22.1" x2="44.0" y2="18.7" stroke="#475569" stroke-width="1"/>
-  <line x1="47.9" y1="28.0" x2="51.3" y2="26.0" stroke="#475569" stroke-width="1"/>
-  <line x1="50.0" y1="36.0" x2="54.0" y2="36.0" stroke="#475569" stroke-width="1"/>
-  <line x1="47.9" y1="44.0" x2="51.3" y2="46.0" stroke="#475569" stroke-width="1"/>
-  <line x1="42.0" y1="49.9" x2="44.0" y2="53.3" stroke="#475569" stroke-width="1"/>
-  <line x1="34.0" y1="52.0" x2="34.0" y2="56.0" stroke="#475569" stroke-width="1"/>
-  <line x1="26.0" y1="49.9" x2="24.0" y2="53.3" stroke="#475569" stroke-width="1"/>
-  <line x1="20.1" y1="44.0" x2="16.7" y2="46.0" stroke="#475569" stroke-width="1"/>
-  <line x1="18.0" y1="36.0" x2="14.0" y2="36.0" stroke="#475569" stroke-width="1"/>
-  <line x1="20.1" y1="28.0" x2="16.7" y2="26.0" stroke="#475569" stroke-width="1"/>
-  <line x1="26.0" y1="22.1" x2="24.0" y2="18.7" stroke="#475569" stroke-width="1"/>
-  <line x1="34" y1="36" x2="43.9" y2="26.1" stroke="#FF8A3D" stroke-width="2.2" stroke-linecap="round"/>
-  <circle cx="43.9" cy="26.1" r="3" fill="#FF8A3D"/>
-  <line x1="34" y1="36" x2="24.1" y2="26.1" stroke="#FF8A3D" stroke-width="2.2" stroke-linecap="round"/>
-  <circle cx="24.1" cy="26.1" r="3" fill="#FF8A3D"/>
-  <circle cx="34" cy="36" r="2" fill="#FF8A3D"/>
-  <text x="34" y="68" font-family="sans-serif" font-size="9" fill="#FF8A3D" text-anchor="middle">1–2h / 10–11h</text>
-  <rect x="318" y="11" width="8" height="8" rx="2" fill="#00D2B8"/>
-  <text x="330" y="18" font-family="sans-serif" font-size="8" fill="#CBD5E1">Chambers / vessels</text>
-  <rect x="318" y="22" width="8" height="8" rx="2" fill="#38BDF8"/>
-  <text x="330" y="29" font-family="sans-serif" font-size="8" fill="#CBD5E1">Septa</text>
-  <rect x="318" y="33" width="8" height="8" rx="2" fill="#FBBF24"/>
-  <text x="330" y="40" font-family="sans-serif" font-size="8" fill="#CBD5E1">Valves</text>
-  <rect x="318" y="44" width="8" height="8" rx="2" fill="#FF8A3D"/>
-  <text x="330" y="51" font-family="sans-serif" font-size="8" fill="#CBD5E1">Probe notch</text>
+  <defs>
+    <linearGradient id="myo" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#D45D70"/>
+      <stop offset="1" stop-color="#8E2B3E"/>
+    </linearGradient>
+    <linearGradient id="myoThin" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#C9707E"/>
+      <stop offset="1" stop-color="#9A4352"/>
+    </linearGradient>
+    <radialGradient id="bloodL" cx="0.45" cy="0.4" r="0.7">
+      <stop offset="0" stop-color="#5E1824"/>
+      <stop offset="1" stop-color="#2B0A11"/>
+    </radialGradient>
+    <radialGradient id="bloodR" cx="0.45" cy="0.4" r="0.7">
+      <stop offset="0" stop-color="#1D3566"/>
+      <stop offset="1" stop-color="#0C1630"/>
+    </radialGradient>
+    <linearGradient id="aortaWall" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#E07A86"/>
+      <stop offset="1" stop-color="#B04456"/>
+    </linearGradient>
+    <linearGradient id="veinWall" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#7F9BD6"/>
+      <stop offset="1" stop-color="#4C66A6"/>
+    </linearGradient>
+    <linearGradient id="liver" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5A3B2E"/>
+      <stop offset="1" stop-color="#3A271F"/>
+    </linearGradient>
+    <radialGradient id="sectorFill" cx="0.5" cy="0" r="1">
+      <stop offset="0" stop-color="#16202E"/>
+      <stop offset="1" stop-color="#0D141D"/>
+    </radialGradient>
+  </defs>
+  <rect x="0" y="0" width="600" height="420" fill="#0A0E14"/>
+  <clipPath id="sectorClip"><path d="M150,30 L-24.3,372.1 A384,384 0 0,0 324.3,372.1 Z M450,30 L275.7,372.1 A384,384 0 0,0 624.3,372.1 Z"/></clipPath>
+  <path d="M150,30 L-24.3,372.1 A384,384 0 0,0 324.3,372.1 Z" fill="url(#sectorFill)" stroke="#22314A" stroke-width="1.5"/>
+  <path d="M450,30 L275.7,372.1 A384,384 0 0,0 624.3,372.1 Z" fill="url(#sectorFill)" stroke="#22314A" stroke-width="1.5"/>
+  <g clip-path="url(#sectorClip)">
+    <path d="M100.8,281.4 C110.4,273.5 133.6,272.5 150,272.8 C166.4,273.2 189.2,275.3 199.2,283.5 C209.2,291.7 211,309.2 209.9,322.1 C208.8,334.9 202.8,352.4 192.8,360.6 C182.8,368.8 164.2,371.6 150,371.3 C135.7,370.9 116.8,367 107.2,358.4 C97.6,349.9 93.3,332.8 92.2,319.9 C91.1,307.1 91.1,289.2 100.8,281.4 Z" fill="url(#myoThin)" stroke="#E58A97" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M104,284 C113,276.7 134.7,275.7 150,276 C165.3,276.3 186.7,278.3 196,286 C205.3,293.7 207,310 206,322 C205,334 199.3,350.3 190,358 C180.7,365.7 163.3,368.3 150,368 C136.7,367.7 119,364 110,356 C101,348 97,332 96,320 C95,308 95,291.3 104,284 Z" fill="url(#bloodL)" stroke="none" stroke-width="0" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M201.7,299.1 C204,294.5 216.7,289.1 222.4,289.9 C228.2,290.7 235.5,298.7 236.2,303.7 C237,308.7 231.6,317.5 227,319.8 C222.4,322.1 212.8,320.9 208.6,317.5 C204.4,314.1 199.4,303.7 201.7,299.1 Z" fill="url(#myoThin)" stroke="#E58A97" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M204,300 C206,296 217,291.3 222,292 C227,292.7 233.3,299.7 234,304 C234.7,308.3 230,316 226,318 C222,320 213.7,319 210,316 C206.3,313 202,304 204,300 Z" fill="url(#bloodL)" stroke="none" stroke-width="0" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M130,360 C128.7,365 124.7,380.7 122,390 C119.3,399.3 115.3,411.7 114,416" fill="none" stroke="url(#aortaWall)" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M130,360 C128.7,365 124.7,380.7 122,390 C119.3,399.3 115.3,411.7 114,416" fill="none" stroke="#2B0A11" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M150,52 C163.3,52 179,61 190,74 C201,87 209.7,109 216,130 C222.3,151 226,176.3 228,200 C230,223.7 234.3,259.3 228,272 C221.7,284.7 209.7,275.3 190,276 C170.3,276.7 129.7,276.7 110,276 C90.3,275.3 78.3,284.7 72,272 C65.7,259.3 70,223.7 72,200 C74,176.3 77.7,151 84,130 C90.3,109 99,87 110,74 C121,61 136.7,52 150,52 Z" fill="url(#myo)" stroke="#E58A97" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M150,82 C159.3,82 170.3,90.7 178,102 C185.7,113.3 191.7,132 196,150 C200.3,168 202.7,190.7 204,210 C205.3,229.3 222,256.7 204,266 C186,275.3 114,275.3 96,266 C78,256.7 94.7,229.3 96,210 C97.3,190.7 99.7,168 104,150 C108.3,132 114.3,113.3 122,102 C129.7,90.7 140.7,82 150,82 Z" fill="url(#bloodL)" stroke="#3A0E18" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M98,208 C98,203.7 108,199 112,200 C116,201 122,209.7 122,214 C122,218.3 116,227 112,226 C108,225 98,212.3 98,208 Z" fill="url(#myo)" stroke="#E58A97" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M202,196 C201.7,191.3 192,190.3 188,192 C184,193.7 177.7,201.3 178,206 C178.3,210.7 186,221.7 190,220 C194,218.3 202.3,200.7 202,196 Z" fill="url(#myo)" stroke="#E58A97" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="120" y1="212" x2="128" y2="246" stroke="#F1E3C6" stroke-width="0.8" stroke-opacity="0.75"/>
+    <line x1="120" y1="212" x2="140" y2="250" stroke="#F1E3C6" stroke-width="0.8" stroke-opacity="0.75"/>
+    <line x1="180" y1="204" x2="168" y2="246" stroke="#F1E3C6" stroke-width="0.8" stroke-opacity="0.75"/>
+    <line x1="180" y1="204" x2="158" y2="250" stroke="#F1E3C6" stroke-width="0.8" stroke-opacity="0.75"/>
+    <path d="M98,270 C100.3,266.7 107.3,255.7 112,250 C116.7,244.3 123.7,238.3 126,236" fill="none" stroke="#FBD38D" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M202,270 C199.7,266.7 192.7,255.7 188,250 C183.3,244.3 176.3,238.3 174,236" fill="none" stroke="#FBD38D" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M377.7,285.7 C387.3,278.9 406.9,274.6 420.5,275 C434,275.3 451.5,279.2 459,287.8 C466.5,296.4 467.6,313.8 465.4,326.3 C463.3,338.8 456.5,355.6 446.2,362.7 C435.8,369.8 416.2,371.3 403.4,369.1 C390.5,367 375.9,358.8 369.1,349.9 C362.4,340.9 361.3,326.3 362.7,315.6 C364.1,304.9 368.1,292.4 377.7,285.7 Z" fill="url(#myoThin)" stroke="#E58A97" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M380,288 C389,281.7 407.3,277.7 420,278 C432.7,278.3 449,282 456,290 C463,298 464,314.3 462,326 C460,337.7 453.7,353.3 444,360 C434.3,366.7 416,368 404,366 C392,364 378.3,356.3 372,348 C365.7,339.7 364.7,326 366,316 C367.3,306 371,294.3 380,288 Z" fill="url(#bloodL)" stroke="none" stroke-width="0" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M470,266 C476.3,265 486.3,270.3 496,276 C505.7,281.7 519.3,290.3 528,300 C536.7,309.7 542.7,320.7 548,334 C553.3,347.3 561.3,371.3 560,380 C558.7,388.7 547,392 540,386 C533,380 525.7,356 518,344 C510.3,332 502.3,321.3 494,314 C485.7,306.7 474,305.3 468,300 C462,294.7 457.7,287.7 458,282 C458.3,276.3 463.7,267 470,266 Z" fill="url(#aortaWall)" stroke="#E58A97" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M470,274 C474.7,274 483.7,278.7 492,284 C500.3,289.3 512.3,297 520,306 C527.7,315 533,325.7 538,338 C543,350.3 549,372.7 550,380 C551,387.3 548,388 544,382 C540,376 533.3,355 526,344 C518.7,333 509,324 500,316 C491,308 478,301.3 472,296 C466,290.7 464.3,287.7 464,284 C463.7,280.3 465.3,274 470,274 Z" fill="url(#bloodL)" stroke="none" stroke-width="0" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M450,52 C463.3,52 479,61.3 490,74 C501,86.7 510,107.7 516,128 C522,148.3 525.3,173.3 526,196 C526.7,218.7 529.3,251 520,264 C510.7,277 487.7,271.7 470,274 C452.3,276.3 430,278 414,278 C398,278 381,287 374,274 C367,261 370.3,224 372,200 C373.7,176 377.7,151 384,130 C390.3,109 399,87 410,74 C421,61 436.7,52 450,52 Z" fill="url(#myo)" stroke="#E58A97" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M450,82 C459.3,82 470.7,90.7 478,102 C485.3,113.3 490.3,132 494,150 C497.7,168 501,191.7 500,210 C499,228.3 494.3,249 488,260 C481.7,271 477.3,274.7 462,276 C446.7,277.3 407,279 396,268 C385,257 394.7,229.7 396,210 C397.3,190.3 399.7,168 404,150 C408.3,132 414.3,113.3 422,102 C429.7,90.7 440.7,82 450,82 Z" fill="url(#bloodL)" stroke="#3A0E18" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M398,272 C400.3,268.7 407.3,257.7 412,252 C416.7,246.3 423.7,240.3 426,238" fill="none" stroke="#FBD38D" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M462,272 C460,268.7 453.7,257.7 450,252 C446.3,246.3 441.7,240.3 440,238" fill="none" stroke="#FBD38D" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M472,286 C473.7,287.7 479.3,293.7 482,296 C484.7,298.3 487,299.3 488,300" fill="none" stroke="#FBD38D" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M468,300 C470,300 476.7,300 480,300 C483.3,300 486.7,300 488,300" fill="none" stroke="#FBD38D" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <path d="M150,30 L-24.3,372.1 A384,384 0 0,0 324.3,372.1 Z" fill="none" stroke="#2C3F5E" stroke-width="1.5"/>
+  <path d="M450,30 L275.7,372.1 A384,384 0 0,0 624.3,372.1 Z" fill="none" stroke="#2C3F5E" stroke-width="1.5"/>
+  <text x="150" y="180" font-family="sans-serif" font-size="17" font-weight="bold" fill="#FFB4BE" text-anchor="middle">LV</text>
+  <text x="150" y="330" font-family="sans-serif" font-size="17" font-weight="bold" fill="#FFB4BE" text-anchor="middle">LA</text>
+  <polyline points="14,156 78,176" fill="none" stroke="#7C8BA1" stroke-width="1"/>
+  <circle cx="78" cy="176" r="2.6" fill="#E2E8F0"/>
+  <text x="18" y="160" font-family="sans-serif" font-size="12.5" fill="#E2E8F0" text-anchor="start">Inferior</text>
+  <polyline points="246,136 222,168" fill="none" stroke="#7C8BA1" stroke-width="1"/>
+  <circle cx="222" cy="168" r="2.6" fill="#E2E8F0"/>
+  <text x="250" y="140" font-family="sans-serif" font-size="12.5" fill="#E2E8F0" text-anchor="start">Anterior</text>
+  <polyline points="258,296 232,304" fill="none" stroke="#7C8BA1" stroke-width="1"/>
+  <circle cx="232" cy="304" r="2.6" fill="#E2E8F0"/>
+  <text x="262" y="300" font-family="sans-serif" font-size="12.5" fill="#E2E8F0" text-anchor="start">LAA</text>
+  <text x="448" y="186" font-family="sans-serif" font-size="17" font-weight="bold" fill="#FFB4BE" text-anchor="middle">LV</text>
+  <text x="414" y="330" font-family="sans-serif" font-size="17" font-weight="bold" fill="#FFB4BE" text-anchor="middle">LA</text>
+  <text x="548" y="412" font-family="sans-serif" font-size="17" font-weight="bold" fill="#FFB4BE" text-anchor="middle">Ao</text>
+  <polyline points="296,192 380,204" fill="none" stroke="#7C8BA1" stroke-width="1"/>
+  <circle cx="380" cy="204" r="2.6" fill="#E2E8F0"/>
+  <text x="300" y="196" font-family="sans-serif" font-size="12.5" fill="#E2E8F0" text-anchor="start">Inferolateral</text>
+  <polyline points="564,146 518,170" fill="none" stroke="#7C8BA1" stroke-width="1"/>
+  <circle cx="518" cy="170" r="2.6" fill="#E2E8F0"/>
+  <text x="560" y="150" font-family="sans-serif" font-size="12.5" fill="#E2E8F0" text-anchor="end">Anteroseptal</text>
+  <polyline points="564,244 480,288" fill="none" stroke="#7C8BA1" stroke-width="1"/>
+  <circle cx="480" cy="288" r="2.6" fill="#E2E8F0"/>
+  <text x="560" y="248" font-family="sans-serif" font-size="12.5" fill="#E2E8F0" text-anchor="end">LVOT · AV</text>
+  <circle cx="180" cy="36" r="5" fill="#FF8A3D"/>
+  <circle cx="480" cy="36" r="5" fill="#FF8A3D"/>
+  <g>
+  <circle cx="36" cy="48" r="22" fill="#111824" stroke="#334155" stroke-width="1.2"/>
+  <line x1="36" y1="48" x2="36" y2="41" stroke="#00D2B8" stroke-width="1.6"/>
+  <line x1="36" y1="48" x2="36" y2="55" stroke="#00D2B8" stroke-width="1.6"/>
+  <line x1="36" y1="48" x2="29" y2="48" stroke="#00D2B8" stroke-width="1.6"/>
+  <line x1="36" y1="48" x2="43" y2="48" stroke="#00D2B8" stroke-width="1.6"/>
+  <circle cx="36" cy="48" r="2.4" fill="#00D2B8"/>
+  <text x="36" y="38" font-family="sans-serif" font-size="11" font-weight="bold" fill="#E2E8F0" text-anchor="middle">I</text>
+  <text x="36" y="67" font-family="sans-serif" font-size="11" font-weight="bold" fill="#E2E8F0" text-anchor="middle">S</text>
+  <text x="23" y="52" font-family="sans-serif" font-size="11" font-weight="bold" fill="#E2E8F0" text-anchor="middle">I</text>
+  <text x="49" y="52" font-family="sans-serif" font-size="11" font-weight="bold" fill="#E2E8F0" text-anchor="middle">A</text>
+  <text x="36" y="85" font-family="sans-serif" font-size="11" font-weight="bold" fill="#00D2B8" text-anchor="middle">A2C</text>
+  </g>
+  <g>
+  <circle cx="564" cy="48" r="22" fill="#111824" stroke="#334155" stroke-width="1.2"/>
+  <line x1="564" y1="48" x2="564" y2="41" stroke="#00D2B8" stroke-width="1.6"/>
+  <line x1="564" y1="48" x2="564" y2="55" stroke="#00D2B8" stroke-width="1.6"/>
+  <line x1="564" y1="48" x2="557" y2="48" stroke="#00D2B8" stroke-width="1.6"/>
+  <line x1="564" y1="48" x2="571" y2="48" stroke="#00D2B8" stroke-width="1.6"/>
+  <circle cx="564" cy="48" r="2.4" fill="#00D2B8"/>
+  <text x="564" y="38" font-family="sans-serif" font-size="11" font-weight="bold" fill="#E2E8F0" text-anchor="middle">I</text>
+  <text x="564" y="67" font-family="sans-serif" font-size="11" font-weight="bold" fill="#E2E8F0" text-anchor="middle">S</text>
+  <text x="551" y="52" font-family="sans-serif" font-size="11" font-weight="bold" fill="#E2E8F0" text-anchor="middle">P</text>
+  <text x="577" y="52" font-family="sans-serif" font-size="11" font-weight="bold" fill="#E2E8F0" text-anchor="middle">A</text>
+  <text x="564" y="85" font-family="sans-serif" font-size="11" font-weight="bold" fill="#00D2B8" text-anchor="middle">A3C</text>
+  </g>
 </svg>

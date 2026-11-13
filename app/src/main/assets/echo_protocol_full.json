@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 3,
+  "schemaVersion": 4,
   "loopsSimulated": true,
   "title": {
     "en": "EchoScope – Comprehensive TTE Protocol",
@@ -103,7 +103,10 @@
                   "en": "> 5 mm suggests RV hypertrophy / pressure overload",
                   "de": "> 5 mm spricht für RV-Hypertrophie / Druckbelastung",
                   "ar": "> 5 مم يشير إلى ضخامة البطين الأيمن / فرط الحمل الضغطي"
-                }
+                },
+                "phases": [
+                  "ED"
+                ]
               },
               {
                 "parameter": {
@@ -120,7 +123,10 @@
                   "en": "Small < 10 mm · Moderate 10–20 mm · Large > 20 mm",
                   "de": "Klein < 10 mm · Mittel 10–20 mm · Groß > 20 mm",
                   "ar": "صغير < 10 مم · متوسط 10–20 مم · كبير > 20 مم"
-                }
+                },
+                "phases": [
+                  "ED"
+                ]
               },
               {
                 "parameter": {
@@ -297,10 +303,10 @@
                 "ar": "في المقطع القمّي قد يظهر الحاجز «مثقوباً» كاذباً (drop-out) لأن الحزمة موازية له."
               },
               "caliper": [
-                112,
-                162,
-                188,
-                158
+                272,
+                244,
+                213,
+                244
               ]
             },
             {
@@ -320,11 +326,79 @@
                 "ar": "لا انصباب · صغير < 10 مم"
               },
               "caliper": [
-                245,
-                88,
-                245,
-                98
+                364,
+                164,
+                374,
+                150
               ]
+            }
+          ],
+          "ecg": {
+            "beatMs": 833,
+            "edMs": 0,
+            "esMs": 325
+          },
+          "timingNote": {
+            "en": "Effusion and RV wall at ED (R-wave); colour over the atrial septum through the whole cycle.",
+            "de": "Erguss und RV-Wand in der ED (R-Zacke); Farbdoppler über dem Vorhofseptum über den ganzen Zyklus.",
+            "ar": "الانصباب وجدار البطين الأيمن عند نهاية الانبساط (موجة R)؛ الدوبلر الملون على الحاجز الأذيني طوال الدورة."
+          },
+          "machineControls": [
+            {
+              "control": "2D",
+              "instruction": {
+                "en": "Start in 2D with the probe flat below the xiphoid.",
+                "de": "Im 2D-Modus beginnen, Schallkopf flach unter dem Xiphoid.",
+                "ar": "ابدأ بوضع 2D والمجس مسطّح تحت الناتئ الرهابي."
+              }
+            },
+            {
+              "control": "DEPTH",
+              "instruction": {
+                "en": "Set 16–20 cm so liver and the whole heart are visible.",
+                "de": "16–20 cm einstellen, sodass Leber und ganzes Herz sichtbar sind.",
+                "ar": "اضبط العمق 16–20 سم ليظهر الكبد والقلب كاملاً."
+              }
+            },
+            {
+              "control": "FOCUS",
+              "instruction": {
+                "en": "Move the focus to the atrial septum.",
+                "de": "Fokus auf das Vorhofseptum legen.",
+                "ar": "حرّك التركيز إلى الحاجز الأذيني."
+              }
+            },
+            {
+              "control": "COLOR",
+              "instruction": {
+                "en": "Place the colour box over the atrial septum.",
+                "de": "Farbbox über das Vorhofseptum legen.",
+                "ar": "ضع صندوق الألوان فوق الحاجز الأذيني."
+              }
+            },
+            {
+              "control": "SCALE",
+              "instruction": {
+                "en": "Lower the Nyquist limit to about 30–40 cm/s for low-velocity shunts.",
+                "de": "Nyquist-Grenze auf etwa 30–40 cm/s senken für langsame Shunts.",
+                "ar": "اخفض حد Nyquist إلى نحو 30–40 سم/ث لكشف التحويلات بطيئة الجريان."
+              }
+            },
+            {
+              "control": "FREEZE",
+              "instruction": {
+                "en": "Freeze and scroll to ED (R-wave) to measure an effusion or the RV wall.",
+                "de": "Einfrieren und zur ED (R-Zacke) blättern, um Erguss oder RV-Wand zu messen.",
+                "ar": "جمّد الصورة وانتقل إلى نهاية الانبساط (موجة R) لقياس الانصباب أو جدار البطين الأيمن."
+              }
+            },
+            {
+              "control": "STORE",
+              "instruction": {
+                "en": "Store the loop.",
+                "de": "Loop speichern.",
+                "ar": "احفظ المقطع."
+              }
             }
           ]
         },
@@ -586,10 +660,10 @@
                 "ar": "≤ 2.1 سم"
               },
               "caliper": [
-                230,
-                165,
-                234,
-                194
+                377,
+                236,
+                383,
+                276
               ]
             },
             {
@@ -612,6 +686,66 @@
                 "en": "Diameter > 2.1 cm with < 50 % collapse fits RAP ≈ 15 mmHg. The rule is less reliable in children and in mechanically ventilated patients.",
                 "de": "Durchmesser > 2,1 cm mit < 50 % Kollaps entspricht RAP ≈ 15 mmHg. Bei Kindern und beatmeten Patienten ist die Regel weniger verlässlich.",
                 "ar": "قطر > 2.1 سم مع انخماص < 50٪ يوافق RAP ≈ 15 ملم زئبق. عند الأطفال والمرضى على التهوية الآلية القاعدة أقل موثوقية."
+              }
+            }
+          ],
+          "ecg": {
+            "beatMs": 833,
+            "edMs": 0,
+            "esMs": 325
+          },
+          "timingNote": {
+            "en": "The IVC follows respiration: maximum diameter at end-expiration, minimum after a sniff (ECG timing is secondary).",
+            "de": "Die VCI folgt der Atmung: maximaler Durchmesser endexspiratorisch, minimaler nach dem Schnüffeln (EKG-Timing nachrangig).",
+            "ar": "الأجوف السفلي يتبع التنفس: أقصى قطر في نهاية الزفير وأدناه بعد الشهيق السريع (توقيت ECG ثانوي)."
+          },
+          "machineControls": [
+            {
+              "control": "2D",
+              "instruction": {
+                "en": "Rotate to the sagittal IVC view in 2D.",
+                "de": "Im 2D-Modus in den sagittalen VCI-Schnitt drehen.",
+                "ar": "دوّر إلى المقطع السهمي للأجوف السفلي بوضع 2D."
+              }
+            },
+            {
+              "control": "DEPTH",
+              "instruction": {
+                "en": "Set 12–16 cm so the IVC–RA junction is centred.",
+                "de": "12–16 cm einstellen, Einmündung VCI–RA zentriert.",
+                "ar": "اضبط العمق 12–16 سم ليتوسط ملتقى الأجوف بالأذين الأيمن."
+              }
+            },
+            {
+              "control": "M-MODE",
+              "instruction": {
+                "en": "Place the M-mode line perpendicular through the IVC 1–2 cm from the RA.",
+                "de": "M-Mode-Linie senkrecht durch die VCI 1–2 cm vor dem RA legen.",
+                "ar": "ضع خط M-Mode عمودياً عبر الأجوف على بعد 1–2 سم من الأذين الأيمن."
+              }
+            },
+            {
+              "control": "FREEZE",
+              "instruction": {
+                "en": "Freeze after a sniff manoeuvre.",
+                "de": "Nach dem Schnüffelmanöver einfrieren.",
+                "ar": "جمّد الصورة بعد مناورة الشهيق السريع."
+              }
+            },
+            {
+              "control": "CALIPER",
+              "instruction": {
+                "en": "Measure the maximum and minimum diameter; calculate collapse in %.",
+                "de": "Maximalen und minimalen Durchmesser messen; Kollaps in % berechnen.",
+                "ar": "قِس القطر الأقصى والأدنى واحسب نسبة الانخماص."
+              }
+            },
+            {
+              "control": "STORE",
+              "instruction": {
+                "en": "Store the M-mode trace.",
+                "de": "M-Mode-Kurve speichern.",
+                "ar": "احفظ منحنى M-Mode."
               }
             }
           ]
@@ -706,7 +840,10 @@
                   "en": "End-diastole, inner-edge to inner-edge, at MV leaflet tips",
                   "de": "Enddiastolisch, Innenkante zu Innenkante, auf Höhe der Mitralsegelspitzen",
                   "ar": "نهاية الانبساط، من الحافة الداخلية إلى الداخلية، عند أطراف وريقات التاجي"
-                }
+                },
+                "phases": [
+                  "ED"
+                ]
               },
               {
                 "parameter": {
@@ -721,7 +858,10 @@
                   "en": "Perpendicular to LV long axis",
                   "de": "Senkrecht zur LV-Längsachse",
                   "ar": "عمودياً على المحور الطويل للبطين الأيسر"
-                }
+                },
+                "phases": [
+                  "ED"
+                ]
               },
               {
                 "parameter": {
@@ -736,7 +876,10 @@
                   "en": "Exclude chordae and papillary muscles",
                   "de": "Chordae und Papillarmuskeln nicht mitmessen",
                   "ar": "استبعاد الحبال الوترية والعضلات الحليمية"
-                }
+                },
+                "phases": [
+                  "ED"
+                ]
               },
               {
                 "parameter": {
@@ -750,7 +893,10 @@
                 },
                 "note": {
                   "en": "RWT = 2 × LVPWd / LVIDd"
-                }
+                },
+                "phases": [
+                  "ED"
+                ]
               },
               {
                 "parameter": {
@@ -767,7 +913,10 @@
                   "en": "Mean ± 2 SD (3.4 ± 0.3 / 3.0 ± 0.3 cm); leading-edge to leading-edge in end-diastole",
                   "de": "Mittelwert ± 2 SD (3,4 ± 0,3 / 3,0 ± 0,3 cm); Leading Edge zu Leading Edge, enddiastolisch",
                   "ar": "المتوسط ± 2 انحراف معياري (3.4 ± 0.3 / 3.0 ± 0.3 سم)؛ من الحافة الأمامية إلى الأمامية في نهاية الانبساط"
-                }
+                },
+                "phases": [
+                  "ED"
+                ]
               },
               {
                 "parameter": {
@@ -784,7 +933,10 @@
                   "en": "End-systole; prefer LA volume (LAVI) for grading",
                   "de": "Endsystolisch; zur Graduierung LA-Volumen (LAVI) bevorzugen",
                   "ar": "نهاية الانقباض؛ يُفضّل حجم الأذين المفهرس (LAVI) للتصنيف"
-                }
+                },
+                "phases": [
+                  "ES"
+                ]
               },
               {
                 "parameter": {
@@ -976,10 +1128,10 @@
                 "ar": "لا تُدخل الحزمة المعدِّلة (moderator band) أو تراكيب البطين الأيمن في القياس."
               },
               "caliper": [
-                200,
-                100,
-                200,
-                110
+                300,
+                150,
+                300,
+                171
               ]
             },
             {
@@ -999,10 +1151,10 @@
                 "ar": "4.2–5.8 سم (ذكور) · 3.8–5.2 سم (إناث)"
               },
               "caliper": [
-                200,
-                113,
-                200,
-                181
+                300,
+                172,
+                300,
+                263
               ]
             },
             {
@@ -1022,10 +1174,10 @@
                 "ar": "0.6–1.0 سم (ذكور) · 0.6–0.9 سم (إناث)"
               },
               "caliper": [
-                200,
-                187,
-                200,
-                194
+                300,
+                264,
+                300,
+                288
               ]
             },
             {
@@ -1045,10 +1197,10 @@
                 "ar": "2.8–4.0 سم (ذكور) · 2.4–3.6 سم (إناث)"
               },
               "caliper": [
-                290,
-                99,
-                290,
-                149
+                440,
+                152,
+                440,
+                228
               ]
             },
             {
@@ -1073,11 +1225,87 @@
                 "ar": "القطر وحده يقلل من تقدير التوسع؛ المعتمد هو LAVI من المقاطع القمّية."
               },
               "caliper": [
-                306,
-                168,
-                306,
-                228
+                450,
+                254,
+                450,
+                320
               ]
+            }
+          ],
+          "ecg": {
+            "beatMs": 833,
+            "edMs": 0,
+            "esMs": 325
+          },
+          "timingNote": {
+            "en": "IVSd, LVIDd, LVPWd and aortic root at ED (R-wave); LA diameter at ES (T-end); LVOT in mid-systole.",
+            "de": "IVSd, LVIDd, LVPWd und Aortenwurzel in der ED (R-Zacke); LA-Durchmesser in der ES (T-Ende); LVOT mittsystolisch.",
+            "ar": "IVSd وLVIDd وLVPWd وجذر الأبهر عند نهاية الانبساط (موجة R)؛ قطر الأذين الأيسر عند نهاية الانقباض (نهاية T)؛ مخرج البطين الأيسر في منتصف الانقباض."
+          },
+          "machineControls": [
+            {
+              "control": "2D",
+              "instruction": {
+                "en": "Acquire PLAX in 2D with septum and posterior wall horizontal.",
+                "de": "PLAX im 2D-Modus einstellen, Septum und Hinterwand horizontal.",
+                "ar": "اضبط PLAX بوضع 2D مع الحاجز والجدار الخلفي أفقيين."
+              }
+            },
+            {
+              "control": "DEPTH",
+              "instruction": {
+                "en": "Set about 16 cm so the descending aorta is just visible.",
+                "de": "Etwa 16 cm einstellen, sodass die Aorta descendens gerade sichtbar ist.",
+                "ar": "اضبط نحو 16 سم ليظهر الأبهر النازل بالكاد."
+              }
+            },
+            {
+              "control": "FOCUS",
+              "instruction": {
+                "en": "Place the focus at the mitral leaflet tips.",
+                "de": "Fokus auf Höhe der Mitralsegelspitzen legen.",
+                "ar": "ضع التركيز عند أطراف وريقات الصمام التاجي."
+              }
+            },
+            {
+              "control": "FREEZE",
+              "instruction": {
+                "en": "Freeze and scroll with the trackball to ED (R-wave).",
+                "de": "Einfrieren und mit dem Trackball zur ED (R-Zacke) blättern.",
+                "ar": "جمّد الصورة وانتقل بكرة التتبع إلى نهاية الانبساط (موجة R)."
+              }
+            },
+            {
+              "control": "CALIPER",
+              "instruction": {
+                "en": "Measure IVSd, LVIDd and LVPWd at the leaflet tips; then go to ES (T-end) for the LA.",
+                "de": "IVSd, LVIDd und LVPWd an den Segelspitzen messen; dann zur ES (T-Ende) für den LA.",
+                "ar": "قِس IVSd وLVIDd وLVPWd عند أطراف الوريقات؛ ثم انتقل إلى نهاية الانقباض (نهاية T) لقياس الأذين الأيسر."
+              }
+            },
+            {
+              "control": "ZOOM",
+              "instruction": {
+                "en": "Zoom the LVOT and aortic root for precise diameters.",
+                "de": "LVOT und Aortenwurzel für präzise Durchmesser zoomen.",
+                "ar": "كبّر مخرج البطين الأيسر وجذر الأبهر لقياس دقيق."
+              }
+            },
+            {
+              "control": "COLOR",
+              "instruction": {
+                "en": "Check mitral and aortic valves with colour Doppler.",
+                "de": "Mitral- und Aortenklappe mit Farbdoppler prüfen.",
+                "ar": "افحص الصمامين التاجي والأبهري بالدوبلر الملون."
+              }
+            },
+            {
+              "control": "STORE",
+              "instruction": {
+                "en": "Store loops and measurements.",
+                "de": "Loops und Messungen speichern.",
+                "ar": "احفظ المقاطع والقياسات."
+              }
             }
           ]
         },
@@ -1170,7 +1398,10 @@
                   "en": "≥ 2.9 cm or MPA > ascending aorta suggests pulmonary hypertension",
                   "de": "≥ 2,9 cm oder Truncus > Aorta ascendens spricht für pulmonale Hypertonie",
                   "ar": "≥ 2.9 سم أو الشريان الرئوي > الأبهر الصاعد يشير إلى ارتفاع الضغط الرئوي"
-                }
+                },
+                "phases": [
+                  "ED"
+                ]
               },
               {
                 "parameter": {
@@ -1187,7 +1418,10 @@
                   "en": "End-diastole, anterior RV wall to AV",
                   "de": "Enddiastolisch, RV-Vorderwand bis Aortenklappe",
                   "ar": "نهاية الانبساط، من الجدار الأمامي للبطين الأيمن إلى الصمام الأبهري"
-                }
+                },
+                "phases": [
+                  "ED"
+                ]
               },
               {
                 "parameter": {
@@ -1204,7 +1438,10 @@
                   "en": "Just proximal to the pulmonary valve",
                   "de": "Unmittelbar proximal der Pulmonalklappe",
                   "ar": "قبل الصمام الرئوي مباشرة"
-                }
+                },
+                "phases": [
+                  "ED"
+                ]
               },
               {
                 "parameter": {
@@ -1374,10 +1611,10 @@
                 "ar": "< 2.9 سم (عند الأطفال: Z-Score)"
               },
               "caliper": [
-                306,
-                132,
-                336,
-                128
+                438,
+                200,
+                466,
+                180
               ]
             },
             {
@@ -1397,10 +1634,10 @@
                 "ar": "0.6–0.9 م/ث"
               },
               "caliper": [
-                296,
-                100,
-                310,
-                108
+                428,
+                172,
+                440,
+                164
               ]
             },
             {
@@ -1413,6 +1650,74 @@
                 "en": "Apply colour Doppler at the bifurcation: continuous red flow entering the main PA near the left branch indicates a patent ductus arteriosus.",
                 "de": "Farbdoppler auf die Bifurkation: Ein kontinuierlicher roter Fluss in den Truncus nahe dem linken Ast spricht für einen persistierenden Ductus arteriosus.",
                 "ar": "ضع الدوبلر الملون على التفرّع: جريان أحمر مستمر يدخل الجذع الرئوي قرب الفرع الأيسر يدل على قناة شريانية سالكة."
+              }
+            }
+          ],
+          "ecg": {
+            "beatMs": 833,
+            "edMs": 0,
+            "esMs": 325
+          },
+          "timingNote": {
+            "en": "RVOT and PA diameters at ED; valve morphology in systole (opening) and diastole (closure); pediatric aortic dimensions in systole.",
+            "de": "RVOT- und PA-Durchmesser in der ED; Klappenmorphologie in Systole (Öffnung) und Diastole (Schluss); pädiatrische Aortenmaße in der Systole.",
+            "ar": "أقطار مخرج البطين الأيمن والشريان الرئوي عند نهاية الانبساط؛ شكل الصمام في الانقباض (الانفتاح) والانبساط (الإغلاق)؛ أبعاد الأبهر عند الأطفال في الانقباض."
+          },
+          "machineControls": [
+            {
+              "control": "2D",
+              "instruction": {
+                "en": "Rotate to PSAX at the aortic valve level in 2D.",
+                "de": "Im 2D-Modus in die PSAX auf Aortenklappenebene drehen.",
+                "ar": "دوّر إلى المحور القصير عند مستوى الصمام الأبهري بوضع 2D."
+              }
+            },
+            {
+              "control": "ZOOM",
+              "instruction": {
+                "en": "Zoom the aortic valve to judge the number of cusps.",
+                "de": "Aortenklappe zoomen, um die Taschenzahl zu beurteilen.",
+                "ar": "كبّر الصمام الأبهري لتقييم عدد الشرفات."
+              }
+            },
+            {
+              "control": "COLOR",
+              "instruction": {
+                "en": "Place the colour box over RVOT, pulmonary valve and PA bifurcation.",
+                "de": "Farbbox über RVOT, Pulmonalklappe und PA-Bifurkation legen.",
+                "ar": "ضع صندوق الألوان فوق مخرج البطين الأيمن والصمام الرئوي وتفرع الشريان الرئوي."
+              }
+            },
+            {
+              "control": "TRACKBALL",
+              "instruction": {
+                "en": "Move the PW gate to the pulmonary valve with the trackball.",
+                "de": "PW-Messvolumen mit dem Trackball an die Pulmonalklappe bewegen.",
+                "ar": "حرّك بوابة PW إلى الصمام الرئوي بكرة التتبع."
+              }
+            },
+            {
+              "control": "PW",
+              "instruction": {
+                "en": "Record PW at the pulmonary valve and measure the acceleration time.",
+                "de": "PW an der Pulmonalklappe ableiten und Akzelerationszeit messen.",
+                "ar": "سجّل PW عند الصمام الرئوي وقِس زمن التسارع."
+              }
+            },
+            {
+              "control": "SCALE",
+              "instruction": {
+                "en": "Adjust the scale so the spectrum fills two thirds of the display.",
+                "de": "Skala anpassen, sodass das Spektrum zwei Drittel der Anzeige füllt.",
+                "ar": "اضبط المقياس ليملأ الطيف ثلثي الشاشة."
+              }
+            },
+            {
+              "control": "STORE",
+              "instruction": {
+                "en": "Store loops and Doppler traces.",
+                "de": "Loops und Dopplerkurven speichern.",
+                "ar": "احفظ المقاطع ومنحنيات الدوبلر."
               }
             }
           ]
@@ -1485,7 +1790,11 @@
                 },
                 "note": {
                   "en": "FS = (LVIDd − LVIDs) / LVIDd"
-                }
+                },
+                "phases": [
+                  "ED",
+                  "ES"
+                ]
               },
               {
                 "parameter": {
@@ -1502,7 +1811,11 @@
                   "en": "D-shape = septal flattening",
                   "de": "D-Form = Septumabflachung",
                   "ar": "شكل D = تسطّح الحاجز"
-                }
+                },
+                "phases": [
+                  "ED",
+                  "ES"
+                ]
               },
               {
                 "parameter": {
@@ -1518,7 +1831,11 @@
                   "en": "> 1.0 in diastole → RV volume overload; > 1.0 in systole → RV pressure overload",
                   "de": "> 1,0 in der Diastole → RV-Volumenbelastung; > 1,0 in der Systole → RV-Druckbelastung",
                   "ar": "> 1.0 في الانبساط → فرط حمل حجمي للبطين الأيمن؛ > 1.0 في الانقباض → فرط حمل ضغطي"
-                }
+                },
+                "phases": [
+                  "ED",
+                  "ES"
+                ]
               },
               {
                 "parameter": {
@@ -1663,10 +1980,10 @@
                 "ar": "25–43٪"
               },
               "caliper": [
-                220,
-                94,
-                220,
-                226
+                320,
+                158,
+                320,
+                306
               ]
             },
             {
@@ -1691,10 +2008,10 @@
                 "ar": "تسطّح في الانبساط فقط: حمل حجمي على البطين الأيمن. تسطّح في الانقباض والانبساط: حمل ضغطي."
               },
               "caliper": [
-                154,
-                160,
-                286,
-                160
+                244,
+                232,
+                396,
+                232
               ]
             },
             {
@@ -1707,6 +2024,66 @@
                 "en": "Assess thickening and motion of each segment: anterior, septal, inferior and lateral.",
                 "de": "Wanddickenzunahme und Bewegung jedes Segments beurteilen: anterior, septal, inferior und lateral.",
                 "ar": "قيّم تسمّك وحركة كل قطعة: الأمامية، الحاجزية، السفلية، الوحشية."
+              }
+            }
+          ],
+          "ecg": {
+            "beatMs": 833,
+            "edMs": 0,
+            "esMs": 325
+          },
+          "timingNote": {
+            "en": "LVIDd at ED (R-wave) and LVIDs at ES (T-end) for FS; septal shape in both phases.",
+            "de": "LVIDd in der ED (R-Zacke) und LVIDs in der ES (T-Ende) für die FS; Septumform in beiden Phasen.",
+            "ar": "LVIDd عند نهاية الانبساط (موجة R) وLVIDs عند نهاية الانقباض (نهاية T) لحساب FS؛ شكل الحاجز في الطورين."
+          },
+          "machineControls": [
+            {
+              "control": "2D",
+              "instruction": {
+                "en": "Tilt to the papillary muscle level in 2D; the LV must be round.",
+                "de": "Im 2D-Modus auf Papillarmuskelebene kippen; der LV muss rund sein.",
+                "ar": "أمِل إلى مستوى العضلات الحليمية بوضع 2D؛ يجب أن يكون البطين دائرياً."
+              }
+            },
+            {
+              "control": "GAIN",
+              "instruction": {
+                "en": "Adjust gain until the endocardium is clearly defined.",
+                "de": "Verstärkung anpassen, bis das Endokard klar abgegrenzt ist.",
+                "ar": "اضبط الكسب حتى تتضح حدود الشغاف."
+              }
+            },
+            {
+              "control": "M-MODE",
+              "instruction": {
+                "en": "Place the M-mode line through the centre of the LV between the papillary muscles.",
+                "de": "M-Mode-Linie durch die LV-Mitte zwischen den Papillarmuskeln legen.",
+                "ar": "ضع خط M-Mode عبر مركز البطين بين العضلتين الحليميتين."
+              }
+            },
+            {
+              "control": "FREEZE",
+              "instruction": {
+                "en": "Freeze a trace with at least two cardiac cycles.",
+                "de": "Eine Kurve mit mindestens zwei Herzzyklen einfrieren.",
+                "ar": "جمّد منحنى يحتوي دورتين قلبيتين على الأقل."
+              }
+            },
+            {
+              "control": "CALIPER",
+              "instruction": {
+                "en": "Measure LVIDd at the R-wave and LVIDs at the T-wave end; FS is calculated.",
+                "de": "LVIDd an der R-Zacke und LVIDs am T-Ende messen; die FS wird berechnet.",
+                "ar": "قِس LVIDd عند موجة R وLVIDs عند نهاية T؛ يُحسب FS."
+              }
+            },
+            {
+              "control": "STORE",
+              "instruction": {
+                "en": "Store the loop and the M-mode trace.",
+                "de": "Loop und M-Mode-Kurve speichern.",
+                "ar": "احفظ المقطع ومنحنى M-Mode."
               }
             }
           ]
@@ -1797,7 +2174,11 @@
                   "en": "Trace endocardium in end-diastole and end-systole; A4C + A2C",
                   "de": "Endokard enddiastolisch und endsystolisch umfahren; 4K + 2K",
                   "ar": "تتبّع الشغاف في نهاية الانبساط والانقباض؛ رباعي + ثنائي الحجرات"
-                }
+                },
+                "phases": [
+                  "ED",
+                  "ES"
+                ]
               },
               {
                 "parameter": {
@@ -1844,7 +2225,10 @@
                   "en": "RV-focused A4C, end-diastole",
                   "de": "RV-fokussierter 4K-Blick, enddiastolisch",
                   "ar": "المقطع رباعي الحجرات المركّز على البطين الأيمن، نهاية الانبساط"
-                }
+                },
+                "phases": [
+                  "ED"
+                ]
               },
               {
                 "parameter": {
@@ -1861,7 +2245,10 @@
                   "en": "Biplane disc summation or area-length at end-systole",
                   "de": "Biplane Scheibchensummation oder Fläche-Länge, endsystolisch",
                   "ar": "جمع الأقراص ثنائي المستوى أو المساحة-الطول في نهاية الانقباض"
-                }
+                },
+                "phases": [
+                  "ES"
+                ]
               },
               {
                 "parameter": {
@@ -1909,7 +2296,10 @@
                   "en": "End-systole",
                   "de": "Endsystolisch",
                   "ar": "نهاية الانقباض"
-                }
+                },
+                "phases": [
+                  "ES"
+                ]
               },
               {
                 "parameter": {
@@ -2074,10 +2464,10 @@
                 "ar": "العضلات الحليمية والترابيق تُحسب ضمن التجويف، لا ضمن الجدار."
               },
               "caliper": [
-                222,
-                48,
-                250,
-                178
+                316,
+                90,
+                358,
+                260
               ]
             },
             {
@@ -2097,10 +2487,10 @@
                 "ar": "≥ 1.7 سم"
               },
               "caliper": [
-                200,
+                300,
                 22,
-                122,
-                170
+                196,
+                262
               ]
             },
             {
@@ -2120,10 +2510,10 @@
                 "ar": "≤ 4.1 سم"
               },
               "caliper": [
-                126,
-                152,
-                192,
-                152
+                205,
+                236,
+                295,
+                236
               ]
             },
             {
@@ -2143,10 +2533,10 @@
                 "ar": "E/A = 0.8–2.0 (حسب العمر)"
               },
               "caliper": [
-                240,
-                172,
-                260,
-                172
+                340,
+                224,
+                356,
+                220
               ]
             },
             {
@@ -2166,10 +2556,10 @@
                 "ar": "E/e' المتوسط < 14"
               },
               "caliper": [
-                208,
-                180,
-                292,
-                180
+                316,
+                262,
+                400,
+                262
               ]
             },
             {
@@ -2189,11 +2579,95 @@
                 "ar": "LAVI ≤ 34 مل/م²"
               },
               "caliper": [
-                252,
-                188,
-                252,
-                260
+                360,
+                278,
+                360,
+                366
               ]
+            }
+          ],
+          "ecg": {
+            "beatMs": 833,
+            "edMs": 0,
+            "esMs": 325
+          },
+          "timingNote": {
+            "en": "Simpson: trace at ED (R-wave) and ES (T-end); LAVI and RA area at ES; RV basal diameter at ED.",
+            "de": "Simpson: Tracing in der ED (R-Zacke) und ES (T-Ende); LAVI und RA-Fläche in der ES; basaler RV-Durchmesser in der ED.",
+            "ar": "سيمبسون: التتبّع عند نهاية الانبساط (موجة R) ونهاية الانقباض (نهاية T)؛ LAVI ومساحة الأذين الأيمن عند نهاية الانقباض؛ القطر القاعدي للبطين الأيمن عند نهاية الانبساط."
+          },
+          "machineControls": [
+            {
+              "control": "2D",
+              "instruction": {
+                "en": "Acquire A4C in 2D without foreshortening.",
+                "de": "4K-Blick im 2D-Modus ohne Verkürzung einstellen.",
+                "ar": "اضبط المقطع القمي رباعي الحجرات بوضع 2D دون تقصير."
+              }
+            },
+            {
+              "control": "DEPTH",
+              "instruction": {
+                "en": "Set the depth so both atria are completely visible.",
+                "de": "Tiefe so einstellen, dass beide Vorhöfe vollständig sichtbar sind.",
+                "ar": "اضبط العمق ليظهر الأذينان كاملين."
+              }
+            },
+            {
+              "control": "FREEZE",
+              "instruction": {
+                "en": "Freeze and select the ED (R-wave) and ES (T-end) frames.",
+                "de": "Einfrieren und die Bilder für ED (R-Zacke) und ES (T-Ende) auswählen.",
+                "ar": "جمّد الصورة واختر إطاري نهاية الانبساط (موجة R) ونهاية الانقباض (نهاية T)."
+              }
+            },
+            {
+              "control": "CALIPER",
+              "instruction": {
+                "en": "Trace the LV endocardium (Simpson) and the LA at ES.",
+                "de": "LV-Endokard (Simpson) und den LA in der ES umfahren.",
+                "ar": "تتبّع شغاف البطين الأيسر (سيمبسون) والأذين الأيسر عند نهاية الانقباض."
+              }
+            },
+            {
+              "control": "M-MODE",
+              "instruction": {
+                "en": "Place M-mode through the lateral tricuspid annulus for TAPSE.",
+                "de": "M-Mode durch den lateralen Trikuspidalanulus für die TAPSE legen.",
+                "ar": "ضع M-Mode عبر الحلقة الجانبية لثلاثي الشرف لقياس TAPSE."
+              }
+            },
+            {
+              "control": "PW",
+              "instruction": {
+                "en": "Place the PW gate at the mitral leaflet tips for E and A.",
+                "de": "PW-Messvolumen an die Mitralsegelspitzen für E und A legen.",
+                "ar": "ضع بوابة PW عند أطراف الوريقات التاجية لقياس E وA."
+              }
+            },
+            {
+              "control": "TDI",
+              "instruction": {
+                "en": "Switch to TDI and sample the septal and lateral mitral annulus (e').",
+                "de": "Auf TDI umschalten und septalen und lateralen Mitralanulus ableiten (e').",
+                "ar": "بدّل إلى TDI وسجّل الحلقة التاجية الحاجزية والجانبية (e')."
+              }
+            },
+            {
+              "control": "CW",
+              "instruction": {
+                "en": "Align CW through the tricuspid regurgitation jet for the TR velocity.",
+                "de": "CW durch den TI-Jet für die TI-Geschwindigkeit legen.",
+                "ar": "مرّر CW عبر نفث قلس ثلاثي الشرف لقياس سرعته."
+              }
+            },
+            {
+              "control": "STORE",
+              "instruction": {
+                "en": "Store loops and all traces.",
+                "de": "Loops und alle Kurven speichern.",
+                "ar": "احفظ المقاطع وكل المنحنيات."
+              }
             }
           ]
         },
@@ -2468,10 +2942,10 @@
                 "ar": "الحجم الضربي = مساحة LVOT × VTI. قطر LVOT يُقاس في PLAX."
               },
               "caliper": [
-                190,
-                172,
-                216,
-                172
+                288,
+                250,
+                320,
+                250
               ]
             },
             {
@@ -2496,11 +2970,79 @@
                 "ar": "أي انحراف في الزاوية يقلل السرعة المقاسة؛ جرّب نوافذ أخرى عند الشك بتضيق."
               },
               "caliper": [
-                200,
+                300,
                 22,
-                203,
-                262
+                303,
+                400
               ]
+            }
+          ],
+          "ecg": {
+            "beatMs": 833,
+            "edMs": 0,
+            "esMs": 325
+          },
+          "timingNote": {
+            "en": "Doppler over the ejection period: LVOT VTI and aortic CW from just after the QRS to the T-wave end.",
+            "de": "Doppler über die Austreibungsphase: LVOT-VTI und Aorten-CW von kurz nach dem QRS bis zum T-Ende.",
+            "ar": "الدوبلر خلال فترة القذف: VTI مخرج البطين الأيسر وCW الأبهري من بعد QRS مباشرة حتى نهاية T."
+          },
+          "machineControls": [
+            {
+              "control": "2D",
+              "instruction": {
+                "en": "Tilt from A4C to A5C in 2D.",
+                "de": "Im 2D-Modus vom 4K- in den 5K-Blick kippen.",
+                "ar": "أمِل من المقطع الرباعي إلى الخماسي بوضع 2D."
+              }
+            },
+            {
+              "control": "COLOR",
+              "instruction": {
+                "en": "Check the LVOT and aortic valve for regurgitation or turbulence.",
+                "de": "LVOT und Aortenklappe auf Insuffizienz oder Turbulenz prüfen.",
+                "ar": "افحص مخرج البطين الأيسر والصمام الأبهري بحثاً عن قلس أو اضطراب."
+              }
+            },
+            {
+              "control": "TRACKBALL",
+              "instruction": {
+                "en": "Move the PW gate 0.5–1 cm below the aortic valve.",
+                "de": "PW-Messvolumen 0,5–1 cm unterhalb der Aortenklappe platzieren.",
+                "ar": "حرّك بوابة PW إلى 0.5–1 سم تحت الصمام الأبهري."
+              }
+            },
+            {
+              "control": "PW",
+              "instruction": {
+                "en": "Record the LVOT spectrum and trace the VTI.",
+                "de": "LVOT-Spektrum ableiten und VTI umfahren.",
+                "ar": "سجّل طيف مخرج البطين الأيسر وتتبّع VTI."
+              }
+            },
+            {
+              "control": "CW",
+              "instruction": {
+                "en": "Align CW through the aortic valve for Vmax and mean gradient.",
+                "de": "CW durch die Aortenklappe für Vmax und mittleren Gradienten legen.",
+                "ar": "مرّر CW عبر الصمام الأبهري لقياس Vmax والمدروج الوسطي."
+              }
+            },
+            {
+              "control": "SCALE",
+              "instruction": {
+                "en": "Shift the baseline and scale so the full envelope is shown.",
+                "de": "Nulllinie und Skala so verschieben, dass die ganze Hüllkurve sichtbar ist.",
+                "ar": "حرّك خط الأساس والمقياس ليظهر الغلاف كاملاً."
+              }
+            },
+            {
+              "control": "STORE",
+              "instruction": {
+                "en": "Store the Doppler traces.",
+                "de": "Dopplerkurven speichern.",
+                "ar": "احفظ منحنيات الدوبلر."
+              }
             }
           ]
         },
@@ -2588,7 +3130,11 @@
                   "en": "Use A2C tracing for the second plane",
                   "de": "2K-Tracing als zweite Ebene verwenden",
                   "ar": "استخدم تتبّع ثنائي الحجرات كمستوى ثانٍ"
-                }
+                },
+                "phases": [
+                  "ED",
+                  "ES"
+                ]
               },
               {
                 "parameter": {
@@ -2622,7 +3168,10 @@
                   "en": "Exclude LAA and pulmonary veins",
                   "de": "Vorhofohr und Lungenvenen ausschließen",
                   "ar": "استبعاد زائدة الأذين والأوردة الرئوية"
-                }
+                },
+                "phases": [
+                  "ES"
+                ]
               }
             ],
             "pediatric": [
@@ -2743,10 +3292,10 @@
                 "ar": "فرق طول البطين بين A4C و A2C يجب ألا يتجاوز 10%."
               },
               "caliper": [
-                110,
-                64,
-                110,
-                190
+                150,
+                84,
+                150,
+                266
               ]
             },
             {
@@ -2776,6 +3325,58 @@
                 "en": "−18 % to −22 %",
                 "de": "−18 % bis −22 %",
                 "ar": "−18٪ إلى −22٪"
+              }
+            }
+          ],
+          "ecg": {
+            "beatMs": 833,
+            "edMs": 0,
+            "esMs": 325
+          },
+          "timingNote": {
+            "en": "Simpson in A2C at ED (R-wave) and ES (T-end); GLS uses QRS onset as the end-diastolic reference.",
+            "de": "Simpson im 2K-Blick in ED (R-Zacke) und ES (T-Ende); GLS nutzt den QRS-Beginn als enddiastolische Referenz.",
+            "ar": "سيمبسون في ثنائي الحجرات عند نهاية الانبساط (موجة R) ونهاية الانقباض (نهاية T)؛ GLS يعتمد بداية QRS مرجعاً لنهاية الانبساط."
+          },
+          "machineControls": [
+            {
+              "control": "2D",
+              "instruction": {
+                "en": "Rotate counter-clockwise from A4C to A2C, then to A3C.",
+                "de": "Vom 4K-Blick gegen den Uhrzeigersinn in den 2K-, dann den 3K-Blick drehen.",
+                "ar": "دوّر عكس عقارب الساعة من الرباعي إلى الثنائي ثم الثلاثي."
+              }
+            },
+            {
+              "control": "FREEZE",
+              "instruction": {
+                "en": "Freeze A2C and select the ED and ES frames.",
+                "de": "2K-Blick einfrieren und ED- und ES-Bild auswählen.",
+                "ar": "جمّد المقطع الثنائي واختر إطاري نهاية الانبساط والانقباض."
+              }
+            },
+            {
+              "control": "CALIPER",
+              "instruction": {
+                "en": "Trace the endocardium for the biplane EF.",
+                "de": "Endokard für die biplane EF umfahren.",
+                "ar": "تتبّع الشغاف لحساب الكسر القذفي ثنائي المستوى."
+              }
+            },
+            {
+              "control": "COLOR",
+              "instruction": {
+                "en": "In A3C check the mitral and aortic valves with colour.",
+                "de": "Im 3K-Blick Mitral- und Aortenklappe mit Farbe prüfen.",
+                "ar": "في المقطع الثلاثي افحص الصمامين التاجي والأبهري بالدوبلر الملون."
+              }
+            },
+            {
+              "control": "STORE",
+              "instruction": {
+                "en": "Store A2C and A3C loops at a high frame rate for strain.",
+                "de": "2K- und 3K-Loops mit hoher Bildrate für Strain speichern.",
+                "ar": "احفظ مقطعي الثنائي والثلاثي بمعدل إطارات عالٍ لتحليل الإجهاد."
               }
             }
           ]
@@ -2863,7 +3464,10 @@
                   "en": "Between the innominate and left carotid origins",
                   "de": "Zwischen Truncus brachiocephalicus und linker A. carotis",
                   "ar": "بين منشأ الجذع العضدي الرأسي والسباتي الأيسر"
-                }
+                },
+                "phases": [
+                  "ED"
+                ]
               },
               {
                 "parameter": {
@@ -3085,10 +3689,10 @@
                 "ar": "2.2–3.6 سم (عند الأطفال: Z-Score)"
               },
               "caliper": [
-                137,
-                80,
-                137,
-                114
+                268,
+                129,
+                268,
+                179
               ]
             },
             {
@@ -3108,10 +3712,10 @@
                 "ar": "عند الأطفال: Z-Score > −2"
               },
               "caliper": [
-                220,
-                136,
-                247,
-                116
+                375,
+                210,
+                415,
+                180
               ]
             },
             {
@@ -3136,15 +3740,152 @@
                 "ar": "سرعة مرتفعة مع استمرار الجريان في الانبساط (ذيل انبساطي) علامة مميزة لتضيق البرزخ."
               },
               "caliper": [
-                200,
+                300,
                 22,
-                250,
-                230
+                432,
+                392
               ]
+            }
+          ],
+          "ecg": {
+            "beatMs": 833,
+            "edMs": 0,
+            "esMs": 325
+          },
+          "timingNote": {
+            "en": "Arch and isthmus diameters at ED in adults (systole in children); check for a diastolic tail after the T-wave end.",
+            "de": "Bogen- und Isthmusdurchmesser bei Erwachsenen in der ED (bei Kindern in der Systole); nach dem T-Ende auf einen diastolischen Ausläufer achten.",
+            "ar": "أقطار القوس والبرزخ عند نهاية الانبساط عند البالغين (وفي الانقباض عند الأطفال)؛ ابحث عن الذيل الانبساطي بعد نهاية T."
+          },
+          "machineControls": [
+            {
+              "control": "2D",
+              "instruction": {
+                "en": "Acquire the arch long axis in 2D with the neck extended.",
+                "de": "Lange Achse des Bogens im 2D-Modus bei rekliniertem Hals einstellen.",
+                "ar": "اضبط المحور الطويل للقوس بوضع 2D مع بسط الرقبة."
+              }
+            },
+            {
+              "control": "DEPTH",
+              "instruction": {
+                "en": "Set the depth to show the arch and the descending aorta.",
+                "de": "Tiefe so wählen, dass Bogen und Aorta descendens sichtbar sind.",
+                "ar": "اضبط العمق ليظهر القوس والأبهر النازل."
+              }
+            },
+            {
+              "control": "COLOR",
+              "instruction": {
+                "en": "Place the colour box over the isthmus and descending aorta.",
+                "de": "Farbbox über Isthmus und Aorta descendens legen.",
+                "ar": "ضع صندوق الألوان فوق البرزخ والأبهر النازل."
+              }
+            },
+            {
+              "control": "CW",
+              "instruction": {
+                "en": "Align CW through the descending aorta.",
+                "de": "CW durch die Aorta descendens legen.",
+                "ar": "مرّر CW عبر الأبهر النازل."
+              }
+            },
+            {
+              "control": "SCALE",
+              "instruction": {
+                "en": "Adjust scale and baseline to see the whole diastolic flow.",
+                "de": "Skala und Nulllinie anpassen, um den gesamten diastolischen Fluss zu sehen.",
+                "ar": "اضبط المقياس وخط الأساس لرؤية الجريان الانبساطي كاملاً."
+              }
+            },
+            {
+              "control": "STORE",
+              "instruction": {
+                "en": "Store the loop and the Doppler trace.",
+                "de": "Loop und Dopplerkurve speichern.",
+                "ar": "احفظ المقطع ومنحنى الدوبلر."
+              }
             }
           ]
         }
       ]
     }
-  ]
+  ],
+  "consoleControls": {
+    "GAIN": {
+      "en": "Overall 2D gain: brightness of all echoes. Aim for black blood pools and mid-grey myocardium.",
+      "de": "Gesamtverstärkung (2D): Helligkeit aller Echos. Ziel: schwarzes Blut, mittelgraues Myokard.",
+      "ar": "الكسب الكلي (2D): سطوع كل الأصداء. الهدف: دم أسود وعضلة قلبية رمادية متوسطة."
+    },
+    "DEPTH": {
+      "en": "Image depth. The heart should fill about two thirds of the sector with a small margin below the structure of interest.",
+      "de": "Bildtiefe. Das Herz sollte etwa zwei Drittel des Sektors füllen, mit etwas Rand unter der Zielstruktur.",
+      "ar": "عمق الصورة. يجب أن يملأ القلب نحو ثلثي القطاع مع هامش صغير تحت البنية المستهدفة."
+    },
+    "FOCUS": {
+      "en": "Focal zone: place it at the structure of interest for the best lateral resolution.",
+      "de": "Fokuszone: auf Höhe der Zielstruktur legen für die beste laterale Auflösung.",
+      "ar": "منطقة التركيز: ضعها عند البنية المستهدفة لأفضل دقة جانبية."
+    },
+    "SCALE": {
+      "en": "Velocity scale (Nyquist limit) for Color, PW and CW. Raise it to avoid aliasing, lower it for slow flow.",
+      "de": "Geschwindigkeitsskala (Nyquist-Grenze) für Farbe, PW und CW. Erhöhen gegen Aliasing, senken für langsame Flüsse.",
+      "ar": "مقياس السرعة (حد Nyquist) للدوبلر الملون وPW وCW. ارفعه لتجنب التشوّه (aliasing) واخفضه للجريان البطيء."
+    },
+    "2D": {
+      "en": "B-mode imaging: the base mode for every view and every Doppler acquisition.",
+      "de": "B-Bild: Grundmodus für jeden Schnitt und jede Doppler-Ableitung.",
+      "ar": "التصوير ثنائي الأبعاد (B-mode): الوضع الأساسي لكل مقطع وكل قياس دوبلر."
+    },
+    "M-MODE": {
+      "en": "One scan line over time with very high temporal resolution (TAPSE, FS, IVC collapse).",
+      "de": "Eine Schalllinie über die Zeit mit sehr hoher zeitlicher Auflösung (TAPSE, FS, VCI-Kollaps).",
+      "ar": "خط مسح واحد عبر الزمن بدقة زمنية عالية جداً (TAPSE، FS، انخماص الأجوف)."
+    },
+    "COLOR": {
+      "en": "Colour flow Doppler box: direction and turbulence of flow (red toward, blue away from the probe).",
+      "de": "Farbdoppler-Box: Richtung und Turbulenz des Flusses (rot auf den Schallkopf zu, blau weg).",
+      "ar": "صندوق الدوبلر الملون: اتجاه الجريان واضطرابه (الأحمر نحو المجس، الأزرق بعيداً عنه)."
+    },
+    "PW": {
+      "en": "Pulsed-wave Doppler: velocity at one sample gate (LVOT, mitral inflow, pulmonary valve).",
+      "de": "Gepulster Doppler: Geschwindigkeit an einem Messvolumen (LVOT, Mitraleinstrom, Pulmonalklappe).",
+      "ar": "الدوبلر النبضي: السرعة عند بوابة عينة واحدة (مخرج البطين الأيسر، التدفق التاجي، الصمام الرئوي)."
+    },
+    "CW": {
+      "en": "Continuous-wave Doppler: peak velocity anywhere along the cursor line (AS, TR, coarctation).",
+      "de": "Continuous-Wave-Doppler: Spitzengeschwindigkeit entlang der ganzen Cursorlinie (AS, TI, Isthmusstenose).",
+      "ar": "الدوبلر المستمر: السرعة القصوى على طول خط المؤشر (تضيق أبهري، قلس ثلاثي الشرف، تضيق البرزخ)."
+    },
+    "TDI": {
+      "en": "Tissue Doppler imaging: myocardial velocities such as mitral e' and tricuspid S'.",
+      "de": "Gewebedoppler: Myokardgeschwindigkeiten wie mitrales e' und trikuspidales S'.",
+      "ar": "دوبلر الأنسجة: سرعات العضلة القلبية مثل e' التاجي وS' ثلاثي الشرف."
+    },
+    "ZOOM": {
+      "en": "Magnifies a region of interest for precise measurements (LVOT, valves, aortic root).",
+      "de": "Vergrößert eine Region für präzise Messungen (LVOT, Klappen, Aortenwurzel).",
+      "ar": "تكبير منطقة محددة لقياسات دقيقة (مخرج البطين الأيسر، الصمامات، جذر الأبهر)."
+    },
+    "TRACKBALL": {
+      "en": "Moves the cursor, Doppler gate, colour box and caliper points; scrolls cine frames when frozen.",
+      "de": "Bewegt Cursor, Messvolumen, Farbbox und Caliper-Punkte; blättert im eingefrorenen Cine-Loop.",
+      "ar": "يحرّك المؤشر وبوابة الدوبلر وصندوق الألوان ونقاط القياس؛ ويتنقل بين إطارات المقطع المجمّد."
+    },
+    "FREEZE": {
+      "en": "Freezes the image. Scroll to the ED frame (R-wave) or ES frame (T-wave end) before measuring.",
+      "de": "Friert das Bild ein. Vor dem Messen zum ED-Bild (R-Zacke) oder ES-Bild (T-Ende) blättern.",
+      "ar": "يجمّد الصورة. انتقل إلى إطار نهاية الانبساط (موجة R) أو نهاية الانقباض (نهاية T) قبل القياس."
+    },
+    "CALIPER": {
+      "en": "Starts a distance, area or trace measurement on the frozen frame.",
+      "de": "Startet eine Strecken-, Flächen- oder Tracing-Messung im eingefrorenen Bild.",
+      "ar": "يبدأ قياس مسافة أو مساحة أو تتبّع على الإطار المجمّد."
+    },
+    "STORE": {
+      "en": "Saves the loop or image to the study.",
+      "de": "Speichert Loop oder Bild in der Untersuchung.",
+      "ar": "يحفظ المقطع أو الصورة في الدراسة."
+    }
+  }
 }

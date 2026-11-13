@@ -3,7 +3,7 @@
 Guided-exam steps for EchoScope (en / de / ar).
 
 Merges the `steps` array of every view into app/src/main/assets/echo_protocol_full.json.
-Caliper coordinates are [x1, y1, x2, y2] in the 400x300 space of the bundled SVG diagrams.
+Caliper coordinates are [x1, y1, x2, y2] in the 600x420 space of the bundled SVG diagrams.
 
 Usage: python3 scripts/guided_steps.py
 """
@@ -56,7 +56,7 @@ STEPS = {
             note=t("In apical views the septum can look falsely perforated (drop-out) because the beam runs parallel to it.",
                    "In apikalen Schnitten kann das Septum fälschlich perforiert wirken (Drop-out), weil der Schallstrahl parallel verläuft.",
                    "في المقطع القمّي قد يظهر الحاجز «مثقوباً» كاذباً (drop-out) لأن الحزمة موازية له."),
-            caliper=[112, 162, 188, 158],
+            caliper=[272, 244, 213, 244],
         ),
         step(
             t("Pericardium", "Perikard", "التامور"),
@@ -64,7 +64,7 @@ STEPS = {
               "Nach einem echofreien Saum um das Herz suchen, besonders zwischen Leber und rechtem Ventrikel; enddiastolisch messen.",
               "ابحث عن فراغ أسود حول القلب، خصوصاً بين الكبد والبطين الأيمن، وقِسه في نهاية الانبساط."),
             normal=t("No effusion · small < 10 mm", "Kein Erguss · klein < 10 mm", "لا انصباب · صغير < 10 مم"),
-            caliper=[245, 88, 245, 98],
+            caliper=[364, 164, 374, 150],
         ),
     ],
     "subcostal_ivc": [
@@ -83,7 +83,7 @@ STEPS = {
               "Endexspiratorisch einfrieren und senkrecht zur Längsachse messen, 1–2 cm vor der Einmündung in den rechten Vorhof.",
               "ثبّت الصورة في نهاية الزفير وقِس القطر عمودياً على المحور الطويل، على بعد 1–2 سم من مدخل الأذين الأيمن."),
             normal=t("≤ 2.1 cm", "≤ 2,1 cm", "≤ 2.1 سم"),
-            caliper=[230, 165, 234, 194],
+            caliper=[377, 236, 383, 276],
         ),
         step(
             t("Collapsibility test", "Kollapsibilitätstest", "اختبار الانخماص"),
@@ -127,7 +127,7 @@ STEPS = {
             note=t("Do not include the moderator band or other RV structures.",
                    "Moderatorband und andere RV-Strukturen nicht mitmessen.",
                    "لا تُدخل الحزمة المعدِّلة (moderator band) أو تراكيب البطين الأيمن في القياس."),
-            caliper=[200, 100, 200, 110],
+            caliper=[300, 150, 300, 171],
         ),
         step(
             t("Measure LVIDd", "LVIDd messen", "قياس LVIDd"),
@@ -135,7 +135,7 @@ STEPS = {
               "Auf derselben Linie: von der Innenkante des Septums bis zur Innenkante der Hinterwand.",
               "على نفس الخط: من حافة الحاجز الداخلية إلى حافة الجدار الخلفي الداخلية."),
             normal=t("4.2–5.8 cm (M) · 3.8–5.2 cm (F)", "4,2–5,8 cm (M) · 3,8–5,2 cm (F)", "4.2–5.8 سم (ذكور) · 3.8–5.2 سم (إناث)"),
-            caliper=[200, 113, 200, 181],
+            caliper=[300, 172, 300, 263],
         ),
         step(
             t("Measure LVPWd", "LVPWd messen", "قياس LVPWd"),
@@ -143,7 +143,7 @@ STEPS = {
               "Auf derselben Linie weiter: Hinterwanddicke ohne Chordae und Perikard.",
               "أكمل على نفس الخط: سُمك الجدار الخلفي دون إدخال الحبال الوترية أو التامور."),
             normal=t("0.6–1.0 cm (M) · 0.6–0.9 cm (F)", "0,6–1,0 cm (M) · 0,6–0,9 cm (F)", "0.6–1.0 سم (ذكور) · 0.6–0.9 سم (إناث)"),
-            caliper=[200, 187, 200, 194],
+            caliper=[300, 264, 300, 288],
         ),
         step(
             t("Aortic root", "Aortenwurzel", "جذر الأبهر"),
@@ -151,7 +151,7 @@ STEPS = {
               "Auf Höhe der Sinus Valsalvae enddiastolisch messen, Leading Edge zu Leading Edge.",
               "قِس عند جيوب فالسالفا في نهاية الانبساط بطريقة الحافة الأمامية إلى الحافة الأمامية (leading edge)."),
             normal=t("2.8–4.0 cm (M) · 2.4–3.6 cm (F)", "2,8–4,0 cm (M) · 2,4–3,6 cm (F)", "2.8–4.0 سم (ذكور) · 2.4–3.6 سم (إناث)"),
-            caliper=[290, 99, 290, 149],
+            caliper=[440, 152, 440, 228],
         ),
         step(
             t("Left atrium", "Linker Vorhof", "الأذين الأيسر"),
@@ -162,7 +162,7 @@ STEPS = {
             note=t("The diameter alone underestimates enlargement; grade with LAVI from the apical views.",
                    "Der Durchmesser allein unterschätzt eine Dilatation; Graduierung über LAVI aus den apikalen Schnitten.",
                    "القطر وحده يقلل من تقدير التوسع؛ المعتمد هو LAVI من المقاطع القمّية."),
-            caliper=[306, 168, 306, 228],
+            caliper=[450, 254, 450, 320],
         ),
     ],
     "psax_av": [
@@ -187,7 +187,7 @@ STEPS = {
               "Leicht kippen, um RVOT, Pulmonalklappe, Truncus und Bifurkation darzustellen. Den Truncus in der Mitte messen.",
               "أمل قليلاً لإظهار مخرج البطين الأيمن والصمام الرئوي والجذع وتفرّعه. قِس قطر الجذع في منتصفه."),
             normal=t("< 2.9 cm (children: Z-score)", "< 2,9 cm (Kinder: Z-Score)", "< 2.9 سم (عند الأطفال: Z-Score)"),
-            caliper=[306, 132, 336, 128],
+            caliper=[438, 200, 466, 180],
         ),
         step(
             t("Pulmonary valve Doppler", "Pulmonalklappendoppler", "دوبلر الصمام الرئوي"),
@@ -195,7 +195,7 @@ STEPS = {
               "PW-Messvolumen an die Pulmonalklappe legen, Schallstrahl parallel zum Fluss.",
               "ضع عينة PW عند الصمام الرئوي والحزمة موازية للجريان."),
             normal=t("0.6–0.9 m/s", "0,6–0,9 m/s", "0.6–0.9 م/ث"),
-            caliper=[296, 100, 310, 108],
+            caliper=[428, 172, 440, 164],
         ),
         step(
             t("Look for a PDA", "Nach PDA suchen", "البحث عن PDA"),
@@ -223,7 +223,7 @@ STEPS = {
               "M-Mode-Linie senkrecht durch die LV-Mitte legen. FS = (LVIDd − LVIDs) ÷ LVIDd.",
               "ضع خط M-Mode عمودياً عبر مركز البطين. FS = (LVIDd − LVIDs) ÷ LVIDd."),
             normal=t("25–43 %", "25–43 %", "25–43٪"),
-            caliper=[220, 94, 220, 226],
+            caliper=[320, 158, 320, 306],
         ),
         step(
             t("Eccentricity index", "Exzentrizitätsindex", "مؤشر اللامركزية"),
@@ -234,7 +234,7 @@ STEPS = {
             note=t("Flattening in diastole only: RV volume overload. Flattening in systole and diastole: RV pressure overload.",
                    "Abflachung nur in der Diastole: RV-Volumenbelastung. Abflachung in Systole und Diastole: RV-Druckbelastung.",
                    "تسطّح في الانبساط فقط: حمل حجمي على البطين الأيمن. تسطّح في الانقباض والانبساط: حمل ضغطي."),
-            caliper=[154, 160, 286, 160],
+            caliper=[244, 232, 396, 232],
         ),
         step(
             t("Wall motion", "Wandbewegung", "حركية الجدران"),
@@ -268,7 +268,7 @@ STEPS = {
             note=t("Papillary muscles and trabeculae belong to the cavity, not to the wall.",
                    "Papillarmuskeln und Trabekel gehören zum Kavum, nicht zur Wand.",
                    "العضلات الحليمية والترابيق تُحسب ضمن التجويف، لا ضمن الجدار."),
-            caliper=[222, 48, 250, 178],
+            caliper=[316, 90, 358, 260],
         ),
         step(
             t("TAPSE", "TAPSE", "TAPSE"),
@@ -276,7 +276,7 @@ STEPS = {
               "M-Mode-Linie auf den lateralen Trikuspidalanulus legen und dessen longitudinale Exkursion von Diastole zu Systole messen.",
               "ضع خط M-Mode على الحلقة الوحشية للصمام مثلث الشرف وقِس حركتها الطولية من الانبساط إلى الانقباض."),
             normal=t("≥ 1.7 cm", "≥ 1,7 cm", "≥ 1.7 سم"),
-            caliper=[200, 22, 122, 170],
+            caliper=[300, 22, 196, 262],
         ),
         step(
             t("RV basal diameter", "Basaler RV-Durchmesser", "قطر قاعدة البطين الأيمن"),
@@ -284,7 +284,7 @@ STEPS = {
               "Im RV-fokussierten Schnitt den größten Durchmesser im basalen Drittel enddiastolisch messen.",
               "في مقطع مركَّز على البطين الأيمن، قِس أعرض قطر في الثلث القاعدي في نهاية الانبساط."),
             normal=t("≤ 4.1 cm", "≤ 4,1 cm", "≤ 4.1 سم"),
-            caliper=[126, 152, 192, 152],
+            caliper=[205, 236, 295, 236],
         ),
         step(
             t("Mitral inflow", "Mitraleinstrom", "جريان الصمام التاجي"),
@@ -292,7 +292,7 @@ STEPS = {
               "PW-Messvolumen (1–3 mm) an die Mitralsegelspitzen legen und E- und A-Welle ableiten.",
               "ضع عينة PW (1–3 مم) عند أطراف وريقات الصمام التاجي وسجّل موجتي E و A."),
             normal=t("E/A = 0.8–2.0 (age-dependent)", "E/A = 0,8–2,0 (altersabhängig)", "E/A = 0.8–2.0 (حسب العمر)"),
-            caliper=[240, 172, 260, 172],
+            caliper=[340, 224, 356, 220],
         ),
         step(
             t("Tissue Doppler e'", "Gewebedoppler e'", "دوبلر الأنسجة e'"),
@@ -300,7 +300,7 @@ STEPS = {
               "TDI aktivieren und das Messvolumen auf den septalen, dann den lateralen Mitralanulus legen. E ÷ gemitteltes e' berechnen.",
               "فعّل TDI وضع العينة على الحلقة التاجية الحاجزية ثم الوحشية. احسب E ÷ متوسط e'."),
             normal=t("Average E/e' < 14", "Gemitteltes E/e' < 14", "E/e' المتوسط < 14"),
-            caliper=[208, 180, 292, 180],
+            caliper=[316, 262, 400, 262],
         ),
         step(
             t("Left atrial volume", "Volumen des linken Vorhofs", "حجم الأذين الأيسر"),
@@ -308,7 +308,7 @@ STEPS = {
               "Endsystolisch den linken Vorhof umfahren (ohne Lungenvenen und Vorhofohr) und das Volumen durch die KOF teilen.",
               "في نهاية الانقباض ارسم حدود الأذين الأيسر (دون الأوردة الرئوية والزائدة) واقسم الحجم على BSA."),
             normal=t("LAVI ≤ 34 mL/m²", "LAVI ≤ 34 ml/m²", "LAVI ≤ 34 مل/م²"),
-            caliper=[252, 188, 252, 260],
+            caliper=[360, 278, 360, 366],
         ),
     ],
     "apical_5c": [
@@ -327,7 +327,7 @@ STEPS = {
             note=t("Stroke volume = LVOT area × VTI. The LVOT diameter is measured in PLAX.",
                    "Schlagvolumen = LVOT-Fläche × VTI. Der LVOT-Durchmesser wird in der PLAX gemessen.",
                    "الحجم الضربي = مساحة LVOT × VTI. قطر LVOT يُقاس في PLAX."),
-            caliper=[190, 172, 216, 172],
+            caliper=[288, 250, 320, 250],
         ),
         step(
             t("Aortic valve velocity", "Aortenklappengeschwindigkeit", "سرعة الصمام الأبهري"),
@@ -338,7 +338,7 @@ STEPS = {
             note=t("Any angle error lowers the measured velocity; try other windows when stenosis is suspected.",
                    "Jeder Winkelfehler senkt die gemessene Geschwindigkeit; bei Stenoseverdacht weitere Fenster nutzen.",
                    "أي انحراف في الزاوية يقلل السرعة المقاسة؛ جرّب نوافذ أخرى عند الشك بتضيق."),
-            caliper=[200, 22, 203, 262],
+            caliper=[300, 22, 303, 400],
         ),
     ],
     "apical_2c_3c": [
@@ -356,7 +356,7 @@ STEPS = {
             note=t("LV length in A4C and A2C should not differ by more than 10 %.",
                    "Die LV-Länge in 4K und 2K sollte um nicht mehr als 10 % abweichen.",
                    "فرق طول البطين بين A4C و A2C يجب ألا يتجاوز 10%."),
-            caliper=[110, 64, 110, 190],
+            caliper=[150, 84, 150, 266],
         ),
         step(
             t("A3C view", "3K-Blick", "مقطع A3C"),
@@ -394,7 +394,7 @@ STEPS = {
               "Zwischen den Abgängen von Truncus brachiocephalicus und linker A. carotis messen, Innenkante zu Innenkante.",
               "قِس القطر بين الجذع العضدي الرأسي والسباتي الأيسر، من الحافة الداخلية إلى الداخلية."),
             normal=t("2.2–3.6 cm (children: Z-score)", "2,2–3,6 cm (Kinder: Z-Score)", "2.2–3.6 سم (عند الأطفال: Z-Score)"),
-            caliper=[137, 80, 137, 114],
+            caliper=[268, 129, 268, 179],
         ),
         step(
             t("Aortic isthmus", "Aortenisthmus", "برزخ الأبهر"),
@@ -402,7 +402,7 @@ STEPS = {
               "Den Durchmesser unmittelbar distal des Abgangs der linken A. subclavia messen: typische Lokalisation der Isthmusstenose.",
               "قِس القطر مباشرة بعد منشأ الشريان تحت الترقوة الأيسر: الموضع النموذجي لتضيق برزخ الأبهر."),
             normal=t("Children: Z-score > −2", "Kinder: Z-Score > −2", "عند الأطفال: Z-Score > −2"),
-            caliper=[220, 136, 247, 116],
+            caliper=[375, 210, 415, 180],
         ),
         step(
             t("Descending aorta Doppler", "Doppler der Aorta descendens", "دوبلر الأبهر النازل"),
@@ -413,7 +413,7 @@ STEPS = {
             note=t("A high velocity with flow continuing into diastole (diastolic tail) is the hallmark of coarctation.",
                    "Hohe Geschwindigkeit mit in die Diastole fortgesetztem Fluss (diastolischer Ausläufer) ist das Leitzeichen der Isthmusstenose.",
                    "سرعة مرتفعة مع استمرار الجريان في الانبساط (ذيل انبساطي) علامة مميزة لتضيق البرزخ."),
-            caliper=[200, 22, 250, 230],
+            caliper=[300, 22, 432, 392],
         ),
     ],
 }

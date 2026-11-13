@@ -12,15 +12,13 @@
         <item quantity="one">%d view</item>
         <item quantity="other">%d views</item>
     </plurals>
-    <string name="tab_svg">SVG Anatomy</string>
-    <string name="tab_measurements">Adult &amp; Pediatric Measurements</string>
-    <string name="tab_checklist">Clinical Checklist</string>
+    <string name="tab_svg">Anatomy (SVG)</string>
+    <string name="tab_measurements">Measurements (ED/ES)</string>
+    <string name="tab_checklist">Checklist</string>
     <string name="loading_protocol">Loading protocol database…</string>
     <string name="protocol_error">Unable to read echo_protocol_full.json: %1$s</string>
     <string name="notch_label">Notch at %1$s o\'clock</string>
     <string name="key_structures">Key structures</string>
-    <string name="legend_chambers">Chambers</string>
-    <string name="legend_septa">Septa</string>
     <string name="legend_valves">Valves</string>
     <string name="legend_notch">Notch</string>
     <string name="adult_reference">Adult (ASE/EACVI)</string>
@@ -70,4 +68,30 @@
         <item quantity="one">%d step</item>
         <item quantity="other">%d steps</item>
     </plurals>
+    <string name="ecg_ed_label">ED · R-wave</string>
+    <string name="ecg_es_label">ES · T-end</string>
+    <string name="ecg_jump_ed">Jump to ED (R-wave)</string>
+    <string name="ecg_jump_es">Jump to ES (T-end)</string>
+    <string name="ecg_lead">Lead II</string>
+    <string name="ecg_systole">SYSTOLE</string>
+    <string name="ecg_diastole">DIASTOLE</string>
+    <string name="tab_console">Console</string>
+    <string name="console_title">Ultrasound console</string>
+    <string name="console_step_of">Step %1$d of %2$d</string>
+    <string name="console_function">Function</string>
+    <string name="console_for_view">In this view</string>
+    <string name="console_not_used">Not part of this view\'s sequence.</string>
+    <string name="console_next">Next step</string>
+    <string name="console_restart">Start over</string>
+    <string name="console_close">Close</string>
+    <string name="console_sequence">Sequence for this view</string>
+    <string name="console_hint">Tap any key or knob · drag a knob sideways to turn it</string>
+    <string name="zoom_hint">Pinch to zoom · drag to pan · double-tap to reset</string>
+    <string name="zoom_reset">Reset zoom</string>
+    <string name="legend_myocardium">Myocardium</string>
+    <string name="legend_oxygenated">Oxygenated</string>
+    <string name="legend_deoxygenated">Deoxygenated</string>
+    <string name="legend_doppler">Doppler</string>
+    <string name="phase_ed_hint">End-diastole · R-wave</string>
+    <string name="phase_es_hint">End-systole · T-end</string>
 </resources>

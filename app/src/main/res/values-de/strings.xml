@@ -11,15 +11,13 @@
         <item quantity="one">%d Schnitt</item>
         <item quantity="other">%d Schnitte</item>
     </plurals>
-    <string name="tab_svg">SVG-Anatomie</string>
-    <string name="tab_measurements">Messwerte Erwachsene &amp; Kinder</string>
-    <string name="tab_checklist">Klinische Checkliste</string>
+    <string name="tab_svg">Anatomie (SVG)</string>
+    <string name="tab_measurements">Messwerte (ED/ES)</string>
+    <string name="tab_checklist">Checkliste</string>
     <string name="loading_protocol">Protokolldatenbank wird geladen…</string>
     <string name="protocol_error">echo_protocol_full.json konnte nicht gelesen werden: %1$s</string>
     <string name="notch_label">Markierung bei %1$s Uhr</string>
     <string name="key_structures">Schlüsselstrukturen</string>
-    <string name="legend_chambers">Kammern</string>
-    <string name="legend_septa">Septen</string>
     <string name="legend_valves">Klappen</string>
     <string name="legend_notch">Markierung</string>
     <string name="adult_reference">Erwachsene (ASE/EACVI)</string>
@@ -69,4 +67,30 @@
         <item quantity="one">%d Schritt</item>
         <item quantity="other">%d Schritte</item>
     </plurals>
+    <string name="ecg_ed_label">ED · R-Zacke</string>
+    <string name="ecg_es_label">ES · T-Ende</string>
+    <string name="ecg_jump_ed">Zur ED (R-Zacke)</string>
+    <string name="ecg_jump_es">Zur ES (T-Ende)</string>
+    <string name="ecg_lead">Abl. II</string>
+    <string name="ecg_systole">SYSTOLE</string>
+    <string name="ecg_diastole">DIASTOLE</string>
+    <string name="tab_console">Gerätekonsole</string>
+    <string name="console_title">Ultraschallkonsole</string>
+    <string name="console_step_of">Schritt %1$d von %2$d</string>
+    <string name="console_function">Funktion</string>
+    <string name="console_for_view">In diesem Schnitt</string>
+    <string name="console_not_used">Nicht Teil des Ablaufs für diesen Schnitt.</string>
+    <string name="console_next">Nächster Schritt</string>
+    <string name="console_restart">Von vorn</string>
+    <string name="console_close">Schließen</string>
+    <string name="console_sequence">Ablauf für diesen Schnitt</string>
+    <string name="console_hint">Taste oder Drehregler antippen · Regler seitlich ziehen zum Drehen</string>
+    <string name="zoom_hint">Zwei Finger zum Zoomen · ziehen zum Verschieben · Doppeltippen zum Zurücksetzen</string>
+    <string name="zoom_reset">Zoom zurücksetzen</string>
+    <string name="legend_myocardium">Myokard</string>
+    <string name="legend_oxygenated">Sauerstoffreich</string>
+    <string name="legend_deoxygenated">Sauerstoffarm</string>
+    <string name="legend_doppler">Doppler</string>
+    <string name="phase_ed_hint">Enddiastole · R-Zacke</string>
+    <string name="phase_es_hint">Endsystole · T-Ende</string>
 </resources>

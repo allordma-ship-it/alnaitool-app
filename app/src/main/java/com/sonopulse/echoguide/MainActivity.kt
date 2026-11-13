@@ -9,6 +9,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -362,7 +363,10 @@ private fun ProtocolContent(protocol: EchoProtocol, language: AppLanguage) {
 
         ViewTitle(view, language)
 
-        EchoCinePlayer(videoAssetPath = view.videoAsset, simulated = protocol.loopsSimulated)
+        // Cine loop and ECG share one ExoPlayer, so video and ECG cursor move in lockstep.
+        val player = rememberEchoPlayer()
+        EchoCinePlayer(videoAssetPath = view.videoAsset, simulated = protocol.loopsSimulated, player = player)
+        EchoEcgStrip(player = player, timing = view.ecg, timingNote = view.timingNote?.get(language))
 
         ProbeNotchCard(view, language)
 
@@ -373,7 +377,8 @@ private fun ProtocolContent(protocol: EchoProtocol, language: AppLanguage) {
 
         when (tabIndex) {
             0 -> SvgAnatomyPanel(view, language)
-            1 -> MeasurementsPanel(view, language)
+            1 -> EchoCard { EchoControlConsole(view, protocol.consoleControls, language) }
+            2 -> MeasurementsPanel(view, language)
             else -> ChecklistPanel(
                 view = view,
                 language = language,
@@ -627,6 +632,7 @@ private fun NotchClock(hours: List<Double>, modifier: Modifier = Modifier) {
 private fun DetailTabs(selectedIndex: Int, onSelect: (Int) -> Unit) {
     val titles = listOf(
         stringResource(R.string.tab_svg),
+        stringResource(R.string.tab_console),
         stringResource(R.string.tab_measurements),
         stringResource(R.string.tab_checklist)
     )
@@ -665,38 +671,16 @@ private fun DetailTabs(selectedIndex: Int, onSelect: (Int) -> Unit) {
 
 @Composable
 private fun SvgAnatomyPanel(view: EchoView, language: AppLanguage) {
-    val context = LocalContext.current
-    val imageLoader = remember(context) {
-        ImageLoader.Builder(context.applicationContext)
-            .components { add(SvgDecoder.Factory()) }
-            .crossfade(true)
-            .build()
-    }
     EchoCard {
-        SubcomposeAsyncImage(
-            model = ImageRequest.Builder(context)
-                .data("file:///android_asset/${view.svgAsset}")
-                .decoderFactory(SvgDecoder.Factory())
-                .build(),
-            imageLoader = imageLoader,
-            contentDescription = view.title.get(language),
-            contentScale = ContentScale.Fit,
-            loading = {
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(color = EchoTeal, modifier = Modifier.size(28.dp))
-                }
-            },
-            error = {
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("assets/${view.svgAsset}", color = EchoMuted)
-                }
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(4f / 3f)
-                .clip(RoundedCornerShape(12.dp))
-                .background(EchoBackground)
+        ZoomableSvgDiagram(svgAsset = view.svgAsset, contentDescription = view.title.get(language))
+        Spacer(Modifier.height(6.dp))
+        Text(
+            text = stringResource(R.string.zoom_hint),
+            style = MaterialTheme.typography.labelSmall,
+            color = EchoMuted
         )
+        Spacer(Modifier.height(8.dp))
+        LegendRow()
         Spacer(Modifier.height(12.dp))
         Text(
             text = stringResource(R.string.key_structures),
@@ -710,8 +694,6 @@ private fun SvgAnatomyPanel(view: EchoView, language: AppLanguage) {
                 Text(item.get(language), style = MaterialTheme.typography.bodyMedium, color = EchoText)
             }
         }
-        Spacer(Modifier.height(8.dp))
-        LegendRow()
     }
 }
 
@@ -724,9 +706,11 @@ private fun LegendRow() {
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         listOf(
-            EchoTeal to stringResource(R.string.legend_chambers),
-            EchoSky to stringResource(R.string.legend_septa),
+            Color(0xFFC2475B) to stringResource(R.string.legend_myocardium),
+            Color(0xFFB03A4E) to stringResource(R.string.legend_oxygenated),
+            Color(0xFF3A5BA8) to stringResource(R.string.legend_deoxygenated),
             EchoAmber to stringResource(R.string.legend_valves),
+            Color(0xFFFF4D6D) to stringResource(R.string.legend_doppler),
             EchoOrange to stringResource(R.string.legend_notch)
         ).forEach { (color, label) ->
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -743,6 +727,22 @@ private fun LegendRow() {
     }
 }
 
+/** Small ED (teal) / ES (orange) chip showing which ECG phase to freeze for a measurement. */
+@Composable
+private fun PhaseChip(phase: String) {
+    val color = if (phase == "ES") EchoOrange else EchoTeal
+    Box(
+        modifier = Modifier
+            .padding(end = 4.dp)
+            .clip(RoundedCornerShape(6.dp))
+            .background(color.copy(alpha = 0.15f))
+            .border(1.dp, color.copy(alpha = 0.7f), RoundedCornerShape(6.dp))
+            .padding(horizontal = 6.dp, vertical = 1.dp)
+    ) {
+        Text(phase, color = color, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
+    }
+}
+
 @Composable
 private fun MeasurementsPanel(view: EchoView, language: AppLanguage) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -753,6 +753,13 @@ private fun MeasurementsPanel(view: EchoView, language: AppLanguage) {
                 fontWeight = FontWeight.Bold,
                 color = EchoTeal
             )
+            Row(modifier = Modifier.padding(top = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+                PhaseChip("ED")
+                Text(stringResource(R.string.phase_ed_hint), style = MaterialTheme.typography.labelSmall, color = EchoMuted)
+                Spacer(Modifier.width(10.dp))
+                PhaseChip("ES")
+                Text(stringResource(R.string.phase_es_hint), style = MaterialTheme.typography.labelSmall, color = EchoMuted)
+            }
             view.referenceMeasurements.adult.forEachIndexed { index, m ->
                 if (index > 0) HorizontalDivider(color = EchoOutline)
                 Column(modifier = Modifier.padding(vertical = 8.dp)) {
@@ -775,6 +782,9 @@ private fun MeasurementsPanel(view: EchoView, language: AppLanguage) {
                             textAlign = TextAlign.End,
                             modifier = Modifier.weight(1f)
                         )
+                    }
+                    if (m.phases.isNotEmpty()) {
+                        Row(modifier = Modifier.padding(top = 2.dp)) { m.phases.forEach { PhaseChip(it) } }
                     }
                     val note = m.note?.get(language).orEmpty()
                     if (note.isNotBlank()) {

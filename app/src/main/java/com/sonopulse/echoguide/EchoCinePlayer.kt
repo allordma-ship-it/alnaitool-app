@@ -68,7 +68,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 /** Duration of one frame at ~30 fps, used for frame-by-frame stepping. */
-private const val FRAME_STEP_MS = 33L
+const val FRAME_STEP_MS = 33L
 
 private val PLAYBACK_SPEEDS = listOf(0.25f, 0.5f, 1.0f)
 
@@ -99,51 +99,19 @@ private fun buildEchoPlayer(context: Context): ExoPlayer {
 }
 
 /**
- * Reusable cine-loop player.
- *
- * Switching [videoAssetPath] does NOT create a new player: the same instance receives a new
- * media item via `setMediaItem(..., resetPosition = true)`, which avoids decoder leaks and the
- * freezes caused by tearing down and re-creating codecs on every view change.
- *
- * @param videoAssetPath path relative to `assets/`, e.g. `loops/apical_4c.mp4`.
+ * Creates the screen's single ExoPlayer and ties it to the composition and lifecycle:
+ * it is released when the caller leaves the composition and paused while the app is in the
+ * background. Share the returned instance between [EchoCinePlayer] and [EchoEcgStrip] so the
+ * cine loop and the ECG cursor move in lockstep.
  */
-@OptIn(UnstableApi::class)
 @Composable
-fun EchoCinePlayer(
-    videoAssetPath: String,
-    modifier: Modifier = Modifier,
-    simulated: Boolean = false
-) {
+fun rememberEchoPlayer(): ExoPlayer {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
-
     val player = remember { buildEchoPlayer(context) }
 
-    var isPlaying by remember { mutableStateOf(true) }
-    var speed by remember { mutableFloatStateOf(1.0f) }
-    var playbackFailed by remember { mutableStateOf(false) }
-
-    var assetAvailable by remember { mutableStateOf<Boolean?>(null) }
-    LaunchedEffect(videoAssetPath) {
-        assetAvailable = withContext(Dispatchers.IO) { EchoRepository.assetExists(context, videoAssetPath) }
-    }
-
-    // Release the one and only player when the composable leaves the composition.
     DisposableEffect(player) {
-        val listener = object : Player.Listener {
-            override fun onIsPlayingChanged(playing: Boolean) {
-                isPlaying = playing
-            }
-
-            override fun onPlayerError(error: PlaybackException) {
-                playbackFailed = true
-            }
-        }
-        player.addListener(listener)
-        onDispose {
-            player.removeListener(listener)
-            player.release()
-        }
+        onDispose { player.release() }
     }
 
     // Pause in background, resume when visible again.
@@ -161,6 +129,51 @@ fun EchoCinePlayer(
         }
         lifecycleOwner.lifecycle.addObserver(observer)
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
+    return player
+}
+
+/**
+ * Reusable cine-loop player.
+ *
+ * Switching [videoAssetPath] does NOT create a new player: the same instance receives a new
+ * media item via `setMediaItem(..., resetPosition = true)`, which avoids decoder leaks and the
+ * freezes caused by tearing down and re-creating codecs on every view change.
+ *
+ * @param videoAssetPath path relative to `assets/`, e.g. `loops/apical_4c.mp4`.
+ * @param player shared instance from [rememberEchoPlayer].
+ */
+@OptIn(UnstableApi::class)
+@Composable
+fun EchoCinePlayer(
+    videoAssetPath: String,
+    modifier: Modifier = Modifier,
+    simulated: Boolean = false,
+    player: ExoPlayer = rememberEchoPlayer()
+) {
+    val context = LocalContext.current
+
+    var isPlaying by remember { mutableStateOf(true) }
+    var speed by remember { mutableFloatStateOf(1.0f) }
+    var playbackFailed by remember { mutableStateOf(false) }
+
+    var assetAvailable by remember { mutableStateOf<Boolean?>(null) }
+    LaunchedEffect(videoAssetPath) {
+        assetAvailable = withContext(Dispatchers.IO) { EchoRepository.assetExists(context, videoAssetPath) }
+    }
+
+    DisposableEffect(player) {
+        val listener = object : Player.Listener {
+            override fun onIsPlayingChanged(playing: Boolean) {
+                isPlaying = playing
+            }
+
+            override fun onPlayerError(error: PlaybackException) {
+                playbackFailed = true
+            }
+        }
+        player.addListener(listener)
+        onDispose { player.removeListener(listener) }
     }
 
     // Swap media on the existing instance whenever the selected view changes.
