@@ -365,7 +365,7 @@ private fun ProtocolContent(protocol: EchoProtocol, language: AppLanguage) {
 
         // Cine loop and ECG share one ExoPlayer, so video and ECG cursor move in lockstep.
         val player = rememberEchoPlayer()
-        EchoCinePlayer(videoAssetPath = view.videoAsset, simulated = protocol.loopsSimulated, player = player)
+        EchoCinePlayer(videoAssetPath = view.videoAsset, source = view.videoSource, player = player)
         EchoEcgStrip(player = player, timing = view.ecg, timingNote = view.timingNote?.get(language))
 
         ProbeNotchCard(view, language)

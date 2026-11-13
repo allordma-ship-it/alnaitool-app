@@ -73,7 +73,6 @@ data class LocalizedText(
 @Serializable
 data class EchoProtocol(
     val schemaVersion: Int,
-    val loopsSimulated: Boolean = false,
     val title: LocalizedText,
     val references: List<String> = emptyList(),
     val disclaimer: LocalizedText,
@@ -111,6 +110,7 @@ data class EchoView(
     val checklist: List<LocalizedText>,
     val steps: List<GuideStep> = emptyList(),
     val ecg: EcgTiming = EcgTiming(),
+    val videoSource: VideoSource = VideoSource(),
     val timingNote: LocalizedText? = null,
     val machineControls: List<MachineControlStep> = emptyList()
 )
@@ -124,8 +124,28 @@ data class EchoView(
 data class EcgTiming(
     val beatMs: Long = 833,
     val edMs: Long = 0,
-    val esMs: Long = 325
+    val esMs: Long = 325,
+    /**
+     * Explicit R-wave times (ms) for loops with varying beat length (real clips, joined clips).
+     * When set, each beat runs from one R-wave to the next and end-systole falls at the same
+     * fraction of the beat as `(esMs - edMs) / beatMs`.
+     */
+    val rWavesMs: List<Long> = emptyList()
 )
+
+/** Where a view's cine loop comes from; real clips carry the attribution their licence requires. */
+@Immutable
+@Serializable
+data class VideoSource(
+    val type: String = "simulated",
+    val title: String? = null,
+    val author: String? = null,
+    val license: String? = null,
+    val licenseUrl: String? = null,
+    val sourceUrl: String? = null
+) {
+    val isSimulated: Boolean get() = type != "real"
+}
 
 /** One ordered step on the ultrasound console for a view. */
 @Immutable

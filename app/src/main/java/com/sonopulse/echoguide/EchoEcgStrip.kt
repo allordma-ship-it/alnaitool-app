@@ -50,7 +50,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.media3.exoplayer.ExoPlayer
 import kotlin.math.exp
-import kotlin.math.floor
 
 /** Medical-monitor green for the ECG trace. */
 private val EcgGreen = Color(0xFF00E676)
@@ -80,19 +79,48 @@ internal fun ecgAmplitude(phase: Double, tEnd: Double): Double {
     return v
 }
 
-/** Start of the beat (ms) that contains [positionMs], aligned on the R-wave. */
-internal fun beatStartMs(positionMs: Long, timing: EcgTiming): Long {
-    val beat = timing.beatMs.coerceAtLeast(1)
-    val index = floor((positionMs - timing.edMs).toDouble() / beat).toLong().coerceAtLeast(0)
-    return timing.edMs + index * beat
+/** One cardiac cycle inside the clip: R-wave time, length and end-systole time (all ms). */
+internal data class Beat(val startMs: Long, val lengthMs: Long, val esMs: Long)
+
+/**
+ * Beats covering [windowMs]: from explicit R-waves when the timing has them (real or joined
+ * clips), otherwise a regular rhythm of `beatMs` starting at `edMs`.
+ */
+internal fun beatsFor(timing: EcgTiming, windowMs: Long): List<Beat> {
+    val regular = timing.beatMs.coerceAtLeast(1)
+    val esFraction = (timing.esMs - timing.edMs).toDouble() / regular
+    val starts = if (timing.rWavesMs.isNotEmpty()) {
+        timing.rWavesMs.sorted()
+    } else {
+        generateSequence(timing.edMs) { it + regular }.takeWhile { it < windowMs.coerceAtLeast(1) }.toList()
+    }
+    return starts.mapIndexed { i, start ->
+        val length = (starts.getOrNull(i + 1) ?: (start + (if (i > 0) start - starts[i - 1] else regular))) - start
+        Beat(start, length, start + Math.round(length * esFraction))
+    }
+}
+
+/** The beat containing [positionMs]; positions before the first R-wave belong to a virtual previous beat. */
+internal fun beatAt(positionMs: Long, beats: List<Beat>): Beat {
+    val first = beats.first()
+    if (positionMs < first.startMs) {
+        val start = first.startMs - first.lengthMs
+        return Beat(start, first.lengthMs, start + (first.esMs - first.startMs))
+    }
+    return beats.last { it.startMs <= positionMs }
 }
 
 /** Target position (ms) for a jump to end-diastole or end-systole of the current beat. */
 internal fun phaseJumpTarget(positionMs: Long, durationMs: Long, timing: EcgTiming, endSystole: Boolean): Long {
+    val window = if (durationMs > 0) durationMs else Long.MAX_VALUE / 4
     val position = if (durationMs > 0) positionMs.coerceIn(0, durationMs - 1) else positionMs.coerceAtLeast(0)
-    val start = beatStartMs(position, timing)
-    var target = if (endSystole) start + (timing.esMs - timing.edMs) else start
-    if (durationMs > 0 && target >= durationMs) target -= timing.beatMs
+    val beats = beatsFor(timing, if (durationMs > 0) durationMs else position + timing.beatMs)
+    val beat = beatAt(position, beats)
+    var target = if (endSystole) beat.esMs else beat.startMs
+    if (target >= window) {
+        val previous = beats.lastOrNull { (if (endSystole) it.esMs else it.startMs) < window }
+        target = previous?.let { if (endSystole) it.esMs else it.startMs } ?: 0L
+    }
     return target.coerceIn(0, if (durationMs > 0) durationMs - 1 else Long.MAX_VALUE)
 }
 
@@ -119,10 +147,10 @@ fun EchoEcgStrip(
         }
     }
 
-    val beat = timing.beatMs.coerceAtLeast(1)
-    val windowMs = if (durationMs > 0) durationMs else beat * DEFAULT_BEATS
-    val inBeat = ((positionMs - timing.edMs) % beat + beat) % beat
-    val systole = inBeat < (timing.esMs - timing.edMs)
+    val windowMs = if (durationMs > 0) durationMs else timing.beatMs.coerceAtLeast(1) * DEFAULT_BEATS
+    val beats = remember(timing, windowMs) { beatsFor(timing, windowMs) }
+    val current = beatAt(positionMs.coerceIn(0, windowMs), beats)
+    val systole = positionMs in current.startMs until current.esMs
 
     val edLabel = stringResource(R.string.ecg_ed_label)
     val esLabel = stringResource(R.string.ecg_es_label)
@@ -147,32 +175,28 @@ fun EchoEcgStrip(
                 val h = size.height
                 val baseline = h * 0.62f
                 val amplitude = h * 0.42f
-                val tEnd = (timing.esMs - timing.edMs).toDouble() / beat
                 fun xOf(ms: Long) = (ms.toFloat() / windowMs) * w
 
                 // ED / ES markers on every beat
-                var k = 0L
-                while (true) {
-                    val ed = timing.edMs + k * beat
-                    if (ed > windowMs) break
-                    val es = ed + (timing.esMs - timing.edMs)
-                    drawPhaseMarker(xOf(ed), EcgTeal, if (k == 0L) edLabel else "ED", textMeasurer)
-                    if (es <= windowMs) {
-                        drawPhaseMarker(xOf(es), EcgOrange, if (k == 0L) esLabel else "ES", textMeasurer)
-                    }
-                    k++
+                beats.forEachIndexed { k, b ->
+                    if (b.startMs <= windowMs) drawPhaseMarker(xOf(b.startMs), EcgTeal, if (k == 0) edLabel else "ED", textMeasurer)
+                    if (b.esMs <= windowMs) drawPhaseMarker(xOf(b.esMs), EcgOrange, if (k == 0) esLabel else "ES", textMeasurer)
+                }
+
+                fun yOf(ms: Float): Float {
+                    val b = beatAt(ms.toLong(), beats)
+                    val phase = ((ms - b.startMs) / b.lengthMs).toDouble()
+                    val tEnd = (b.esMs - b.startMs).toDouble() / b.lengthMs
+                    return baseline - (ecgAmplitude(phase, tEnd) * amplitude).toFloat()
                 }
 
                 // Waveform
                 val path = Path()
-                val step = 2f
                 var x = 0f
                 while (x <= w) {
-                    val ms = (x / w) * windowMs
-                    val phase = (((ms - timing.edMs) % beat) + beat) % beat / beat
-                    val y = baseline - (ecgAmplitude(phase.toDouble(), tEnd) * amplitude).toFloat()
+                    val y = yOf((x / w) * windowMs)
                     if (x == 0f) path.moveTo(x, y) else path.lineTo(x, y)
-                    x += step
+                    x += 2f
                 }
                 drawPath(
                     path,
@@ -181,9 +205,9 @@ fun EchoEcgStrip(
                 )
 
                 // Synchronized cursor
-                val cx = xOf(positionMs.coerceIn(0, windowMs))
-                val cPhase = inBeat.toDouble() / beat
-                val cy = baseline - (ecgAmplitude(cPhase, tEnd) * amplitude).toFloat()
+                val clamped = positionMs.coerceIn(0, windowMs)
+                val cx = xOf(clamped)
+                val cy = yOf(clamped.toFloat())
                 drawLine(EcgCursor.copy(alpha = 0.85f), Offset(cx, 0f), Offset(cx, h), strokeWidth = 1.5.dp.toPx())
                 drawCircle(EcgGreen.copy(alpha = 0.35f), radius = 7.dp.toPx(), center = Offset(cx, cy))
                 drawCircle(EcgCursor, radius = 3.dp.toPx(), center = Offset(cx, cy))

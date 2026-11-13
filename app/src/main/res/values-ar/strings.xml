@@ -101,4 +101,5 @@
     <string name="legend_doppler">دوبلر</string>
     <string name="phase_ed_hint">نهاية الانبساط · موجة R</string>
     <string name="phase_es_hint">نهاية الانقباض · نهاية T</string>
+    <string name="player_real_credit">مقطع إيكو حقيقي · %1$s · %2$s · Wikimedia Commons</string>
 </resources>

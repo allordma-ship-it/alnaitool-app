@@ -148,7 +148,7 @@ fun rememberEchoPlayer(): ExoPlayer {
 fun EchoCinePlayer(
     videoAssetPath: String,
     modifier: Modifier = Modifier,
-    simulated: Boolean = false,
+    source: VideoSource = VideoSource(),
     player: ExoPlayer = rememberEchoPlayer()
 ) {
     val context = LocalContext.current
@@ -229,10 +229,18 @@ fun EchoCinePlayer(
             }
         }
 
-        if (simulated && !showFallback) {
+        if (!showFallback) {
             Spacer(Modifier.size(6.dp))
             Text(
-                text = stringResource(R.string.player_simulated_note),
+                text = if (source.isSimulated) {
+                    stringResource(R.string.player_simulated_note)
+                } else {
+                    stringResource(
+                        R.string.player_real_credit,
+                        source.author.orEmpty().ifBlank { "Wikimedia Commons" },
+                        source.license.orEmpty()
+                    )
+                },
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.secondary
             )

@@ -35,4 +35,15 @@ class EcgTimingTest {
         listOf(0.1, 0.3, 0.5, 0.88).forEach { assertTrue(ecgAmplitude(it, tEnd) < r) }
         assertTrue(ecgAmplitude(tEnd - 0.09, tEnd) > ecgAmplitude(0.6, tEnd)) // T wave above baseline
     }
+
+    @Test
+    fun explicitRWavesDefineIrregularBeats() {
+        // two joined clips: 3 beats of 595 ms, then 3 beats of 673 ms
+        val joined = EcgTiming(beatMs = 595, edMs = 0, esMs = 292, rWavesMs = listOf(0, 595, 1190, 1785, 2458, 3131))
+        val beats = beatsFor(joined, 3804)
+        assertEquals(6, beats.size)
+        assertEquals(673L, beats[4].lengthMs)
+        assertEquals(2458L, phaseJumpTarget(2600, 3804, joined, endSystole = false))
+        assertEquals(2458L + Math.round(673 * 292.0 / 595), phaseJumpTarget(2600, 3804, joined, endSystole = true))
+    }
 }

@@ -174,7 +174,7 @@ private fun GuidedExamContent(protocol: EchoProtocol, language: AppLanguage, mod
                 caliper = step.caliper
             )
             val player = rememberEchoPlayer()
-            EchoCinePlayer(videoAssetPath = view.videoAsset, simulated = protocol.loopsSimulated, player = player)
+            EchoCinePlayer(videoAssetPath = view.videoAsset, source = view.videoSource, player = player)
             EchoEcgStrip(player = player, timing = view.ecg, timingNote = view.timingNote?.get(language))
             Text(
                 text = stringResource(R.string.notch_label, view.notchClock) +
