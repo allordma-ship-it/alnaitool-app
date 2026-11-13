@@ -2039,9 +2039,14 @@
             }
           ],
           "ecg": {
-            "beatMs": 833,
+            "beatMs": 608,
             "edMs": 0,
-            "esMs": 325
+            "esMs": 304,
+            "rWavesMs": [
+              0,
+              608,
+              1216
+            ]
           },
           "timingNote": {
             "en": "LVIDd at ED (R-wave) and LVIDs at ES (T-end) for FS; septal shape in both phases.",
@@ -2099,7 +2104,12 @@
             }
           ],
           "videoSource": {
-            "type": "simulated"
+            "type": "real",
+            "title": "SAXPAP normal (CardioNetworks ECHOpedia).webm",
+            "author": "CardioNetworks: Vdbilt",
+            "license": "CC BY-SA 3.0",
+            "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:SAXPAP_normal_(CardioNetworks_ECHOpedia).webm"
           }
         }
       ]
@@ -3349,9 +3359,17 @@
             }
           ],
           "ecg": {
-            "beatMs": 833,
+            "beatMs": 595,
             "edMs": 0,
-            "esMs": 325
+            "esMs": 301,
+            "rWavesMs": [
+              0,
+              595,
+              1190,
+              1785,
+              2458,
+              3132
+            ]
           },
           "timingNote": {
             "en": "Simpson in A2C at ED (R-wave) and ES (T-end); GLS uses QRS onset as the end-diastolic reference.",
@@ -3401,7 +3419,12 @@
             }
           ],
           "videoSource": {
-            "type": "simulated"
+            "type": "real",
+            "title": "A2Cnormal (CardioNetworks ECGpedia).avi.webm + A3Cnormal (CardioNetworks ECGpedia).avi.webm",
+            "author": "CardioNetworks: Vdbilt",
+            "license": "CC BY-SA 3.0",
+            "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:A2Cnormal_(CardioNetworks_ECGpedia).avi.webm https://commons.wikimedia.org/wiki/File:A3Cnormal_(CardioNetworks_ECGpedia).avi.webm"
           }
         }
       ]

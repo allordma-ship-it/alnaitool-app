@@ -244,7 +244,8 @@ def main():
     for window in db["windows"]:
         for view in window["views"]:
             content = VIEWS[view["id"]]
-            view["ecg"] = dict(SIMULATED_ECG)
+            if view.get("videoSource", {}).get("type", "simulated") != "real":
+                view["ecg"] = dict(SIMULATED_ECG)   # real clips keep their measured timing
             view["timingNote"] = content["timingNote"]
             view["machineControls"] = content["machineControls"]
             for control in content["machineControls"]:
