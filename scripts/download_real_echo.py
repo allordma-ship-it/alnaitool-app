@@ -52,7 +52,8 @@ VIDEO_EXT = (".webm", ".ogv", ".ogg", ".mp4", ".gif")
 ECHO_WORDS = re.compile(
     r"echocardi|echokardi|\btte\b|parasternal|apical (four|4|five|5|two|2|three|3)|four[- ]chamber|"
     r"4[- ]chamber|subcostal|suprasternal|plax|psax|transthoracic|cardiac ultrasound|heart ultrasound|"
-    r"ultrasound of the heart|point[- ]of[- ]care.*heart",
+    r"ultrasound of the heart|point[- ]of[- ]care.*heart|echopedia|cardionetworks|\bA[2-5]C|\bSAX(AP|PAP|MV)?\b|"
+    r"ultrasound video of a human heart|\b4 chamber\b",
     re.IGNORECASE,
 )
 EXCLUDE_WORDS = re.compile(r"fetal|fetus|foetal|obstetric|pregnan|transesophageal|\btee\b|\btoe\b|"
@@ -102,7 +103,7 @@ def api(params: dict) -> dict:
         return json.load(resp)
 
 
-IIPROP = "url|size|mime|mediatype|extmetadata"
+IIPROP = "url|size|mime|mediatype|extmetadata"  # size also returns width/height/duration
 
 
 def strip_html(text: str) -> str:
@@ -215,17 +216,40 @@ def ffprobe(path: str) -> dict:
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--max-mb", type=float, default=80.0, help="skip files larger than this")
+    ap.add_argument("--list-only", action="store_true", help="search and list candidates, no downloads")
+    ap.add_argument("--refresh", action="store_true", help="ignore cached search results")
+    ap.add_argument("--match", help="only download candidates whose title matches this regex")
     args = ap.parse_args()
 
     os.makedirs(OUT_DIR, exist_ok=True)
-    candidates = search_candidates()
+    cache = os.path.join(OUT_DIR, "candidates.json")
+    if os.path.exists(cache) and not args.refresh:
+        with open(cache, encoding="utf-8") as f:
+            candidates = json.load(f)
+        print(f"using cached search results ({cache})")
+    else:
+        candidates = search_candidates()
+        with open(cache, "w", encoding="utf-8") as f:
+            json.dump(candidates, f, ensure_ascii=False)
     print(f"\n{len(candidates)} File: pages found, filtering for echocardiography videos…")
 
+    matches = [(t, p) for t, p in sorted(candidates.items()) if is_echo_video(p)[0]]
+    print(f"{len(matches)} echocardiography video/GIF candidates:")
+    for title, page in matches:
+        info = page["imageinfo"][0]
+        lic = info.get("extmetadata", {}).get("LicenseShortName", {}).get("value", "?")
+        dur = info.get("duration")
+        print(f"   {info.get('size', 0) / 1e6:6.1f} MB  {info.get('width', '?')}x{info.get('height', '?')}"
+              f"  {(str(round(dur, 1)) + 's') if dur else '   ?':>6}  {lic:14}  {title}")
+    if args.list_only:
+        return
+    if args.match:
+        rx = re.compile(args.match, re.IGNORECASE)
+        matches = [(t, p) for t, p in matches if rx.search(t)]
+        print(f"\n--match keeps {len(matches)} file(s)")
+
     manifest = []
-    for title, page in sorted(candidates.items()):
-        ok, reason = is_echo_video(page)
-        if not ok:
-            continue
+    for title, page in matches:
         info = page["imageinfo"][0]
         size_mb = info.get("size", 0) / 1e6
         if size_mb > args.max_mb:
