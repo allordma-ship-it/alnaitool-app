@@ -106,7 +106,22 @@ data class EchoView(
     val svgAsset: String,
     val keyStructures: List<LocalizedText>,
     val referenceMeasurements: ReferenceMeasurements,
-    val checklist: List<LocalizedText>
+    val checklist: List<LocalizedText>,
+    val steps: List<GuideStep> = emptyList()
+)
+
+/**
+ * One step of the guided exam. [caliper] is an optional measurement line
+ * `[x1, y1, x2, y2]` in the 400x300 coordinate space of the view's SVG diagram.
+ */
+@Immutable
+@Serializable
+data class GuideStep(
+    val title: LocalizedText,
+    val instruction: LocalizedText,
+    val normal: LocalizedText? = null,
+    val note: LocalizedText? = null,
+    val caliper: List<Float>? = null
 )
 
 @Immutable

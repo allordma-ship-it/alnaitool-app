@@ -15,13 +15,15 @@ class ProtocolDatabaseTest {
             .map(::File)
             .first { it.isDirectory }
 
+        private val json = Json { ignoreUnknownKeys = true }
+
         private lateinit var protocol: EchoProtocol
 
         @JvmStatic
         @BeforeClass
         fun loadProtocol() {
             val text = File(assetsDir, EchoRepository.PROTOCOL_ASSET).readText(Charsets.UTF_8)
-            protocol = Json { ignoreUnknownKeys = true }.decodeFromString(EchoProtocol.serializer(), text)
+            protocol = json.decodeFromString(EchoProtocol.serializer(), text)
         }
 
         private val expectedViews = listOf(
@@ -71,6 +73,24 @@ class ProtocolDatabaseTest {
             assertTrue(v.referenceMeasurements.pediatric.isNotEmpty())
             assertTrue(v.checklist.size >= 5)
             assertTrue(v.notchHours.isNotEmpty())
+        }
+    }
+
+    @Test
+    fun guidedExamHasTranslatedStepsWithValidCalipers() {
+        val steps = protocol.allViews.flatMap { it.steps }
+        assertEquals(45, steps.size)
+        protocol.allViews.forEach { assertTrue("no steps for ${it.id}", it.steps.isNotEmpty()) }
+        steps.forEach { step ->
+            listOfNotNull(step.title, step.instruction, step.normal, step.note).forEach { t ->
+                assertFalse("German missing for: ${t.en}", t.de.isNullOrBlank())
+                assertFalse("Arabic missing for: ${t.en}", t.ar.isNullOrBlank())
+            }
+            step.caliper?.let { c ->
+                assertEquals("caliper needs 4 values: ${step.title.en}", 4, c.size)
+                assertTrue(c[0] in 0f..400f && c[2] in 0f..400f)
+                assertTrue(c[1] in 0f..300f && c[3] in 0f..300f)
+            }
         }
     }
 

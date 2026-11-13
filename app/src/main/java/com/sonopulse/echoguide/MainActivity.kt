@@ -32,9 +32,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Calculate
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.MonitorHeart
+import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.Translate
 import androidx.compose.material.icons.outlined.Calculate
 import androidx.compose.material.icons.outlined.MonitorHeart
+import androidx.compose.material.icons.outlined.School
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
@@ -165,6 +167,7 @@ class MainActivity : ComponentActivity() {
 
 private enum class EchoDestination(val labelRes: Int, val selectedIcon: ImageVector, val icon: ImageVector) {
     PROTOCOL(R.string.nav_protocol, Icons.Filled.MonitorHeart, Icons.Outlined.MonitorHeart),
+    GUIDED(R.string.nav_guided, Icons.Filled.School, Icons.Outlined.School),
     ZSCORE(R.string.nav_zscore, Icons.Filled.Calculate, Icons.Outlined.Calculate)
 }
 
@@ -254,6 +257,7 @@ private fun EchoScopeScaffold(language: AppLanguage, onLanguageChange: (AppLangu
         ) {
             when (destination) {
                 EchoDestination.PROTOCOL -> ProtocolScreen(language)
+                EchoDestination.GUIDED -> GuidedExamScreen(language)
                 EchoDestination.ZSCORE -> ZScoreCalculatorScreen()
             }
         }

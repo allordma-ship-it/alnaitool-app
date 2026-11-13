@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_tagline">دليل بروتوكول الإيكو عبر الصدر – دون اتصال</string>
-    <string name="nav_protocol">البروتوكول والمقاطع</string>
-    <string name="nav_zscore">حاسبة Z-Score</string>
+    <string name="nav_protocol">المقاطع</string>
+    <string name="nav_zscore">Z-Score</string>
     <string name="section_windows">النوافذ الصوتية</string>
     <string name="section_views">المقاطع القياسية</string>
     <string name="section_probe">وضعية المسبار والعلامة</string>
@@ -56,4 +56,25 @@
     <string name="zs_lvidd">LVIDd</string>
     <string name="zs_ivsd">IVSd</string>
     <string name="zs_main_pa">الشريان الرئوي الرئيسي</string>
+    <string name="nav_guided">الفحص الموجّه</string>
+    <string name="guided_step_of">%1$s • الخطوة %2$d من %3$d</string>
+    <string name="guided_protocol_list">القائمة</string>
+    <string name="guided_sequence_title">تسلسل الفحص</string>
+    <string name="guided_note">ملاحظة</string>
+    <string name="guided_note_title">ملاحظة</string>
+    <string name="guided_normal">الطبيعي: %1$s</string>
+    <string name="guided_previous">السابق</string>
+    <string name="guided_next">التالي</string>
+    <string name="guided_restart">إعادة من البداية</string>
+    <string name="guided_done">تم</string>
+    <string name="guided_close">إغلاق</string>
+    <string name="guided_empty">لا توجد خطوات في قاعدة البيانات.</string>
+    <plurals name="guided_steps_count">
+        <item quantity="zero">لا خطوات</item>
+        <item quantity="one">خطوة واحدة</item>
+        <item quantity="two">خطوتان</item>
+        <item quantity="few">%d خطوات</item>
+        <item quantity="many">%d خطوة</item>
+        <item quantity="other">%d خطوة</item>
+    </plurals>
 </resources>

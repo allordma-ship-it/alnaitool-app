@@ -3,8 +3,8 @@
     <string name="app_name" translatable="false">EchoScope</string>
     <string name="app_tagline">Offline TTE Protocol Guide</string>
     <string name="language_label">Language</string>
-    <string name="nav_protocol">Protocol &amp; Views</string>
-    <string name="nav_zscore">Z-Score Calculator</string>
+    <string name="nav_protocol">Views</string>
+    <string name="nav_zscore">Z-Score</string>
     <string name="section_windows">Acoustic Windows</string>
     <string name="section_views">Standard Views</string>
     <string name="section_probe">Probe Position &amp; Notch</string>
@@ -53,4 +53,21 @@
     <string name="zs_ivsd">IVSd</string>
     <string name="zs_main_pa">Main Pulmonary Artery</string>
     <string name="checklist_progress">Checklist: %1$d / %2$d</string>
+    <string name="nav_guided">Guided Exam</string>
+    <string name="guided_step_of">%1$s • Step %2$d of %3$d</string>
+    <string name="guided_protocol_list">Protocol</string>
+    <string name="guided_sequence_title">Exam sequence</string>
+    <string name="guided_note">NOTE</string>
+    <string name="guided_note_title">Note</string>
+    <string name="guided_normal">Normal: %1$s</string>
+    <string name="guided_previous">Previous</string>
+    <string name="guided_next">Next</string>
+    <string name="guided_restart">Start over</string>
+    <string name="guided_done">Done</string>
+    <string name="guided_close">Close</string>
+    <string name="guided_empty">No guided steps in the database.</string>
+    <plurals name="guided_steps_count">
+        <item quantity="one">%d step</item>
+        <item quantity="other">%d steps</item>
+    </plurals>
 </resources>

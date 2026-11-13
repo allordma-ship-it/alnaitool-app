@@ -2,8 +2,8 @@
 <resources>
     <string name="app_tagline">Offline-Leitfaden für das TTE-Protokoll</string>
     <string name="language_label">Sprache</string>
-    <string name="nav_protocol">Protokoll &amp; Schnitte</string>
-    <string name="nav_zscore">Z-Score-Rechner</string>
+    <string name="nav_protocol">Schnitte</string>
+    <string name="nav_zscore">Z-Score</string>
     <string name="section_windows">Schallfenster</string>
     <string name="section_views">Standardschnitte</string>
     <string name="section_probe">Schallkopfposition &amp; Markierung</string>
@@ -52,4 +52,21 @@
     <string name="zs_ivsd">IVSd</string>
     <string name="zs_main_pa">Truncus pulmonalis</string>
     <string name="checklist_progress">Checkliste: %1$d / %2$d</string>
+    <string name="nav_guided">Anleitung</string>
+    <string name="guided_step_of">%1$s • Schritt %2$d von %3$d</string>
+    <string name="guided_protocol_list">Ablauf</string>
+    <string name="guided_sequence_title">Untersuchungsablauf</string>
+    <string name="guided_note">HINWEIS</string>
+    <string name="guided_note_title">Hinweis</string>
+    <string name="guided_normal">Normal: %1$s</string>
+    <string name="guided_previous">Zurück</string>
+    <string name="guided_next">Weiter</string>
+    <string name="guided_restart">Von vorn</string>
+    <string name="guided_done">OK</string>
+    <string name="guided_close">Schließen</string>
+    <string name="guided_empty">Keine Anleitungsschritte in der Datenbank.</string>
+    <plurals name="guided_steps_count">
+        <item quantity="one">%d Schritt</item>
+        <item quantity="other">%d Schritte</item>
+    </plurals>
 </resources>
