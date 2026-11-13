@@ -148,6 +148,17 @@ class ProtocolDatabaseTest {
     }
 
     @Test
+    fun everyViewHasAReadableAtlasDiagramWithCredit() {
+        protocol.allViews.forEach { v ->
+            val asset = v.diagramAsset
+            assertTrue("diagram missing for ${v.id}", asset != null && File(assetsDir, asset).isFile)
+            assertTrue(v.diagramAspect > 0.5f && v.diagramAspect < 2.5f)
+            val credit = v.diagramCredit
+            assertTrue("credit missing for ${v.id}", credit != null && !credit.de.isNullOrBlank() && !credit.ar.isNullOrBlank())
+        }
+    }
+
+    @Test
     fun localizedTextFallsBackToEnglish() {
         val t = LocalizedText(en = "TAPSE")
         assertEquals("TAPSE", t.get(AppLanguage.DE))

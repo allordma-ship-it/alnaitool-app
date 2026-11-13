@@ -94,4 +94,18 @@
     <string name="phase_ed_hint">Enddiastole · R-Zacke</string>
     <string name="phase_es_hint">Endsystole · T-Ende</string>
     <string name="player_real_credit">Echter Echo-Clip · %1$s · %2$s · Wikimedia Commons</string>
+    <string name="anatomy_atlas">Atlas</string>
+    <string name="anatomy_schematic">Schema</string>
+    <string name="about_title">Über EchoScope</string>
+    <string name="about_version">Version %1$s</string>
+    <string name="about_illustrations_title">Anatomische Illustrationen</string>
+    <string name="about_illustrations_credit">Anatomische Illustrationen bearbeitet nach Patrick J. Lynch (CC-BY 2.5)</string>
+    <string name="about_illustrations_detail">Patrick J. Lynch, medizinischer Illustrator; C. Carl Jaffe, MD, Kardiologe (Yale University). Lizenz: creativecommons.org/licenses/by/2.5. Bearbeitet: transparenter Hintergrund durch eine hellgraue Karte ersetzt, damit alle Beschriftungen lesbar sind.</string>
+    <string name="about_clips_title">Echo-Cine-Loops</string>
+    <string name="about_clips_credit">Echte Clips (4K, 2K/3K, PSAX Papillarmuskel, suprasternaler Bogen): CardioNetworks ECHOpedia, Dept. of Echocardiography AMC, über Wikimedia Commons, CC BY-SA 3.0. Alle anderen Loops sind simuliert und enthalten keine Patientendaten.</string>
+    <string name="about_reference_title">Ultraschall-Referenzbilder</string>
+    <string name="about_reference_credit">Die beschrifteten Referenzbilder zu VCI/VCS und suprasternalem Bogen wurden für diese App bereitgestellt; Originalquelle und Lizenz sind noch zu klären.</string>
+    <string name="about_disclaimer_title">Hinweis</string>
+    <string name="about_disclaimer">Nur zu Lehrzwecken. Kein Medizinprodukt; Werte immer mit aktuellen Leitlinien und lokalen Laborstandards abgleichen.</string>
+    <string name="about_close">Schließen</string>
 </resources>

@@ -2,6 +2,11 @@ package com.sonopulse.echoguide
 
 import android.content.res.Configuration
 import android.os.Bundle
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.IconButton
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
@@ -114,6 +119,8 @@ private val EchoAmber = Color(0xFFFBBF24)
 private val EchoText = Color(0xFFE2E8F0)
 private val EchoMuted = Color(0xFF94A3B8)
 private val EchoOutline = Color(0xFF263244)
+/** Light-slate card behind the anatomical atlas illustrations so their dark labels stay readable. */
+private val AtlasCard = Color(0xFFE2E8F0)
 
 private val EchoColorScheme = darkColorScheme(
     primary = EchoTeal,
@@ -432,6 +439,11 @@ private fun EchoTopBar(language: AppLanguage, onLanguageChange: (AppLanguage) ->
                 overflow = TextOverflow.Ellipsis
             )
         }
+        var aboutOpen by remember { mutableStateOf(false) }
+        IconButton(onClick = { aboutOpen = true }) {
+            Icon(Icons.Outlined.Info, contentDescription = stringResource(R.string.about_title), tint = EchoMuted)
+        }
+        if (aboutOpen) AboutDialog(onDismiss = { aboutOpen = false })
         Box {
             TextButton(onClick = { menuOpen = true }) {
                 Icon(
@@ -469,6 +481,50 @@ private fun EchoTopBar(language: AppLanguage, onLanguageChange: (AppLanguage) ->
                     )
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun AboutDialog(onDismiss: () -> Unit) {
+    val context = LocalContext.current
+    val version = remember(context) {
+        runCatching {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                context.packageManager.getPackageInfo(context.packageName, PackageManager.PackageInfoFlags.of(0)).versionName
+            } else {
+                @Suppress("DEPRECATION")
+                context.packageManager.getPackageInfo(context.packageName, 0).versionName
+            }
+        }.getOrNull().orEmpty()
+    }
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.about_close)) } },
+        title = { Text(stringResource(R.string.about_title), fontWeight = FontWeight.Bold) },
+        text = {
+            Column(
+                modifier = Modifier.verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                Text(stringResource(R.string.about_version, version), color = EchoMuted, style = MaterialTheme.typography.labelMedium)
+                AboutSection(R.string.about_illustrations_title, R.string.about_illustrations_credit, R.string.about_illustrations_detail)
+                AboutSection(R.string.about_clips_title, R.string.about_clips_credit, null)
+                AboutSection(R.string.about_reference_title, R.string.about_reference_credit, null)
+                AboutSection(R.string.about_disclaimer_title, R.string.about_disclaimer, null)
+            }
+        },
+        containerColor = EchoSurface
+    )
+}
+
+@Composable
+private fun AboutSection(titleRes: Int, bodyRes: Int, detailRes: Int?) {
+    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        Text(stringResource(titleRes), color = EchoTeal, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
+        Text(stringResource(bodyRes), color = EchoText, style = MaterialTheme.typography.bodyMedium)
+        if (detailRes != null) {
+            Text(stringResource(detailRes), color = EchoMuted, style = MaterialTheme.typography.bodySmall)
         }
     }
 }
@@ -671,16 +727,49 @@ private fun DetailTabs(selectedIndex: Int, onSelect: (Int) -> Unit) {
 
 @Composable
 private fun SvgAnatomyPanel(view: EchoView, language: AppLanguage) {
+    val atlas = view.diagramAsset
+    var showAtlas by rememberSaveable(view.id) { mutableStateOf(atlas != null) }
     EchoCard {
-        ZoomableSvgDiagram(svgAsset = view.svgAsset, contentDescription = view.title.get(language))
+        if (atlas != null) {
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                listOf(true to R.string.anatomy_atlas, false to R.string.anatomy_schematic).forEach { (isAtlas, label) ->
+                    FilterChip(
+                        selected = showAtlas == isAtlas,
+                        onClick = { showAtlas = isAtlas },
+                        label = { Text(stringResource(label)) },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = EchoTeal,
+                            selectedLabelColor = EchoBackground
+                        )
+                    )
+                }
+            }
+            Spacer(Modifier.height(8.dp))
+        }
+        if (showAtlas && atlas != null) {
+            ZoomableDiagram(
+                assetPath = atlas,
+                contentDescription = view.title.get(language),
+                aspectRatio = view.diagramAspect,
+                background = AtlasCard
+            )
+            view.diagramCredit?.let { credit ->
+                Spacer(Modifier.height(6.dp))
+                Text(text = credit.get(language), style = MaterialTheme.typography.labelSmall, color = EchoMuted)
+            }
+        } else {
+            ZoomableSvgDiagram(svgAsset = view.svgAsset, contentDescription = view.title.get(language))
+        }
         Spacer(Modifier.height(6.dp))
         Text(
             text = stringResource(R.string.zoom_hint),
             style = MaterialTheme.typography.labelSmall,
             color = EchoMuted
         )
-        Spacer(Modifier.height(8.dp))
-        LegendRow()
+        if (!showAtlas || atlas == null) {
+            Spacer(Modifier.height(8.dp))
+            LegendRow()
+        }
         Spacer(Modifier.height(12.dp))
         Text(
             text = stringResource(R.string.key_structures),

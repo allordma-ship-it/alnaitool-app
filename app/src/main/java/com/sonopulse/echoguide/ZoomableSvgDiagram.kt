@@ -73,7 +73,29 @@ fun ZoomableSvgDiagram(
     contentDescription: String,
     modifier: Modifier = Modifier,
     caliper: List<Float>? = null
+) = ZoomableDiagram(
+    assetPath = svgAsset,
+    contentDescription = contentDescription,
+    modifier = modifier,
+    aspectRatio = SVG_WIDTH / SVG_HEIGHT,
+    caliper = caliper
+)
+
+/**
+ * Zoomable asset image (SVG or raster such as PNG). [caliper] coordinates are only meaningful
+ * for the 600x420 SVG diagrams. [background] fills letter-boxing around raster images.
+ */
+@Composable
+fun ZoomableDiagram(
+    assetPath: String,
+    contentDescription: String,
+    modifier: Modifier = Modifier,
+    aspectRatio: Float = SVG_WIDTH / SVG_HEIGHT,
+    caliper: List<Float>? = null,
+    background: Color = Color.Unspecified
 ) {
+    val svgAsset = assetPath
+    val isSvg = assetPath.endsWith(".svg", ignoreCase = true)
     val context = LocalContext.current
     val imageLoader = remember(context) {
         ImageLoader.Builder(context.applicationContext)
@@ -95,9 +117,9 @@ fun ZoomableSvgDiagram(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .aspectRatio(SVG_WIDTH / SVG_HEIGHT)
+            .aspectRatio(aspectRatio)
             .clip(RoundedCornerShape(14.dp))
-            .background(MaterialTheme.colorScheme.background)
+            .background(if (background != Color.Unspecified) background else MaterialTheme.colorScheme.background)
             .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(14.dp))
             .onSizeChanged { size = it }
             .pointerInput(svgAsset) {
@@ -141,11 +163,11 @@ fun ZoomableSvgDiagram(
             SubcomposeAsyncImage(
                 model = ImageRequest.Builder(context)
                     .data("file:///android_asset/$svgAsset")
-                    .decoderFactory(SvgDecoder.Factory())
+                    .apply { if (isSvg) decoderFactory(SvgDecoder.Factory()) }
                     .build(),
                 imageLoader = imageLoader,
                 contentDescription = contentDescription,
-                contentScale = ContentScale.FillBounds,
+                contentScale = if (isSvg) ContentScale.FillBounds else ContentScale.Fit,
                 loading = {
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         CircularProgressIndicator(color = MaterialTheme.colorScheme.primary, modifier = Modifier.size(28.dp))
@@ -158,7 +180,7 @@ fun ZoomableSvgDiagram(
                 },
                 modifier = Modifier.fillMaxSize()
             )
-            if (caliper != null && caliper.size == 4) {
+            if (isSvg && caliper != null && caliper.size == 4) {
                 Canvas(modifier = Modifier.fillMaxSize()) { drawCaliper(caliper, scale) }
             }
         }

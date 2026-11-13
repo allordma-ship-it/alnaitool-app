@@ -102,4 +102,18 @@
     <string name="phase_ed_hint">نهاية الانبساط · موجة R</string>
     <string name="phase_es_hint">نهاية الانقباض · نهاية T</string>
     <string name="player_real_credit">مقطع إيكو حقيقي · %1$s · %2$s · Wikimedia Commons</string>
+    <string name="anatomy_atlas">الأطلس</string>
+    <string name="anatomy_schematic">المخطط</string>
+    <string name="about_title">حول EchoScope</string>
+    <string name="about_version">الإصدار %1$s</string>
+    <string name="about_illustrations_title">الرسوم التشريحية</string>
+    <string name="about_illustrations_credit">الرسوم التشريحية مقتبسة ومعدَّلة عن Patrick J. Lynch (CC-BY 2.5)</string>
+    <string name="about_illustrations_detail">Patrick J. Lynch، رسّام طبي؛ C. Carl Jaffe, MD، طبيب قلب (جامعة Yale). الترخيص: creativecommons.org/licenses/by/2.5. التعديل: استُبدلت الخلفية الشفافة ببطاقة رمادية فاتحة لتصبح كل التسميات مقروءة.</string>
+    <string name="about_clips_title">مقاطع الإيكو</string>
+    <string name="about_clips_credit">المقاطع الحقيقية (القمي الرباعي، الثنائي/الثلاثي، المحور القصير عند العضلات الحليمية، قوس الأبهر): CardioNetworks ECHOpedia، قسم تخطيط صدى القلب AMC، عبر Wikimedia Commons، ترخيص CC BY-SA 3.0. باقي المقاطع محاكاة ولا تحتوي بيانات مرضى.</string>
+    <string name="about_reference_title">صور الإيكو المرجعية</string>
+    <string name="about_reference_credit">صورتا الأجوف السفلي/العلوي وقوس الأبهر الموسومتان قُدّمتا لهذا التطبيق؛ المصدر الأصلي والترخيص بحاجة إلى تأكيد.</string>
+    <string name="about_disclaimer_title">تنبيه</string>
+    <string name="about_disclaimer">للتعليم فقط. ليس جهازاً طبياً؛ تحقّق دائماً من القيم مع الإرشادات الحالية ومعايير المختبر المحلي.</string>
+    <string name="about_close">إغلاق</string>
 </resources>

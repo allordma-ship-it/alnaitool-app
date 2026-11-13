@@ -402,6 +402,13 @@
           ],
           "videoSource": {
             "type": "simulated"
+          },
+          "diagramAsset": "diagrams/subcostal_4c.png",
+          "diagramAspect": 1.1527,
+          "diagramCredit": {
+            "en": "Illustration: Patrick J. Lynch & C. Carl Jaffe, MD (Yale) · CC BY 2.5 · adapted (light background)",
+            "de": "Illustration: Patrick J. Lynch & C. Carl Jaffe, MD (Yale) · CC BY 2.5 · bearbeitet (heller Hintergrund)",
+            "ar": "الرسم: Patrick J. Lynch و C. Carl Jaffe, MD (Yale) · CC BY 2.5 · معدَّل (خلفية فاتحة)"
           }
         },
         {
@@ -753,6 +760,13 @@
           ],
           "videoSource": {
             "type": "simulated"
+          },
+          "diagramAsset": "diagrams/subcostal_ivc.png",
+          "diagramAspect": 1.7398,
+          "diagramCredit": {
+            "en": "Labelled ultrasound reference image (supplied; original source and licence to be confirmed)",
+            "de": "Beschriftetes Ultraschall-Referenzbild (bereitgestellt; Originalquelle und Lizenz noch zu klären)",
+            "ar": "صورة إيكو مرجعية موسومة (مقدَّمة من المستخدم؛ المصدر الأصلي والترخيص بحاجة إلى تأكيد)"
           }
         }
       ]
@@ -1315,6 +1329,13 @@
           ],
           "videoSource": {
             "type": "simulated"
+          },
+          "diagramAsset": "diagrams/plax_standard.png",
+          "diagramAspect": 1.1527,
+          "diagramCredit": {
+            "en": "Illustration: Patrick J. Lynch & C. Carl Jaffe, MD (Yale) · CC BY 2.5 · adapted (light background)",
+            "de": "Illustration: Patrick J. Lynch & C. Carl Jaffe, MD (Yale) · CC BY 2.5 · bearbeitet (heller Hintergrund)",
+            "ar": "الرسم: Patrick J. Lynch و C. Carl Jaffe, MD (Yale) · CC BY 2.5 · معدَّل (خلفية فاتحة)"
           }
         },
         {
@@ -1731,6 +1752,13 @@
           ],
           "videoSource": {
             "type": "simulated"
+          },
+          "diagramAsset": "diagrams/psax_av.png",
+          "diagramAspect": 1.1527,
+          "diagramCredit": {
+            "en": "Illustration: Patrick J. Lynch & C. Carl Jaffe, MD (Yale) · CC BY 2.5 · adapted (light background)",
+            "de": "Illustration: Patrick J. Lynch & C. Carl Jaffe, MD (Yale) · CC BY 2.5 · bearbeitet (heller Hintergrund)",
+            "ar": "الرسم: Patrick J. Lynch و C. Carl Jaffe, MD (Yale) · CC BY 2.5 · معدَّل (خلفية فاتحة)"
           }
         },
         {
@@ -2110,6 +2138,13 @@
             "license": "CC BY-SA 3.0",
             "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
             "sourceUrl": "https://commons.wikimedia.org/wiki/File:SAXPAP_normal_(CardioNetworks_ECHOpedia).webm"
+          },
+          "diagramAsset": "diagrams/psax_papillary.png",
+          "diagramAspect": 1.1527,
+          "diagramCredit": {
+            "en": "Illustration: Patrick J. Lynch & C. Carl Jaffe, MD (Yale) · CC BY 2.5 · adapted (light background)",
+            "de": "Illustration: Patrick J. Lynch & C. Carl Jaffe, MD (Yale) · CC BY 2.5 · bearbeitet (heller Hintergrund)",
+            "ar": "الرسم: Patrick J. Lynch و C. Carl Jaffe, MD (Yale) · CC BY 2.5 · معدَّل (خلفية فاتحة)"
           }
         }
       ]
@@ -2702,6 +2737,13 @@
             "license": "CC BY-SA 3.0",
             "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
             "sourceUrl": "https://commons.wikimedia.org/wiki/File:A4C_normal_(CardioNetworks_ECHOpedia).webm"
+          },
+          "diagramAsset": "diagrams/apical_4c.png",
+          "diagramAspect": 1.1527,
+          "diagramCredit": {
+            "en": "Illustration: Patrick J. Lynch & C. Carl Jaffe, MD (Yale) · CC BY 2.5 · adapted (light background)",
+            "de": "Illustration: Patrick J. Lynch & C. Carl Jaffe, MD (Yale) · CC BY 2.5 · bearbeitet (heller Hintergrund)",
+            "ar": "الرسم: Patrick J. Lynch و C. Carl Jaffe, MD (Yale) · CC BY 2.5 · معدَّل (خلفية فاتحة)"
           }
         },
         {
@@ -3080,6 +3122,13 @@
           ],
           "videoSource": {
             "type": "simulated"
+          },
+          "diagramAsset": "diagrams/apical_5c.png",
+          "diagramAspect": 1.1527,
+          "diagramCredit": {
+            "en": "Illustration: Patrick J. Lynch & C. Carl Jaffe, MD (Yale) · CC BY 2.5 · adapted (light background)",
+            "de": "Illustration: Patrick J. Lynch & C. Carl Jaffe, MD (Yale) · CC BY 2.5 · bearbeitet (heller Hintergrund)",
+            "ar": "الرسم: Patrick J. Lynch و C. Carl Jaffe, MD (Yale) · CC BY 2.5 · معدَّل (خلفية فاتحة)"
           }
         },
         {
@@ -3431,6 +3480,13 @@
             "license": "CC BY-SA 3.0",
             "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
             "sourceUrl": "https://commons.wikimedia.org/wiki/File:A2Cnormal_(CardioNetworks_ECGpedia).avi.webm https://commons.wikimedia.org/wiki/File:A3Cnormal_(CardioNetworks_ECGpedia).avi.webm"
+          },
+          "diagramAsset": "diagrams/apical_2c_3c.png",
+          "diagramAspect": 1.1527,
+          "diagramCredit": {
+            "en": "Illustration: Patrick J. Lynch & C. Carl Jaffe, MD (Yale) · CC BY 2.5 · adapted (light background)",
+            "de": "Illustration: Patrick J. Lynch & C. Carl Jaffe, MD (Yale) · CC BY 2.5 · bearbeitet (heller Hintergrund)",
+            "ar": "الرسم: Patrick J. Lynch و C. Carl Jaffe, MD (Yale) · CC BY 2.5 · معدَّل (خلفية فاتحة)"
           }
         }
       ]
@@ -3867,6 +3923,13 @@
             "license": "CC BY-SA 3.0",
             "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
             "sourceUrl": "https://commons.wikimedia.org/wiki/File:SuprasternalNormal_(CardioNetworks_ECHOpedia).webm"
+          },
+          "diagramAsset": "diagrams/suprasternal_arch.png",
+          "diagramAspect": 1.381,
+          "diagramCredit": {
+            "en": "Labelled ultrasound reference image (supplied; original source and licence to be confirmed)",
+            "de": "Beschriftetes Ultraschall-Referenzbild (bereitgestellt; Originalquelle und Lizenz noch zu klären)",
+            "ar": "صورة إيكو مرجعية موسومة (مقدَّمة من المستخدم؛ المصدر الأصلي والترخيص بحاجة إلى تأكيد)"
           }
         }
       ]

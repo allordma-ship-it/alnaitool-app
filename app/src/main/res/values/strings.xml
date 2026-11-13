@@ -95,4 +95,18 @@
     <string name="phase_ed_hint">End-diastole · R-wave</string>
     <string name="phase_es_hint">End-systole · T-end</string>
     <string name="player_real_credit">Real echo clip · %1$s · %2$s · Wikimedia Commons</string>
+    <string name="anatomy_atlas">Atlas</string>
+    <string name="anatomy_schematic">Schematic</string>
+    <string name="about_title">About EchoScope</string>
+    <string name="about_version">Version %1$s</string>
+    <string name="about_illustrations_title">Anatomical illustrations</string>
+    <string name="about_illustrations_credit">Anatomical illustrations adapted from Patrick J. Lynch (CC-BY 2.5)</string>
+    <string name="about_illustrations_detail">Patrick J. Lynch, medical illustrator; C. Carl Jaffe, MD, cardiologist (Yale University). Licence: creativecommons.org/licenses/by/2.5. Adapted: transparent background replaced by a light-slate card so all labels are readable.</string>
+    <string name="about_clips_title">Echo cine loops</string>
+    <string name="about_clips_credit">Real clips (A4C, A2C/A3C, PSAX papillary, suprasternal arch): CardioNetworks ECHOpedia, Dept. of Echocardiography AMC, via Wikimedia Commons, CC BY-SA 3.0. All other loops are simulated and contain no patient data.</string>
+    <string name="about_reference_title">Ultrasound reference images</string>
+    <string name="about_reference_credit">The labelled IVC/SVC and suprasternal arch reference images were supplied for this app; their original source and licence still have to be confirmed.</string>
+    <string name="about_disclaimer_title">Disclaimer</string>
+    <string name="about_disclaimer">For education only. Not a medical device; always confirm values against current guidelines and your local laboratory standards.</string>
+    <string name="about_close">Close</string>
 </resources>

@@ -111,6 +111,11 @@ data class EchoView(
     val steps: List<GuideStep> = emptyList(),
     val ecg: EcgTiming = EcgTiming(),
     val videoSource: VideoSource = VideoSource(),
+    /** Anatomical reference illustration (raster) shown in the Anatomy tab, e.g. `diagrams/apical_4c.png`. */
+    val diagramAsset: String? = null,
+    /** Width / height of [diagramAsset]. */
+    val diagramAspect: Float = 1.15f,
+    val diagramCredit: LocalizedText? = null,
     val timingNote: LocalizedText? = null,
     val machineControls: List<MachineControlStep> = emptyList()
 )
