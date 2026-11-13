@@ -37,7 +37,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -120,8 +119,9 @@ fun EchoCinePlayer(
     var speed by remember { mutableFloatStateOf(1.0f) }
     var playbackFailed by remember { mutableStateOf(false) }
 
-    val assetAvailable by produceState<Boolean?>(initialValue = null, videoAssetPath) {
-        value = withContext(Dispatchers.IO) { EchoRepository.assetExists(context, videoAssetPath) }
+    var assetAvailable by remember { mutableStateOf<Boolean?>(null) }
+    LaunchedEffect(videoAssetPath) {
+        assetAvailable = withContext(Dispatchers.IO) { EchoRepository.assetExists(context, videoAssetPath) }
     }
 
     // Release the one and only player when the composable leaves the composition.

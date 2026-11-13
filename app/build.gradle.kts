@@ -47,6 +47,13 @@ android {
         noCompress += listOf("mp4")
     }
 
+    lint {
+        // Dependency versions are pinned intentionally for reproducible offline builds.
+        disable += "GradleDependency"
+        abortOnError = true
+        warningsAsErrors = false
+    }
+
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"

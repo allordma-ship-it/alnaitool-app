@@ -36,5 +36,5 @@
     <string name="zscore_reset">إعادة ضبط</string>
     <string name="zscore_disclaimer">نموذج تعليمي تقديري (المتوسط = a·BSA^b). تحقّق دائماً من المخططات المرجعية المعتمدة في مؤسستك قبل أي قرار سريري.</string>
     <string name="zscore_hint">أدخل الوزن والطول والقيمة المقاسة للحساب.</string>
-    <string name="checklist_progress">%1$d / %2$d مكتمل</string>
+    <string name="checklist_progress">قائمة التحقق: %1$d / %2$d</string>
 </resources>

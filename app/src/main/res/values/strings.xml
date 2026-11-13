@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">EchoScope</string>
+    <string name="app_name" translatable="false">EchoScope</string>
     <string name="app_tagline">Offline TTE Protocol Guide</string>
     <string name="nav_protocol">Protocol &amp; Views</string>
     <string name="nav_zscore">Z-Score Calculator</string>
@@ -37,5 +37,5 @@
     <string name="zscore_reset">Reset</string>
     <string name="zscore_disclaimer">Educational allometric model (mean = a·BSA^b, log-normal SD). Always confirm against your institutional pediatric nomogram before clinical decisions.</string>
     <string name="zscore_hint">Enter weight, height and a measured value to calculate.</string>
-    <string name="checklist_progress">%1$d / %2$d completed</string>
+    <string name="checklist_progress">Checklist: %1$d / %2$d</string>
 </resources>
