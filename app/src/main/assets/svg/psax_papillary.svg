@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300">
+  <title>PSAX Papillary Muscle Level</title>
+  <rect x="0" y="0" width="400" height="300" fill="#0A0E14"/>
+  <path d="M200,22 L27.7,227.3 A268,268 0 0,0 372.3,227.3 Z" fill="#0F1620" stroke="#1F2A3A" stroke-width="1.5"/>
+  <path d="M90,140 Q110,72 200,74 Q160,90 150,150 Q148,200 170,230 Q100,214 90,140 Z" fill="#00D2B8" fill-opacity="0.22" stroke="#00D2B8" stroke-width="1.6"/>
+  <text x="118" y="146" font-family="sans-serif" font-size="10" font-weight="bold" fill="#CBD5E1" text-anchor="middle">RV</text>
+  <circle cx="220" cy="160" r="72" fill="#00D2B8" fill-opacity="0.08" stroke="#2DD4BF" stroke-width="8"/>
+  <circle cx="220" cy="160" r="66" fill="#00D2B8" fill-opacity="0.18" stroke="#00D2B8" stroke-width="1.4"/>
+  <text x="220" y="164" font-family="sans-serif" font-size="10" font-weight="bold" fill="#CBD5E1" text-anchor="middle">LV</text>
+  <path d="M168,104 Q146,160 172,216" fill="none" stroke="#38BDF8" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="140" y="104" font-family="sans-serif" font-size="8" font-weight="normal" fill="#94A3B8" text-anchor="end">IVS</text>
+  <ellipse cx="262" cy="186" rx="14" ry="10" fill="#00D2B8" fill-opacity="0.6" stroke="#00D2B8" stroke-width="1.6" transform="rotate(-30 262 186)"/>
+  <ellipse cx="180" cy="196" rx="14" ry="10" fill="#00D2B8" fill-opacity="0.6" stroke="#00D2B8" stroke-width="1.6" transform="rotate(30 180 196)"/>
+  <text x="282" y="204" font-family="sans-serif" font-size="8" font-weight="normal" fill="#94A3B8" text-anchor="start">AL-PM</text>
+  <text x="160" y="222" font-family="sans-serif" font-size="8" font-weight="normal" fill="#94A3B8" text-anchor="end">PM-PM</text>
+  <text x="220" y="80" font-family="sans-serif" font-size="8" font-weight="normal" fill="#94A3B8" text-anchor="middle">Ant</text>
+  <text x="296" y="118" font-family="sans-serif" font-size="8" font-weight="normal" fill="#94A3B8" text-anchor="middle">AntLat</text>
+  <text x="300" y="220" font-family="sans-serif" font-size="8" font-weight="normal" fill="#94A3B8" text-anchor="middle">InfLat</text>
+  <text x="220" y="246" font-family="sans-serif" font-size="8" font-weight="normal" fill="#94A3B8" text-anchor="middle">Inf</text>
+  <text x="150" y="236" font-family="sans-serif" font-size="8" font-weight="normal" fill="#94A3B8" text-anchor="middle">InfSep</text>
+  <text x="156" y="92" font-family="sans-serif" font-size="8" font-weight="normal" fill="#94A3B8" text-anchor="middle">AntSep</text>
+  <circle cx="226" cy="30" r="4.5" fill="#FF8A3D"/>
+  <text x="234" y="33" font-family="sans-serif" font-size="8" fill="#FF8A3D">notch</text>
+  <circle cx="34" cy="36" r="20" fill="#111824" stroke="#334155" stroke-width="1.2"/>
+  <line x1="34.0" y1="20.0" x2="34.0" y2="16.0" stroke="#475569" stroke-width="1"/>
+  <line x1="42.0" y1="22.1" x2="44.0" y2="18.7" stroke="#475569" stroke-width="1"/>
+  <line x1="47.9" y1="28.0" x2="51.3" y2="26.0" stroke="#475569" stroke-width="1"/>
+  <line x1="50.0" y1="36.0" x2="54.0" y2="36.0" stroke="#475569" stroke-width="1"/>
+  <line x1="47.9" y1="44.0" x2="51.3" y2="46.0" stroke="#475569" stroke-width="1"/>
+  <line x1="42.0" y1="49.9" x2="44.0" y2="53.3" stroke="#475569" stroke-width="1"/>
+  <line x1="34.0" y1="52.0" x2="34.0" y2="56.0" stroke="#475569" stroke-width="1"/>
+  <line x1="26.0" y1="49.9" x2="24.0" y2="53.3" stroke="#475569" stroke-width="1"/>
+  <line x1="20.1" y1="44.0" x2="16.7" y2="46.0" stroke="#475569" stroke-width="1"/>
+  <line x1="18.0" y1="36.0" x2="14.0" y2="36.0" stroke="#475569" stroke-width="1"/>
+  <line x1="20.1" y1="28.0" x2="16.7" y2="26.0" stroke="#475569" stroke-width="1"/>
+  <line x1="26.0" y1="22.1" x2="24.0" y2="18.7" stroke="#475569" stroke-width="1"/>
+  <line x1="34" y1="36" x2="46.1" y2="29.0" stroke="#FF8A3D" stroke-width="2.2" stroke-linecap="round"/>
+  <circle cx="46.1" cy="29.0" r="3" fill="#FF8A3D"/>
+  <circle cx="34" cy="36" r="2" fill="#FF8A3D"/>
+  <text x="34" y="68" font-family="sans-serif" font-size="9" fill="#FF8A3D" text-anchor="middle">2 o'clock</text>
+  <rect x="318" y="11" width="8" height="8" rx="2" fill="#00D2B8"/>
+  <text x="330" y="18" font-family="sans-serif" font-size="8" fill="#CBD5E1">Chambers / vessels</text>
+  <rect x="318" y="22" width="8" height="8" rx="2" fill="#38BDF8"/>
+  <text x="330" y="29" font-family="sans-serif" font-size="8" fill="#CBD5E1">Septa</text>
+  <rect x="318" y="33" width="8" height="8" rx="2" fill="#FBBF24"/>
+  <text x="330" y="40" font-family="sans-serif" font-size="8" fill="#CBD5E1">Valves</text>
+  <rect x="318" y="44" width="8" height="8" rx="2" fill="#FF8A3D"/>
+  <text x="330" y="51" font-family="sans-serif" font-size="8" fill="#CBD5E1">Probe notch</text>
+  <text x="392" y="292" font-family="sans-serif" font-size="10" fill="#94A3B8" text-anchor="end">PSAX PM · circular LV · FS 25–43 %</text>
+</svg>

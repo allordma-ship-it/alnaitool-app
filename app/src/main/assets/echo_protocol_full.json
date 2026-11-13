@@ -1,0 +1,464 @@
+{
+  "schemaVersion": 1,
+  "titleEn": "EchoScope – Comprehensive TTE Protocol",
+  "titleAr": "إيكوسكوب – بروتوكول تخطيط صدى القلب عبر الصدر الشامل",
+  "references": [
+    "Lang RM et al. Recommendations for Cardiac Chamber Quantification by Echocardiography in Adults. ASE/EACVI, J Am Soc Echocardiogr 2015;28:1-39",
+    "Mitchell C et al. Guidelines for Performing a Comprehensive Transthoracic Echocardiographic Examination in Adults. ASE, J Am Soc Echocardiogr 2019;32:1-64",
+    "Nagueh SF et al. Recommendations for the Evaluation of Left Ventricular Diastolic Function. ASE/EACVI, J Am Soc Echocardiogr 2016;29:277-314",
+    "Rudski LG et al. Guidelines for the Echocardiographic Assessment of the Right Heart in Adults. ASE, J Am Soc Echocardiogr 2010;23:685-713",
+    "Lopez L et al. Recommendations for Quantification Methods During the Performance of a Pediatric Echocardiogram. ASE, J Am Soc Echocardiogr 2010;23:465-495",
+    "Haycock GB et al. Geometric method for measuring body surface area. J Pediatr 1978;93:62-66"
+  ],
+  "disclaimerEn": "Educational reference only. Normal ranges are guideline-derived and must be interpreted in clinical context and against local laboratory standards.",
+  "disclaimerAr": "مرجع تعليمي فقط. القيم الطبيعية مستمدة من الإرشادات ويجب تفسيرها في السياق السريري ومقارنتها بمعايير المختبر المحلي.",
+  "windows": [
+    {
+      "id": "subcostal",
+      "titleEn": "Subcostal",
+      "titleAr": "تحت الضلعية",
+      "descriptionEn": "Below the xiphoid process, patient supine with knees flexed. First window in pediatrics: situs, systemic veins, atrial septum.",
+      "descriptionAr": "تحت الناتئ الرهابي، المريض مستلقٍ على ظهره مع ثني الركبتين. النافذة الأولى عند الأطفال: الوضع الحشوي، الأوردة الجهازية، الحاجز الأذيني.",
+      "views": [
+        {
+          "id": "subcostal_4c",
+          "titleEn": "Subcostal 4-Chamber",
+          "titleAr": "المقطع تحت الضلعي رباعي الحجرات",
+          "probePositionEn": "Probe just below the xiphoid, angled cranially toward the left shoulder, beam nearly parallel to the skin; use the liver as acoustic window.",
+          "probePositionAr": "المسبار تحت الناتئ الرهابي مباشرة، موجّه نحو الكتف الأيسر، والحزمة شبه موازية للجلد؛ يُستخدم الكبد كنافذة صوتية.",
+          "notchClock": "3",
+          "notchHours": [3.0],
+          "notchDescriptionEn": "Notch at 3 o'clock (toward the patient's left side).",
+          "notchDescriptionAr": "العلامة عند الساعة 3 (نحو الجانب الأيسر للمريض).",
+          "videoAsset": "loops/subcostal_4c.mp4",
+          "svgAsset": "svg/subcostal_4c.svg",
+          "keyStructures": [
+            "Liver (near field)",
+            "Right atrium & right ventricle",
+            "Interatrial septum (perpendicular to beam)",
+            "Interventricular septum",
+            "Left atrium & left ventricle",
+            "Pericardium (inferior RV free wall)"
+          ],
+          "referenceMeasurements": {
+            "adult": [
+              { "parameter": "RV free wall thickness (end-diastole)", "normal": "≤ 5 mm", "note": "> 5 mm suggests RV hypertrophy / pressure overload" },
+              { "parameter": "Pericardial effusion (end-diastole)", "normal": "Physiological < 50 mL, no separation in diastole", "note": "Small < 10 mm · Moderate 10–20 mm · Large > 20 mm" },
+              { "parameter": "Interatrial septum", "normal": "Intact on 2D and colour Doppler (Nyquist 40–60 cm/s)", "note": "Agitated saline with Valsalva for PFO if clinically indicated" },
+              { "parameter": "RA / RV diastolic collapse", "normal": "Absent", "note": "RA systolic collapse > 1/3 of cycle or RV diastolic collapse → tamponade physiology" }
+            ],
+            "pediatric": [
+              { "parameter": "Visceral & atrial situs", "focus": "Liver right, stomach left, IVC right of spine, aorta left (situs solitus). Document before any other view." },
+              { "parameter": "Atrial septal defect size", "focus": "Measure in two orthogonal planes; index to BSA; secundum rims (≥ 5 mm) for device closure planning." },
+              { "parameter": "Ventricular septum", "focus": "Sweep anterior → posterior for inlet/muscular VSDs; colour Doppler at low Nyquist." },
+              { "parameter": "AV valve offset", "focus": "Normal tricuspid apical offset; loss of offset → AVSD." }
+            ]
+          },
+          "checklist": [
+            "تأكيد الوضع الحشوي: الكبد يميناً، والوريد الأجوف السفلي يمين العمود الفقري، والأبهر يساراً",
+            "إظهار الحجرات الأربع مع كون الحاجز الأذيني عمودياً على الحزمة",
+            "فحص الحاجز الأذيني بالدوبلر الملون لاستبعاد عيب الحاجز الأذيني أو الثقبة البيضوية السالكة",
+            "تقييم الانصباب التاموري وقياسه في نهاية الانبساط",
+            "البحث عن انخماص الأذين الأيمن أو البطين الأيمن (علامات الاندحاس)",
+            "قياس سماكة الجدار الحر للبطين الأيمن (الطبيعي ≤ 5 مم)",
+            "مسح الحاجز البطيني من الأمام إلى الخلف لاستبعاد عيب الحاجز البطيني"
+          ]
+        },
+        {
+          "id": "subcostal_ivc",
+          "titleEn": "Subcostal IVC & Bicaval",
+          "titleAr": "الوريد الأجوف السفلي والمقطع ثنائي الأجوف تحت الضلعي",
+          "probePositionEn": "From the subcostal 4C, rotate 90° counter-clockwise to a sagittal plane; IVC enters the RA, hepatic vein joins 1–2 cm proximal. Tilt rightward for the bicaval view (SVC + IVC + IAS).",
+          "probePositionAr": "من المقطع رباعي الحجرات تحت الضلعي، دوّر المسبار 90° عكس عقارب الساعة إلى المستوى السهمي؛ يظهر الوريد الأجوف السفلي داخلاً إلى الأذين الأيمن. أمِل المسبار يميناً للمقطع ثنائي الأجوف.",
+          "notchClock": "12",
+          "notchHours": [12.0],
+          "notchDescriptionEn": "Notch at 12 o'clock (toward the patient's head).",
+          "notchDescriptionAr": "العلامة عند الساعة 12 (نحو رأس المريض).",
+          "videoAsset": "loops/subcostal_ivc.mp4",
+          "svgAsset": "svg/subcostal_ivc.svg",
+          "keyStructures": [
+            "Inferior vena cava (long axis)",
+            "Hepatic vein confluence",
+            "Right atrium / IVC–RA junction",
+            "Eustachian valve",
+            "Superior vena cava (bicaval tilt)",
+            "Interatrial septum (sinus venosus region)"
+          ],
+          "referenceMeasurements": {
+            "adult": [
+              { "parameter": "IVC diameter (end-expiration)", "normal": "≤ 2.1 cm", "note": "Measured 1–2 cm proximal to the RA junction, perpendicular to the long axis" },
+              { "parameter": "IVC collapsibility (sniff)", "normal": "> 50 %", "note": "≤ 2.1 cm & > 50 % → RAP 3 mmHg (0–5)" },
+              { "parameter": "Estimated RAP – intermediate", "normal": "8 mmHg (5–10)", "note": "Diameter and collapse discordant" },
+              { "parameter": "Estimated RAP – high", "normal": "15 mmHg (10–20)", "note": "> 2.1 cm & < 50 % collapse" },
+              { "parameter": "Hepatic vein flow", "normal": "Systolic predominance (S > D)", "note": "Systolic flow reversal → severe TR" }
+            ],
+            "pediatric": [
+              { "parameter": "IVC continuity", "focus": "Interrupted IVC with azygos continuation (left isomerism / heterotaxy)." },
+              { "parameter": "IVC / aorta ratio", "focus": "Volume status surrogate; IVC normally ≈ aorta diameter in children." },
+              { "parameter": "Sinus venosus ASD", "focus": "Bicaval view: superior defect at SVC–RA junction, check right upper pulmonary vein drainage." },
+              { "parameter": "Hepatic veins", "focus": "Drainage directly to RA; abnormal Doppler with restrictive RV physiology." }
+            ]
+          },
+          "checklist": [
+            "إظهار الوريد الأجوف السفلي بمحوره الطويل داخلاً إلى الأذين الأيمن",
+            "قياس القطر على بعد 1–2 سم من ملتقى الأذين الأيمن عمودياً على المحور الطويل",
+            "تقييم نسبة الانخماص مع الشهيق السريع (Sniff)",
+            "تقدير ضغط الأذين الأيمن (3 / 8 / 15 ملم زئبق)",
+            "تسجيل دوبلر الوريد الكبدي (السيطرة الانقباضية S > D)",
+            "إمالة المسبار للمقطع ثنائي الأجوف لاستبعاد عيب الجيب الوريدي",
+            "تجنّب الخلط بين الوريد الأجوف السفلي والأبهر البطني (النبض والاتجاه)"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "parasternal",
+      "titleEn": "Parasternal",
+      "titleAr": "جانب القص",
+      "descriptionEn": "Left sternal border, 3rd–4th intercostal space, patient in left lateral decubitus. Linear dimensions, valves and LV short-axis geometry.",
+      "descriptionAr": "الحافة اليسرى للقص، المسافة الوربية الثالثة إلى الرابعة، المريض مستلقٍ على جانبه الأيسر. القياسات الخطية والصمامات وهندسة البطين الأيسر بالمحور القصير.",
+      "views": [
+        {
+          "id": "plax_standard",
+          "titleEn": "Parasternal Long Axis",
+          "titleAr": "المحور الطويل جانب القص",
+          "probePositionEn": "Left sternal border, 3rd–4th intercostal space; the plane runs from the right shoulder to the left hip. LV apex should not be foreshortened; septum and aorta horizontal.",
+          "probePositionAr": "الحافة اليسرى للقص، المسافة الوربية الثالثة إلى الرابعة؛ يمتد المستوى من الكتف الأيمن إلى الورك الأيسر. يجب أن يكون الحاجز والأبهر أفقيين.",
+          "notchClock": "10",
+          "notchHours": [10.0],
+          "notchDescriptionEn": "Notch at 10 o'clock (toward the patient's right shoulder).",
+          "notchDescriptionAr": "العلامة عند الساعة 10 (نحو الكتف الأيمن للمريض).",
+          "videoAsset": "loops/plax_standard.mp4",
+          "svgAsset": "svg/plax_standard.svg",
+          "keyStructures": [
+            "RV outflow tract (near field)",
+            "Interventricular septum",
+            "LV cavity & posterior wall",
+            "Aortic root, RCC & NCC",
+            "Mitral valve (AML & PML)",
+            "Left atrium",
+            "Descending thoracic aorta (behind LA, landmark)"
+          ],
+          "referenceMeasurements": {
+            "adult": [
+              { "parameter": "IVSd", "normal": "0.6–1.0 cm (M) · 0.6–0.9 cm (F)", "note": "End-diastole, inner-edge to inner-edge, at MV leaflet tips" },
+              { "parameter": "LVIDd", "normal": "4.2–5.8 cm (M) · 3.8–5.2 cm (F)", "note": "Perpendicular to LV long axis" },
+              { "parameter": "LVPWd", "normal": "0.6–1.0 cm (M) · 0.6–0.9 cm (F)", "note": "Exclude chordae and papillary muscles" },
+              { "parameter": "Relative wall thickness", "normal": "≤ 0.42", "note": "RWT = 2 × LVPWd / LVIDd" },
+              { "parameter": "Aortic root (sinuses of Valsalva)", "normal": "3.1–3.7 cm (M) · 2.7–3.3 cm (F)", "note": "Leading-edge to leading-edge in end-diastole" },
+              { "parameter": "LA AP diameter", "normal": "3.0–4.0 cm (M) · 2.7–3.8 cm (F)", "note": "End-systole; prefer LA volume (LAVI) for grading" },
+              { "parameter": "LVOT diameter", "normal": "1.8–2.2 cm", "note": "Mid-systole, within 0.5–1.0 cm of the AV annulus" },
+              { "parameter": "Descending aorta landmark", "normal": "Circular structure behind the AV groove", "note": "Pericardial effusion lies anterior, pleural effusion posterior to it" }
+            ],
+            "pediatric": [
+              { "parameter": "LVIDd / LVPWd / IVSd", "focus": "BSA-indexed Z-scores; Z > +2 suggests dilatation or hypertrophy." },
+              { "parameter": "Aortic annulus & sinuses", "focus": "Z-score tracking in Marfan, Loeys–Dietz, bicuspid aortopathy, Turner syndrome." },
+              { "parameter": "Perimembranous / outlet VSD", "focus": "Colour Doppler below the RCC; check aortic cusp prolapse." },
+              { "parameter": "Mitral valve", "focus": "Prolapse > 2 mm beyond annular plane; parachute MV; cleft MV in AVSD." }
+            ]
+          },
+          "checklist": [
+            "الحاجز البطيني وجذر الأبهر أفقيان وغير مقصّرين",
+            "قياس IVSd وLVIDd وLVPWd في نهاية الانبساط عند أطراف وريقات الصمام التاجي",
+            "حساب سماكة الجدار النسبية (RWT ≤ 0.42)",
+            "قياس جذر الأبهر عند جيوب فالسالفا والأبهر الصاعد",
+            "قياس قطر مخرج البطين الأيسر في منتصف الانقباض",
+            "قياس القطر الأمامي الخلفي للأذين الأيسر",
+            "تحديد الأبهر النازل كمعلم لتمييز الانصباب التاموري من الجنبي",
+            "فحص الصمامين التاجي والأبهري بالدوبلر الملون"
+          ]
+        },
+        {
+          "id": "psax_av",
+          "titleEn": "PSAX – Aortic Valve & Great Vessels",
+          "titleAr": "المحور القصير جانب القص – الصمام الأبهري والأوعية الكبرى",
+          "probePositionEn": "From PLAX rotate 90° clockwise; tilt toward the right shoulder until the AV appears as a circle centred in the image with the RVOT wrapping anteriorly.",
+          "probePositionAr": "من المحور الطويل دوّر المسبار 90° مع عقارب الساعة؛ أمِله نحو الكتف الأيمن حتى يظهر الصمام الأبهري دائرياً في المنتصف.",
+          "notchClock": "2",
+          "notchHours": [2.0],
+          "notchDescriptionEn": "Notch at 2 o'clock (toward the patient's left shoulder).",
+          "notchDescriptionAr": "العلامة عند الساعة 2 (نحو الكتف الأيسر للمريض).",
+          "videoAsset": "loops/psax_av.mp4",
+          "svgAsset": "svg/psax_av.svg",
+          "keyStructures": [
+            "Aortic valve (RCC, LCC, NCC – 'Mercedes-Benz' sign)",
+            "Left main coronary (≈ 4 o'clock) & RCA (≈ 10–11 o'clock)",
+            "Right atrium, tricuspid valve",
+            "RV outflow tract & pulmonary valve",
+            "Main pulmonary artery with bifurcation (RPA / LPA)",
+            "Left atrium & interatrial septum"
+          ],
+          "referenceMeasurements": {
+            "adult": [
+              { "parameter": "Aortic valve morphology", "normal": "Tricuspid, three commissures, 'Y' closure line", "note": "Bicuspid: two cusps, 'fish-mouth' systolic opening ± raphe" },
+              { "parameter": "Main pulmonary artery", "normal": "< 2.9 cm", "note": "≥ 2.9 cm or MPA > ascending aorta suggests pulmonary hypertension" },
+              { "parameter": "RVOT proximal (PSAX)", "normal": "2.1–3.5 cm", "note": "End-diastole, anterior RV wall to AV" },
+              { "parameter": "RVOT distal (pre-pulmonic)", "normal": "1.7–2.7 cm", "note": "Just proximal to the pulmonary valve" },
+              { "parameter": "PA acceleration time", "normal": "> 130 ms", "note": "< 105 ms or mid-systolic notching suggests elevated PVR" },
+              { "parameter": "Pulmonary valve peak velocity", "normal": "< 1.0 m/s (0.6–0.9)", "note": "PW in RVOT, CW across valve" }
+            ],
+            "pediatric": [
+              { "parameter": "Coronary artery origins", "focus": "Both origins & proximal course; LMCA / RCA Z-scores for Kawasaki disease (Z ≥ 2.5 aneurysm)." },
+              { "parameter": "Bicuspid aortic valve", "focus": "Fusion pattern (R–L most common, R–N); associated coarctation." },
+              { "parameter": "Patent ductus arteriosus", "focus": "Colour jet at PA bifurcation near LPA origin; continuous Doppler, shunt direction and gradient." },
+              { "parameter": "MPA / branch PA", "focus": "BSA Z-score; branch PA stenosis; pulmonary valve annulus Z for stenosis planning." }
+            ]
+          },
+          "checklist": [
+            "إظهار الصمام الأبهري دائرياً مع الشرفات الثلاث (علامة مرسيدس)",
+            "التمييز بين الصمام ثلاثي الشرفات وثنائي الشرفات (الفتحة على شكل فم السمكة)",
+            "تحديد منشأ الشريان التاجي الأيسر الرئيسي والأيمن",
+            "قياس الشريان الرئوي الرئيسي (الطبيعي < 2.9 سم) وإظهار تفرعه",
+            "البحث عن القناة الشريانية السالكة بالدوبلر الملون عند التفرع الرئوي",
+            "تسجيل دوبلر الصمام الرئوي وزمن التسارع",
+            "تقييم الصمام ثلاثي الشرف وقلس الصمام ثلاثي الشرف"
+          ]
+        },
+        {
+          "id": "psax_papillary",
+          "titleEn": "PSAX – Papillary Muscle Level",
+          "titleAr": "المحور القصير جانب القص – مستوى العضلات الحليمية",
+          "probePositionEn": "From the PSAX AV level tilt the beam inferolaterally (toward the apex) past the mitral 'fish-mouth' until both papillary muscles appear; LV must look circular.",
+          "probePositionAr": "من مستوى الصمام الأبهري أمِل الحزمة نحو القمة متجاوزاً مستوى الصمام التاجي حتى تظهر العضلتان الحليميتان؛ يجب أن يبدو البطين الأيسر دائرياً.",
+          "notchClock": "2",
+          "notchHours": [2.0],
+          "notchDescriptionEn": "Notch at 2 o'clock (toward the patient's left shoulder).",
+          "notchDescriptionAr": "العلامة عند الساعة 2 (نحو الكتف الأيسر للمريض).",
+          "videoAsset": "loops/psax_papillary.mp4",
+          "svgAsset": "svg/psax_papillary.svg",
+          "keyStructures": [
+            "LV cavity (circular in short axis)",
+            "Anterolateral papillary muscle (≈ 3–4 o'clock)",
+            "Posteromedial papillary muscle (≈ 7–8 o'clock)",
+            "Interventricular septum",
+            "RV (crescent-shaped, anterior)",
+            "Six mid-ventricular wall segments"
+          ],
+          "referenceMeasurements": {
+            "adult": [
+              { "parameter": "Fractional shortening", "normal": "25–43 %", "note": "FS = (LVIDd − LVIDs) / LVIDd" },
+              { "parameter": "LV geometry", "normal": "Circular in systole and diastole", "note": "D-shape = septal flattening" },
+              { "parameter": "Eccentricity index", "normal": "≈ 1.0", "note": "> 1.0 in diastole → RV volume overload; > 1.0 in systole → RV pressure overload" },
+              { "parameter": "Regional wall motion", "normal": "Uniform thickening > 40 %", "note": "Score six mid segments (17-segment model)" }
+            ],
+            "pediatric": [
+              { "parameter": "Septal position", "focus": "D-shape grading in PH, PS, ASD/APVR volume load; serial follow-up." },
+              { "parameter": "Papillary muscle architecture", "focus": "Single papillary muscle → parachute MV (Shone complex)." },
+              { "parameter": "Muscular VSD", "focus": "Colour sweep of the trabecular septum." },
+              { "parameter": "LV shortening fraction", "focus": "Pediatric normal ≈ 28–44 %; age-dependent." }
+            ]
+          },
+          "checklist": [
+            "التأكد من دائرية البطين الأيسر وعدم انحراف المقطع",
+            "إظهار العضلتين الحليميتين الأمامية الجانبية والخلفية الإنسية",
+            "تقييم شكل الحاجز البطيني (شكل حرف D) في الانقباض والانبساط",
+            "تقييم حركة الجدران القطاعية الست في المستوى المتوسط",
+            "قياس نسبة التقصّر الكسري (الطبيعي 25–43٪)",
+            "البحث عن عيب حاجز بطيني عضلي بالدوبلر الملون"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "apical",
+      "titleEn": "Apical",
+      "titleAr": "القمّية",
+      "descriptionEn": "Point of maximal impulse, 5th–6th intercostal space anterior/mid-axillary line, steep left lateral decubitus. Volumes, EF, diastology and Doppler.",
+      "descriptionAr": "نقطة الدفع القمي الأعظمي، المسافة الوربية الخامسة إلى السادسة، المريض على جانبه الأيسر بشدة. الأحجام والكسر القذفي والوظيفة الانبساطية والدوبلر.",
+      "views": [
+        {
+          "id": "apical_4c",
+          "titleEn": "Apical 4-Chamber",
+          "titleAr": "المقطع القمي رباعي الحجرات",
+          "probePositionEn": "Probe at the palpated apex, beam directed toward the right scapula. Avoid foreshortening: the LV should be bullet-shaped with the true apex stationary.",
+          "probePositionAr": "المسبار على القمة المجسوسة والحزمة موجّهة نحو لوح الكتف الأيمن. تجنّب التقصير: يجب أن يكون البطين الأيسر على شكل رصاصة مع ثبات القمة.",
+          "notchClock": "3",
+          "notchHours": [3.0],
+          "notchDescriptionEn": "Notch at 3 o'clock (toward the patient's left; LV on the image right in standard ASE display).",
+          "notchDescriptionAr": "العلامة عند الساعة 3 (نحو يسار المريض).",
+          "videoAsset": "loops/apical_4c.mp4",
+          "svgAsset": "svg/apical_4c.svg",
+          "keyStructures": [
+            "LV (inferoseptal & anterolateral walls)",
+            "RV free wall & tricuspid annulus",
+            "Left & right atria",
+            "Mitral & tricuspid valves (septal leaflet offset)",
+            "Interatrial & interventricular septa",
+            "Pulmonary veins entering the LA"
+          ],
+          "referenceMeasurements": {
+            "adult": [
+              { "parameter": "LVEF (biplane Simpson)", "normal": "52–72 % (M) · 54–74 % (F)", "note": "Trace endocardium in end-diastole and end-systole; A4C + A2C" },
+              { "parameter": "TAPSE", "normal": "≥ 1.7 cm", "note": "M-mode through the lateral tricuspid annulus" },
+              { "parameter": "RV S' (TDI)", "normal": "≥ 9.5 cm/s", "note": "Lateral tricuspid annulus" },
+              { "parameter": "RV basal diameter", "normal": "≤ 4.1 cm", "note": "RV-focused A4C, end-diastole" },
+              { "parameter": "LA volume index (LAVI)", "normal": "≤ 34 mL/m²", "note": "Biplane disc summation or area-length at end-systole" },
+              { "parameter": "Average E/e'", "normal": "< 14", "note": "Septal e' ≥ 7 cm/s, lateral e' ≥ 10 cm/s" },
+              { "parameter": "TR peak velocity", "normal": "≤ 2.8 m/s", "note": "Used for RVSP = 4V² + RAP" },
+              { "parameter": "RA area", "normal": "≤ 18 cm²", "note": "End-systole" },
+              { "parameter": "Tricuspid septal leaflet displacement", "normal": "< 8 mm/m² (apical offset vs. anterior MV leaflet)", "note": "≥ 8 mm/m² → Ebstein anomaly" }
+            ],
+            "pediatric": [
+              { "parameter": "Ebstein anomaly", "focus": "Displacement index ≥ 8 mm/m² BSA; functional RV size, atrialised RV, GOSE score in neonates." },
+              { "parameter": "AV valve annuli", "focus": "Mitral and tricuspid annulus Z-scores (hypoplasia < −2, dilatation > +2)." },
+              { "parameter": "LV volumes & EF", "focus": "BSA-indexed volumes (BSA^1.3 scaling); EF ≥ 55 % in children." },
+              { "parameter": "Atrioventricular septal defect", "focus": "Loss of differential insertion (common AV valve); primum ASD; inlet VSD." }
+            ]
+          },
+          "checklist": [
+            "تجنّب تقصير البطين الأيسر وإظهار القمة الحقيقية",
+            "حساب الكسر القذفي بطريقة سيمبسون ثنائية المستوى",
+            "قياس TAPSE (الطبيعي ≥ 1.7 سم) وموجة S' للبطين الأيمن",
+            "قياس القطر القاعدي للبطين الأيمن في المقطع المركّز على البطين الأيمن (≤ 4.1 سم)",
+            "قياس حجم الأذين الأيسر المفهرس (≤ 34 مل/م²)",
+            "تسجيل دوبلر التدفق التاجي (E/A) ودوبلر الأنسجة (e') وحساب E/e'",
+            "قياس سرعة قلس الصمام ثلاثي الشرف وتقدير الضغط الانقباضي للبطين الأيمن",
+            "قياس إزاحة الوريقة الحاجزية للصمام ثلاثي الشرف لاستبعاد شذوذ إبشتاين"
+          ]
+        },
+        {
+          "id": "apical_5c",
+          "titleEn": "Apical 5-Chamber",
+          "titleAr": "المقطع القمي خماسي الحجرات",
+          "probePositionEn": "From the A4C tilt the probe tail down (beam anteriorly) until the LVOT and aortic valve open up as the 'fifth chamber'.",
+          "probePositionAr": "من المقطع رباعي الحجرات أمِل ذيل المسبار للأسفل (الحزمة للأمام) حتى يظهر مخرج البطين الأيسر والصمام الأبهري كحجرة خامسة.",
+          "notchClock": "3",
+          "notchHours": [3.0],
+          "notchDescriptionEn": "Notch at 3 o'clock, anterior angulation from A4C.",
+          "notchDescriptionAr": "العلامة عند الساعة 3 مع إمالة أمامية من المقطع رباعي الحجرات.",
+          "videoAsset": "loops/apical_5c.mp4",
+          "svgAsset": "svg/apical_5c.svg",
+          "keyStructures": [
+            "LV outflow tract",
+            "Aortic valve & proximal ascending aorta",
+            "Anterior mitral leaflet (aorto-mitral continuity)",
+            "Left & right ventricles",
+            "Right atrium & left atrium"
+          ],
+          "referenceMeasurements": {
+            "adult": [
+              { "parameter": "AV peak velocity (Vmax, CW)", "normal": "< 2.0 m/s", "note": "2.0–2.5 m/s aortic sclerosis; ≥ 4.0 m/s severe AS" },
+              { "parameter": "AV mean gradient", "normal": "< 10 mmHg", "note": "≥ 40 mmHg severe AS" },
+              { "parameter": "LVOT VTI (PW)", "normal": "18–22 cm", "note": "Sample volume 0.5 cm proximal to AV; < 15 cm low output" },
+              { "parameter": "Dimensionless index", "normal": "> 0.5", "note": "VTI(LVOT) / VTI(AV); < 0.25 severe AS" },
+              { "parameter": "Stroke volume", "normal": "≈ 60–100 mL (SVi > 35 mL/m²)", "note": "SV = π × (LVOT d/2)² × LVOT VTI" },
+              { "parameter": "Aortic regurgitation", "normal": "None / trace", "note": "Vena contracta > 0.6 cm or PHT < 200 ms → severe" }
+            ],
+            "pediatric": [
+              { "parameter": "Subaortic membrane", "focus": "Discrete ridge in LVOT; serial gradients, associated AR." },
+              { "parameter": "LVOT obstruction", "focus": "Dynamic gradient in HCM (SAM); late-peaking dagger-shaped CW signal." },
+              { "parameter": "Stroke volume / cardiac index", "focus": "CI normal 3.5–5.5 L/min/m² in children." },
+              { "parameter": "AV annulus Z-score", "focus": "Hypoplasia (Z < −2) in critical AS / HLHS spectrum." }
+            ]
+          },
+          "checklist": [
+            "إظهار مخرج البطين الأيسر والصمام الأبهري بمحاذاة الحزمة",
+            "قياس السرعة القصوى عبر الصمام الأبهري بالدوبلر المستمر (الطبيعي < 2.0 م/ث)",
+            "قياس متوسط المدروج (الطبيعي < 10 ملم زئبق)",
+            "قياس تكامل السرعة-الزمن لمخرج البطين الأيسر بالدوبلر النبضي (18–22 سم)",
+            "حساب المؤشر عديم الأبعاد وحجم الضربة",
+            "تقييم قلس الصمام الأبهري بالدوبلر الملون",
+            "البحث عن غشاء تحت أبهري أو انسداد ديناميكي في مخرج البطين الأيسر"
+          ]
+        },
+        {
+          "id": "apical_2c_3c",
+          "titleEn": "Apical 2-Chamber & 3-Chamber",
+          "titleAr": "المقطع القمي ثنائي وثلاثي الحجرات",
+          "probePositionEn": "From the A4C rotate counter-clockwise ≈ 60° (RV disappears) for A2C; continue ≈ 60° further for the A3C / apical long-axis showing LVOT and aorta.",
+          "probePositionAr": "من المقطع رباعي الحجرات دوّر المسبار عكس عقارب الساعة نحو 60° (يختفي البطين الأيمن) للمقطع ثنائي الحجرات، ثم 60° إضافية للمقطع ثلاثي الحجرات.",
+          "notchClock": "1–2 / 10–11",
+          "notchHours": [1.5, 10.5],
+          "notchDescriptionEn": "A2C: notch at 1–2 o'clock. A3C: notch at 10–11 o'clock.",
+          "notchDescriptionAr": "ثنائي الحجرات: العلامة عند الساعة 1–2. ثلاثي الحجرات: العلامة عند الساعة 10–11.",
+          "videoAsset": "loops/apical_2c_3c.mp4",
+          "svgAsset": "svg/apical_2c_3c.svg",
+          "keyStructures": [
+            "A2C: anterior wall (right of image) & inferior wall (left)",
+            "A2C: left atrial appendage",
+            "A3C: anteroseptal & inferolateral walls",
+            "A3C: LVOT, aortic valve, aortic root",
+            "Mitral valve (P1–P3 / A2–P2 scallops)"
+          ],
+          "referenceMeasurements": {
+            "adult": [
+              { "parameter": "Global longitudinal strain (GLS)", "normal": "−18 % to −22 %", "note": "Less negative than −16 % is abnormal; vendor-specific" },
+              { "parameter": "LVEF (biplane, with A4C)", "normal": "52–72 % (M) · 54–74 % (F)", "note": "Use A2C tracing for the second plane" },
+              { "parameter": "Regional wall motion", "normal": "Normokinesis of all 17 segments", "note": "A2C: LAD (anterior) & RCA (inferior); A3C: LAD (anteroseptal) & LCx (inferolateral)" },
+              { "parameter": "LA volume (A2C plane)", "normal": "Biplane LAVI ≤ 34 mL/m²", "note": "Exclude LAA and pulmonary veins" }
+            ],
+            "pediatric": [
+              { "parameter": "Coronary territory assessment", "focus": "ALCAPA: anterolateral dysfunction, papillary muscle echogenicity, MR." },
+              { "parameter": "Left atrial appendage", "focus": "Morphology for atrial isomerism (broad vs. finger-like)." },
+              { "parameter": "Global longitudinal strain", "focus": "Age-specific normal ≈ −20 % to −24 %; early marker in anthracycline cardiotoxicity, DMD." },
+              { "parameter": "Mitral valve scallops", "focus": "Cleft MV, MV prolapse; pediatric MR quantification." }
+            ]
+          },
+          "checklist": [
+            "التدوير عكس عقارب الساعة حتى يختفي البطين الأيمن (ثنائي الحجرات)",
+            "تقييم الجدارين الأمامي والسفلي وزائدة الأذين الأيسر",
+            "متابعة التدوير لإظهار مخرج البطين الأيسر والأبهر (ثلاثي الحجرات)",
+            "تقييم الجدارين الأمامي الحاجزي والسفلي الجانبي",
+            "تتبّع الشغاف للكسر القذفي ثنائي المستوى",
+            "قياس الإجهاد الطولي العام (GLS) من المقاطع القمية الثلاثة (الطبيعي −18٪ إلى −22٪)",
+            "ربط اضطرابات الحركة القطاعية بالشرايين التاجية المغذية"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "suprasternal",
+      "titleEn": "Suprasternal",
+      "titleAr": "فوق القص",
+      "descriptionEn": "Suprasternal notch with the neck extended (pillow under shoulders). Aortic arch, head-and-neck vessels, coarctation, pulmonary veins.",
+      "descriptionAr": "الثلمة فوق القصية مع بسط الرقبة (وسادة تحت الكتفين). قوس الأبهر وأوعية الرأس والعنق والتضيّق الأبهري والأوردة الرئوية.",
+      "views": [
+        {
+          "id": "suprasternal_arch",
+          "titleEn": "Suprasternal Aortic Arch – Long Axis & Crab View",
+          "titleAr": "قوس الأبهر فوق القص – المحور الطويل ومقطع السلطعون",
+          "probePositionEn": "Probe in the suprasternal notch pointing caudally. Long axis: plane along the arch toward the left scapula. Crab view: coronal plane, steep caudal tilt to the LA with four pulmonary veins.",
+          "probePositionAr": "المسبار في الثلمة فوق القصية موجّه نحو الأسفل. المحور الطويل: على امتداد القوس نحو لوح الكتف الأيسر. مقطع السلطعون: مستوى إكليلي مع إمالة شديدة نحو الأذين الأيسر والأوردة الرئوية الأربعة.",
+          "notchClock": "1 / 3",
+          "notchHours": [1.0, 3.0],
+          "notchDescriptionEn": "Arch long axis: notch at 1 o'clock. Crab view: notch at 3 o'clock.",
+          "notchDescriptionAr": "المحور الطويل للقوس: العلامة عند الساعة 1. مقطع السلطعون: العلامة عند الساعة 3.",
+          "videoAsset": "loops/suprasternal_arch.mp4",
+          "svgAsset": "svg/suprasternal_arch.svg",
+          "keyStructures": [
+            "Ascending aorta, transverse arch, isthmus, descending aorta",
+            "Brachiocephalic (innominate), left common carotid, left subclavian arteries",
+            "Right pulmonary artery (under the arch, cross-section)",
+            "Left brachiocephalic (innominate) vein",
+            "Crab view: left atrium with four pulmonary veins"
+          ],
+          "referenceMeasurements": {
+            "adult": [
+              { "parameter": "Transverse aortic arch diameter", "normal": "2.2–3.6 cm", "note": "Between the innominate and left carotid origins" },
+              { "parameter": "Descending aorta peak velocity", "normal": "1.0–1.5 m/s", "note": "PW/CW just distal to the left subclavian artery" },
+              { "parameter": "Coarctation diastolic tail", "normal": "Absent (flow returns to baseline in diastole)", "note": "Continuous antegrade diastolic flow ('saw-tooth') → significant coarctation" },
+              { "parameter": "Isthmus peak gradient", "normal": "< 20 mmHg", "note": "Gradient ≥ 20 mmHg with diastolic tail → haemodynamically significant" },
+              { "parameter": "Diastolic flow reversal (desc. aorta)", "normal": "Brief early-diastolic only", "note": "Holodiastolic reversal → severe aortic regurgitation" },
+              { "parameter": "Right pulmonary artery", "normal": "≈ 1.0–1.7 cm", "note": "Seen in cross-section beneath the arch" }
+            ],
+            "pediatric": [
+              { "parameter": "Arch sidedness & branching", "focus": "Left vs. right arch (first branch direction), vascular ring, aberrant subclavian." },
+              { "parameter": "Transverse arch / isthmus Z-score", "focus": "Hypoplasia if Z < −2 or isthmus < 40 % of ascending aorta; neonatal ductal-dependent coarctation." },
+              { "parameter": "Patent ductus arteriosus", "focus": "Ductal view; right-to-left shunting in PPHN / ductal-dependent systemic flow." },
+              { "parameter": "Pulmonary venous return (crab view)", "focus": "Four veins to LA; exclude TAPVR (vertical vein, confluence behind LA) and PAPVR." }
+            ]
+          },
+          "checklist": [
+            "إظهار الأبهر الصاعد والقوس والبرزخ والأبهر النازل في مقطع واحد",
+            "تحديد الفروع الثلاثة: الجذع العضدي الرأسي والسباتي الأيسر وتحت الترقوة الأيسر",
+            "قياس القطر المستعرض لقوس الأبهر (2.2–3.6 سم)",
+            "تسجيل دوبلر الأبهر النازل (1.0–1.5 م/ث) واستبعاد الذيل الانبساطي (تضيّق الأبهر)",
+            "تقييم الانعكاس الانبساطي الشامل كعلامة لقلس أبهري شديد",
+            "إظهار الشريان الرئوي الأيمن تحت القوس",
+            "مقطع السلطعون: إظهار الأوردة الرئوية الأربعة لاستبعاد العودة الوريدية الرئوية الشاذة الكلية"
+          ]
+        }
+      ]
+    }
+  ]
+}

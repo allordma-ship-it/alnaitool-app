@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">EchoScope</string>
+    <string name="app_tagline">Offline TTE Protocol Guide</string>
+    <string name="nav_protocol">Protocol &amp; Views</string>
+    <string name="nav_zscore">Z-Score Calculator</string>
+    <string name="section_windows">Acoustic Windows</string>
+    <string name="section_views">Standard Views</string>
+    <string name="section_probe">Probe Position &amp; Notch</string>
+    <string name="tab_svg">SVG Anatomy</string>
+    <string name="tab_measurements">Adult &amp; Pediatric Measurements</string>
+    <string name="tab_checklist">Clinical Checklist</string>
+    <string name="loading_protocol">Loading protocol database…</string>
+    <string name="protocol_error">Unable to read echo_protocol_full.json: %1$s</string>
+    <string name="notch_label">Notch at %1$s o\'clock</string>
+    <string name="key_structures">Key structures</string>
+    <string name="adult_reference">Adult (ASE/EACVI)</string>
+    <string name="pediatric_reference">Pediatric (BSA-indexed Z-score focus)</string>
+    <string name="player_play">Play</string>
+    <string name="player_pause">Pause</string>
+    <string name="player_step_back">Step back one frame (−33 ms)</string>
+    <string name="player_step_forward">Step forward one frame (+33 ms)</string>
+    <string name="player_missing_title">Cine loop not bundled yet</string>
+    <string name="player_missing_body">Add the anonymised MP4 at: assets/%1$s\nRun scripts/prepare_loops.sh to generate it.</string>
+    <string name="zscore_title">Pediatric Z-Score Calculator</string>
+    <string name="zscore_weight">Weight (kg)</string>
+    <string name="zscore_height">Height (cm)</string>
+    <string name="zscore_structure">Structure</string>
+    <string name="zscore_measured">Measured value (mm)</string>
+    <string name="zscore_bsa">BSA (Haycock)</string>
+    <string name="zscore_predicted">Predicted mean</string>
+    <string name="zscore_range">Normal range (Z ±2)</string>
+    <string name="zscore_value">Z-Score</string>
+    <string name="zscore_normal">Normal (|Z| ≤ 2.0)</string>
+    <string name="zscore_borderline">Borderline (2.0 &lt; |Z| ≤ 3.0)</string>
+    <string name="zscore_significant">Significant (|Z| &gt; 3.0)</string>
+    <string name="zscore_reset">Reset</string>
+    <string name="zscore_disclaimer">Educational allometric model (mean = a·BSA^b, log-normal SD). Always confirm against your institutional pediatric nomogram before clinical decisions.</string>
+    <string name="zscore_hint">Enter weight, height and a measured value to calculate.</string>
+    <string name="checklist_progress">%1$d / %2$d completed</string>
+</resources>

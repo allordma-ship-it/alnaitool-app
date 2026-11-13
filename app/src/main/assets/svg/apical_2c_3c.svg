@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300">
+  <title>Apical 2-Chamber &amp; 3-Chamber</title>
+  <rect x="0" y="0" width="400" height="300" fill="#0A0E14"/>
+  <path d="M110,40 L15.6,251.9 A232,232 0 0,0 204.4,251.9 Z" fill="#111A26" stroke="#2B3A50" stroke-width="1.2"/>
+  <path d="M290,40 L195.6,251.9 A232,232 0 0,0 384.4,251.9 Z" fill="#111A26" stroke="#2B3A50" stroke-width="1.2"/>
+  <path d="M110,62 Q66,110 66,190 L154,190 Q154,110 110,62 Z" fill="#00D2B8" fill-opacity="0.22" stroke="#00D2B8" stroke-width="1.6"/>
+  <text x="110" y="140" font-family="sans-serif" font-size="10" font-weight="bold" fill="#CBD5E1" text-anchor="middle">LV</text>
+  <text x="60" y="128" font-family="sans-serif" font-size="8" font-weight="normal" fill="#94A3B8" text-anchor="end">Inf</text>
+  <text x="160" y="128" font-family="sans-serif" font-size="8" font-weight="normal" fill="#94A3B8" text-anchor="start">Ant</text>
+  <line x1="68" y1="196" x2="152" y2="196" stroke="#FBBF24" stroke-width="3" stroke-linecap="round"/>
+  <text x="156" y="200" font-family="sans-serif" font-size="8" font-weight="normal" fill="#94A3B8" text-anchor="start">MV</text>
+  <ellipse cx="110" cy="236" rx="38" ry="28" fill="#00D2B8" fill-opacity="0.22" stroke="#00D2B8" stroke-width="1.6"/>
+  <text x="110" y="239" font-family="sans-serif" font-size="10" font-weight="bold" fill="#CBD5E1" text-anchor="middle">LA</text>
+  <path d="M146,222 Q168,214 170,232 Q160,246 146,240 Z" fill="#00D2B8" fill-opacity="0.15" stroke="#00D2B8" stroke-width="1.6"/>
+  <text x="176" y="256" font-family="sans-serif" font-size="10" font-weight="bold" fill="#CBD5E1" text-anchor="middle">LAA</text>
+  <text x="110" y="290" font-family="sans-serif" font-size="9" font-weight="bold" fill="#FF8A3D" text-anchor="middle">A2C · notch 1–2h</text>
+  <path d="M290,62 Q246,110 248,188 L300,190 Q332,110 290,62 Z" fill="#00D2B8" fill-opacity="0.22" stroke="#00D2B8" stroke-width="1.6"/>
+  <text x="282" y="140" font-family="sans-serif" font-size="10" font-weight="bold" fill="#CBD5E1" text-anchor="middle">LV</text>
+  <text x="242" y="128" font-family="sans-serif" font-size="8" font-weight="normal" fill="#94A3B8" text-anchor="end">InfLat</text>
+  <text x="326" y="110" font-family="sans-serif" font-size="8" font-weight="normal" fill="#94A3B8" text-anchor="start">AntSep</text>
+  <path d="M302,176 L346,190 L340,236 L300,218 Z" fill="#00D2B8" fill-opacity="0.22" stroke="#00D2B8" stroke-width="1.6"/>
+  <text x="326" y="214" font-family="sans-serif" font-size="10" font-weight="bold" fill="#CBD5E1" text-anchor="middle">Ao</text>
+  <path d="M306,182 Q314,196 304,206" fill="none" stroke="#FBBF24" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <line x1="250" y1="194" x2="298" y2="198" stroke="#FBBF24" stroke-width="3" stroke-linecap="round"/>
+  <ellipse cx="268" cy="238" rx="30" ry="24" fill="#00D2B8" fill-opacity="0.22" stroke="#00D2B8" stroke-width="1.6"/>
+  <text x="268" y="241" font-family="sans-serif" font-size="10" font-weight="bold" fill="#CBD5E1" text-anchor="middle">LA</text>
+  <text x="290" y="290" font-family="sans-serif" font-size="9" font-weight="bold" fill="#FF8A3D" text-anchor="middle">A3C · notch 10–11h</text>
+  <text x="200" y="60" font-family="sans-serif" font-size="8" font-weight="normal" fill="#94A3B8" text-anchor="middle">GLS −18 to −22 %</text>
+  <circle cx="122" cy="46" r="4" fill="#FF8A3D"/>
+  <circle cx="278" cy="46" r="4" fill="#FF8A3D"/>
+  <circle cx="34" cy="36" r="20" fill="#111824" stroke="#334155" stroke-width="1.2"/>
+  <line x1="34.0" y1="20.0" x2="34.0" y2="16.0" stroke="#475569" stroke-width="1"/>
+  <line x1="42.0" y1="22.1" x2="44.0" y2="18.7" stroke="#475569" stroke-width="1"/>
+  <line x1="47.9" y1="28.0" x2="51.3" y2="26.0" stroke="#475569" stroke-width="1"/>
+  <line x1="50.0" y1="36.0" x2="54.0" y2="36.0" stroke="#475569" stroke-width="1"/>
+  <line x1="47.9" y1="44.0" x2="51.3" y2="46.0" stroke="#475569" stroke-width="1"/>
+  <line x1="42.0" y1="49.9" x2="44.0" y2="53.3" stroke="#475569" stroke-width="1"/>
+  <line x1="34.0" y1="52.0" x2="34.0" y2="56.0" stroke="#475569" stroke-width="1"/>
+  <line x1="26.0" y1="49.9" x2="24.0" y2="53.3" stroke="#475569" stroke-width="1"/>
+  <line x1="20.1" y1="44.0" x2="16.7" y2="46.0" stroke="#475569" stroke-width="1"/>
+  <line x1="18.0" y1="36.0" x2="14.0" y2="36.0" stroke="#475569" stroke-width="1"/>
+  <line x1="20.1" y1="28.0" x2="16.7" y2="26.0" stroke="#475569" stroke-width="1"/>
+  <line x1="26.0" y1="22.1" x2="24.0" y2="18.7" stroke="#475569" stroke-width="1"/>
+  <line x1="34" y1="36" x2="43.9" y2="26.1" stroke="#FF8A3D" stroke-width="2.2" stroke-linecap="round"/>
+  <circle cx="43.9" cy="26.1" r="3" fill="#FF8A3D"/>
+  <line x1="34" y1="36" x2="24.1" y2="26.1" stroke="#FF8A3D" stroke-width="2.2" stroke-linecap="round"/>
+  <circle cx="24.1" cy="26.1" r="3" fill="#FF8A3D"/>
+  <circle cx="34" cy="36" r="2" fill="#FF8A3D"/>
+  <text x="34" y="68" font-family="sans-serif" font-size="9" fill="#FF8A3D" text-anchor="middle">1–2h / 10–11h</text>
+  <rect x="318" y="11" width="8" height="8" rx="2" fill="#00D2B8"/>
+  <text x="330" y="18" font-family="sans-serif" font-size="8" fill="#CBD5E1">Chambers / vessels</text>
+  <rect x="318" y="22" width="8" height="8" rx="2" fill="#38BDF8"/>
+  <text x="330" y="29" font-family="sans-serif" font-size="8" fill="#CBD5E1">Septa</text>
+  <rect x="318" y="33" width="8" height="8" rx="2" fill="#FBBF24"/>
+  <text x="330" y="40" font-family="sans-serif" font-size="8" fill="#CBD5E1">Valves</text>
+  <rect x="318" y="44" width="8" height="8" rx="2" fill="#FF8A3D"/>
+  <text x="330" y="51" font-family="sans-serif" font-size="8" fill="#CBD5E1">Probe notch</text>
+</svg>

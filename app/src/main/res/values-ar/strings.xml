@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_tagline">دليل بروتوكول الإيكو عبر الصدر – دون اتصال</string>
+    <string name="nav_protocol">البروتوكول والمقاطع</string>
+    <string name="nav_zscore">حاسبة Z-Score</string>
+    <string name="section_windows">النوافذ الصوتية</string>
+    <string name="section_views">المقاطع القياسية</string>
+    <string name="section_probe">وضعية المسبار والعلامة</string>
+    <string name="tab_svg">التشريح SVG</string>
+    <string name="tab_measurements">قياسات البالغين والأطفال</string>
+    <string name="tab_checklist">قائمة التحقق السريرية</string>
+    <string name="loading_protocol">جارٍ تحميل قاعدة البروتوكول…</string>
+    <string name="protocol_error">تعذّرت قراءة echo_protocol_full.json: %1$s</string>
+    <string name="notch_label">العلامة عند الساعة %1$s</string>
+    <string name="key_structures">البنى الأساسية</string>
+    <string name="adult_reference">البالغون (ASE/EACVI)</string>
+    <string name="pediatric_reference">الأطفال (Z-Score حسب BSA)</string>
+    <string name="player_play">تشغيل</string>
+    <string name="player_pause">إيقاف مؤقت</string>
+    <string name="player_step_back">إطار للخلف (−33 مللي ثانية)</string>
+    <string name="player_step_forward">إطار للأمام (+33 مللي ثانية)</string>
+    <string name="player_missing_title">المقطع غير مضاف بعد</string>
+    <string name="player_missing_body">أضف ملف MP4 المجهّل في: assets/%1$s\nشغّل scripts/prepare_loops.sh لإنشائه.</string>
+    <string name="zscore_title">حاسبة Z-Score للأطفال</string>
+    <string name="zscore_weight">الوزن (كغ)</string>
+    <string name="zscore_height">الطول (سم)</string>
+    <string name="zscore_structure">البنية</string>
+    <string name="zscore_measured">القيمة المقاسة (مم)</string>
+    <string name="zscore_bsa">مساحة سطح الجسم (Haycock)</string>
+    <string name="zscore_predicted">المتوسط المتوقع</string>
+    <string name="zscore_range">المجال الطبيعي (Z ±2)</string>
+    <string name="zscore_value">Z-Score</string>
+    <string name="zscore_normal">طبيعي (|Z| ≤ 2.0)</string>
+    <string name="zscore_borderline">حدّي (2.0 &lt; |Z| ≤ 3.0)</string>
+    <string name="zscore_significant">هام (|Z| &gt; 3.0)</string>
+    <string name="zscore_reset">إعادة ضبط</string>
+    <string name="zscore_disclaimer">نموذج تعليمي تقديري (المتوسط = a·BSA^b). تحقّق دائماً من المخططات المرجعية المعتمدة في مؤسستك قبل أي قرار سريري.</string>
+    <string name="zscore_hint">أدخل الوزن والطول والقيمة المقاسة للحساب.</string>
+    <string name="checklist_progress">%1$d / %2$d مكتمل</string>
+</resources>

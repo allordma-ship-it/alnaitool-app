@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300">
+  <title>PSAX Aortic Valve &amp; Great Vessels</title>
+  <rect x="0" y="0" width="400" height="300" fill="#0A0E14"/>
+  <path d="M200,22 L27.7,227.3 A268,268 0 0,0 372.3,227.3 Z" fill="#0F1620" stroke="#1F2A3A" stroke-width="1.5"/>
+  <path d="M70,150 Q90,60 200,58 Q290,58 312,92 L290,112 Q270,92 200,92 Q122,96 110,150 Z" fill="#00D2B8" fill-opacity="0.22" stroke="#00D2B8" stroke-width="1.6"/>
+  <text x="150" y="80" font-family="sans-serif" font-size="10" font-weight="bold" fill="#CBD5E1" text-anchor="middle">RVOT</text>
+  <ellipse cx="110" cy="196" rx="40" ry="30" fill="#00D2B8" fill-opacity="0.22" stroke="#00D2B8" stroke-width="1.6"/>
+  <text x="110" y="199" font-family="sans-serif" font-size="10" font-weight="bold" fill="#CBD5E1" text-anchor="middle">RA</text>
+  <ellipse cx="208" cy="228" rx="52" ry="26" fill="#00D2B8" fill-opacity="0.22" stroke="#00D2B8" stroke-width="1.6"/>
+  <text x="208" y="231" font-family="sans-serif" font-size="10" font-weight="bold" fill="#CBD5E1" text-anchor="middle">LA</text>
+  <path d="M296,96 L340,120 L332,176 L304,160 L308,126 Z" fill="#00D2B8" fill-opacity="0.22" stroke="#00D2B8" stroke-width="1.6"/>
+  <text x="326" y="140" font-family="sans-serif" font-size="10" font-weight="bold" fill="#CBD5E1" text-anchor="middle">MPA</text>
+  <path d="M332,176 L320,222" fill="none" stroke="#00D2B8" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M338,172 L366,206" fill="none" stroke="#00D2B8" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="296" y="236" font-family="sans-serif" font-size="8" font-weight="normal" fill="#94A3B8" text-anchor="start">RPA</text>
+  <text x="356" y="222" font-family="sans-serif" font-size="8" font-weight="normal" fill="#94A3B8" text-anchor="start">LPA</text>
+  <circle cx="200" cy="150" r="40" fill="#00D2B8" fill-opacity="0.10" stroke="#FBBF24" stroke-width="2.4"/>
+  <line x1="200" y1="150" x2="200" y2="110" stroke="#FBBF24" stroke-width="2.6" stroke-linecap="round"/>
+  <line x1="200" y1="150" x2="165" y2="170" stroke="#FBBF24" stroke-width="2.6" stroke-linecap="round"/>
+  <line x1="200" y1="150" x2="235" y2="170" stroke="#FBBF24" stroke-width="2.6" stroke-linecap="round"/>
+  <text x="200" y="136" font-family="sans-serif" font-size="8" font-weight="normal" fill="#94A3B8" text-anchor="middle">RCC</text>
+  <text x="172" y="160" font-family="sans-serif" font-size="8" font-weight="normal" fill="#94A3B8" text-anchor="middle">NCC</text>
+  <text x="228" y="160" font-family="sans-serif" font-size="8" font-weight="normal" fill="#94A3B8" text-anchor="middle">LCC</text>
+  <circle cx="236" cy="172" r="4" fill="#F87171"/>
+  <text x="244" y="184" font-family="sans-serif" font-size="8" font-weight="normal" fill="#94A3B8" text-anchor="start">LCA</text>
+  <circle cx="168" cy="120" r="4" fill="#F87171"/>
+  <text x="152" y="114" font-family="sans-serif" font-size="8" font-weight="normal" fill="#94A3B8" text-anchor="end">RCA</text>
+  <path d="M296,96 L306,110" fill="none" stroke="#FBBF24" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="300" y="88" font-family="sans-serif" font-size="8" font-weight="normal" fill="#94A3B8" text-anchor="start">PV</text>
+  <line x1="120" y1="152" x2="138" y2="168" stroke="#FBBF24" stroke-width="3" stroke-linecap="round"/>
+  <text x="80" y="150" font-family="sans-serif" font-size="8" font-weight="normal" fill="#94A3B8" text-anchor="end">TV</text>
+  <line x1="150" y1="214" x2="168" y2="240" stroke="#38BDF8" stroke-width="4" stroke-linecap="round"/>
+  <text x="140" y="252" font-family="sans-serif" font-size="8" font-weight="normal" fill="#94A3B8" text-anchor="end">IAS</text>
+  <text x="352" y="190" font-family="sans-serif" font-size="8" font-weight="normal" fill="#94A3B8" text-anchor="start">PDA?</text>
+  <circle cx="226" cy="30" r="4.5" fill="#FF8A3D"/>
+  <text x="234" y="33" font-family="sans-serif" font-size="8" fill="#FF8A3D">notch</text>
+  <circle cx="34" cy="36" r="20" fill="#111824" stroke="#334155" stroke-width="1.2"/>
+  <line x1="34.0" y1="20.0" x2="34.0" y2="16.0" stroke="#475569" stroke-width="1"/>
+  <line x1="42.0" y1="22.1" x2="44.0" y2="18.7" stroke="#475569" stroke-width="1"/>
+  <line x1="47.9" y1="28.0" x2="51.3" y2="26.0" stroke="#475569" stroke-width="1"/>
+  <line x1="50.0" y1="36.0" x2="54.0" y2="36.0" stroke="#475569" stroke-width="1"/>
+  <line x1="47.9" y1="44.0" x2="51.3" y2="46.0" stroke="#475569" stroke-width="1"/>
+  <line x1="42.0" y1="49.9" x2="44.0" y2="53.3" stroke="#475569" stroke-width="1"/>
+  <line x1="34.0" y1="52.0" x2="34.0" y2="56.0" stroke="#475569" stroke-width="1"/>
+  <line x1="26.0" y1="49.9" x2="24.0" y2="53.3" stroke="#475569" stroke-width="1"/>
+  <line x1="20.1" y1="44.0" x2="16.7" y2="46.0" stroke="#475569" stroke-width="1"/>
+  <line x1="18.0" y1="36.0" x2="14.0" y2="36.0" stroke="#475569" stroke-width="1"/>
+  <line x1="20.1" y1="28.0" x2="16.7" y2="26.0" stroke="#475569" stroke-width="1"/>
+  <line x1="26.0" y1="22.1" x2="24.0" y2="18.7" stroke="#475569" stroke-width="1"/>
+  <line x1="34" y1="36" x2="46.1" y2="29.0" stroke="#FF8A3D" stroke-width="2.2" stroke-linecap="round"/>
+  <circle cx="46.1" cy="29.0" r="3" fill="#FF8A3D"/>
+  <circle cx="34" cy="36" r="2" fill="#FF8A3D"/>
+  <text x="34" y="68" font-family="sans-serif" font-size="9" fill="#FF8A3D" text-anchor="middle">2 o'clock</text>
+  <rect x="318" y="11" width="8" height="8" rx="2" fill="#00D2B8"/>
+  <text x="330" y="18" font-family="sans-serif" font-size="8" fill="#CBD5E1">Chambers / vessels</text>
+  <rect x="318" y="22" width="8" height="8" rx="2" fill="#38BDF8"/>
+  <text x="330" y="29" font-family="sans-serif" font-size="8" fill="#CBD5E1">Septa</text>
+  <rect x="318" y="33" width="8" height="8" rx="2" fill="#FBBF24"/>
+  <text x="330" y="40" font-family="sans-serif" font-size="8" fill="#CBD5E1">Valves</text>
+  <rect x="318" y="44" width="8" height="8" rx="2" fill="#FF8A3D"/>
+  <text x="330" y="51" font-family="sans-serif" font-size="8" fill="#CBD5E1">Probe notch</text>
+  <text x="392" y="292" font-family="sans-serif" font-size="10" fill="#94A3B8" text-anchor="end">PSAX AV · Mercedes sign · MPA &lt; 2.9 cm</text>
+</svg>
