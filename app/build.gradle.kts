@@ -54,6 +54,13 @@ android {
         }
     }
 
+    testOptions {
+        unitTests {
+            // Robolectric layout/screenshot tests need merged resources and assets.
+            isIncludeAndroidResources = true
+        }
+    }
+
     lint {
         // Dependency versions are pinned intentionally for reproducible offline builds.
         disable += "GradleDependency"
@@ -87,4 +94,9 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
 
     testImplementation("junit:junit:4.13.2")
+    testImplementation("org.robolectric:robolectric:4.14.1")
+    testImplementation("io.github.takahirom.roborazzi:roborazzi:1.32.2")
+    testImplementation(composeBom)
+    testImplementation("androidx.compose.ui:ui-test-junit4")
+    debugImplementation("androidx.compose.ui:ui-test-manifest")
 }

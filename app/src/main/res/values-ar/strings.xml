@@ -5,14 +5,11 @@
     <string name="nav_zscore">Z-Score</string>
     <string name="section_windows">النوافذ الصوتية</string>
     <string name="section_views">المقاطع القياسية</string>
-    <string name="section_probe">وضعية المسبار والعلامة</string>
-    <string name="tab_svg">التشريح (SVG)</string>
     <string name="tab_measurements">القياسات (ED/ES)</string>
     <string name="tab_checklist">التحقق</string>
     <string name="loading_protocol">جارٍ تحميل قاعدة البروتوكول…</string>
     <string name="protocol_error">تعذّرت قراءة echo_protocol_full.json: %1$s</string>
     <string name="notch_label">العلامة عند الساعة %1$s</string>
-    <string name="key_structures">البنى الأساسية</string>
     <string name="adult_reference">البالغون (ASE/EACVI)</string>
     <string name="pediatric_reference">الأطفال (Z-Score حسب BSA)</string>
     <string name="player_play">تشغيل</string>
@@ -55,7 +52,6 @@
     <string name="zs_ivsd">IVSd</string>
     <string name="zs_main_pa">الشريان الرئوي الرئيسي</string>
     <string name="nav_guided">الفحص الموجّه</string>
-    <string name="guided_step_of">%1$s • الخطوة %2$d من %3$d</string>
     <string name="guided_protocol_list">القائمة</string>
     <string name="guided_sequence_title">تسلسل الفحص</string>
     <string name="guided_note">ملاحظة</string>
@@ -65,7 +61,6 @@
     <string name="guided_next">التالي</string>
     <string name="guided_restart">إعادة من البداية</string>
     <string name="guided_done">تم</string>
-    <string name="guided_close">إغلاق</string>
     <string name="guided_empty">لا توجد خطوات في قاعدة البيانات.</string>
     <plurals name="guided_steps_count">
         <item quantity="zero">لا خطوات</item>
@@ -75,24 +70,10 @@
         <item quantity="many">%d خطوة</item>
         <item quantity="other">%d خطوة</item>
     </plurals>
-    <string name="ecg_ed_label">ED · موجة R</string>
-    <string name="ecg_es_label">ES · نهاية T</string>
-    <string name="ecg_jump_ed">انتقل إلى ED (موجة R)</string>
-    <string name="ecg_jump_es">انتقل إلى ES (نهاية T)</string>
-    <string name="ecg_lead">الاشتقاق II</string>
-    <string name="ecg_systole">انقباض</string>
-    <string name="ecg_diastole">انبساط</string>
-    <string name="tab_console">لوحة الجهاز</string>
-    <string name="console_title">لوحة جهاز الإيكو</string>
     <string name="console_step_of">الخطوة %1$d من %2$d</string>
-    <string name="console_function">الوظيفة</string>
-    <string name="console_for_view">في هذا المقطع</string>
     <string name="console_not_used">ليست ضمن تسلسل هذا المقطع.</string>
     <string name="console_next">الخطوة التالية</string>
     <string name="console_restart">من البداية</string>
-    <string name="console_close">إغلاق</string>
-    <string name="console_sequence">تسلسل هذا المقطع</string>
-    <string name="console_hint">اضغط أي زر أو مقبض · اسحب المقبض جانبياً لتدويره</string>
     <string name="zoom_hint">إصبعان للتكبير · اسحب للتحريك · نقرتان لإعادة الضبط</string>
     <string name="zoom_reset">إعادة ضبط التكبير</string>
     <string name="legend_myocardium">العضلة القلبية</string>
@@ -116,4 +97,14 @@
     <string name="about_disclaimer_title">تنبيه</string>
     <string name="about_disclaimer">للتعليم فقط. ليس جهازاً طبياً؛ تحقّق دائماً من القيم مع الإرشادات الحالية ومعايير المختبر المحلي.</string>
     <string name="about_close">إغلاق</string>
+    <string name="cockpit_tab_steps">الإرشاد</string>
+    <string name="cockpit_tab_console">لوحة الجهاز</string>
+    <string name="cockpit_tab_timing">التوقيت والمسبار</string>
+    <string name="cockpit_back">رجوع</string>
+    <string name="cockpit_enlarge">تكبير</string>
+    <string name="cockpit_reference">القيم الطبيعية</string>
+    <string name="cockpit_tips">نصائح التحسين</string>
+    <string name="badge_real">حقيقي</string>
+    <string name="badge_simulated">محاكاة</string>
+    <string name="about_this_view">هذا المقطع: %1$s</string>
 </resources>

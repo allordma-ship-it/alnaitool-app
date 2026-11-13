@@ -1,40 +1,26 @@
 package com.sonopulse.echoguide
 
+import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Color as AndroidColor
-import android.view.ViewGroup
+import android.view.LayoutInflater
 import androidx.annotation.OptIn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Pause
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.SkipNext
-import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material.icons.outlined.VideocamOff
-import androidx.compose.material3.FilledIconButton
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -42,16 +28,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -62,15 +45,12 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 /** Duration of one frame at ~30 fps, used for frame-by-frame stepping. */
 const val FRAME_STEP_MS = 33L
-
-private val PLAYBACK_SPEEDS = listOf(0.25f, 0.5f, 1.0f)
 
 /**
  * Builds the single ExoPlayer used for every cine loop.
@@ -99,10 +79,8 @@ private fun buildEchoPlayer(context: Context): ExoPlayer {
 }
 
 /**
- * Creates the screen's single ExoPlayer and ties it to the composition and lifecycle:
- * it is released when the caller leaves the composition and paused while the app is in the
- * background. Share the returned instance between [EchoCinePlayer] and [EchoEcgStrip] so the
- * cine loop and the ECG cursor move in lockstep.
+ * Creates the screen's single ExoPlayer and ties it to the composition and lifecycle: released
+ * when the caller leaves the composition, paused while the app is in the background.
  */
 @Composable
 fun rememberEchoPlayer(): ExoPlayer {
@@ -113,8 +91,6 @@ fun rememberEchoPlayer(): ExoPlayer {
     DisposableEffect(player) {
         onDispose { player.release() }
     }
-
-    // Pause in background, resume when visible again.
     DisposableEffect(lifecycleOwner, player) {
         var resumeOnForeground = false
         val observer = LifecycleEventObserver { _, event ->
@@ -133,202 +109,117 @@ fun rememberEchoPlayer(): ExoPlayer {
     return player
 }
 
-/**
- * Reusable cine-loop player.
- *
- * Switching [videoAssetPath] does NOT create a new player: the same instance receives a new
- * media item via `setMediaItem(..., resetPosition = true)`, which avoids decoder leaks and the
- * freezes caused by tearing down and re-creating codecs on every view change.
- *
- * @param videoAssetPath path relative to `assets/`, e.g. `loops/apical_4c.mp4`.
- * @param player shared instance from [rememberEchoPlayer].
- */
-@OptIn(UnstableApi::class)
-@Composable
-fun EchoCinePlayer(
-    videoAssetPath: String,
-    modifier: Modifier = Modifier,
-    source: VideoSource = VideoSource(),
-    player: ExoPlayer = rememberEchoPlayer()
-) {
-    val context = LocalContext.current
+/** Observable playback state of the current cine loop. */
+@Stable
+class LoopState internal constructor(private val player: ExoPlayer) {
+    /** null while checking the APK assets, false when the MP4 is not bundled. */
+    var available by mutableStateOf<Boolean?>(null)
+        internal set
+    var failed by mutableStateOf(false)
+        internal set
+    var isPlaying by mutableStateOf(false)
+        internal set
+    var speed by mutableFloatStateOf(1f)
+        private set
 
-    var isPlaying by remember { mutableStateOf(true) }
-    var speed by remember { mutableFloatStateOf(1.0f) }
-    var playbackFailed by remember { mutableStateOf(false) }
+    val showFallback: Boolean get() = available == false || failed
+    val ready: Boolean get() = available == true && !failed
 
-    var assetAvailable by remember { mutableStateOf<Boolean?>(null) }
-    LaunchedEffect(videoAssetPath) {
-        assetAvailable = withContext(Dispatchers.IO) { EchoRepository.assetExists(context, videoAssetPath) }
+    fun togglePlay() {
+        if (player.isPlaying) player.pause() else player.play()
     }
+
+    fun setPlaybackSpeed(value: Float) {
+        speed = value
+        player.setPlaybackSpeed(value)
+    }
+
+    fun stepFrame(forward: Boolean) {
+        player.pause()
+        val target = player.currentPosition + if (forward) FRAME_STEP_MS else -FRAME_STEP_MS
+        val duration = player.duration
+        player.seekTo(target.coerceIn(0L, if (duration > 0) duration else Long.MAX_VALUE))
+    }
+}
+
+/**
+ * Loads [assetPath] (relative to `assets/`) into the shared [player].
+ *
+ * Switching the asset does NOT create a new player: the same instance receives a new media item
+ * via `setMediaItem(..., resetPosition = true)`, which avoids decoder leaks and freezes.
+ */
+@Composable
+fun rememberLoopState(player: ExoPlayer, assetPath: String): LoopState {
+    val context = LocalContext.current
+    val state = remember(player) { LoopState(player) }
 
     DisposableEffect(player) {
         val listener = object : Player.Listener {
-            override fun onIsPlayingChanged(playing: Boolean) {
-                isPlaying = playing
+            override fun onIsPlayingChanged(isPlaying: Boolean) {
+                state.isPlaying = isPlaying
             }
 
             override fun onPlayerError(error: PlaybackException) {
-                playbackFailed = true
+                state.failed = true
             }
         }
         player.addListener(listener)
         onDispose { player.removeListener(listener) }
     }
 
-    // Swap media on the existing instance whenever the selected view changes.
-    LaunchedEffect(videoAssetPath, assetAvailable) {
-        playbackFailed = false
-        when (assetAvailable) {
-            true -> {
-                player.setMediaItem(MediaItem.fromUri("asset:///$videoAssetPath"), true)
-                player.setPlaybackSpeed(speed)
+    LaunchedEffect(assetPath) {
+        state.failed = false
+        val exists = withContext(Dispatchers.IO) { EchoRepository.assetExists(context, assetPath) }
+        // ExoPlayer must only be touched on its application (main) thread.
+        withContext(Dispatchers.Main) {
+            state.available = exists
+            if (exists) {
+                player.setMediaItem(MediaItem.fromUri("asset:///$assetPath"), true)
+                player.setPlaybackSpeed(state.speed)
                 player.prepare()
                 player.play()
-            }
-            false -> {
+            } else {
                 player.stop()
                 player.clearMediaItems()
             }
-            null -> Unit
         }
     }
-
-    val showFallback = assetAvailable == false || playbackFailed
-
-    Column(modifier = modifier.fillMaxWidth()) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(4f / 3f)
-                .clip(RoundedCornerShape(16.dp))
-                .background(androidx.compose.ui.graphics.Color.Black),
-            contentAlignment = Alignment.Center
-        ) {
-            if (showFallback) {
-                MissingLoopFallback(videoAssetPath)
-            } else {
-                AndroidView(
-                    modifier = Modifier.fillMaxSize(),
-                    factory = { ctx ->
-                        PlayerView(ctx).apply {
-                            layoutParams = ViewGroup.LayoutParams(
-                                ViewGroup.LayoutParams.MATCH_PARENT,
-                                ViewGroup.LayoutParams.MATCH_PARENT
-                            )
-                            useController = false
-                            setShutterBackgroundColor(AndroidColor.BLACK)
-                            setKeepContentOnPlayerReset(false)
-                            resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT
-                            this.player = player
-                        }
-                    },
-                    update = { view -> if (view.player !== player) view.player = player },
-                    onRelease = { view -> view.player = null }
-                )
-            }
-        }
-
-        if (!showFallback) {
-            Spacer(Modifier.size(6.dp))
-            Text(
-                text = if (source.isSimulated) {
-                    stringResource(R.string.player_simulated_note)
-                } else {
-                    stringResource(
-                        R.string.player_real_credit,
-                        source.author.orEmpty().ifBlank { "Wikimedia Commons" },
-                        source.license.orEmpty()
-                    )
-                },
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.secondary
-            )
-        }
-
-        Spacer(Modifier.size(10.dp))
-
-        // Media transport controls keep their left-to-right order in RTL languages.
-        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    OutlinedIconButton(
-                        enabled = !showFallback,
-                        onClick = {
-                            player.pause()
-                            player.seekTo((player.currentPosition - FRAME_STEP_MS).coerceAtLeast(0L))
-                        }
-                    ) {
-                        Icon(Icons.Filled.SkipPrevious, contentDescription = stringResource(R.string.player_step_back))
-                    }
-                    Spacer(Modifier.width(6.dp))
-                    FilledIconButton(
-                        enabled = !showFallback,
-                        onClick = { if (player.isPlaying) player.pause() else player.play() },
-                        colors = IconButtonDefaults.filledIconButtonColors(
-                            containerColor = MaterialTheme.colorScheme.primary,
-                            contentColor = MaterialTheme.colorScheme.onPrimary
-                        )
-                    ) {
-                        Icon(
-                            imageVector = if (isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow,
-                            contentDescription = stringResource(
-                                if (isPlaying) R.string.player_pause else R.string.player_play
-                            )
-                        )
-                    }
-                    Spacer(Modifier.width(6.dp))
-                    OutlinedIconButton(
-                        enabled = !showFallback,
-                        onClick = {
-                            player.pause()
-                            val duration = player.duration
-                            val target = player.currentPosition + FRAME_STEP_MS
-                            player.seekTo(if (duration > 0) target.coerceAtMost(duration) else target)
-                        }
-                    ) {
-                        Icon(Icons.Filled.SkipNext, contentDescription = stringResource(R.string.player_step_forward))
-                    }
-                }
-
-                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                    PLAYBACK_SPEEDS.forEach { option ->
-                        FilterChip(
-                            selected = speed == option,
-                            enabled = !showFallback,
-                            onClick = {
-                                speed = option
-                                player.setPlaybackSpeed(option)
-                            },
-                            label = {
-                                Text(
-                                    text = if (option == 1.0f) "1.0x" else "${option}x",
-                                    fontSize = 12.sp
-                                )
-                            },
-                            colors = FilterChipDefaults.filterChipColors(
-                                selectedContainerColor = MaterialTheme.colorScheme.secondary,
-                                selectedLabelColor = MaterialTheme.colorScheme.onSecondary
-                            )
-                        )
-                    }
-                }
-            }
-        }
-    }
+    return state
 }
 
+/**
+ * Video surface for the shared player. Only one surface can show the video at a time, so pass
+ * [attached] = false while another surface (e.g. the full-screen overlay) owns the player.
+ */
+@OptIn(UnstableApi::class)
 @Composable
-private fun MissingLoopFallback(videoAssetPath: String) {
+fun LoopSurface(player: ExoPlayer, attached: Boolean, modifier: Modifier = Modifier) {
+    AndroidView(
+        modifier = modifier,
+        factory = { ctx ->
+            // AndroidView assigns the layout params, so inflating without a root is intended here.
+            @SuppressLint("InflateParams")
+            val view = LayoutInflater.from(ctx).inflate(R.layout.echo_player_texture, null) as PlayerView
+            view.apply {
+                setKeepContentOnPlayerReset(false)
+            }
+        },
+        update = { view ->
+            val target = if (attached) player else null
+            if (view.player !== target) view.player = target
+        },
+        onRelease = { view -> view.player = null }
+    )
+}
+
+/** Shown instead of the video when the MP4 is missing or cannot be decoded. */
+@Composable
+fun LoopFallback(assetPath: String, modifier: Modifier = Modifier, compact: Boolean = false) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.surface)
-            .padding(20.dp),
+            .padding(if (compact) 8.dp else 20.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -336,23 +227,44 @@ private fun MissingLoopFallback(videoAssetPath: String) {
             imageVector = Icons.Outlined.VideocamOff,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.secondary,
-            modifier = Modifier.size(40.dp)
+            modifier = Modifier.size(if (compact) 24.dp else 40.dp)
         )
-        Spacer(Modifier.size(10.dp))
+        Spacer(Modifier.size(6.dp))
         Text(
             text = stringResource(R.string.player_missing_title),
-            style = MaterialTheme.typography.titleMedium,
+            style = if (compact) MaterialTheme.typography.labelMedium else MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center
         )
-        Spacer(Modifier.size(6.dp))
-        Text(
-            text = stringResource(R.string.player_missing_body, videoAssetPath),
-            style = MaterialTheme.typography.bodySmall,
-            fontFamily = FontFamily.Monospace,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center
-        )
+        if (!compact) {
+            Spacer(Modifier.size(6.dp))
+            Text(
+                text = stringResource(R.string.player_missing_body, assetPath),
+                style = MaterialTheme.typography.bodySmall,
+                fontFamily = FontFamily.Monospace,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center
+            )
+        }
+    }
+}
+
+/** Black video box containing either the live surface or the fallback card. */
+@Composable
+fun LoopBox(
+    player: ExoPlayer,
+    loop: LoopState,
+    assetPath: String,
+    attached: Boolean,
+    modifier: Modifier = Modifier,
+    compactFallback: Boolean = true
+) {
+    Box(modifier = modifier.background(Color.Black), contentAlignment = Alignment.Center) {
+        if (loop.showFallback) {
+            LoopFallback(assetPath, compact = compactFallback)
+        } else {
+            LoopSurface(player, attached, Modifier.fillMaxSize())
+        }
     }
 }

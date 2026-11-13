@@ -3,28 +3,28 @@ package com.sonopulse.echoguide
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Schedule
-import androidx.compose.material3.AssistChip
-import androidx.compose.material3.AssistChipDefaults
+import androidx.compose.material.icons.filled.Pause
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameMillis
@@ -41,6 +41,7 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontWeight
@@ -48,13 +49,14 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import kotlin.math.exp
 
 /** Medical-monitor green for the ECG trace. */
-private val EcgGreen = Color(0xFF00E676)
-private val EcgTeal = Color(0xFF00D2B8)
-private val EcgOrange = Color(0xFFFF8A3D)
+internal val EcgGreen = Color(0xFF00E676)
+internal val EcgTeal = Color(0xFF00D2B8)
+internal val EcgOrange = Color(0xFFFF8A3D)
 private val EcgPaper = Color(0xFF050B0E)
 private val EcgGridMinor = Color(0xFF0E2A1E)
 private val EcgGridMajor = Color(0xFF16402D)
@@ -124,181 +126,175 @@ internal fun phaseJumpTarget(positionMs: Long, durationMs: Long, timing: EcgTimi
     return target.coerceIn(0, if (durationMs > 0) durationMs - 1 else Long.MAX_VALUE)
 }
 
+/** Player position and duration for the ECG cursor. */
+private class PlaybackClock {
+    var positionMs by mutableLongStateOf(0L)
+    var durationMs by mutableLongStateOf(0L)
+    var playing by mutableStateOf(false)
+
+    fun update(player: Player) {
+        positionMs = player.currentPosition
+        durationMs = player.duration.takeIf { it > 0 } ?: 0L
+        playing = player.isPlaying
+    }
+}
+
 /**
- * ECG strip docked under [EchoCinePlayer]. The cursor follows the shared [player] every frame,
- * so it moves with playback, speed changes and ±33 ms frame stepping. ED (R-wave) and ES
- * (T-wave end) are marked on every beat, and the two pills pause the loop on those frames.
+ * Follows the player every frame while it plays; while paused it updates only on player events
+ * (seek, ±33 ms frame step, ED/ES jump, new clip), so no frames are drawn needlessly.
  */
 @Composable
-fun EchoEcgStrip(
-    player: ExoPlayer,
-    timing: EcgTiming,
-    timingNote: String?,
-    modifier: Modifier = Modifier
-) {
-    var positionMs by remember { mutableLongStateOf(0L) }
-    var durationMs by remember { mutableLongStateOf(0L) }
-
-    LaunchedEffect(player) {
-        while (true) {
+private fun rememberPlaybackClock(player: ExoPlayer): PlaybackClock {
+    val clock = remember(player) { PlaybackClock() }
+    DisposableEffect(player) {
+        val listener = object : Player.Listener {
+            override fun onEvents(player: Player, events: Player.Events) = clock.update(player)
+        }
+        player.addListener(listener)
+        clock.update(player)
+        onDispose { player.removeListener(listener) }
+    }
+    LaunchedEffect(player, clock.playing) {
+        while (clock.playing) {
             withFrameMillis { }
-            positionMs = player.currentPosition
-            durationMs = player.duration.takeIf { it > 0 } ?: 0L
+            clock.update(player)
         }
     }
+    return clock
+}
 
-    val windowMs = if (durationMs > 0) durationMs else timing.beatMs.coerceAtLeast(1) * DEFAULT_BEATS
-    val beats = remember(timing, windowMs) { beatsFor(timing, windowMs) }
-    val current = beatAt(positionMs.coerceIn(0, windowMs), beats)
-    val systole = positionMs in current.startMs until current.esMs
-
-    val edLabel = stringResource(R.string.ecg_ed_label)
-    val esLabel = stringResource(R.string.ecg_es_label)
-    val leadLabel = stringResource(R.string.ecg_lead)
-    val phaseLabel = stringResource(if (systole) R.string.ecg_systole else R.string.ecg_diastole)
-    val textMeasurer = rememberTextMeasurer()
-
-    Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        // Time always runs left → right, also in Arabic.
-        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-            Canvas(
+/**
+ * Compact synchronized ECG & transport bar (54 dp): a live lead-II trace (42 dp) with teal ED
+ * (R-wave) and orange ES (T-wave end) markers on every beat, followed by Play/Pause, a 0.5×
+ * toggle and ED / ES jump buttons that pause the loop on the exact frame.
+ */
+@Composable
+fun EcgTransportBar(
+    player: ExoPlayer,
+    loop: LoopState,
+    timing: EcgTiming,
+    modifier: Modifier = Modifier
+) {
+    val clock = rememberPlaybackClock(player)
+    val enabled = loop.ready && clock.durationMs > 0
+    // Time always runs left → right, also in Arabic.
+    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+        Row(
+            modifier = modifier
+                .fillMaxWidth()
+                .height(54.dp)
+                .clip(RoundedCornerShape(12.dp))
+                .background(EcgPaper)
+                .border(1.dp, EcgGridMajor, RoundedCornerShape(12.dp))
+                .padding(horizontal = 6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(5.dp)
+        ) {
+            EcgTrace(
+                positionMs = clock.positionMs,
+                durationMs = clock.durationMs,
+                timing = timing,
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(104.dp)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(EcgPaper)
-                    .border(1.dp, EcgGridMajor, RoundedCornerShape(12.dp))
-            ) {
-                drawEcgGrid()
-
-                val w = size.width
-                val h = size.height
-                val baseline = h * 0.62f
-                val amplitude = h * 0.42f
-                fun xOf(ms: Long) = (ms.toFloat() / windowMs) * w
-
-                // ED / ES markers on every beat
-                beats.forEachIndexed { k, b ->
-                    if (b.startMs <= windowMs) drawPhaseMarker(xOf(b.startMs), EcgTeal, if (k == 0) edLabel else "ED", textMeasurer)
-                    if (b.esMs <= windowMs) drawPhaseMarker(xOf(b.esMs), EcgOrange, if (k == 0) esLabel else "ES", textMeasurer)
-                }
-
-                fun yOf(ms: Float): Float {
-                    val b = beatAt(ms.toLong(), beats)
-                    val phase = ((ms - b.startMs) / b.lengthMs).toDouble()
-                    val tEnd = (b.esMs - b.startMs).toDouble() / b.lengthMs
-                    return baseline - (ecgAmplitude(phase, tEnd) * amplitude).toFloat()
-                }
-
-                // Waveform
-                val path = Path()
-                var x = 0f
-                while (x <= w) {
-                    val y = yOf((x / w) * windowMs)
-                    if (x == 0f) path.moveTo(x, y) else path.lineTo(x, y)
-                    x += 2f
-                }
-                drawPath(
-                    path,
-                    EcgGreen,
-                    style = Stroke(width = 2.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round)
+                    .weight(1f)
+                    .height(42.dp)
+            )
+            TransportButton(enabled = loop.ready, onClick = { loop.togglePlay() }) {
+                Icon(
+                    imageVector = if (loop.isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow,
+                    contentDescription = stringResource(if (loop.isPlaying) R.string.player_pause else R.string.player_play),
+                    tint = Color.White,
+                    modifier = Modifier.size(20.dp)
                 )
-
-                // Synchronized cursor
-                val clamped = positionMs.coerceIn(0, windowMs)
-                val cx = xOf(clamped)
-                val cy = yOf(clamped.toFloat())
-                drawLine(EcgCursor.copy(alpha = 0.85f), Offset(cx, 0f), Offset(cx, h), strokeWidth = 1.5.dp.toPx())
-                drawCircle(EcgGreen.copy(alpha = 0.35f), radius = 7.dp.toPx(), center = Offset(cx, cy))
-                drawCircle(EcgCursor, radius = 3.dp.toPx(), center = Offset(cx, cy))
-
-                // Lead + live phase readout
-                drawText(
-                    textMeasurer, leadLabel, Offset(8.dp.toPx(), h - 18.dp.toPx()),
-                    TextStyle(color = EcgGreen.copy(alpha = 0.8f), fontSize = 10.sp, fontWeight = FontWeight.SemiBold)
-                )
-                val phaseLayout = textMeasurer.measure(
-                    phaseLabel,
-                    TextStyle(color = if (systole) EcgOrange else EcgTeal, fontSize = 10.sp, fontWeight = FontWeight.Bold)
-                )
-                drawText(phaseLayout, topLeft = Offset(w - phaseLayout.size.width - 8.dp.toPx(), h - 18.dp.toPx()))
             }
-        }
-
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-            PhaseJumpPill(
-                text = stringResource(R.string.ecg_jump_ed),
-                color = EcgTeal,
-                enabled = durationMs > 0,
-                modifier = Modifier.weight(1f)
-            ) {
+            TransportPill(
+                text = "0.5x",
+                color = Color(0xFFCBD5E1),
+                selected = loop.speed == 0.5f,
+                enabled = loop.ready
+            ) { loop.setPlaybackSpeed(if (loop.speed == 0.5f) 1f else 0.5f) }
+            TransportPill(text = "ED", color = EcgTeal, selected = false, enabled = enabled) {
                 player.pause()
-                player.seekTo(phaseJumpTarget(player.currentPosition, durationMs, timing, endSystole = false))
+                player.seekTo(phaseJumpTarget(player.currentPosition, clock.durationMs, timing, endSystole = false))
             }
-            PhaseJumpPill(
-                text = stringResource(R.string.ecg_jump_es),
-                color = EcgOrange,
-                enabled = durationMs > 0,
-                modifier = Modifier.weight(1f)
-            ) {
+            TransportPill(text = "ES", color = EcgOrange, selected = false, enabled = enabled) {
                 player.pause()
-                player.seekTo(phaseJumpTarget(player.currentPosition, durationMs, timing, endSystole = true))
-            }
-        }
-
-        if (!timingNote.isNullOrBlank()) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(10.dp))
-                    .background(EcgTeal.copy(alpha = 0.08f))
-                    .border(1.dp, EcgTeal.copy(alpha = 0.35f), RoundedCornerShape(10.dp))
-                    .padding(horizontal = 10.dp, vertical = 8.dp),
-                verticalAlignment = Alignment.Top
-            ) {
-                Icon(Icons.Outlined.Schedule, contentDescription = null, tint = EcgTeal, modifier = Modifier.size(16.dp))
-                Spacer(Modifier.width(8.dp))
-                Text(
-                    text = timingNote,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
+                player.seekTo(phaseJumpTarget(player.currentPosition, clock.durationMs, timing, endSystole = true))
             }
         }
     }
 }
 
 @Composable
-private fun PhaseJumpPill(
-    text: String,
-    color: Color,
-    enabled: Boolean,
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit
-) {
-    AssistChip(
-        onClick = onClick,
-        enabled = enabled,
-        modifier = modifier,
-        shape = RoundedCornerShape(50),
-        label = {
-            Text(
-                text = text,
-                style = MaterialTheme.typography.labelMedium,
-                fontWeight = FontWeight.Bold,
-                maxLines = 1
-            )
-        },
-        colors = AssistChipDefaults.assistChipColors(
-            containerColor = color.copy(alpha = 0.14f),
-            labelColor = color
-        ),
-        border = AssistChipDefaults.assistChipBorder(enabled = enabled, borderColor = color.copy(alpha = 0.6f))
-    )
+private fun TransportButton(enabled: Boolean, onClick: () -> Unit, content: @Composable () -> Unit) {
+    Box(
+        modifier = Modifier
+            .size(34.dp)
+            .clip(CircleShape)
+            .background(if (enabled) EcgTeal.copy(alpha = 0.25f) else Color(0x22FFFFFF))
+            .clickable(enabled = enabled, onClick = onClick),
+        contentAlignment = Alignment.Center
+    ) { content() }
+}
+
+@Composable
+private fun TransportPill(text: String, color: Color, selected: Boolean, enabled: Boolean, onClick: () -> Unit) {
+    val alpha = if (enabled) 1f else 0.4f
+    Box(
+        modifier = Modifier
+            .height(30.dp)
+            .clip(RoundedCornerShape(15.dp))
+            .background(if (selected) color.copy(alpha = 0.35f * alpha) else color.copy(alpha = 0.12f * alpha))
+            .border(1.dp, color.copy(alpha = 0.7f * alpha), RoundedCornerShape(15.dp))
+            .clickable(enabled = enabled, onClick = onClick)
+            .padding(horizontal = 9.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(text, color = color.copy(alpha = alpha), fontSize = 12.sp, fontWeight = FontWeight.Bold, maxLines = 1)
+    }
+}
+
+/** Lead-II trace across the whole clip with ED/ES markers and a cursor at [positionMs]. */
+@Composable
+private fun EcgTrace(positionMs: Long, durationMs: Long, timing: EcgTiming, modifier: Modifier = Modifier) {
+    val windowMs = if (durationMs > 0) durationMs else timing.beatMs.coerceAtLeast(1) * DEFAULT_BEATS
+    val beats = remember(timing, windowMs) { beatsFor(timing, windowMs) }
+    val textMeasurer = rememberTextMeasurer()
+    Canvas(modifier = modifier) {
+        drawEcgGrid()
+        val w = size.width
+        val h = size.height
+        val baseline = h * 0.66f
+        val amplitude = h * 0.48f
+        fun xOf(ms: Long) = (ms.toFloat() / windowMs) * w
+        fun yOf(ms: Float): Float {
+            val b = beatAt(ms.toLong(), beats)
+            val phase = ((ms - b.startMs) / b.lengthMs).toDouble()
+            val tEnd = (b.esMs - b.startMs).toDouble() / b.lengthMs
+            return baseline - (ecgAmplitude(phase, tEnd) * amplitude).toFloat()
+        }
+        beats.forEach { b ->
+            if (b.startMs <= windowMs) drawPhaseMarker(xOf(b.startMs), EcgTeal, "ED", textMeasurer)
+            if (b.esMs <= windowMs) drawPhaseMarker(xOf(b.esMs), EcgOrange, "ES", textMeasurer)
+        }
+        val path = Path()
+        var x = 0f
+        while (x <= w) {
+            val y = yOf((x / w) * windowMs)
+            if (x == 0f) path.moveTo(x, y) else path.lineTo(x, y)
+            x += 2f
+        }
+        drawPath(path, EcgGreen, style = Stroke(width = 1.8.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round))
+        val clamped = positionMs.coerceIn(0, windowMs)
+        val cx = xOf(clamped)
+        val cy = yOf(clamped.toFloat())
+        drawLine(EcgCursor.copy(alpha = 0.85f), Offset(cx, 0f), Offset(cx, h), strokeWidth = 1.2.dp.toPx())
+        drawCircle(EcgGreen.copy(alpha = 0.35f), radius = 5.dp.toPx(), center = Offset(cx, cy))
+        drawCircle(EcgCursor, radius = 2.4.dp.toPx(), center = Offset(cx, cy))
+    }
 }
 
 private fun DrawScope.drawEcgGrid() {
-    val minor = 5.dp.toPx()
+    val minor = 4.dp.toPx()
     var x = 0f
     var i = 0
     while (x <= size.width) {
@@ -313,20 +309,15 @@ private fun DrawScope.drawEcgGrid() {
     }
 }
 
-private fun DrawScope.drawPhaseMarker(
-    x: Float,
-    color: Color,
-    label: String,
-    textMeasurer: androidx.compose.ui.text.TextMeasurer
-) {
+private fun DrawScope.drawPhaseMarker(x: Float, color: Color, label: String, textMeasurer: TextMeasurer) {
     drawLine(
         color.copy(alpha = 0.8f),
-        Offset(x, 14.dp.toPx()),
+        Offset(x, 10.dp.toPx()),
         Offset(x, size.height),
-        strokeWidth = 1.5.dp.toPx(),
-        pathEffect = PathEffect.dashPathEffect(floatArrayOf(6f, 5f))
+        strokeWidth = 1.2.dp.toPx(),
+        pathEffect = PathEffect.dashPathEffect(floatArrayOf(5f, 4f))
     )
-    val layout = textMeasurer.measure(label, TextStyle(color = color, fontSize = 9.sp, fontWeight = FontWeight.Bold))
-    val left = (x + 3.dp.toPx()).coerceAtMost(size.width - layout.size.width - 2.dp.toPx())
-    drawText(layout, topLeft = Offset(left, 2.dp.toPx()))
+    val layout = textMeasurer.measure(label, TextStyle(color = color, fontSize = 8.sp, fontWeight = FontWeight.Bold))
+    val left = (x + 2.dp.toPx()).coerceAtMost(size.width - layout.size.width - 1.dp.toPx())
+    drawText(layout, topLeft = Offset(left, 0f))
 }
