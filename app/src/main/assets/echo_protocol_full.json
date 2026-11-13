@@ -2611,9 +2611,10 @@
             }
           ],
           "ecg": {
-            "beatMs": 833,
+            "beatMs": 981,
             "edMs": 0,
-            "esMs": 325
+            "esMs": 386,
+            "rWavesMs": []
           },
           "timingNote": {
             "en": "Simpson: trace at ED (R-wave) and ES (T-end); LAVI and RA area at ES; RV basal diameter at ED.",
@@ -2695,7 +2696,12 @@
             }
           ],
           "videoSource": {
-            "type": "simulated"
+            "type": "real",
+            "title": "A4C normal (CardioNetworks ECHOpedia).webm",
+            "author": "CardioNetworks: Vdbilt",
+            "license": "CC BY-SA 3.0",
+            "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:A4C_normal_(CardioNetworks_ECHOpedia).webm"
           }
         },
         {
@@ -3794,9 +3800,10 @@
             }
           ],
           "ecg": {
-            "beatMs": 833,
+            "beatMs": 1196,
             "edMs": 0,
-            "esMs": 325
+            "esMs": 427,
+            "rWavesMs": []
           },
           "timingNote": {
             "en": "Arch and isthmus diameters at ED in adults (systole in children); check for a diastolic tail after the T-wave end.",
@@ -3854,7 +3861,12 @@
             }
           ],
           "videoSource": {
-            "type": "simulated"
+            "type": "real",
+            "title": "SuprasternalNormal (CardioNetworks ECHOpedia).webm",
+            "author": "CardioNetworks: Vdbilt",
+            "license": "CC BY-SA 3.0",
+            "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:SuprasternalNormal_(CardioNetworks_ECHOpedia).webm"
           }
         }
       ]

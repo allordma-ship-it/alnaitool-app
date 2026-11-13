@@ -133,6 +133,21 @@ class ProtocolDatabaseTest {
     }
 
     @Test
+    fun realClipsCarryAttributionAndTiming() {
+        val real = protocol.allViews.filter { !it.videoSource.isSimulated }
+        assertTrue("expected real clips", real.isNotEmpty())
+        val attribution = File(assetsDir, "loops/ATTRIBUTION.txt").readText()
+        real.forEach { v ->
+            val src = v.videoSource
+            assertFalse("author missing for ${v.id}", src.author.isNullOrBlank())
+            assertFalse("licence missing for ${v.id}", src.license.isNullOrBlank())
+            assertTrue("source URL missing for ${v.id}", src.sourceUrl.orEmpty().startsWith("https://commons.wikimedia.org/"))
+            assertTrue("${v.id} not credited in ATTRIBUTION.txt", attribution.contains("loops/${v.id}.mp4"))
+            assertTrue(v.ecg.rWavesMs.zipWithNext().all { (a, b) -> b > a })
+        }
+    }
+
+    @Test
     fun localizedTextFallsBackToEnglish() {
         val t = LocalizedText(en = "TAPSE")
         assertEquals("TAPSE", t.get(AppLanguage.DE))
