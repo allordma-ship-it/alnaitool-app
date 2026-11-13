@@ -37,4 +37,23 @@
     <string name="zscore_disclaimer">نموذج تعليمي تقديري (المتوسط = a·BSA^b). تحقّق دائماً من المخططات المرجعية المعتمدة في مؤسستك قبل أي قرار سريري.</string>
     <string name="zscore_hint">أدخل الوزن والطول والقيمة المقاسة للحساب.</string>
     <string name="checklist_progress">قائمة التحقق: %1$d / %2$d</string>
+    <string name="language_label">اللغة</string>
+    <plurals name="views_count">
+        <item quantity="zero">لا مقاطع</item>
+        <item quantity="one">مقطع واحد</item>
+        <item quantity="two">مقطعان</item>
+        <item quantity="few">%d مقاطع</item>
+        <item quantity="many">%d مقطعاً</item>
+        <item quantity="other">%d مقطع</item>
+    </plurals>
+    <string name="legend_chambers">الحجرات</string>
+    <string name="legend_septa">الحواجز</string>
+    <string name="legend_valves">الصمامات</string>
+    <string name="legend_notch">العلامة</string>
+    <string name="player_simulated_note">مقطع تعليمي محاكى – ليس تسجيلاً لمريض</string>
+    <string name="zs_aortic_annulus">حلقة الصمام الأبهري</string>
+    <string name="zs_aortic_sinuses">جيوب فالسالفا الأبهرية</string>
+    <string name="zs_lvidd">LVIDd</string>
+    <string name="zs_ivsd">IVSd</string>
+    <string name="zs_main_pa">الشريان الرئوي الرئيسي</string>
 </resources>

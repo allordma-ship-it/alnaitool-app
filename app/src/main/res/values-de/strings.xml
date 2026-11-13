@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_tagline">Offline-Leitfaden für das TTE-Protokoll</string>
+    <string name="language_label">Sprache</string>
+    <string name="nav_protocol">Protokoll &amp; Schnitte</string>
+    <string name="nav_zscore">Z-Score-Rechner</string>
+    <string name="section_windows">Schallfenster</string>
+    <string name="section_views">Standardschnitte</string>
+    <string name="section_probe">Schallkopfposition &amp; Markierung</string>
+    <plurals name="views_count">
+        <item quantity="one">%d Schnitt</item>
+        <item quantity="other">%d Schnitte</item>
+    </plurals>
+    <string name="tab_svg">SVG-Anatomie</string>
+    <string name="tab_measurements">Messwerte Erwachsene &amp; Kinder</string>
+    <string name="tab_checklist">Klinische Checkliste</string>
+    <string name="loading_protocol">Protokolldatenbank wird geladen…</string>
+    <string name="protocol_error">echo_protocol_full.json konnte nicht gelesen werden: %1$s</string>
+    <string name="notch_label">Markierung bei %1$s Uhr</string>
+    <string name="key_structures">Schlüsselstrukturen</string>
+    <string name="legend_chambers">Kammern</string>
+    <string name="legend_septa">Septen</string>
+    <string name="legend_valves">Klappen</string>
+    <string name="legend_notch">Markierung</string>
+    <string name="adult_reference">Erwachsene (ASE/EACVI)</string>
+    <string name="pediatric_reference">Kinder (KOF-bezogener Z-Score-Fokus)</string>
+    <string name="player_play">Abspielen</string>
+    <string name="player_pause">Pause</string>
+    <string name="player_step_back">Ein Bild zurück (−33 ms)</string>
+    <string name="player_step_forward">Ein Bild vor (+33 ms)</string>
+    <string name="player_missing_title">Cine-Loop noch nicht enthalten</string>
+    <string name="player_missing_body">Anonymisierte MP4-Datei hinzufügen unter: assets/%1$s\nZum Erzeugen scripts/prepare_loops.sh ausführen.</string>
+    <string name="player_simulated_note">Simulierter Lehr-Loop – keine Patientenaufnahme</string>
+    <string name="zscore_title">Pädiatrischer Z-Score-Rechner</string>
+    <string name="zscore_weight">Gewicht (kg)</string>
+    <string name="zscore_height">Größe (cm)</string>
+    <string name="zscore_structure">Struktur</string>
+    <string name="zscore_measured">Messwert (mm)</string>
+    <string name="zscore_bsa">KOF (Haycock)</string>
+    <string name="zscore_predicted">Erwarteter Mittelwert</string>
+    <string name="zscore_range">Normbereich (Z ±2)</string>
+    <string name="zscore_value">Z-Score</string>
+    <string name="zscore_normal">Normal (|Z| ≤ 2,0)</string>
+    <string name="zscore_borderline">Grenzwertig (2,0 &lt; |Z| ≤ 3,0)</string>
+    <string name="zscore_significant">Signifikant (|Z| &gt; 3,0)</string>
+    <string name="zscore_reset">Zurücksetzen</string>
+    <string name="zscore_disclaimer">Allometrisches Lehrmodell (Mittelwert = a·KOF^b, log-normale SD). Vor klinischen Entscheidungen immer mit dem pädiatrischen Nomogramm Ihrer Klinik abgleichen.</string>
+    <string name="zscore_hint">Gewicht, Größe und Messwert eingeben, um zu berechnen.</string>
+    <string name="zs_aortic_annulus">Aortenklappenanulus</string>
+    <string name="zs_aortic_sinuses">Sinus Valsalvae</string>
+    <string name="zs_lvidd">LVIDd</string>
+    <string name="zs_ivsd">IVSd</string>
+    <string name="zs_main_pa">Truncus pulmonalis</string>
+    <string name="checklist_progress">Checkliste: %1$d / %2$d</string>
+</resources>

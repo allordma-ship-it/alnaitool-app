@@ -1,5 +1,6 @@
 package com.sonopulse.echoguide
 
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
@@ -22,13 +23,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Calculate
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.MonitorHeart
+import androidx.compose.material.icons.filled.Translate
 import androidx.compose.material.icons.outlined.Calculate
 import androidx.compose.material.icons.outlined.MonitorHeart
 import androidx.compose.material3.Card
@@ -36,6 +40,8 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -51,6 +57,7 @@ import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
@@ -72,8 +79,10 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -161,10 +170,57 @@ private enum class EchoDestination(val labelRes: Int, val selectedIcon: ImageVec
 
 @Composable
 fun EchoScopeApp() {
+    val appContext = LocalContext.current
+    var language by remember {
+        mutableStateOf(
+            LanguagePreferences.load(appContext) ?: AppLanguage.fromSystem(appContext.resources.configuration)
+        )
+    }
+    LocalizedRoot(language) {
+        EchoScopeScaffold(
+            language = language,
+            onLanguageChange = { selected ->
+                language = selected
+                LanguagePreferences.save(appContext, selected)
+            }
+        )
+    }
+}
+
+/**
+ * Applies the in-app language to everything below it: string resources (via a localized
+ * Context/Configuration), plural rules, and the layout direction (RTL for Arabic).
+ */
+@Composable
+private fun LocalizedRoot(language: AppLanguage, content: @Composable () -> Unit) {
+    val baseContext = LocalContext.current
+    val baseConfiguration = LocalConfiguration.current
+    val localized = remember(language, baseConfiguration) {
+        val configuration = Configuration(baseConfiguration).apply {
+            setLocale(language.locale)
+            setLayoutDirection(language.locale)
+        }
+        baseContext.createConfigurationContext(configuration) to configuration
+    }
+    CompositionLocalProvider(
+        LocalContext provides localized.first,
+        LocalConfiguration provides localized.second,
+        LocalLayoutDirection provides if (language.isRtl) LayoutDirection.Rtl else LayoutDirection.Ltr
+    ) {
+        content()
+    }
+}
+
+/** Secondary language shown under titles: Arabic for German/English users, German for Arabic users. */
+private fun AppLanguage.companion(): AppLanguage = if (this == AppLanguage.AR) AppLanguage.DE else AppLanguage.AR
+
+@Composable
+private fun EchoScopeScaffold(language: AppLanguage, onLanguageChange: (AppLanguage) -> Unit) {
     var destination by rememberSaveable { mutableStateOf(EchoDestination.PROTOCOL) }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
+        topBar = { EchoTopBar(language = language, onLanguageChange = onLanguageChange) },
         bottomBar = {
             NavigationBar(containerColor = EchoSurface, tonalElevation = 0.dp) {
                 EchoDestination.entries.forEach { item ->
@@ -197,7 +253,7 @@ fun EchoScopeApp() {
                 .padding(innerPadding)
         ) {
             when (destination) {
-                EchoDestination.PROTOCOL -> ProtocolScreen()
+                EchoDestination.PROTOCOL -> ProtocolScreen(language)
                 EchoDestination.ZSCORE -> ZScoreCalculatorScreen()
             }
         }
@@ -209,7 +265,7 @@ fun EchoScopeApp() {
 // ---------------------------------------------------------------------------------------------
 
 @Composable
-private fun ProtocolScreen() {
+private fun ProtocolScreen(language: AppLanguage) {
     val context = LocalContext.current
     val state by produceState<ProtocolState>(ProtocolState.Loading) {
         value = EchoRepository.load(context)
@@ -230,7 +286,7 @@ private fun ProtocolScreen() {
             )
         }
 
-        is ProtocolState.Ready -> ProtocolContent(s.protocol)
+        is ProtocolState.Ready -> ProtocolContent(s.protocol, language)
     }
 }
 
@@ -246,7 +302,7 @@ private fun CenteredMessage(content: @Composable () -> Unit) {
 }
 
 @Composable
-private fun ProtocolContent(protocol: EchoProtocol) {
+private fun ProtocolContent(protocol: EchoProtocol, language: AppLanguage) {
     var windowId by rememberSaveable { mutableStateOf(protocol.windows.first().id) }
     var viewId by rememberSaveable { mutableStateOf(protocol.windows.first().views.first().id) }
     var tabIndex by rememberSaveable { mutableIntStateOf(0) }
@@ -265,11 +321,10 @@ private fun ProtocolContent(protocol: EchoProtocol) {
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
-        Header()
-
         SectionTitle(stringResource(R.string.section_windows))
         WindowGrid(
             windows = protocol.windows,
+            language = language,
             selectedId = window.id,
             onSelect = { selected ->
                 if (selected.id != windowId) {
@@ -290,7 +345,7 @@ private fun ProtocolContent(protocol: EchoProtocol) {
                 FilterChip(
                     selected = v.id == view.id,
                     onClick = { viewId = v.id },
-                    label = { Text(v.titleEn, maxLines = 1) },
+                    label = { Text(v.title.get(language), maxLines = 1) },
                     colors = FilterChipDefaults.filterChipColors(
                         containerColor = EchoSurface,
                         labelColor = EchoText,
@@ -301,11 +356,11 @@ private fun ProtocolContent(protocol: EchoProtocol) {
             }
         }
 
-        ViewTitle(view)
+        ViewTitle(view, language)
 
-        EchoCinePlayer(videoAssetPath = view.videoAsset)
+        EchoCinePlayer(videoAssetPath = view.videoAsset, simulated = protocol.loopsSimulated)
 
-        ProbeNotchCard(view)
+        ProbeNotchCard(view, language)
 
         DetailTabs(
             selectedIndex = tabIndex,
@@ -313,17 +368,18 @@ private fun ProtocolContent(protocol: EchoProtocol) {
         )
 
         when (tabIndex) {
-            0 -> SvgAnatomyPanel(view)
-            1 -> MeasurementsPanel(view)
+            0 -> SvgAnatomyPanel(view, language)
+            1 -> MeasurementsPanel(view, language)
             else -> ChecklistPanel(
                 view = view,
+                language = language,
                 isChecked = { i -> checked["${view.id}#$i"] == true },
                 onToggle = { i, value -> checked["${view.id}#$i"] = value }
             )
         }
 
         Text(
-            text = protocol.disclaimerEn,
+            text = protocol.disclaimer.get(language),
             style = MaterialTheme.typography.bodySmall,
             color = EchoMuted
         )
@@ -332,8 +388,16 @@ private fun ProtocolContent(protocol: EchoProtocol) {
 }
 
 @Composable
-private fun Header() {
-    Row(verticalAlignment = Alignment.CenterVertically) {
+private fun EchoTopBar(language: AppLanguage, onLanguageChange: (AppLanguage) -> Unit) {
+    var menuOpen by remember { mutableStateOf(false) }
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(EchoBackground)
+            .statusBarsPadding()
+            .padding(start = 16.dp, end = 8.dp, top = 8.dp, bottom = 4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         Box(
             modifier = Modifier
                 .size(40.dp)
@@ -344,18 +408,58 @@ private fun Header() {
             Icon(Icons.Filled.MonitorHeart, contentDescription = null, tint = EchoTeal)
         }
         Spacer(Modifier.width(12.dp))
-        Column {
+        Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = stringResource(R.string.app_name),
-                style = MaterialTheme.typography.headlineSmall,
+                style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 color = EchoText
             )
             Text(
                 text = stringResource(R.string.app_tagline),
                 style = MaterialTheme.typography.bodySmall,
-                color = EchoMuted
+                color = EchoMuted,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
+        }
+        Box {
+            TextButton(onClick = { menuOpen = true }) {
+                Icon(
+                    Icons.Filled.Translate,
+                    contentDescription = stringResource(R.string.language_label),
+                    tint = EchoOrange,
+                    modifier = Modifier.size(18.dp)
+                )
+                Spacer(Modifier.width(6.dp))
+                Text(language.nativeName, color = EchoOrange)
+            }
+            DropdownMenu(
+                expanded = menuOpen,
+                onDismissRequest = { menuOpen = false },
+                containerColor = EchoSurfaceHigh
+            ) {
+                AppLanguage.entries.forEach { option ->
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = option.nativeName,
+                                color = if (option == language) EchoTeal else EchoText,
+                                fontWeight = if (option == language) FontWeight.Bold else FontWeight.Normal
+                            )
+                        },
+                        trailingIcon = {
+                            if (option == language) {
+                                Icon(Icons.Filled.Check, contentDescription = null, tint = EchoTeal)
+                            }
+                        },
+                        onClick = {
+                            menuOpen = false
+                            onLanguageChange(option)
+                        }
+                    )
+                }
+            }
         }
     }
 }
@@ -373,6 +477,7 @@ private fun SectionTitle(text: String) {
 @Composable
 private fun WindowGrid(
     windows: List<AcousticWindow>,
+    language: AppLanguage,
     selectedId: String,
     onSelect: (AcousticWindow) -> Unit
 ) {
@@ -382,6 +487,7 @@ private fun WindowGrid(
                 rowItems.forEach { w ->
                     WindowCard(
                         window = w,
+                        language = language,
                         selected = w.id == selectedId,
                         onClick = { onSelect(w) },
                         modifier = Modifier.weight(1f)
@@ -396,6 +502,7 @@ private fun WindowGrid(
 @Composable
 private fun WindowCard(
     window: AcousticWindow,
+    language: AppLanguage,
     selected: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -413,19 +520,19 @@ private fun WindowCard(
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
             Text(
-                text = window.titleEn,
+                text = window.title.get(language),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = if (selected) EchoTeal else EchoText
             )
             Text(
-                text = window.titleAr,
+                text = window.title.get(language.companion()),
                 style = MaterialTheme.typography.bodyMedium,
                 color = EchoOrange
             )
             Spacer(Modifier.height(4.dp))
             Text(
-                text = "${window.views.size} view" + if (window.views.size == 1) "" else "s",
+                text = pluralStringResource(R.plurals.views_count, window.views.size, window.views.size),
                 style = MaterialTheme.typography.labelSmall,
                 color = EchoMuted
             )
@@ -434,27 +541,24 @@ private fun WindowCard(
 }
 
 @Composable
-private fun ViewTitle(view: EchoView) {
+private fun ViewTitle(view: EchoView, language: AppLanguage) {
     Column {
         Text(
-            text = view.titleEn,
+            text = view.title.get(language),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
             color = EchoText
         )
-        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-            Text(
-                text = view.titleAr,
-                style = MaterialTheme.typography.titleSmall,
-                color = EchoOrange,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
+        Text(
+            text = view.title.get(language.companion()),
+            style = MaterialTheme.typography.titleSmall,
+            color = EchoOrange
+        )
     }
 }
 
 @Composable
-private fun ProbeNotchCard(view: EchoView) {
+private fun ProbeNotchCard(view: EchoView, language: AppLanguage) {
     EchoCard {
         SectionTitle(stringResource(R.string.section_probe))
         Spacer(Modifier.height(10.dp))
@@ -470,7 +574,7 @@ private fun ProbeNotchCard(view: EchoView) {
                 )
                 Spacer(Modifier.height(2.dp))
                 Text(
-                    text = view.notchDescriptionEn,
+                    text = view.notchDescription.get(language),
                     style = MaterialTheme.typography.bodySmall,
                     color = EchoMuted
                 )
@@ -478,28 +582,10 @@ private fun ProbeNotchCard(view: EchoView) {
         }
         Spacer(Modifier.height(12.dp))
         Text(
-            text = view.probePositionEn,
+            text = view.probePosition.get(language),
             style = MaterialTheme.typography.bodyMedium,
             color = EchoText
         )
-        HorizontalDivider(modifier = Modifier.padding(vertical = 10.dp), color = EchoOutline)
-        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-            Column(modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    text = view.probePositionAr,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = EchoText,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(Modifier.height(4.dp))
-                Text(
-                    text = view.notchDescriptionAr,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = EchoOrange,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-        }
     }
 }
 
@@ -574,7 +660,7 @@ private fun DetailTabs(selectedIndex: Int, onSelect: (Int) -> Unit) {
 }
 
 @Composable
-private fun SvgAnatomyPanel(view: EchoView) {
+private fun SvgAnatomyPanel(view: EchoView, language: AppLanguage) {
     val context = LocalContext.current
     val imageLoader = remember(context) {
         ImageLoader.Builder(context.applicationContext)
@@ -589,7 +675,7 @@ private fun SvgAnatomyPanel(view: EchoView) {
                 .decoderFactory(SvgDecoder.Factory())
                 .build(),
             imageLoader = imageLoader,
-            contentDescription = view.titleEn,
+            contentDescription = view.title.get(language),
             contentScale = ContentScale.Fit,
             loading = {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -617,7 +703,7 @@ private fun SvgAnatomyPanel(view: EchoView) {
         view.keyStructures.forEach { item ->
             Row(modifier = Modifier.padding(vertical = 2.dp)) {
                 Text("•", color = EchoOrange, modifier = Modifier.width(14.dp))
-                Text(item, style = MaterialTheme.typography.bodyMedium, color = EchoText)
+                Text(item.get(language), style = MaterialTheme.typography.bodyMedium, color = EchoText)
             }
         }
         Spacer(Modifier.height(8.dp))
@@ -634,10 +720,10 @@ private fun LegendRow() {
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         listOf(
-            EchoTeal to "Chambers",
-            EchoSky to "Septa",
-            EchoAmber to "Valves",
-            EchoOrange to "Notch"
+            EchoTeal to stringResource(R.string.legend_chambers),
+            EchoSky to stringResource(R.string.legend_septa),
+            EchoAmber to stringResource(R.string.legend_valves),
+            EchoOrange to stringResource(R.string.legend_notch)
         ).forEach { (color, label) ->
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(
@@ -654,7 +740,7 @@ private fun LegendRow() {
 }
 
 @Composable
-private fun MeasurementsPanel(view: EchoView) {
+private fun MeasurementsPanel(view: EchoView, language: AppLanguage) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         EchoCard {
             Text(
@@ -671,7 +757,7 @@ private fun MeasurementsPanel(view: EchoView) {
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            text = m.parameter,
+                            text = m.parameter.get(language),
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.SemiBold,
                             color = EchoText,
@@ -679,16 +765,17 @@ private fun MeasurementsPanel(view: EchoView) {
                         )
                         Spacer(Modifier.width(8.dp))
                         Text(
-                            text = m.normal,
+                            text = m.normal.get(language),
                             style = MaterialTheme.typography.bodyMedium,
                             color = EchoTeal,
                             textAlign = TextAlign.End,
                             modifier = Modifier.weight(1f)
                         )
                     }
-                    if (m.note.isNotBlank()) {
+                    val note = m.note?.get(language).orEmpty()
+                    if (note.isNotBlank()) {
                         Text(
-                            text = m.note,
+                            text = note,
                             style = MaterialTheme.typography.bodySmall,
                             color = EchoMuted
                         )
@@ -707,13 +794,13 @@ private fun MeasurementsPanel(view: EchoView) {
                 if (index > 0) HorizontalDivider(color = EchoOutline)
                 Column(modifier = Modifier.padding(vertical = 8.dp)) {
                     Text(
-                        text = p.parameter,
+                        text = p.parameter.get(language),
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.SemiBold,
                         color = EchoText
                     )
                     Text(
-                        text = p.focus,
+                        text = p.focus.get(language),
                         style = MaterialTheme.typography.bodySmall,
                         color = EchoMuted
                     )
@@ -726,56 +813,55 @@ private fun MeasurementsPanel(view: EchoView) {
 @Composable
 private fun ChecklistPanel(
     view: EchoView,
+    language: AppLanguage,
     isChecked: (Int) -> Boolean,
     onToggle: (Int, Boolean) -> Unit
 ) {
     val total = view.checklist.size
     val done = view.checklist.indices.count { isChecked(it) }
     EchoCard {
-        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-            Column(modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    text = stringResource(R.string.checklist_progress, done, total),
-                    style = MaterialTheme.typography.labelLarge,
-                    color = if (done == total) EchoTeal else EchoOrange
-                )
-                Spacer(Modifier.height(6.dp))
-                LinearProgressIndicator(
-                    progress = { if (total == 0) 0f else done.toFloat() / total },
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Text(
+                text = stringResource(R.string.checklist_progress, done, total),
+                style = MaterialTheme.typography.labelLarge,
+                color = if (done == total) EchoTeal else EchoOrange
+            )
+            Spacer(Modifier.height(6.dp))
+            LinearProgressIndicator(
+                progress = { if (total == 0) 0f else done.toFloat() / total },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(4.dp)),
+                color = EchoTeal,
+                trackColor = EchoSurfaceHigh,
+                drawStopIndicator = {}
+            )
+            Spacer(Modifier.height(8.dp))
+            view.checklist.forEachIndexed { index, item ->
+                val itemChecked = isChecked(index)
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(4.dp)),
-                    color = EchoTeal,
-                    trackColor = EchoSurfaceHigh,
-                    drawStopIndicator = {}
-                )
-                Spacer(Modifier.height(8.dp))
-                view.checklist.forEachIndexed { index, item ->
-                    val itemChecked = isChecked(index)
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(8.dp))
-                            .clickable { onToggle(index, !itemChecked) }
-                            .padding(vertical = 2.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Checkbox(
-                            checked = itemChecked,
-                            onCheckedChange = { onToggle(index, it) },
-                            colors = CheckboxDefaults.colors(
-                                checkedColor = EchoTeal,
-                                checkmarkColor = EchoBackground,
-                                uncheckedColor = EchoMuted
-                            )
+                        .clip(RoundedCornerShape(8.dp))
+                        .clickable { onToggle(index, !itemChecked) }
+                        .padding(vertical = 2.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Checkbox(
+                        checked = itemChecked,
+                        onCheckedChange = { onToggle(index, it) },
+                        colors = CheckboxDefaults.colors(
+                            checkedColor = EchoTeal,
+                            checkmarkColor = EchoBackground,
+                            uncheckedColor = EchoMuted
                         )
-                        Text(
-                            text = item,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = if (itemChecked) EchoMuted else EchoText,
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
+                    )
+                    Text(
+                        text = item.get(language),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = if (itemChecked) EchoMuted else EchoText,
+                        modifier = Modifier.weight(1f)
+                    )
                 }
             }
         }

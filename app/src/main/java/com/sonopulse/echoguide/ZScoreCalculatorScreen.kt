@@ -1,5 +1,6 @@
 package com.sonopulse.echoguide
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -61,16 +62,16 @@ import kotlin.math.pow
  * so Z = (ln(measured) − ln(predicted)) / [sdLn].
  */
 enum class CardiacStructure(
-    val displayName: String,
+    @StringRes val labelRes: Int,
     val a: Double,
     val b: Double,
     val sdLn: Double
 ) {
-    AORTIC_ANNULUS("Aortic Valve Annulus", a = 14.8, b = 0.50, sdLn = 0.085),
-    AORTIC_SINUSES("Aortic Sinuses of Valsalva", a = 21.2, b = 0.50, sdLn = 0.085),
-    LVIDD("LVIDd", a = 39.5, b = 0.35, sdLn = 0.075),
-    IVSD("IVSd", a = 6.9, b = 0.35, sdLn = 0.14),
-    MAIN_PA("Main Pulmonary Artery", a = 17.5, b = 0.50, sdLn = 0.10);
+    AORTIC_ANNULUS(R.string.zs_aortic_annulus, a = 14.8, b = 0.50, sdLn = 0.085),
+    AORTIC_SINUSES(R.string.zs_aortic_sinuses, a = 21.2, b = 0.50, sdLn = 0.085),
+    LVIDD(R.string.zs_lvidd, a = 39.5, b = 0.35, sdLn = 0.075),
+    IVSD(R.string.zs_ivsd, a = 6.9, b = 0.35, sdLn = 0.14),
+    MAIN_PA(R.string.zs_main_pa, a = 17.5, b = 0.50, sdLn = 0.10);
 
     fun predictedMeanMm(bsa: Double): Double = a * bsa.pow(b)
 
@@ -99,8 +100,22 @@ private val ZTeal = Color(0xFF00D2B8)
 private val ZAmber = Color(0xFFFBBF24)
 private val ZRed = Color(0xFFF87171)
 
+/** Accepts Western, Arabic-Indic (٠–٩) and Eastern Arabic-Indic (۰–۹) digits, with '.', ',' or '٫'. */
+internal fun normalizeNumberInput(input: String): String = buildString(input.length) {
+    input.forEach { c ->
+        append(
+            when (c) {
+                in '\u0660'..'\u0669' -> '0' + (c - '\u0660')
+                in '\u06F0'..'\u06F9' -> '0' + (c - '\u06F0')
+                ',', '\u066B' -> '.'
+                else -> c
+            }
+        )
+    }
+}
+
 private fun String.toPositiveDoubleOrNull(): Double? =
-    replace(',', '.').trim().toDoubleOrNull()?.takeIf { it > 0.0 && it.isFinite() }
+    normalizeNumberInput(this).trim().toDoubleOrNull()?.takeIf { it > 0.0 && it.isFinite() }
 
 private fun Double.fmt(decimals: Int): String = String.format(Locale.US, "%.${decimals}f", this)
 
@@ -172,7 +187,7 @@ fun ZScoreCalculatorScreen(modifier: Modifier = Modifier) {
                 onExpandedChange = { menuExpanded = it }
             ) {
                 OutlinedTextField(
-                    value = structure.displayName,
+                    value = stringResource(structure.labelRes),
                     onValueChange = {},
                     readOnly = true,
                     singleLine = true,
@@ -189,7 +204,7 @@ fun ZScoreCalculatorScreen(modifier: Modifier = Modifier) {
                 ) {
                     CardiacStructure.entries.forEach { option ->
                         DropdownMenuItem(
-                            text = { Text(option.displayName) },
+                            text = { Text(stringResource(option.labelRes)) },
                             onClick = {
                                 structureName = option.name
                                 menuExpanded = false
@@ -328,7 +343,7 @@ private fun ResultCard(structure: CardiacStructure, bsa: Double?, measured: Doub
         }
         Spacer(Modifier.height(8.dp))
         Text(
-            text = "${structure.displayName}: ${measured.fmt(1)} mm @ BSA ${bsa.fmt(2)} m²",
+            text = "${stringResource(structure.labelRes)}: ${measured.fmt(1)} mm @ BSA ${bsa.fmt(2)} m²",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -347,7 +362,7 @@ private fun NumberField(
     OutlinedTextField(
         value = value,
         onValueChange = { input ->
-            if (input.length <= 7 && input.all { it.isDigit() || it == '.' || it == ',' }) {
+            if (input.length <= 7 && input.all { it.isDigit() || it == '.' || it == ',' || it == '\u066B' }) {
                 onValueChange(input)
             }
         },

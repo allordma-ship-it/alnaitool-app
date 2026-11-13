@@ -32,6 +32,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -43,10 +44,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -108,7 +111,8 @@ private fun buildEchoPlayer(context: Context): ExoPlayer {
 @Composable
 fun EchoCinePlayer(
     videoAssetPath: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    simulated: Boolean = false
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -212,73 +216,85 @@ fun EchoCinePlayer(
             }
         }
 
+        if (simulated && !showFallback) {
+            Spacer(Modifier.size(6.dp))
+            Text(
+                text = stringResource(R.string.player_simulated_note),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.secondary
+            )
+        }
+
         Spacer(Modifier.size(10.dp))
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                OutlinedIconButton(
-                    enabled = !showFallback,
-                    onClick = {
-                        player.pause()
-                        player.seekTo((player.currentPosition - FRAME_STEP_MS).coerceAtLeast(0L))
-                    }
-                ) {
-                    Icon(Icons.Filled.SkipPrevious, contentDescription = stringResource(R.string.player_step_back))
-                }
-                Spacer(Modifier.width(6.dp))
-                FilledIconButton(
-                    enabled = !showFallback,
-                    onClick = { if (player.isPlaying) player.pause() else player.play() },
-                    colors = IconButtonDefaults.filledIconButtonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
-                    )
-                ) {
-                    Icon(
-                        imageVector = if (isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow,
-                        contentDescription = stringResource(
-                            if (isPlaying) R.string.player_pause else R.string.player_play
-                        )
-                    )
-                }
-                Spacer(Modifier.width(6.dp))
-                OutlinedIconButton(
-                    enabled = !showFallback,
-                    onClick = {
-                        player.pause()
-                        val duration = player.duration
-                        val target = player.currentPosition + FRAME_STEP_MS
-                        player.seekTo(if (duration > 0) target.coerceAtMost(duration) else target)
-                    }
-                ) {
-                    Icon(Icons.Filled.SkipNext, contentDescription = stringResource(R.string.player_step_forward))
-                }
-            }
-
-            Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                PLAYBACK_SPEEDS.forEach { option ->
-                    FilterChip(
-                        selected = speed == option,
+        // Media transport controls keep their left-to-right order in RTL languages.
+        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    OutlinedIconButton(
                         enabled = !showFallback,
                         onClick = {
-                            speed = option
-                            player.setPlaybackSpeed(option)
-                        },
-                        label = {
-                            Text(
-                                text = if (option == 1.0f) "1.0x" else "${option}x",
-                                fontSize = 12.sp
-                            )
-                        },
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = MaterialTheme.colorScheme.secondary,
-                            selectedLabelColor = MaterialTheme.colorScheme.onSecondary
+                            player.pause()
+                            player.seekTo((player.currentPosition - FRAME_STEP_MS).coerceAtLeast(0L))
+                        }
+                    ) {
+                        Icon(Icons.Filled.SkipPrevious, contentDescription = stringResource(R.string.player_step_back))
+                    }
+                    Spacer(Modifier.width(6.dp))
+                    FilledIconButton(
+                        enabled = !showFallback,
+                        onClick = { if (player.isPlaying) player.pause() else player.play() },
+                        colors = IconButtonDefaults.filledIconButtonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
                         )
-                    )
+                    ) {
+                        Icon(
+                            imageVector = if (isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow,
+                            contentDescription = stringResource(
+                                if (isPlaying) R.string.player_pause else R.string.player_play
+                            )
+                        )
+                    }
+                    Spacer(Modifier.width(6.dp))
+                    OutlinedIconButton(
+                        enabled = !showFallback,
+                        onClick = {
+                            player.pause()
+                            val duration = player.duration
+                            val target = player.currentPosition + FRAME_STEP_MS
+                            player.seekTo(if (duration > 0) target.coerceAtMost(duration) else target)
+                        }
+                    ) {
+                        Icon(Icons.Filled.SkipNext, contentDescription = stringResource(R.string.player_step_forward))
+                    }
+                }
+
+                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    PLAYBACK_SPEEDS.forEach { option ->
+                        FilterChip(
+                            selected = speed == option,
+                            enabled = !showFallback,
+                            onClick = {
+                                speed = option
+                                player.setPlaybackSpeed(option)
+                            },
+                            label = {
+                                Text(
+                                    text = if (option == 1.0f) "1.0x" else "${option}x",
+                                    fontSize = 12.sp
+                                )
+                            },
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = MaterialTheme.colorScheme.secondary,
+                                selectedLabelColor = MaterialTheme.colorScheme.onSecondary
+                            )
+                        )
+                    }
                 }
             }
         }

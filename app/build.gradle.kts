@@ -47,6 +47,13 @@ android {
         noCompress += listOf("mp4")
     }
 
+    bundle {
+        language {
+            // All UI languages ship in every install so the in-app DE/AR/EN switch always works.
+            enableSplit = false
+        }
+    }
+
     lint {
         // Dependency versions are pinned intentionally for reproducible offline builds.
         disable += "GradleDependency"
@@ -78,4 +85,6 @@ dependencies {
     implementation("io.coil-kt:coil-svg:2.7.0")
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
+
+    testImplementation("junit:junit:4.13.2")
 }

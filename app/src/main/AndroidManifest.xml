@@ -9,8 +9,10 @@
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:localeConfig="@xml/locales_config"
         android:supportsRtl="true"
-        android:theme="@style/Theme.EchoScope">
+        android:theme="@style/Theme.EchoScope"
+        tools:targetApi="tiramisu">
 
         <activity
             android:name=".MainActivity"

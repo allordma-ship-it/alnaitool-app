@@ -2,11 +2,16 @@
 <resources>
     <string name="app_name" translatable="false">EchoScope</string>
     <string name="app_tagline">Offline TTE Protocol Guide</string>
+    <string name="language_label">Language</string>
     <string name="nav_protocol">Protocol &amp; Views</string>
     <string name="nav_zscore">Z-Score Calculator</string>
     <string name="section_windows">Acoustic Windows</string>
     <string name="section_views">Standard Views</string>
     <string name="section_probe">Probe Position &amp; Notch</string>
+    <plurals name="views_count">
+        <item quantity="one">%d view</item>
+        <item quantity="other">%d views</item>
+    </plurals>
     <string name="tab_svg">SVG Anatomy</string>
     <string name="tab_measurements">Adult &amp; Pediatric Measurements</string>
     <string name="tab_checklist">Clinical Checklist</string>
@@ -14,6 +19,10 @@
     <string name="protocol_error">Unable to read echo_protocol_full.json: %1$s</string>
     <string name="notch_label">Notch at %1$s o\'clock</string>
     <string name="key_structures">Key structures</string>
+    <string name="legend_chambers">Chambers</string>
+    <string name="legend_septa">Septa</string>
+    <string name="legend_valves">Valves</string>
+    <string name="legend_notch">Notch</string>
     <string name="adult_reference">Adult (ASE/EACVI)</string>
     <string name="pediatric_reference">Pediatric (BSA-indexed Z-score focus)</string>
     <string name="player_play">Play</string>
@@ -22,6 +31,7 @@
     <string name="player_step_forward">Step forward one frame (+33 ms)</string>
     <string name="player_missing_title">Cine loop not bundled yet</string>
     <string name="player_missing_body">Add the anonymised MP4 at: assets/%1$s\nRun scripts/prepare_loops.sh to generate it.</string>
+    <string name="player_simulated_note">Simulated educational loop – not a patient recording</string>
     <string name="zscore_title">Pediatric Z-Score Calculator</string>
     <string name="zscore_weight">Weight (kg)</string>
     <string name="zscore_height">Height (cm)</string>
@@ -37,5 +47,10 @@
     <string name="zscore_reset">Reset</string>
     <string name="zscore_disclaimer">Educational allometric model (mean = a·BSA^b, log-normal SD). Always confirm against your institutional pediatric nomogram before clinical decisions.</string>
     <string name="zscore_hint">Enter weight, height and a measured value to calculate.</string>
+    <string name="zs_aortic_annulus">Aortic Valve Annulus</string>
+    <string name="zs_aortic_sinuses">Aortic Sinuses of Valsalva</string>
+    <string name="zs_lvidd">LVIDd</string>
+    <string name="zs_ivsd">IVSd</string>
+    <string name="zs_main_pa">Main Pulmonary Artery</string>
     <string name="checklist_progress">Checklist: %1$d / %2$d</string>
 </resources>

@@ -1,22 +1,82 @@
 package com.sonopulse.echoguide
 
 import android.content.Context
+import android.content.res.Configuration
 import androidx.compose.runtime.Immutable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import java.util.Locale
 
-/** Root of `assets/echo_protocol_full.json`. */
+// ---------------------------------------------------------------------------------------------
+// Languages
+// ---------------------------------------------------------------------------------------------
+
+/** Languages supported by EchoScope's UI and clinical database. */
+enum class AppLanguage(val tag: String, val nativeName: String, val isRtl: Boolean) {
+    DE("de", "Deutsch", false),
+    AR("ar", "العربية", true),
+    EN("en", "English", false);
+
+    val locale: Locale get() = Locale.forLanguageTag(tag)
+
+    companion object {
+        fun fromTag(tag: String?): AppLanguage? = entries.firstOrNull { it.tag == tag }
+
+        /** Follows the device language when it is German or Arabic, English otherwise. */
+        fun fromSystem(configuration: Configuration): AppLanguage {
+            val system = configuration.locales.get(0)?.language
+            return fromTag(system) ?: EN
+        }
+    }
+}
+
+/** Persists the user's in-app language choice (offline, SharedPreferences). */
+object LanguagePreferences {
+    private const val PREFS = "echoscope_prefs"
+    private const val KEY_LANGUAGE = "app_language"
+
+    fun load(context: Context): AppLanguage? =
+        AppLanguage.fromTag(
+            context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY_LANGUAGE, null)
+        )
+
+    fun save(context: Context, language: AppLanguage) {
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+            .edit()
+            .putString(KEY_LANGUAGE, language.tag)
+            .apply()
+    }
+}
+
+/** Text in the three app languages; German and Arabic fall back to English when absent. */
+@Immutable
+@Serializable
+data class LocalizedText(
+    val en: String,
+    val de: String? = null,
+    val ar: String? = null
+) {
+    fun get(language: AppLanguage): String = when (language) {
+        AppLanguage.DE -> de ?: en
+        AppLanguage.AR -> ar ?: en
+        AppLanguage.EN -> en
+    }
+}
+
+// ---------------------------------------------------------------------------------------------
+// Protocol model (assets/echo_protocol_full.json)
+// ---------------------------------------------------------------------------------------------
+
 @Immutable
 @Serializable
 data class EchoProtocol(
     val schemaVersion: Int,
-    val titleEn: String,
-    val titleAr: String,
+    val loopsSimulated: Boolean = false,
+    val title: LocalizedText,
     val references: List<String> = emptyList(),
-    val disclaimerEn: String = "",
-    val disclaimerAr: String = "",
+    val disclaimer: LocalizedText,
     val windows: List<AcousticWindow>
 ) {
     val allViews: List<EchoView> get() = windows.flatMap { it.views }
@@ -27,10 +87,8 @@ data class EchoProtocol(
 @Serializable
 data class AcousticWindow(
     val id: String,
-    val titleEn: String,
-    val titleAr: String,
-    val descriptionEn: String,
-    val descriptionAr: String,
+    val title: LocalizedText,
+    val description: LocalizedText,
     val views: List<EchoView>
 )
 
@@ -39,19 +97,16 @@ data class AcousticWindow(
 @Serializable
 data class EchoView(
     val id: String,
-    val titleEn: String,
-    val titleAr: String,
-    val probePositionEn: String,
-    val probePositionAr: String,
+    val title: LocalizedText,
+    val probePosition: LocalizedText,
     val notchClock: String,
     val notchHours: List<Double>,
-    val notchDescriptionEn: String,
-    val notchDescriptionAr: String,
+    val notchDescription: LocalizedText,
     val videoAsset: String,
     val svgAsset: String,
-    val keyStructures: List<String>,
+    val keyStructures: List<LocalizedText>,
     val referenceMeasurements: ReferenceMeasurements,
-    val checklist: List<String>
+    val checklist: List<LocalizedText>
 )
 
 @Immutable
@@ -64,16 +119,16 @@ data class ReferenceMeasurements(
 @Immutable
 @Serializable
 data class AdultMeasurement(
-    val parameter: String,
-    val normal: String,
-    val note: String = ""
+    val parameter: LocalizedText,
+    val normal: LocalizedText,
+    val note: LocalizedText? = null
 )
 
 @Immutable
 @Serializable
 data class PediatricFocus(
-    val parameter: String,
-    val focus: String
+    val parameter: LocalizedText,
+    val focus: LocalizedText
 )
 
 /** Result wrapper used by the UI while the bundled JSON is parsed off the main thread. */
