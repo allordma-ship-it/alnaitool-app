@@ -159,6 +159,32 @@ class ProtocolDatabaseTest {
     }
 
     @Test
+    fun measurementStepsFreezeOnTheirPhaseWithOverlays() {
+        var frozen = 0
+        protocol.allViews.forEach { view ->
+            view.steps.forEach { step ->
+                val where = "${view.id}: ${step.title.en}"
+                assertTrue("$where phase ${step.requiredPhase}", step.requiredPhase in StepPhase.all)
+                if (step.requiredPhase == StepPhase.EXP) assertTrue("$where needs freezeAtMs", step.freezeAtMs != null)
+                step.caliperOverlay?.let { o ->
+                    assertTrue("$where type ${o.type}", o.type in CaliperOverlay.types)
+                    assertTrue("$where label", o.label.isNotBlank())
+                    assertTrue("$where video coords", isNormalizedBox(o.video))
+                    assertTrue("$where diagram coords", isNormalizedBox(o.diagram))
+                }
+                if (step.requiredPhase != StepPhase.LIVE) {
+                    frozen++
+                    // Every frozen step measures something, except the plain "freeze end-diastole" step.
+                    if (!step.title.en.startsWith("Freeze")) {
+                        assertTrue("$where has no caliper overlay", step.caliperOverlay?.type == CaliperOverlay.LINE)
+                    }
+                }
+            }
+        }
+        assertTrue("ED / ES steps present", frozen >= 15)
+    }
+
+    @Test
     fun localizedTextFallsBackToEnglish() {
         val t = LocalizedText(en = "TAPSE")
         assertEquals("TAPSE", t.get(AppLanguage.DE))

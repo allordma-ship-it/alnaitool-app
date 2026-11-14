@@ -92,7 +92,9 @@ fun ZoomableDiagram(
     modifier: Modifier = Modifier,
     aspectRatio: Float = SVG_WIDTH / SVG_HEIGHT,
     caliper: List<Float>? = null,
-    background: Color = Color.Unspecified
+    background: Color = Color.Unspecified,
+    /** Normalised measurement drawn on raster atlas illustrations (`overlay.diagram`). */
+    overlay: CaliperOverlay? = null
 ) {
     val svgAsset = assetPath
     val isSvg = assetPath.endsWith(".svg", ignoreCase = true)
@@ -182,6 +184,9 @@ fun ZoomableDiagram(
             )
             if (isSvg && caliper != null && caliper.size == 4) {
                 Canvas(modifier = Modifier.fillMaxSize()) { drawCaliper(caliper, scale) }
+            }
+            if (overlay != null) {
+                CaliperCanvas(overlay, overlay.diagram, aspect = 0f, modifier = Modifier.fillMaxSize(), zoom = scale)
             }
         }
 

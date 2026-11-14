@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.getBoundsInRoot
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
@@ -40,7 +41,7 @@ class CockpitLayoutTest {
         (EchoRepository.load(ApplicationProvider.getApplicationContext()) as ProtocolState.Ready).protocol
     }
 
-    private fun showCockpit(viewId: String, language: AppLanguage = AppLanguage.EN) {
+    private fun showCockpit(viewId: String, language: AppLanguage = AppLanguage.EN, stepIndex: Int = 0) {
         // Robolectric cannot draw the TextureView video surface, so point the loop at a missing file:
         // the stage then shows the same-sized fallback card and the layout under test is unchanged.
         val view = protocol.allViews.first { it.id == viewId }.copy(videoAsset = "loops/robolectric_placeholder.mp4")
@@ -55,7 +56,7 @@ class CockpitLayoutTest {
                         view = view,
                         language = language,
                         onLanguageChange = {},
-                        navigator = StepNavigator(view.steps.first(), "1 / ${view.steps.size}", false, false, {}, {}),
+                        navigator = StepNavigator(view.steps[stepIndex], "${stepIndex + 1} / ${view.steps.size}", stepIndex > 0, false, {}, {}),
                         onSelectView = {},
                         modifier = Modifier.weight(1f)
                     )
@@ -110,5 +111,18 @@ class CockpitLayoutTest {
         val next = compose.onNodeWithText("التالي").getBoundsInRoot()
         assertTrue(next.bottom <= root.bottom - 80.dp)
         screenshot("apical_4c_steps_ar")
+    }
+
+    @Test
+    fun measurementStepKeepsAtlasWithCaliperToggle() {
+        showCockpit("plax_standard", stepIndex = 3) // IVSd, frozen at end-diastole
+        compose.onNodeWithContentDescription("Caliper overlay").assertExists()
+        compose.onNodeWithText("ON").assertExists()
+        screenshot("plax_ivsd_caliper")
+        compose.onNodeWithContentDescription("Caliper overlay").performClick()
+        compose.mainClock.advanceTimeBy(300)
+        compose.onNodeWithText("OFF").assertExists()
+        compose.onNodeWithContentDescription("Caliper overlay").performClick() // restore the saved default
+        compose.mainClock.advanceTimeBy(300)
     }
 }

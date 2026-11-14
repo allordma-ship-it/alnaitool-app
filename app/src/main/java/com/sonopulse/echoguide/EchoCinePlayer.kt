@@ -42,6 +42,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
+import androidx.media3.common.VideoSize
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.ExoPlayer
@@ -122,11 +123,37 @@ class LoopState internal constructor(private val player: ExoPlayer) {
     var speed by mutableFloatStateOf(1f)
         private set
 
+    /** Display width / height of the decoded video, 0 until the first frame size is known. */
+    var videoAspect by mutableFloatStateOf(0f)
+        internal set
+
+    /**
+     * [StepPhase] the loop is currently frozen on (ED, ES or EXP), or null while it plays or after
+     * the user moved away from that frame.
+     */
+    var frozenPhase by mutableStateOf<String?>(null)
+        private set
+
     val showFallback: Boolean get() = available == false || failed
     val ready: Boolean get() = available == true && !failed
 
+    /** True while the current media item is prepared and seekable. */
+    internal var mediaReady = false
+
+    private var pending: PhaseRequest? = null
+
+    private class PhaseRequest(val phase: String, val timing: EcgTiming, val freezeAtMs: Long?)
+
+    /** False when the step waiting for this media item wants a frozen frame instead of playback. */
+    internal val autoPlay: Boolean get() = pending.let { it == null || it.phase == StepPhase.LIVE }
+
     fun togglePlay() {
-        if (player.isPlaying) player.pause() else player.play()
+        if (player.isPlaying) {
+            player.pause()
+        } else {
+            frozenPhase = null
+            player.play()
+        }
     }
 
     fun setPlaybackSpeed(value: Float) {
@@ -136,9 +163,45 @@ class LoopState internal constructor(private val player: ExoPlayer) {
 
     fun stepFrame(forward: Boolean) {
         player.pause()
+        frozenPhase = null
         val target = player.currentPosition + if (forward) FRAME_STEP_MS else -FRAME_STEP_MS
         val duration = player.duration
         player.seekTo(target.coerceIn(0L, if (duration > 0) duration else Long.MAX_VALUE))
+    }
+
+    /** Pauses on [positionMs] and shows the frozen-phase badge for [phase]. */
+    fun freezeAt(phase: String, positionMs: Long) {
+        player.pause()
+        val duration = player.duration
+        player.seekTo(positionMs.coerceIn(0L, if (duration > 0) duration - 1 else Long.MAX_VALUE))
+        frozenPhase = phase
+    }
+
+    /**
+     * Puts the loop into the state a guided step needs: ED / ES freeze on the first R-wave /
+     * T-wave end of the loop, EXP on [freezeAtMs], LIVE keeps playing. Applied as soon as the
+     * media item is ready, so it also works right after switching views.
+     */
+    fun requestPhase(phase: String, timing: EcgTiming, freezeAtMs: Long? = null) {
+        pending = PhaseRequest(phase, timing, freezeAtMs)
+        if (mediaReady) applyPending()
+    }
+
+    internal fun applyPending() {
+        val request = pending ?: return
+        pending = null
+        val duration = player.duration.takeIf { it > 0 } ?: 0L
+        when (request.phase) {
+            StepPhase.ED, StepPhase.ES -> {
+                val first = beatsFor(request.timing, if (duration > 0) duration else request.timing.beatMs).first()
+                freezeAt(request.phase, if (request.phase == StepPhase.ED) first.startMs else first.esMs)
+            }
+            StepPhase.EXP -> freezeAt(request.phase, request.freezeAtMs ?: 0L)
+            else -> {
+                frozenPhase = null
+                player.play()
+            }
+        }
     }
 }
 
@@ -159,6 +222,19 @@ fun rememberLoopState(player: ExoPlayer, assetPath: String): LoopState {
                 state.isPlaying = isPlaying
             }
 
+            override fun onPlaybackStateChanged(playbackState: Int) {
+                if (playbackState == Player.STATE_READY) {
+                    state.mediaReady = true
+                    state.applyPending()
+                }
+            }
+
+            override fun onVideoSizeChanged(videoSize: VideoSize) {
+                if (videoSize.width > 0 && videoSize.height > 0) {
+                    state.videoAspect = videoSize.width * videoSize.pixelWidthHeightRatio / videoSize.height
+                }
+            }
+
             override fun onPlayerError(error: PlaybackException) {
                 state.failed = true
             }
@@ -169,6 +245,7 @@ fun rememberLoopState(player: ExoPlayer, assetPath: String): LoopState {
 
     LaunchedEffect(assetPath) {
         state.failed = false
+        state.mediaReady = false
         val exists = withContext(Dispatchers.IO) { EchoRepository.assetExists(context, assetPath) }
         // ExoPlayer must only be touched on its application (main) thread.
         withContext(Dispatchers.Main) {
@@ -176,8 +253,8 @@ fun rememberLoopState(player: ExoPlayer, assetPath: String): LoopState {
             if (exists) {
                 player.setMediaItem(MediaItem.fromUri("asset:///$assetPath"), true)
                 player.setPlaybackSpeed(state.speed)
+                player.playWhenReady = state.autoPlay
                 player.prepare()
-                player.play()
             } else {
                 player.stop()
                 player.clearMediaItems()

@@ -100,4 +100,12 @@
     <string name="badge_simulated">SIM</string>
     <string name="about_this_view">Dieser Schnitt: %1$s</string>
     <string name="ecg_nominal">Dieser Clip enthält kein EKG – die ED/ES-Marker folgen einem nominellen Rhythmus.</string>
+
+    <!-- Measurement steps: frozen phase & caliper overlay -->
+    <string name="frozen_ed">FROZEN · ED (R-Zacke)</string>
+    <string name="frozen_es">FROZEN · ES (T-Ende)</string>
+    <string name="frozen_exp">FROZEN · Endexspiration</string>
+    <string name="caliper_on">AN</string>
+    <string name="caliper_off">AUS</string>
+    <string name="caliper_toggle">Caliper-Overlay</string>
 </resources>

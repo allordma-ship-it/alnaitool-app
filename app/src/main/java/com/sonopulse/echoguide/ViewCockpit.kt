@@ -109,6 +109,14 @@ fun ViewCockpit(
     var infoOpen by rememberSaveable { mutableStateOf(false) }
     var referenceOpen by rememberSaveable { mutableStateOf(false) }
     val checked = remember { mutableStateMapOf<String, Boolean>() }
+    val (caliperOn, toggleCaliper) = rememberCaliperEnabled()
+    val step = navigator.step
+
+    // Measurement steps open on the frame they are measured on (ED / ES / end-expiration);
+    // orientation, Doppler and colour steps keep the loop running.
+    LaunchedEffect(view.id, step) {
+        loop.requestPhase(step?.requiredPhase ?: StepPhase.LIVE, view.ecg, step?.freezeAtMs)
+    }
 
     BackHandler(enabled = drawerState.isOpen) { scope.launch { drawerState.close() } }
 
@@ -145,7 +153,9 @@ fun ViewCockpit(
                     view = view,
                     player = player,
                     loop = loop,
-                    caliper = navigator.step?.caliper,
+                    step = step,
+                    caliperOn = caliperOn,
+                    onToggleCaliper = toggleCaliper,
                     videoAttached = !videoOverlay,
                     onOpenVideo = { videoOverlay = true },
                     onOpenDiagram = { diagramOverlay = true },
@@ -164,8 +174,12 @@ fun ViewCockpit(
         }
     }
 
-    if (videoOverlay) VideoOverlay(player, loop, view.videoAsset) { videoOverlay = false }
-    if (diagramOverlay) DiagramOverlay(view, navigator.step?.caliper, language) { diagramOverlay = false }
+    if (videoOverlay) {
+        VideoOverlay(player, loop, view.videoAsset, step, caliperOn, toggleCaliper) { videoOverlay = false }
+    }
+    if (diagramOverlay) {
+        DiagramOverlay(view, step, caliperOn, toggleCaliper, language) { diagramOverlay = false }
+    }
     if (infoOpen) AboutDialog(view = view, language = language, onDismiss = { infoOpen = false })
     if (referenceOpen) {
         ReferenceDialog(
@@ -291,38 +305,59 @@ private fun NumberBadge(number: Int, color: Color) {
 // Split stage: cine loop (52 %) | diagram (48 %)
 // ---------------------------------------------------------------------------------------------
 
+/** True when the step's caliper belongs on the current video frame (frozen phase or a live Doppler/colour step). */
+private fun videoCaliperVisible(step: GuideStep?, loop: LoopState, caliperOn: Boolean): Boolean =
+    caliperOn && loop.ready && step?.caliperOverlay?.video != null &&
+        (step.requiredPhase == StepPhase.LIVE || loop.frozenPhase != null)
+
 @Composable
 private fun SplitStage(
     view: EchoView,
     player: ExoPlayer,
     loop: LoopState,
-    caliper: List<Float>?,
+    step: GuideStep?,
+    caliperOn: Boolean,
+    onToggleCaliper: () -> Unit,
     videoAttached: Boolean,
     onOpenVideo: () -> Unit,
     onOpenDiagram: () -> Unit,
     language: AppLanguage
 ) {
+    val overlay = step?.caliperOverlay
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(StageHeight),
         horizontalArrangement = Arrangement.spacedBy(6.dp)
     ) {
-        StageCard(modifier = Modifier.weight(0.52f), onClick = onOpenVideo) {
+        StageCard(
+            modifier = Modifier.weight(0.52f),
+            onClick = onOpenVideo,
+            controls = {
+                if (overlay != null) {
+                    CaliperToggle(caliperOn, onToggleCaliper, Modifier.align(Alignment.TopEnd).padding(5.dp))
+                }
+            }
+        ) {
             LoopBox(player, loop, view.videoAsset, attached = videoAttached, modifier = Modifier.fillMaxSize())
+            if (overlay != null && videoAttached && videoCaliperVisible(step, loop, caliperOn) && loop.videoAspect > 0f) {
+                CaliperCanvas(overlay, overlay.video, loop.videoAspect, Modifier.fillMaxSize())
+            }
             SourceBadge(simulated = view.videoSource.isSimulated, modifier = Modifier.align(Alignment.TopStart).padding(5.dp))
+            loop.frozenPhase?.let { FrozenBadge(it, Modifier.align(Alignment.BottomStart).padding(5.dp)) }
         }
-        // A measurement step shows its caliper on the schematic; otherwise the atlas illustration.
-        val useSchematic = caliper != null || view.diagramAsset == null
+        // The atlas illustration stays visible on every step; the SVG schematic is only a fallback.
+        val atlas = view.diagramAsset
         StageCard(
             modifier = Modifier.weight(0.48f),
             onClick = onOpenDiagram,
-            background = if (useSchematic) EchoBackground else AtlasCard
+            background = if (atlas == null) EchoBackground else AtlasCard
         ) {
             DiagramThumb(
-                assetPath = if (useSchematic) view.svgAsset else view.diagramAsset.orEmpty(),
-                aspectRatio = if (useSchematic) SVG_WIDTH / SVG_HEIGHT else view.diagramAspect,
-                caliper = if (useSchematic) caliper else null,
+                assetPath = atlas ?: view.svgAsset,
+                aspectRatio = if (atlas == null) SVG_WIDTH / SVG_HEIGHT else view.diagramAspect,
+                caliper = if (atlas == null && caliperOn) step?.caliper else null,
+                overlay = if (atlas != null && caliperOn) overlay else null,
                 contentDescription = view.title.get(language)
             )
         }
@@ -334,6 +369,7 @@ private fun StageCard(
     modifier: Modifier,
     onClick: () -> Unit,
     background: Color = Color.Black,
+    controls: @Composable BoxScope.() -> Unit = {},
     content: @Composable BoxScope.() -> Unit
 ) {
     Box(
@@ -362,6 +398,8 @@ private fun StageCard(
                 .background(Color.Black.copy(alpha = 0.45f))
                 .padding(4.dp)
         )
+        // Interactive controls sit above the tap layer.
+        controls()
     }
 }
 
@@ -381,9 +419,18 @@ private fun SourceBadge(simulated: Boolean, modifier: Modifier = Modifier) {
     )
 }
 
-/** Non-interactive diagram preview fitted into its card, with an optional caliper on SVG diagrams. */
+/**
+ * Non-interactive diagram preview fitted into its card, with an optional caliper on SVG diagrams
+ * ([caliper], SVG units) or a normalised measurement [overlay] on the atlas illustration.
+ */
 @Composable
-private fun DiagramThumb(assetPath: String, aspectRatio: Float, caliper: List<Float>?, contentDescription: String) {
+private fun DiagramThumb(
+    assetPath: String,
+    aspectRatio: Float,
+    caliper: List<Float>?,
+    contentDescription: String,
+    overlay: CaliperOverlay? = null
+) {
     val context = LocalContext.current
     val imageLoader = remember(context) {
         ImageLoader.Builder(context.applicationContext).components { add(SvgDecoder.Factory()) }.build()
@@ -401,6 +448,9 @@ private fun DiagramThumb(assetPath: String, aspectRatio: Float, caliper: List<Fl
                 contentScale = ContentScale.FillBounds,
                 modifier = Modifier.fillMaxSize()
             )
+            if (overlay != null) {
+                CaliperCanvas(overlay, overlay.diagram, aspect = 0f, modifier = Modifier.fillMaxSize())
+            }
             if (isSvg && caliper != null && caliper.size == 4) {
                 Canvas(modifier = Modifier.fillMaxSize()) {
                     val sx = size.width / SVG_WIDTH
@@ -508,10 +558,23 @@ private fun ZoomBox(modifier: Modifier = Modifier, content: @Composable BoxScope
 }
 
 @Composable
-private fun VideoOverlay(player: ExoPlayer, loop: LoopState, assetPath: String, onDismiss: () -> Unit) {
+private fun VideoOverlay(
+    player: ExoPlayer,
+    loop: LoopState,
+    assetPath: String,
+    step: GuideStep?,
+    caliperOn: Boolean,
+    onToggleCaliper: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    val overlay = step?.caliperOverlay
     FullScreenDialog(onDismiss) {
+        OverlayStatusRow(loop.frozenPhase, overlay != null, caliperOn, onToggleCaliper)
         ZoomBox(modifier = Modifier.weight(1f).fillMaxWidth()) {
             LoopBox(player, loop, assetPath, attached = true, modifier = Modifier.fillMaxSize(), compactFallback = false)
+            if (overlay != null && videoCaliperVisible(step, loop, caliperOn) && loop.videoAspect > 0f) {
+                CaliperCanvas(overlay, overlay.video, loop.videoAspect, Modifier.fillMaxSize())
+            }
         }
         CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
             Row(
@@ -550,10 +613,19 @@ private fun VideoOverlay(player: ExoPlayer, loop: LoopState, assetPath: String, 
 }
 
 @Composable
-private fun DiagramOverlay(view: EchoView, caliper: List<Float>?, language: AppLanguage, onDismiss: () -> Unit) {
+private fun DiagramOverlay(
+    view: EchoView,
+    step: GuideStep?,
+    caliperOn: Boolean,
+    onToggleCaliper: () -> Unit,
+    language: AppLanguage,
+    onDismiss: () -> Unit
+) {
     val atlas = view.diagramAsset
-    var showAtlas by rememberSaveable { mutableStateOf(atlas != null && caliper == null) }
+    val overlay = step?.caliperOverlay
+    var showAtlas by rememberSaveable { mutableStateOf(atlas != null) }
     FullScreenDialog(onDismiss) {
+        OverlayStatusRow(frozenPhase = null, hasCaliper = overlay != null || step?.caliper != null, caliperOn, onToggleCaliper)
         if (atlas != null) {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 listOf(true to R.string.anatomy_atlas, false to R.string.anatomy_schematic).forEach { (isAtlas, label) ->
@@ -572,14 +644,34 @@ private fun DiagramOverlay(view: EchoView, caliper: List<Float>?, language: AppL
                     assetPath = atlas,
                     contentDescription = view.title.get(language),
                     aspectRatio = view.diagramAspect,
-                    background = AtlasCard
+                    background = AtlasCard,
+                    overlay = if (caliperOn) overlay else null
                 )
             } else {
-                ZoomableSvgDiagram(svgAsset = view.svgAsset, contentDescription = view.title.get(language), caliper = caliper)
+                ZoomableSvgDiagram(
+                    svgAsset = view.svgAsset,
+                    contentDescription = view.title.get(language),
+                    caliper = if (caliperOn) step?.caliper else null
+                )
             }
         }
         if (!showAtlas || atlas == null) LegendRow()
         Text(stringResource(R.string.zoom_hint), style = MaterialTheme.typography.labelSmall, color = EchoMuted)
+    }
+}
+
+/** Frozen-phase badge and Caliper ON/OFF toggle above a full-screen overlay. */
+@Composable
+private fun OverlayStatusRow(frozenPhase: String?, hasCaliper: Boolean, caliperOn: Boolean, onToggleCaliper: () -> Unit) {
+    if (frozenPhase == null && !hasCaliper) return
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        frozenPhase?.let { FrozenBadge(it) }
+        Spacer(Modifier.weight(1f))
+        if (hasCaliper) CaliperToggle(caliperOn, onToggleCaliper)
     }
 }
 

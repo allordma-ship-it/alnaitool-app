@@ -266,7 +266,8 @@
                 "en": "Ask for a deep breath and breath-hold: the heart descends toward the probe and the image improves.",
                 "de": "Tiefe Inspiration und Atemanhalten: Das Herz tritt tiefer und das Bild wird besser.",
                 "ar": "اطلب شهيقاً عميقاً وحبس النفس: ينزل القلب نحو المجس وتتحسن الصورة."
-              }
+              },
+              "requiredPhase": "LIVE"
             },
             {
               "title": {
@@ -278,7 +279,8 @@
                 "en": "The liver is at the top of the screen; below it the right heart, then the left heart. The atria lie on the left of the screen.",
                 "de": "Die Leber liegt oben im Bild, darunter das rechte, dann das linke Herz. Die Vorhöfe liegen links im Bild.",
                 "ar": "الكبد في أعلى الشاشة، تحته القلب الأيمن ثم القلب الأيسر. الأذينان إلى يسار الشاشة."
-              }
+              },
+              "requiredPhase": "LIVE"
             },
             {
               "title": {
@@ -306,7 +308,24 @@
                 244,
                 213,
                 244
-              ]
+              ],
+              "requiredPhase": "LIVE",
+              "caliperOverlay": {
+                "type": "AREA",
+                "label": "Color · IAS",
+                "video": [
+                  0.33,
+                  0.36,
+                  0.56,
+                  0.5
+                ],
+                "diagram": [
+                  0.48,
+                  0.7,
+                  0.62,
+                  0.86
+                ]
+              }
             },
             {
               "title": {
@@ -329,7 +348,24 @@
                 164,
                 374,
                 150
-              ]
+              ],
+              "requiredPhase": "ED",
+              "caliperOverlay": {
+                "type": "LINE",
+                "label": "Pericardium",
+                "video": [
+                  0.5,
+                  0.272,
+                  0.5,
+                  0.31
+                ],
+                "diagram": [
+                  0.535,
+                  0.375,
+                  0.565,
+                  0.415
+                ]
+              }
             }
           ],
           "ecg": {
@@ -661,7 +697,8 @@
                 "en": "To tell it from the aorta: the IVC runs through the liver, drains into the right atrium and receives the hepatic veins. The aorta is pulsatile and thick-walled.",
                 "de": "Abgrenzung zur Aorta: Die VCI verläuft durch die Leber, mündet in den rechten Vorhof und nimmt die Lebervenen auf. Die Aorta pulsiert und ist dickwandig.",
                 "ar": "للتمييز عن الأبهر: الوريد الأجوف يمر داخل الكبد، يصب في الأذين الأيمن، وتصب فيه الأوردة الكبدية. الأبهر نابض وسميك الجدار."
-              }
+              },
+              "requiredPhase": "LIVE"
             },
             {
               "title": {
@@ -684,7 +721,25 @@
                 236,
                 383,
                 276
-              ]
+              ],
+              "requiredPhase": "EXP",
+              "freezeAtMs": 0,
+              "caliperOverlay": {
+                "type": "LINE",
+                "label": "IVC",
+                "video": [
+                  0.56,
+                  0.585,
+                  0.56,
+                  0.67
+                ],
+                "diagram": [
+                  0.36,
+                  0.42,
+                  0.36,
+                  0.535
+                ]
+              }
             },
             {
               "title": {
@@ -706,6 +761,23 @@
                 "en": "Diameter > 2.1 cm with < 50 % collapse fits RAP ≈ 15 mmHg. The rule is less reliable in children and in mechanically ventilated patients.",
                 "de": "Durchmesser > 2,1 cm mit < 50 % Kollaps entspricht RAP ≈ 15 mmHg. Bei Kindern und beatmeten Patienten ist die Regel weniger verlässlich.",
                 "ar": "قطر > 2.1 سم مع انخماص < 50٪ يوافق RAP ≈ 15 ملم زئبق. عند الأطفال والمرضى على التهوية الآلية القاعدة أقل موثوقية."
+              },
+              "requiredPhase": "LIVE",
+              "caliperOverlay": {
+                "type": "CURSOR",
+                "label": "M-mode · IVC",
+                "video": [
+                  0.47,
+                  0.05,
+                  0.58,
+                  0.9
+                ],
+                "diagram": [
+                  0.36,
+                  0.3,
+                  0.36,
+                  0.7
+                ]
               }
             }
           ],
@@ -1124,7 +1196,8 @@
                 "en": "If a rounded apex appears in the image you are too low: move up one intercostal space.",
                 "de": "Erscheint eine abgerundete Spitze im Bild, liegt der Schallkopf zu tief: einen ICR höher gehen.",
                 "ar": "إذا ظهرت القمة مدوّرة داخل الصورة فأنت منخفض جداً: اصعد ورباً واحداً."
-              }
+              },
+              "requiredPhase": "LIVE"
             },
             {
               "title": {
@@ -1136,7 +1209,8 @@
                 "en": "Make the septum and posterior wall horizontal and parallel, with the mitral and aortic valves in the centre. The apex should not be visible.",
                 "de": "Septum und Hinterwand horizontal und parallel einstellen, Mitral- und Aortenklappe in der Bildmitte. Die Herzspitze sollte nicht sichtbar sein.",
                 "ar": "اجعل الحاجز والجدار الخلفي أفقيين ومتوازيين، والصمامين التاجي والأبهري في منتصف الصورة. القمة يجب ألا تظهر."
-              }
+              },
+              "requiredPhase": "LIVE"
             },
             {
               "title": {
@@ -1148,7 +1222,8 @@
                 "en": "Freeze and step frame by frame to the first frame after mitral valve closure (largest LV). All wall measurements are taken at the level of the mitral leaflet tips.",
                 "de": "Einfrieren und Bild für Bild bis zum ersten Bild nach Mitralklappenschluss gehen (größter LV). Alle Wandmessungen auf Höhe der Mitralsegelspitzen.",
                 "ar": "أوقف المقطع وتحرك إطاراً إطاراً حتى أول إطار بعد انغلاق الصمام التاجي (أكبر حجم للبطين). كل قياسات الجدران تؤخذ عند مستوى أطراف وريقات الصمام التاجي."
-              }
+              },
+              "requiredPhase": "ED"
             },
             {
               "title": {
@@ -1176,7 +1251,24 @@
                 150,
                 300,
                 171
-              ]
+              ],
+              "requiredPhase": "ED",
+              "caliperOverlay": {
+                "type": "LINE",
+                "label": "IVSd",
+                "video": [
+                  0.47,
+                  0.245,
+                  0.47,
+                  0.285
+                ],
+                "diagram": [
+                  0.47,
+                  0.555,
+                  0.47,
+                  0.605
+                ]
+              }
             },
             {
               "title": {
@@ -1199,7 +1291,24 @@
                 172,
                 300,
                 263
-              ]
+              ],
+              "requiredPhase": "ED",
+              "caliperOverlay": {
+                "type": "LINE",
+                "label": "LVIDd",
+                "video": [
+                  0.47,
+                  0.29,
+                  0.47,
+                  0.555
+                ],
+                "diagram": [
+                  0.47,
+                  0.612,
+                  0.47,
+                  0.8
+                ]
+              }
             },
             {
               "title": {
@@ -1222,7 +1331,24 @@
                 264,
                 300,
                 288
-              ]
+              ],
+              "requiredPhase": "ED",
+              "caliperOverlay": {
+                "type": "LINE",
+                "label": "LVPWd",
+                "video": [
+                  0.47,
+                  0.56,
+                  0.47,
+                  0.605
+                ],
+                "diagram": [
+                  0.47,
+                  0.807,
+                  0.47,
+                  0.89
+                ]
+              }
             },
             {
               "title": {
@@ -1245,7 +1371,24 @@
                 152,
                 440,
                 228
-              ]
+              ],
+              "requiredPhase": "ED",
+              "caliperOverlay": {
+                "type": "LINE",
+                "label": "Ao root",
+                "video": [
+                  0.66,
+                  0.295,
+                  0.66,
+                  0.405
+                ],
+                "diagram": [
+                  0.6,
+                  0.45,
+                  0.71,
+                  0.43
+                ]
+              }
             },
             {
               "title": {
@@ -1273,7 +1416,24 @@
                 254,
                 450,
                 320
-              ]
+              ],
+              "requiredPhase": "ES",
+              "caliperOverlay": {
+                "type": "LINE",
+                "label": "LA",
+                "video": [
+                  0.63,
+                  0.42,
+                  0.63,
+                  0.58
+                ],
+                "diagram": [
+                  0.74,
+                  0.52,
+                  0.74,
+                  0.78
+                ]
+              }
             }
           ],
           "ecg": {
@@ -1639,7 +1799,8 @@
                 "en": "From PLAX keep the aortic valve centred and rotate 90° clockwise until the notch points to the left shoulder.",
                 "de": "Aus der PLAX die Aortenklappe zentriert halten und um 90° im Uhrzeigersinn drehen, bis die Markierung zur linken Schulter zeigt.",
                 "ar": "من PLAX، ثبّت الصمام الأبهري في المنتصف ثم دوّر 90° مع عقارب الساعة حتى يصبح المؤشر نحو الكتف الأيسر."
-              }
+              },
+              "requiredPhase": "LIVE"
             },
             {
               "title": {
@@ -1656,7 +1817,8 @@
                 "en": "In children look here for the origins of the left (≈ 4 o'clock) and right (≈ 11 o'clock) coronary arteries.",
                 "de": "Bei Kindern hier die Abgänge der linken (≈ 4 Uhr) und rechten (≈ 11 Uhr) Koronararterie suchen.",
                 "ar": "عند الأطفال: ابحث هنا عن منشأ الشريانين التاجيين الأيسر (نحو الساعة 4) والأيمن (نحو الساعة 11)."
-              }
+              },
+              "requiredPhase": "LIVE"
             },
             {
               "title": {
@@ -1679,7 +1841,24 @@
                 200,
                 466,
                 180
-              ]
+              ],
+              "requiredPhase": "ED",
+              "caliperOverlay": {
+                "type": "LINE",
+                "label": "MPA",
+                "video": [
+                  0.851,
+                  0.441,
+                  0.799,
+                  0.493
+                ],
+                "diagram": [
+                  0.78,
+                  0.56,
+                  0.91,
+                  0.56
+                ]
+              }
             },
             {
               "title": {
@@ -1702,7 +1881,24 @@
                 172,
                 440,
                 164
-              ]
+              ],
+              "requiredPhase": "LIVE",
+              "caliperOverlay": {
+                "type": "DOPPLER_GATE",
+                "label": "PW · PV",
+                "video": [
+                  0.5,
+                  0.073,
+                  0.755,
+                  0.357
+                ],
+                "diagram": [
+                  0.8,
+                  0.28,
+                  0.83,
+                  0.43
+                ]
+              }
             },
             {
               "title": {
@@ -1714,6 +1910,23 @@
                 "en": "Apply colour Doppler at the bifurcation: continuous red flow entering the main PA near the left branch indicates a patent ductus arteriosus.",
                 "de": "Farbdoppler auf die Bifurkation: Ein kontinuierlicher roter Fluss in den Truncus nahe dem linken Ast spricht für einen persistierenden Ductus arteriosus.",
                 "ar": "ضع الدوبلر الملون على التفرّع: جريان أحمر مستمر يدخل الجذع الرئوي قرب الفرع الأيسر يدل على قناة شريانية سالكة."
+              },
+              "requiredPhase": "LIVE",
+              "caliperOverlay": {
+                "type": "AREA",
+                "label": "Color · PDA",
+                "video": [
+                  0.76,
+                  0.5,
+                  0.93,
+                  0.7
+                ],
+                "diagram": [
+                  0.75,
+                  0.45,
+                  0.93,
+                  0.65
+                ]
               }
             }
           ],
@@ -2023,7 +2236,8 @@
                 "en": "From the aortic valve level tilt the beam toward the apex: the plane passes the mitral valve (fish-mouth), then both papillary muscles appear.",
                 "de": "Von der Aortenklappenebene den Schallstrahl Richtung Apex kippen: Die Ebene passiert die Mitralklappe („Fischmaul“), dann erscheinen beide Papillarmuskeln.",
                 "ar": "من مستوى الصمام الأبهري أمل الحزمة نحو القمة: يمر المقطع بالصمام التاجي (فم السمكة) ثم تظهر العضلتان الحليميتان."
-              }
+              },
+              "requiredPhase": "LIVE"
             },
             {
               "title": {
@@ -2035,7 +2249,8 @@
                 "en": "The cavity must be circular. If it looks oval the plane is oblique: correct the rotation.",
                 "de": "Das Kavum muss rund sein. Wirkt es oval, ist die Ebene schräg: Rotation korrigieren.",
                 "ar": "يجب أن يكون التجويف دائرياً. إذا كان بيضوياً فالمقطع مائل: عدّل الدوران."
-              }
+              },
+              "requiredPhase": "LIVE"
             },
             {
               "title": {
@@ -2058,7 +2273,24 @@
                 158,
                 320,
                 306
-              ]
+              ],
+              "requiredPhase": "ED",
+              "caliperOverlay": {
+                "type": "LINE",
+                "label": "LVIDd (FS)",
+                "video": [
+                  0.47,
+                  0.37,
+                  0.47,
+                  0.6
+                ],
+                "diagram": [
+                  0.68,
+                  0.17,
+                  0.68,
+                  0.52
+                ]
+              }
             },
             {
               "title": {
@@ -2086,7 +2318,24 @@
                 232,
                 396,
                 232
-              ]
+              ],
+              "requiredPhase": "ED",
+              "caliperOverlay": {
+                "type": "LINE",
+                "label": "D1 (EI)",
+                "video": [
+                  0.33,
+                  0.48,
+                  0.64,
+                  0.48
+                ],
+                "diagram": [
+                  0.53,
+                  0.36,
+                  0.79,
+                  0.36
+                ]
+              }
             },
             {
               "title": {
@@ -2098,7 +2347,8 @@
                 "en": "Assess thickening and motion of each segment: anterior, septal, inferior and lateral.",
                 "de": "Wanddickenzunahme und Bewegung jedes Segments beurteilen: anterior, septal, inferior und lateral.",
                 "ar": "قيّم تسمّك وحركة كل قطعة: الأمامية، الحاجزية، السفلية، الوحشية."
-              }
+              },
+              "requiredPhase": "LIVE"
             }
           ],
           "ecg": {
@@ -2526,7 +2776,8 @@
                 "en": "The apex should be pointed and stationary at the top of the sector. A rounded, moving apex means foreshortening: go one space lower or more lateral.",
                 "de": "Die Spitze sollte spitz und unbewegt oben im Sektor liegen. Eine runde, bewegte Spitze bedeutet Verkürzung: einen ICR tiefer oder weiter lateral gehen.",
                 "ar": "القمة يجب أن تكون مدببة وثابتة في أعلى القطاع. قمة مدوّرة ومتحركة = تقصير (foreshortening): انزل ورباً أو تحرك للوحشي."
-              }
+              },
+              "requiredPhase": "LIVE"
             },
             {
               "title": {
@@ -2538,7 +2789,8 @@
                 "en": "The interventricular septum runs vertically in the centre, and both mitral and tricuspid valves open clearly.",
                 "de": "Das interventrikuläre Septum verläuft senkrecht in der Bildmitte, Mitral- und Trikuspidalklappe öffnen sich deutlich.",
                 "ar": "الحاجز بين البطينين عمودي في منتصف الشاشة، والصمامان التاجي ومثلث الشرف ينفتحان بوضوح."
-              }
+              },
+              "requiredPhase": "LIVE"
             },
             {
               "title": {
@@ -2566,7 +2818,24 @@
                 90,
                 358,
                 260
-              ]
+              ],
+              "requiredPhase": "ED",
+              "caliperOverlay": {
+                "type": "LINE",
+                "label": "LV length (EDV)",
+                "video": [
+                  0.49,
+                  0.14,
+                  0.54,
+                  0.57
+                ],
+                "diagram": [
+                  0.69,
+                  0.15,
+                  0.76,
+                  0.62
+                ]
+              }
             },
             {
               "title": {
@@ -2589,7 +2858,24 @@
                 22,
                 196,
                 262
-              ]
+              ],
+              "requiredPhase": "LIVE",
+              "caliperOverlay": {
+                "type": "CURSOR",
+                "label": "M-mode · TAPSE",
+                "video": [
+                  0.48,
+                  0.08,
+                  0.2,
+                  0.6
+                ],
+                "diagram": [
+                  0.68,
+                  0.06,
+                  0.47,
+                  0.62
+                ]
+              }
             },
             {
               "title": {
@@ -2612,7 +2898,24 @@
                 236,
                 295,
                 236
-              ]
+              ],
+              "requiredPhase": "ED",
+              "caliperOverlay": {
+                "type": "LINE",
+                "label": "RVD1",
+                "video": [
+                  0.235,
+                  0.47,
+                  0.385,
+                  0.47
+                ],
+                "diagram": [
+                  0.505,
+                  0.5,
+                  0.595,
+                  0.5
+                ]
+              }
             },
             {
               "title": {
@@ -2635,7 +2938,24 @@
                 224,
                 356,
                 220
-              ]
+              ],
+              "requiredPhase": "LIVE",
+              "caliperOverlay": {
+                "type": "DOPPLER_GATE",
+                "label": "PW · E/A",
+                "video": [
+                  0.48,
+                  0.08,
+                  0.53,
+                  0.5
+                ],
+                "diagram": [
+                  0.68,
+                  0.06,
+                  0.76,
+                  0.55
+                ]
+              }
             },
             {
               "title": {
@@ -2658,7 +2978,24 @@
                 262,
                 400,
                 262
-              ]
+              ],
+              "requiredPhase": "LIVE",
+              "caliperOverlay": {
+                "type": "DOPPLER_GATE",
+                "label": "TDI · e'",
+                "video": [
+                  0.48,
+                  0.08,
+                  0.45,
+                  0.58
+                ],
+                "diagram": [
+                  0.68,
+                  0.06,
+                  0.66,
+                  0.63
+                ]
+              }
             },
             {
               "title": {
@@ -2681,7 +3018,24 @@
                 278,
                 360,
                 366
-              ]
+              ],
+              "requiredPhase": "ES",
+              "caliperOverlay": {
+                "type": "LINE",
+                "label": "LA length",
+                "video": [
+                  0.52,
+                  0.565,
+                  0.52,
+                  0.765
+                ],
+                "diagram": [
+                  0.78,
+                  0.66,
+                  0.78,
+                  0.95
+                ]
+              }
             }
           ],
           "ecg": {
@@ -3037,7 +3391,8 @@
                 "en": "From A4C lower the probe tail slightly so the beam points anteriorly until the LVOT and aortic valve appear in the centre.",
                 "de": "Aus dem 4K-Blick das Schallkopfende leicht absenken, sodass der Strahl nach anterior zeigt, bis LVOT und Aortenklappe zentral erscheinen.",
                 "ar": "من A4C اخفض ذيل المجس قليلاً لتتجه الحزمة للأمام حتى يظهر مخرج البطين الأيسر والصمام الأبهري في المنتصف."
-              }
+              },
+              "requiredPhase": "LIVE"
             },
             {
               "title": {
@@ -3065,7 +3420,24 @@
                 250,
                 320,
                 250
-              ]
+              ],
+              "requiredPhase": "LIVE",
+              "caliperOverlay": {
+                "type": "DOPPLER_GATE",
+                "label": "PW · LVOT",
+                "video": [
+                  0.5,
+                  0.073,
+                  0.5075,
+                  0.573
+                ],
+                "diagram": [
+                  0.68,
+                  0.06,
+                  0.66,
+                  0.57
+                ]
+              }
             },
             {
               "title": {
@@ -3093,7 +3465,24 @@
                 22,
                 303,
                 400
-              ]
+              ],
+              "requiredPhase": "LIVE",
+              "caliperOverlay": {
+                "type": "CURSOR",
+                "label": "CW · AV",
+                "video": [
+                  0.5,
+                  0.073,
+                  0.5075,
+                  0.873
+                ],
+                "diagram": [
+                  0.68,
+                  0.06,
+                  0.66,
+                  0.72
+                ]
+              }
             }
           ],
           "ecg": {
@@ -3402,7 +3791,8 @@
                 "en": "From A4C rotate about 60° counter-clockwise until the right ventricle disappears completely. The inferior wall is on the left of the screen, the anterior wall on the right.",
                 "de": "Aus dem 4K-Blick etwa 60° gegen den Uhrzeigersinn drehen, bis der rechte Ventrikel ganz verschwindet. Die inferiore Wand liegt links, die Vorderwand rechts im Bild.",
                 "ar": "من A4C دوّر المجس نحو 60° عكس عقارب الساعة حتى يختفي البطين الأيمن تماماً. يظهر الجدار السفلي (يسار الشاشة) والأمامي (يمينها)."
-              }
+              },
+              "requiredPhase": "LIVE"
             },
             {
               "title": {
@@ -3425,7 +3815,24 @@
                 84,
                 150,
                 266
-              ]
+              ],
+              "requiredPhase": "ED",
+              "caliperOverlay": {
+                "type": "LINE",
+                "label": "LV length (A2C)",
+                "video": [
+                  0.49,
+                  0.11,
+                  0.52,
+                  0.59
+                ],
+                "diagram": [
+                  0.55,
+                  0.15,
+                  0.56,
+                  0.64
+                ]
+              }
             },
             {
               "title": {
@@ -3437,7 +3844,8 @@
                 "en": "Keep rotating (about 120° from A4C) until the LVOT and aortic valve appear: an image like PLAX, seen from the apex.",
                 "de": "Weiter drehen (etwa 120° vom 4K-Blick), bis LVOT und Aortenklappe erscheinen: ein Bild wie die PLAX, von apikal gesehen.",
                 "ar": "تابع التدوير (نحو 120° من A4C) حتى يظهر مخرج البطين الأيسر والصمام الأبهري: صورة تشبه PLAX لكن من القمة."
-              }
+              },
+              "requiredPhase": "LIVE"
             },
             {
               "title": {
@@ -3454,7 +3862,8 @@
                 "en": "−18 % to −22 %",
                 "de": "−18 % bis −22 %",
                 "ar": "−18٪ إلى −22٪"
-              }
+              },
+              "requiredPhase": "LIVE"
             }
           ],
           "ecg": {
@@ -3811,7 +4220,8 @@
                 "en": "Use light pressure; this view is uncomfortable, especially for children.",
                 "de": "Nur leichten Druck ausüben; der Schnitt ist unangenehm, besonders für Kinder.",
                 "ar": "استخدم ضغطاً خفيفاً؛ المقطع مزعج للمريض خصوصاً الأطفال."
-              }
+              },
+              "requiredPhase": "LIVE"
             },
             {
               "title": {
@@ -3823,7 +4233,8 @@
                 "en": "Show the whole aortic arch (candy-cane shape) with its three branches: brachiocephalic trunk, left common carotid and left subclavian artery.",
                 "de": "Den gesamten Aortenbogen (Spazierstockform) mit seinen drei Abgängen darstellen: Truncus brachiocephalicus, A. carotis communis sinistra und A. subclavia sinistra.",
                 "ar": "أظهر قوس الأبهر كاملاً (شكل العكاز) مع فروعه الثلاثة: الجذع العضدي الرأسي، السباتي الأيسر، تحت الترقوة الأيسر."
-              }
+              },
+              "requiredPhase": "LIVE"
             },
             {
               "title": {
@@ -3846,7 +4257,24 @@
                 129,
                 268,
                 179
-              ]
+              ],
+              "requiredPhase": "ED",
+              "caliperOverlay": {
+                "type": "LINE",
+                "label": "Arch",
+                "video": [
+                  0.44,
+                  0.205,
+                  0.44,
+                  0.34
+                ],
+                "diagram": [
+                  0.5,
+                  0.296,
+                  0.5,
+                  0.44
+                ]
+              }
             },
             {
               "title": {
@@ -3869,7 +4297,24 @@
                 210,
                 415,
                 180
-              ]
+              ],
+              "requiredPhase": "ED",
+              "caliperOverlay": {
+                "type": "LINE",
+                "label": "Isthmus",
+                "video": [
+                  0.5,
+                  0.38,
+                  0.58,
+                  0.38
+                ],
+                "diagram": [
+                  0.57,
+                  0.5,
+                  0.66,
+                  0.48
+                ]
+              }
             },
             {
               "title": {
@@ -3897,7 +4342,24 @@
                 22,
                 432,
                 392
-              ]
+              ],
+              "requiredPhase": "LIVE",
+              "caliperOverlay": {
+                "type": "CURSOR",
+                "label": "CW · DAo",
+                "video": [
+                  0.49,
+                  0.04,
+                  0.55,
+                  0.62
+                ],
+                "diagram": [
+                  0.5,
+                  0.2,
+                  0.62,
+                  0.72
+                ]
+              }
             }
           ],
           "ecg": {

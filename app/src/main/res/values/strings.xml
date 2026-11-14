@@ -101,4 +101,12 @@
     <string name="badge_simulated">SIM</string>
     <string name="about_this_view">This view: %1$s</string>
     <string name="ecg_nominal">This clip has no recorded ECG – ED/ES markers follow a nominal rhythm.</string>
+
+    <!-- Measurement steps: frozen phase & caliper overlay -->
+    <string name="frozen_ed">FROZEN · ED (R-wave)</string>
+    <string name="frozen_es">FROZEN · ES (T-wave end)</string>
+    <string name="frozen_exp">FROZEN · End-expiration</string>
+    <string name="caliper_on">ON</string>
+    <string name="caliper_off">OFF</string>
+    <string name="caliper_toggle">Caliper overlay</string>
 </resources>

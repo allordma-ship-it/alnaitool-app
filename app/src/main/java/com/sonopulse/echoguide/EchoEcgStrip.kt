@@ -213,12 +213,10 @@ fun EcgTransportBar(
                 enabled = loop.ready
             ) { loop.setPlaybackSpeed(if (loop.speed == 0.5f) 1f else 0.5f) }
             TransportPill(text = "ED", color = EcgTeal, selected = false, enabled = enabled) {
-                player.pause()
-                player.seekTo(phaseJumpTarget(player.currentPosition, clock.durationMs, timing, endSystole = false))
+                loop.freezeAt(StepPhase.ED, phaseJumpTarget(player.currentPosition, clock.durationMs, timing, endSystole = false))
             }
             TransportPill(text = "ES", color = EcgOrange, selected = false, enabled = enabled) {
-                player.pause()
-                player.seekTo(phaseJumpTarget(player.currentPosition, clock.durationMs, timing, endSystole = true))
+                loop.freezeAt(StepPhase.ES, phaseJumpTarget(player.currentPosition, clock.durationMs, timing, endSystole = true))
             }
         }
     }

@@ -108,4 +108,12 @@
     <string name="badge_simulated">محاكاة</string>
     <string name="about_this_view">هذا المقطع: %1$s</string>
     <string name="ecg_nominal">هذا المقطع بلا تخطيط قلب مسجّل – علامات ED/ES تتبع إيقاعاً افتراضياً.</string>
+
+    <!-- Measurement steps: frozen phase & caliper overlay -->
+    <string name="frozen_ed">مُجمَّد · ED (موجة R)</string>
+    <string name="frozen_es">مُجمَّد · ES (نهاية T)</string>
+    <string name="frozen_exp">مُجمَّد · نهاية الزفير</string>
+    <string name="caliper_on">تشغيل</string>
+    <string name="caliper_off">إيقاف</string>
+    <string name="caliper_toggle">إظهار أداة القياس</string>
 </resources>

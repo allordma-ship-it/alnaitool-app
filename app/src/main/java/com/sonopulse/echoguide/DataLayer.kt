@@ -162,9 +162,48 @@ data class MachineControlStep(
     val instruction: LocalizedText
 )
 
+/** Cardiac / respiratory phase a guided step needs on screen. */
+object StepPhase {
+    /** End-diastole: freeze on the R-wave. */
+    const val ED = "ED"
+    /** End-systole: freeze at the end of the T-wave. */
+    const val ES = "ES"
+    /** End-expiration: freeze on [GuideStep.freezeAtMs] (respiration-dependent IVC). */
+    const val EXP = "EXP"
+    /** Keep the loop playing (orientation, Doppler, colour). */
+    const val LIVE = "LIVE"
+
+    val all = setOf(ED, ES, EXP, LIVE)
+}
+
+/**
+ * Measurement drawn on both the cine-loop frame ([video]) and the atlas illustration ([diagram]).
+ * Both are `[x1, y1, x2, y2]` normalised to 0–1 of the respective image.
+ *
+ * [type]: `LINE` (caliper between two landmarks), `DOPPLER_GATE` (cursor from (x1, y1) to a PW/TDI
+ * sample gate at (x2, y2)), `CURSOR` (M-mode / CW line) or `AREA` (colour-Doppler box).
+ */
+@Immutable
+@Serializable
+data class CaliperOverlay(
+    val type: String,
+    val label: String,
+    val video: List<Float>? = null,
+    val diagram: List<Float>? = null
+) {
+    companion object {
+        const val LINE = "LINE"
+        const val DOPPLER_GATE = "DOPPLER_GATE"
+        const val CURSOR = "CURSOR"
+        const val AREA = "AREA"
+        val types = setOf(LINE, DOPPLER_GATE, CURSOR, AREA)
+    }
+}
+
 /**
  * One step of the guided exam. [caliper] is an optional measurement line
- * `[x1, y1, x2, y2]` in the 400x300 coordinate space of the view's SVG diagram.
+ * `[x1, y1, x2, y2]` in the 600x420 coordinate space of the view's SVG schematic;
+ * [caliperOverlay] is the same measurement on the real loop and the atlas illustration.
  */
 @Immutable
 @Serializable
@@ -173,7 +212,12 @@ data class GuideStep(
     val instruction: LocalizedText,
     val normal: LocalizedText? = null,
     val note: LocalizedText? = null,
-    val caliper: List<Float>? = null
+    val caliper: List<Float>? = null,
+    /** [StepPhase] the loop is frozen on when this step opens. */
+    val requiredPhase: String = StepPhase.LIVE,
+    /** Exact frame for [StepPhase.EXP] steps (ms into the loop). */
+    val freezeAtMs: Long? = null,
+    val caliperOverlay: CaliperOverlay? = null
 )
 
 @Immutable
