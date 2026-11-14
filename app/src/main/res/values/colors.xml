@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="echo_background">#FF0A0E14</color>
+    <color name="echo_teal">#FF00D2B8</color>
+    <color name="echo_orange">#FFFF8A3D</color>
+</resources>

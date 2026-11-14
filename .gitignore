@@ -1,0 +1,15 @@
+.gradle/
+build/
+/app/build/
+local.properties
+.idea/
+*.iml
+.DS_Store
+captures/
+.externalNativeBuild/
+.cxx/
+raw_loops/
+.kotlin/
+__pycache__/
+temp_real/
+debug_calipers/

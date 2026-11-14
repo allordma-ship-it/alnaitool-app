@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="420" viewBox="0 0 600 420">
+  <title>Apical 2-Chamber & 3-Chamber</title>
+  <rect width="600" height="420" fill="#0B1220"/>
+  <path d="M 262 0 L 262 38 C 228 54 122 58 76 94 C 54 116 58 205 74 262 C 86 322 118 378 128 420
+           L 472 420 C 482 378 514 322 526 262 C 542 205 546 116 524 94 C 478 58 372 54 338 38 L 338 0"
+        fill="#182437" stroke="#7C8BA1" stroke-width="2.5" stroke-linejoin="round"/>
+  <g fill="none" stroke="#3A4B66" stroke-width="5" stroke-linecap="round" opacity="0.9"><path d="M 290 112 Q 218 106 150 154" /><path d="M 310 112 Q 382 106 450 154" /><path d="M 290 139 Q 213 133 142 181" /><path d="M 310 139 Q 387 133 458 181" /><path d="M 290 166 Q 209 160 134 208" /><path d="M 310 166 Q 391 160 466 208" /><path d="M 290 193 Q 204 187 126 235" /><path d="M 310 193 Q 396 187 474 235" /><path d="M 290 220 Q 200 214 118 262" /><path d="M 310 220 Q 400 214 482 262" /><path d="M 290 247 Q 196 241 110 289" /><path d="M 310 247 Q 404 241 490 289" /></g>
+  <path d="M 296 86 C 250 74 196 72 150 82 M 304 86 C 350 74 404 72 450 82" fill="none" stroke="#3A4B66"
+        stroke-width="7" stroke-linecap="round"/>
+  <rect x="289" y="88" width="22" height="156" rx="9" fill="#3A4B66"/>
+  <path d="M 291 242 L 309 242 L 300 262 Z" fill="#3A4B66"/>
+  <path d="M 275 158 L 275 104" stroke="#5B7BD5" stroke-width="11" stroke-linecap="round" fill="none"/>
+  <path d="M 284 262 L 287 336" stroke="#5B7BD5" stroke-width="13" stroke-linecap="round" fill="none"/>
+  <path d="M 300 162 C 298 120 304 104 326 104 C 350 104 356 122 352 146" stroke="#D9566B" stroke-width="13"
+        stroke-linecap="round" fill="none"/>
+  <path d="M 268 160 C 240 176 236 232 262 260 C 290 292 352 300 402 270 C 422 256 412 224 386 204
+           C 366 184 346 160 312 152 C 296 148 280 152 268 160 Z" fill="#7A2A3A" stroke="#F4A9B7" stroke-width="2.5"/>
+  <path d="M 276 178 C 262 204 266 246 292 268 C 322 286 356 280 372 262 C 346 240 320 214 306 182 Z"
+        fill="#2B4A8F" opacity="0.85"/>
+  <path d="M 318 158 C 348 168 378 196 396 226 C 410 250 402 264 386 270 C 366 252 336 226 320 194 Z"
+        fill="#B84A5E" opacity="0.9"/>
+  <path d="M 318 160 C 322 146 330 136 342 132" stroke="#6A5ACD" stroke-width="10" stroke-linecap="round" fill="none"/>
+  <g font-family="sans-serif" font-weight="700" font-size="13" fill="#F8FAFC" text-anchor="middle">
+    <text x="306" y="248">RV</text><text x="372" y="236">LV</text>
+  </g>
+  <path d="M 396.0 262.0 L 249.8 241.0 L 252.3 230.6 L 255.3 220.3 L 258.8 210.2 L 262.7 200.2 L 267.1 190.5 L 271.9 180.9 L 277.2 171.7 L 282.8 162.8 L 288.8 154.2 L 295.2 146.0 L 302.0 138.1 L 309.0 130.7 L 316.3 123.7 L 324.0 117.2 L 331.8 111.2 L 339.9 105.7 L 348.1 100.7 L 356.6 96.3 L 365.1 92.4 L 373.8 89.1 L 382.5 86.4 L 391.3 84.3 L 400.1 82.8 L 408.9 81.9 Z" fill="#2EE6D6" fill-opacity="0.26" stroke="#2EE6D6" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M 396.0 262.0 L 309.0 130.7" stroke="#FF4D6D" stroke-width="2.2"
+        stroke-dasharray="7 5" fill="none"/>
+  <text x="414.6" y="72.2" font-family="sans-serif" font-size="12" fill="#2EE6D6" font-weight="700"
+        text-anchor="middle" stroke="#0B1220" stroke-width="3" paint-order="stroke">Scan plane</text>
+  <g transform="translate(396 262) rotate(-45.0)">
+    <rect x="-30" y="-11" width="60" height="22" rx="10" fill="#E2E8F0" stroke="#0F172A" stroke-width="2"/>
+    <rect x="-24" y="-5" width="48" height="10" rx="5" fill="#94A3B8"/>
+  </g>
+  <circle cx="421.5" cy="236.5" r="7.5" fill="#3B82F6" stroke="#DBEAFE" stroke-width="2"/><circle cx="370.5" cy="236.5" r="6.5" fill="none" stroke="#3B82F6" stroke-width="3"/>
+  <g stroke="#94A3B8" stroke-width="2.5" fill="none" stroke-linecap="round">
+    <path d="M 528 32 L 528 92 M 498 62 L 558 62"/>
+    <path d="M 522 39 L 528 31 L 534 39"/>
+  </g>
+  <g font-family="sans-serif" font-size="12" font-weight="700" fill="#F8FAFC" text-anchor="middle"
+     stroke="#0B1220" stroke-width="3" paint-order="stroke">
+    <text x="528" y="24">Superior</text>
+    <text x="528" y="109">Inferior</text>
+    <text x="494" y="66" text-anchor="end">Right</text>
+    <text x="562" y="66" text-anchor="start">Left</text>
+  </g>
+  <circle cx="62" cy="352" r="40" fill="#0F1A2B" stroke="#94A3B8" stroke-width="2"/>
+  <g stroke="#94A3B8" stroke-width="2"><path d="M 62.0 319.0 L 62.0 312.0"/><path d="M 80.0 320.8 L 82.0 317.4"/><path d="M 93.2 334.0 L 96.6 332.0"/><path d="M 95.0 352.0 L 102.0 352.0"/><path d="M 93.2 370.0 L 96.6 372.0"/><path d="M 80.0 383.2 L 82.0 386.6"/><path d="M 62.0 385.0 L 62.0 392.0"/><path d="M 44.0 383.2 L 42.0 386.6"/><path d="M 30.8 370.0 L 27.4 372.0"/><path d="M 29.0 352.0 L 22.0 352.0"/><path d="M 30.8 334.0 L 27.4 332.0"/><path d="M 44.0 320.8 L 42.0 317.4"/></g>
+  <path d="M 62 352 L 83.9 330.1" stroke="#3B82F6" stroke-width="4" stroke-linecap="round"/><circle cx="83.9" cy="330.1" r="4.5" fill="#3B82F6" stroke="#3B82F6" stroke-width="2"/><path d="M 62 352 L 40.1 330.1" stroke="#3B82F6" stroke-width="3" stroke-linecap="round" stroke-dasharray="4 3"/><circle cx="40.1" cy="330.1" r="4.5" fill="#0B1220" stroke="#3B82F6" stroke-width="2"/>
+  <circle cx="62" cy="352" r="3" fill="#F8FAFC"/>
+  <g font-family="sans-serif" font-size="10" font-weight="700" fill="#94A3B8" text-anchor="middle"><text x="62.0" y="305.0">12</text><text x="113.0" y="356.0">3</text><text x="62.0" y="407.0">6</text><text x="11.0" y="356.0">9</text></g>
+  <text x="124" y="346" font-family="sans-serif" font-size="13" font-weight="700" fill="#3B82F6"
+        stroke="#0B1220" stroke-width="3" paint-order="stroke">● Index marker</text>
+  <text x="124" y="365" font-family="sans-serif" font-size="13" font-weight="700" fill="#F8FAFC"
+        stroke="#0B1220" stroke-width="3" paint-order="stroke">1–2 / 10–11 o'clock</text>
+  <g font-family="sans-serif" font-weight="700" stroke="#0B1220" stroke-width="3" paint-order="stroke">
+    <text x="16" y="24" font-size="16" fill="#F8FAFC" text-anchor="start">Apical 2-Chamber & 3-Chamber</text>
+    <text x="16" y="44" font-size="13" fill="#2EE6D6" text-anchor="start">Apical window (apex beat)</text>
+  </g>
+</svg>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Ultrasound sector cone -->
+    <path
+        android:fillColor="#3300D2B8"
+        android:strokeColor="#FF00D2B8"
+        android:strokeWidth="2"
+        android:pathData="M54,30 L32,72 A26,26 0 0,0 76,72 Z" />
+    <!-- Probe footprint -->
+    <path
+        android:fillColor="#FFFF8A3D"
+        android:pathData="M46,24 L62,24 L62,31 L46,31 Z" />
+    <!-- Heartbeat trace -->
+    <path
+        android:strokeColor="#FF38BDF8"
+        android:strokeWidth="2.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M36,62 L45,62 L49,52 L54,70 L58,58 L61,62 L72,62" />
+</vector>
