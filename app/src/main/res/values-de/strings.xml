@@ -99,4 +99,5 @@
     <string name="badge_real">ECHT</string>
     <string name="badge_simulated">SIM</string>
     <string name="about_this_view">Dieser Schnitt: %1$s</string>
+    <string name="ecg_nominal">Dieser Clip enthält kein EKG – die ED/ES-Marker folgen einem nominellen Rhythmus.</string>
 </resources>

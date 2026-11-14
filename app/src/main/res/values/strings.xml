@@ -100,4 +100,5 @@
     <string name="badge_real">REAL</string>
     <string name="badge_simulated">SIM</string>
     <string name="about_this_view">This view: %1$s</string>
+    <string name="ecg_nominal">This clip has no recorded ECG – ED/ES markers follow a nominal rhythm.</string>
 </resources>

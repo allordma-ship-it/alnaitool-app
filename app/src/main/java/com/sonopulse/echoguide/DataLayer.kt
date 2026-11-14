@@ -135,7 +135,9 @@ data class EcgTiming(
      * When set, each beat runs from one R-wave to the next and end-systole falls at the same
      * fraction of the beat as `(esMs - edMs) / beatMs`.
      */
-    val rWavesMs: List<Long> = emptyList()
+    val rWavesMs: List<Long> = emptyList(),
+    /** True when the clip has no recorded ECG and the markers follow a nominal rhythm. */
+    val nominal: Boolean = false
 )
 
 /** Where a view's cine loop comes from; real clips carry the attribution their licence requires. */

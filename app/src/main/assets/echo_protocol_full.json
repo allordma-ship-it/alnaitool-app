@@ -333,9 +333,15 @@
             }
           ],
           "ecg": {
-            "beatMs": 833,
+            "beatMs": 863,
             "edMs": 0,
-            "esMs": 325
+            "esMs": 362,
+            "rWavesMs": [
+              0,
+              863,
+              1726
+            ],
+            "nominal": false
           },
           "timingNote": {
             "en": "Effusion and RV wall at ED (R-wave); colour over the atrial septum through the whole cycle.",
@@ -401,7 +407,12 @@
             }
           ],
           "videoSource": {
-            "type": "simulated"
+            "type": "real",
+            "title": "Subcostal normal (CardioNetworks ECHOpedia).webm",
+            "author": "CardioNetworks: Vdbilt",
+            "license": "CC BY-SA 3.0",
+            "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Subcostal_normal_(CardioNetworks_ECHOpedia).webm"
           },
           "diagramAsset": "diagrams/subcostal_4c.png",
           "diagramAspect": 1.1527,
@@ -699,9 +710,18 @@
             }
           ],
           "ecg": {
-            "beatMs": 833,
+            "beatMs": 840,
             "edMs": 0,
-            "esMs": 325
+            "esMs": 357,
+            "rWavesMs": [
+              0,
+              840,
+              1680,
+              2520,
+              3360,
+              4200
+            ],
+            "nominal": true
           },
           "timingNote": {
             "en": "The IVC follows respiration: maximum diameter at end-expiration, minimum after a sniff (ECG timing is secondary).",
@@ -759,7 +779,12 @@
             }
           ],
           "videoSource": {
-            "type": "simulated"
+            "type": "real",
+            "title": "Inferior vena cava ultrasound.gif",
+            "author": "Tinss",
+            "license": "CC BY-SA 4.0",
+            "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Inferior_vena_cava_ultrasound.gif"
           },
           "diagramAsset": "diagrams/subcostal_ivc.png",
           "diagramAspect": 1.7398,
@@ -1252,9 +1277,14 @@
             }
           ],
           "ecg": {
-            "beatMs": 833,
+            "beatMs": 1000,
             "edMs": 0,
-            "esMs": 325
+            "esMs": 390,
+            "rWavesMs": [
+              0,
+              1000
+            ],
+            "nominal": false
           },
           "timingNote": {
             "en": "IVSd, LVIDd, LVPWd and aortic root at ED (R-wave); LA diameter at ES (T-end); LVOT in mid-systole.",
@@ -1328,7 +1358,12 @@
             }
           ],
           "videoSource": {
-            "type": "simulated"
+            "type": "real",
+            "title": "PLAXnormal (CardioNetworks ECHOpedia).webm",
+            "author": "CardioNetworks: Vdbilt",
+            "license": "CC BY-SA 3.0",
+            "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:PLAXnormal_(CardioNetworks_ECHOpedia).webm"
           },
           "diagramAsset": "diagrams/plax_standard.png",
           "diagramAspect": 1.1527,
@@ -2073,8 +2108,12 @@
             "rWavesMs": [
               0,
               608,
-              1216
-            ]
+              1216,
+              1824,
+              2432,
+              3040
+            ],
+            "nominal": false
           },
           "timingNote": {
             "en": "LVIDd at ED (R-wave) and LVIDs at ES (T-end) for FS; septal shape in both phases.",
@@ -2649,7 +2688,12 @@
             "beatMs": 981,
             "edMs": 0,
             "esMs": 386,
-            "rWavesMs": []
+            "rWavesMs": [
+              0,
+              981,
+              1962
+            ],
+            "nominal": false
           },
           "timingNote": {
             "en": "Simpson: trace at ED (R-wave) and ES (T-end); LAVI and RA area at ES; RV basal diameter at ED.",
@@ -3424,7 +3468,8 @@
               1785,
               2458,
               3132
-            ]
+            ],
+            "nominal": false
           },
           "timingNote": {
             "en": "Simpson in A2C at ED (R-wave) and ES (T-end); GLS uses QRS onset as the end-diastolic reference.",
@@ -3859,7 +3904,11 @@
             "beatMs": 1196,
             "edMs": 0,
             "esMs": 427,
-            "rWavesMs": []
+            "rWavesMs": [
+              0,
+              1196
+            ],
+            "nominal": false
           },
           "timingNote": {
             "en": "Arch and isthmus diameters at ED in adults (systole in children); check for a diastolic tail after the T-wave end.",

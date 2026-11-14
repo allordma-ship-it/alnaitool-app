@@ -3,7 +3,7 @@
 EchoScope – convert verified real echo clips (temp_real/) into the app's cine-loop assets.
 
 For every view in MAPPING the listed Wikimedia Commons clips are scaled to 720 px width and
-encoded as H.264 (CRF 24, yuv420p, no audio, +faststart) WITHOUT cropping the ultrasound
+encoded as H.264 (CRF 22, yuv420p, no audio, +faststart) WITHOUT cropping the ultrasound
 sector; several clips are joined in order. The script then updates the view in
 echo_protocol_full.json:
 
@@ -39,7 +39,14 @@ MAPPING: dict[str, list[tuple[str, int]]] = {
     ],
     "apical_4c": [("File:A4C normal (CardioNetworks ECHOpedia).webm", 1)],
     "suprasternal_arch": [("File:SuprasternalNormal (CardioNetworks ECHOpedia).webm", 1)],
+    "plax_standard": [("File:PLAXnormal (CardioNetworks ECHOpedia).webm", 1)],
+    "subcostal_4c": [("File:Subcostal normal (CardioNetworks ECHOpedia).webm", 1)],
+    # No ECG on this clip; one "beat" = the whole 5 s respiratory cycle (timing is nominal).
+    "subcostal_ivc": [("File:Inferior vena cava ultrasound.gif", 0)],
 }
+
+MIN_LOOP_MS = 2000   # short R-triggered loops are repeated seamlessly up to at least 2 s
+NOMINAL_RR_MS = 833  # used when a clip has no ECG (beats = 0)
 
 
 def safe_name(title: str) -> str:
@@ -61,16 +68,18 @@ def qt_ms(rr_ms: float) -> int:
     return int(round(390 * math.sqrt(rr_ms / 1000.0)))
 
 
-def convert(view_id: str, sources: list[str], out_path: str) -> None:
+def convert(view_id: str, sources: list[str], out_path: str, repeats: int = 1) -> None:
     cmd = ["ffmpeg", "-hide_banner", "-loglevel", "error", "-y"]
     for src in sources:
+        if len(sources) == 1 and repeats > 1:
+            cmd += ["-stream_loop", str(repeats - 1)]
         cmd += ["-i", src]
     chains = "".join(f"[{i}:v]scale=720:-2,setsar=1,format=yuv420p[v{i}];" for i in range(len(sources)))
     if len(sources) > 1:
         graph = chains + "".join(f"[v{i}]" for i in range(len(sources))) + f"concat=n={len(sources)}:v=1:a=0[out]"
     else:
         graph = chains.rstrip(";").replace("[v0]", "[out]")
-    cmd += ["-filter_complex", graph, "-map", "[out]", "-c:v", "libx264", "-crf", "24", "-pix_fmt", "yuv420p",
+    cmd += ["-filter_complex", graph, "-map", "[out]", "-c:v", "libx264", "-crf", "22", "-pix_fmt", "yuv420p",
             "-an", "-movflags", "+faststart", "-map_metadata", "-1", out_path]
     subprocess.run(cmd, check=True)
 
@@ -120,14 +129,23 @@ def main() -> None:
             continue
 
         r_waves, offset = [], 0
+        nominal = False
         for (title, beats), path in zip(clips, paths):
             length = duration_ms(path)
+            if beats == 0:            # no ECG: nominal rhythm across the clip
+                nominal = True
+                beats = max(1, round(length / NOMINAL_RR_MS))
             rr = length / beats
             r_waves += [int(round(offset + k * rr)) for k in range(beats)]
             offset += length
+        repeats = 1
+        if len(clips) == 1 and offset < MIN_LOOP_MS:
+            repeats = math.ceil(MIN_LOOP_MS / offset)
+            r_waves = [int(round(r + k * offset)) for k in range(repeats) for r in r_waves]
+            offset *= repeats
         first_rr = (r_waves[1] - r_waves[0]) if len(r_waves) > 1 else offset
         out = os.path.join(LOOPS, f"{view_id}.mp4")
-        convert(view_id, paths, out)
+        convert(view_id, paths, out, repeats)
 
         infos = [candidates[title]["imageinfo"][0] for title, _ in clips]
         metas = [i.get("extmetadata", {}) for i in infos]
@@ -147,6 +165,7 @@ def main() -> None:
             "edMs": 0,
             "esMs": qt_ms(first_rr),
             "rWavesMs": r_waves if len(r_waves) > 1 else [],
+            "nominal": nominal,
         }
         done.append(view_id)
         print(f"real  {view_id}: {len(clips)} clip(s), {offset} ms, R-waves {r_waves} -> {os.path.relpath(out, ROOT)}")

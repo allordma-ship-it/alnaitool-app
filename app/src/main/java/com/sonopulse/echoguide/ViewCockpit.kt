@@ -800,6 +800,9 @@ private fun TimingProbePanel(view: EchoView, language: AppLanguage) {
             view.timingNote?.let {
                 Text(it.get(language), color = EchoText, style = MaterialTheme.typography.bodySmall)
             }
+            if (view.ecg.nominal) {
+                Text(stringResource(R.string.ecg_nominal), color = EchoOrange, style = MaterialTheme.typography.labelSmall)
+            }
             if (ed.isNotEmpty()) PhaseRule("ED", stringResource(R.string.phase_ed_hint), ed.joinToString(" · "))
             if (es.isNotEmpty()) PhaseRule("ES", stringResource(R.string.phase_es_hint), es.joinToString(" · "))
             if (tips.isNotEmpty()) {

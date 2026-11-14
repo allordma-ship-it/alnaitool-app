@@ -107,4 +107,5 @@
     <string name="badge_real">حقيقي</string>
     <string name="badge_simulated">محاكاة</string>
     <string name="about_this_view">هذا المقطع: %1$s</string>
+    <string name="ecg_nominal">هذا المقطع بلا تخطيط قلب مسجّل – علامات ED/ES تتبع إيقاعاً افتراضياً.</string>
 </resources>
