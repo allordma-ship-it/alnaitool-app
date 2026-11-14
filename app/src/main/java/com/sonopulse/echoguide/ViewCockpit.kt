@@ -47,6 +47,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
@@ -55,7 +56,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.media3.exoplayer.ExoPlayer
 import coil.ImageLoader
-import coil.compose.AsyncImage
+import coil.compose.SubcomposeAsyncImage
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import kotlin.math.PI
@@ -366,7 +367,9 @@ private class DiagramSource(
     val overlays: List<CaliperOverlay>,
     val coords: (CaliperOverlay) -> List<Float>?,
     /** Legacy caliper in 600x420 SVG units, only for the old schematic fallback. */
-    val svgCaliper: List<Float>? = null
+    val svgCaliper: List<Float>? = null,
+    /** Probe panel: falls back to a drawn clock badge so it can never stay blank. */
+    val isProbe: Boolean = false
 )
 
 private fun diagramSource(view: EchoView, mode: DiagramMode, step: GuideStep?, caliperOn: Boolean, language: AppLanguage): DiagramSource {
@@ -375,7 +378,11 @@ private fun diagramSource(view: EchoView, mode: DiagramMode, step: GuideStep?, c
     val orientation = view.orientationAsset
     return when {
         mode == DiagramMode.PROBE && orientation != null ->
-            DiagramSource(localizedOrientationAsset(orientation, language), ORIENTATION_ASPECT, SchemaBackground, emptyList(), { null })
+            DiagramSource(localizedOrientationAsset(orientation, language), ORIENTATION_ASPECT, SchemaBackground, emptyList(), { null },
+                isProbe = true)
+        mode == DiagramMode.PROBE ->
+            // A view without an illustration still gets the clock badge (see ProbeOrientationFallback).
+            DiagramSource("orientation/${view.id}.svg", ORIENTATION_ASPECT, SchemaBackground, emptyList(), { null }, isProbe = true)
         mode == DiagramMode.ATLAS && atlas != null ->
             DiagramSource(atlas, view.diagramAspect, AtlasCard, overlays, { it.diagram })
         view.schemaAsset != null ->
@@ -388,6 +395,31 @@ private fun diagramSource(view: EchoView, mode: DiagramMode, step: GuideStep?, c
 }
 
 private val SchemaBackground = Color(0xFF0B1220)
+
+private fun probeFallback(source: DiagramSource, view: EchoView, language: AppLanguage): (@Composable () -> Unit)? =
+    if (source.isProbe) ({ ProbeOrientationFallback(view, language) }) else null
+
+/** Height reserved under the Sonde | Schema | Atlas pills so they never cover the diagram. */
+private val PillsHeight = 24.dp
+
+/**
+ * Drawn stand-in for the probe illustration (missing or undecodable asset): clock face with the
+ * index direction and the window, so the Sonde panel is never blank.
+ */
+@Composable
+private fun ProbeOrientationFallback(view: EchoView, language: AppLanguage) {
+    Column(
+        modifier = Modifier.fillMaxSize().background(SchemaBackground).padding(6.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        NotchClock(hours = view.notchHours, modifier = Modifier.size(56.dp))
+        Spacer(Modifier.height(4.dp))
+        Text(stringResource(R.string.notch_label, view.notchClock), color = EchoSky, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+        Text(view.probePosition.get(language), color = EchoText, fontSize = 9.sp, maxLines = 2, overflow = TextOverflow.Ellipsis,
+            textAlign = TextAlign.Center)
+    }
+}
 
 @Composable
 private fun SplitStage(
@@ -466,7 +498,9 @@ private fun SplitStage(
                 caliper = source.svgCaliper,
                 contentDescription = view.title.get(language),
                 overlays = source.overlays,
-                overlayCoords = source.coords
+                overlayCoords = source.coords,
+                topInset = if (modes.size > 1) PillsHeight else 0.dp,
+                fallback = probeFallback(source, view, language)
             )
         }
     }
@@ -538,16 +572,23 @@ private fun DiagramThumb(
     caliper: List<Float>?,
     contentDescription: String,
     overlays: List<CaliperOverlay> = emptyList(),
-    overlayCoords: (CaliperOverlay) -> List<Float>? = { it.diagram }
+    overlayCoords: (CaliperOverlay) -> List<Float>? = { it.diagram },
+    /** Space kept free above the image (e.g. for the mode pills). */
+    topInset: Dp = 0.dp,
+    /** Shown instead of a blank box when the asset is missing or cannot be decoded. */
+    fallback: (@Composable () -> Unit)? = null
 ) {
     val context = LocalContext.current
     val imageLoader = remember(context) {
         ImageLoader.Builder(context.applicationContext).components { add(SvgDecoder.Factory()) }.build()
     }
     val isSvg = assetPath.endsWith(".svg", ignoreCase = true)
-    Box(modifier = Modifier.fillMaxSize().padding(2.dp), contentAlignment = Alignment.Center) {
+    Box(
+        modifier = Modifier.fillMaxSize().padding(start = 4.dp, end = 4.dp, bottom = 4.dp, top = 4.dp + topInset),
+        contentAlignment = Alignment.Center
+    ) {
         Box(modifier = Modifier.aspectRatio(aspectRatio, matchHeightConstraintsFirst = true)) {
-            AsyncImage(
+            SubcomposeAsyncImage(
                 model = ImageRequest.Builder(context)
                     .data("file:///android_asset/$assetPath")
                     .apply { if (isSvg) decoderFactory(SvgDecoder.Factory()) }
@@ -555,6 +596,7 @@ private fun DiagramThumb(
                 imageLoader = imageLoader,
                 contentDescription = contentDescription,
                 contentScale = ContentScale.FillBounds,
+                error = { fallback?.invoke() },
                 modifier = Modifier.fillMaxSize()
             )
             if (overlays.isNotEmpty()) {
@@ -761,7 +803,8 @@ private fun DiagramOverlay(
                 caliper = source.svgCaliper,
                 background = source.background,
                 overlays = source.overlays,
-                overlayCoords = source.coords
+                overlayCoords = source.coords,
+                fallback = probeFallback(source, view, language)
             )
         }
         if (source.asset == view.svgAsset) LegendRow()

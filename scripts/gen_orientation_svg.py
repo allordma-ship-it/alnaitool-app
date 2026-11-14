@@ -20,6 +20,7 @@ from __future__ import annotations
 import json
 import math
 import os
+from xml.sax.saxutils import escape
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 ASSETS = os.path.join(ROOT, "app", "src", "main", "assets")
@@ -38,6 +39,9 @@ MUTED = "#94A3B8"
 
 # Probe position on the torso per acoustic window.
 WINDOW_PROBE = {"subcostal": (300, 292), "parasternal": (330, 178), "apical": (396, 262), "suprasternal": (300, 70)}
+# The IVC view sits slightly to the patient's right so the sagittal plane runs through the IVC.
+VIEW_PROBE = {"subcostal_ivc": (287, 300)}
+PILL = "#0F172A"
 
 # Scan-plane fan per view: projected beam direction (screen), foreshortening of the beam in the
 # frontal view (1 = beam runs in the frontal plane, small = beam goes straight into the chest,
@@ -46,7 +50,7 @@ WINDOW_PROBE = {"subcostal": (300, 292), "parasternal": (330, 178), "apical": (3
 # spreads along the index line exactly like the real sector.
 BEAM = {
     "subcostal_4c": ((0.32, -0.95), 1.0, 175),
-    "subcostal_ivc": ((1.0, -0.25), 0.30, 125),
+    "subcostal_ivc": ((1.0, -0.25), 0.22, 135),
     "plax_standard": ((-0.5, 0.87), 0.45, 140),
     "psax_av": ((-0.5, -0.87), 0.45, 125),
     "psax_papillary": ((0.5, 0.87), 0.45, 125),
@@ -71,6 +75,20 @@ TEXTS = {
                windows={"subcostal": "النافذة تحت الضلعية", "parasternal": "جانب القص الأيسر · المسافة الوربية 3–4",
                         "apical": "النافذة القمية (صدمة القمة)", "suprasternal": "الثلمة فوق القص"}),
 }
+
+
+def pill(x: float, y: float, text: str, size: float, fill: str = TEXT, anchor: str = "middle",
+         opacity: float = 0.8) -> str:
+    """Label on a dark rounded pill. No stroke / paint-order: Android's SVG renderer ignores
+    paint-order, which would paint the outline over the glyphs."""
+    w = len(text) * size * 0.54 + size * 0.9
+    h = size * 1.45
+    left = x - w / 2 if anchor == "middle" else (x if anchor == "start" else x - w)
+    tx = left + w / 2
+    return (f'<rect x="{left:.1f}" y="{y - h / 2:.1f}" width="{w:.1f}" height="{h:.1f}" rx="{h / 2:.1f}" '
+            f'fill="{PILL}" fill-opacity="{opacity}"/>'
+            f'<text x="{tx:.1f}" y="{y + size * 0.36:.1f}" font-family="sans-serif" font-weight="700" '
+            f'font-size="{size}" fill="{fill}" text-anchor="middle">{escape(text)}</text>')
 
 
 def unit(hours: float):
@@ -128,16 +146,15 @@ def fan(view_id: str, probe, hours: float, plane_label: str) -> str:
         pts.append((px + radius * (c * dx + s_ * ux), py + radius * (c * dy + s_ * uy)))
     path = f"M {px:.1f} {py:.1f} " + " ".join(f"L {x:.1f} {y:.1f}" for x, y in pts) + " Z"
     beam_end = (px + radius * dx, py + radius * dy)
-    lx, ly = pts[-1][0] + ux * 8, pts[-1][1] + uy * 8 - 4
+    lx, ly = pts[-1][0] + ux * 14, pts[-1][1] + uy * 14
     return f'''
   <path d="{path}" fill="{FAN}" fill-opacity="0.26" stroke="{FAN}" stroke-width="2" stroke-linejoin="round"/>
   <path d="M {px:.1f} {py:.1f} L {beam_end[0]:.1f} {beam_end[1]:.1f}" stroke="{BEAM_RED}" stroke-width="2.2"
         stroke-dasharray="7 5" fill="none"/>
-  <text x="{lx:.1f}" y="{ly:.1f}" font-family="sans-serif" font-size="12" fill="{FAN}" font-weight="700"
-        text-anchor="middle" stroke="{BG}" stroke-width="3" paint-order="stroke">{plane_label}</text>'''
+  {pill(lx, ly, plane_label, 12, FAN)}'''
 
 
-def probe_svg(probe, hours: list[float]) -> str:
+def probe_svg(probe, hours: list[float], badge: str) -> str:
     ux, uy = unit(hours[0])
     ang = math.degrees(math.atan2(uy, ux))
     px, py = probe
@@ -146,7 +163,12 @@ def probe_svg(probe, hours: list[float]) -> str:
         hx, hy = unit(h)
         cx, cy = px + hx * 36, py + hy * 36
         if i == 0:
-            dots.append(f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="7.5" fill="{INDEX_BLUE}" stroke="#DBEAFE" stroke-width="2"/>')
+            # Glowing index marker: soft halos under a bright dot.
+            dots.append(f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="17" fill="{INDEX_BLUE}" fill-opacity="0.16"/>'
+                        f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="12" fill="{INDEX_BLUE}" fill-opacity="0.32"/>'
+                        f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="7.5" fill="#60A5FA" stroke="#DBEAFE" stroke-width="2"/>')
+            bx, by = px + hx * 72, py + hy * 72
+            dots.append(pill(bx, by, badge, 13, "#93C5FD", opacity=0.9))
         else:
             dots.append(f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="6.5" fill="none" stroke="{INDEX_BLUE}" stroke-width="3"/>')
     return f'''
@@ -164,8 +186,7 @@ def compass(t: dict) -> str:
     <path d="M {cx} {cy - 30} L {cx} {cy + 30} M {cx - 30} {cy} L {cx + 30} {cy}"/>
     <path d="M {cx - 6} {cy - 23} L {cx} {cy - 31} L {cx + 6} {cy - 23}"/>
   </g>
-  <g font-family="sans-serif" font-size="12" font-weight="700" fill="{TEXT}" text-anchor="middle"
-     stroke="{BG}" stroke-width="3" paint-order="stroke">
+  <g font-family="sans-serif" font-size="12" font-weight="700" fill="{TEXT}" text-anchor="middle">
     <text x="{cx}" y="{cy - 38}">{t["sup"]}</text>
     <text x="{cx}" y="{cy + 47}">{t["inf"]}</text>
     <text x="{cx - 34}" y="{cy + 4}" text-anchor="end">{t["right"]}</text>
@@ -198,27 +219,38 @@ def clock_inset(hours: list[float], label: str, t: dict) -> str:
   {''.join(hands)}
   <circle cx="{cx}" cy="{cy}" r="3" fill="{TEXT}"/>
   <g font-family="sans-serif" font-size="10" font-weight="700" fill="{MUTED}" text-anchor="middle">{nums}</g>
-  <text x="{cx + r + 22}" y="{cy - 6}" font-family="sans-serif" font-size="13" font-weight="700" fill="{INDEX_BLUE}"
-        stroke="{BG}" stroke-width="3" paint-order="stroke">● {t["index"]}</text>
-  <text x="{cx + r + 22}" y="{cy + 13}" font-family="sans-serif" font-size="13" font-weight="700" fill="{TEXT}"
-        stroke="{BG}" stroke-width="3" paint-order="stroke">{label} {t["clock"]}</text>'''
+  {pill(cx + r + 18, cy - 9, "● " + t["index"], 13, "#93C5FD", anchor="start")}
+  {pill(cx + r + 18, cy + 13, f"{label} {t['clock']}", 13, TEXT, anchor="start")}'''
 
 
 def render(view: dict, window_id: str, lang: str) -> str:
     t = TEXTS[lang]
     hours = view["notchHours"] or [12.0]
-    probe = WINDOW_PROBE[window_id]
-    title = view["title"].get(lang) or view["title"]["en"]
-    direction, anchor_x, anchor = "", 16, "start"
+    probe = VIEW_PROBE.get(view["id"], WINDOW_PROBE[window_id])
+    # Android's SVG renderer drops an escaped "&" from text, so show it as "+".
+    title = (view["title"].get(lang) or view["title"]["en"]).replace(" & ", " + ")
+    primary = view["notchClock"].split("/")[0].strip()
+    badge = f"{t['clock']} {primary}" if lang == "ar" else f"{primary} {t['clock']}"
+    # Every text node is XML-escaped: titles such as "IVC & bicaval" made the files invalid
+    # (blank panel on Android), although lenient browsers still showed them.
     return f'''<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}">
-  <title>{title}</title>
-  <rect width="{W}" height="{H}" fill="{BG}"/>{torso()}{heart()}{fan(view["id"], probe, hours[0], t["plane"])}{probe_svg(probe, hours)}{compass(t)}{clock_inset(hours, view["notchClock"], t)}
-  <g font-family="sans-serif" font-weight="700" stroke="{BG}" stroke-width="3" paint-order="stroke"{direction}>
-    <text x="{anchor_x}" y="24" font-size="16" fill="{TEXT}" text-anchor="{anchor}">{title}</text>
-    <text x="{anchor_x}" y="44" font-size="13" fill="{FAN}" text-anchor="{anchor}">{t["windows"][window_id]}</text>
-  </g>
+  <title>{escape(title)}</title>
+  <rect width="{W}" height="{H}" fill="{BG}"/>{torso()}{heart()}{fan(view["id"], probe, hours[0], t["plane"])}{probe_svg(probe, hours, badge)}{compass(t)}{clock_inset(hours, view["notchClock"], t)}
+  {pill(10, 24, title, 15, TEXT, anchor="start")}
+  {pill(10, 48, t["windows"][window_id], 12, FAN, anchor="start")}
 </svg>
 '''
+
+
+# Index directions the guide teaches (clock face seen facing the patient). Apical 2C: rotate
+# counter-clockwise from 3 o'clock to 12–1 o'clock; apical 3C: on to 10–11 o'clock.
+NOTCH = {
+    "apical_2c_3c": ("12–1 / 10–11", [12.5, 10.5], {
+        "en": "A2C: notch at 12–1 o'clock. A3C: notch at 10–11 o'clock.",
+        "de": "2K: Markierung bei 12–1 Uhr. 3K: Markierung bei 10–11 Uhr.",
+        "ar": "ثنائي الحجرات: العلامة عند الساعة 12–1. ثلاثي الحجرات: العلامة عند الساعة 10–11.",
+    }),
+}
 
 
 def main():
@@ -227,6 +259,9 @@ def main():
         db = json.load(f)
     for window in db["windows"]:
         for view in window["views"]:
+            if view["id"] in NOTCH:
+                clock, hours, text = NOTCH[view["id"]]
+                view["notchClock"], view["notchHours"], view["notchDescription"] = clock, hours, text
             for lang in ("en", "de", "ar"):
                 name = f"{view['id']}.svg" if lang == "en" else f"{view['id']}_{lang}.svg"
                 with open(os.path.join(OUT, name), "w", encoding="utf-8") as f:

@@ -458,13 +458,13 @@
             "ar": "الرسم: Patrick J. Lynch و C. Carl Jaffe, MD (Yale) · CC BY 2.5 · معدَّل (خلفية فاتحة)"
           },
           "schemaAsset": "schema/subcostal_4c.svg",
-          "schemaAspect": 1.4032,
+          "schemaAspect": 1.3813,
           "orientationAsset": "orientation/subcostal_4c.svg",
           "schemaCrop": [
-            0.15,
-            0.15,
-            0.76,
-            0.715
+            0.154,
+            0.138,
+            0.746,
+            0.695
           ]
         },
         {
@@ -875,13 +875,13 @@
             "ar": "صورة إيكو مرجعية موسومة (مقدَّمة من المستخدم؛ المصدر الأصلي والترخيص بحاجة إلى تأكيد)"
           },
           "schemaAsset": "schema/subcostal_ivc.svg",
-          "schemaAspect": 1.5087,
+          "schemaAspect": 1.5404,
           "orientationAsset": "orientation/subcostal_ivc.svg",
           "schemaCrop": [
             0.0,
             0.0,
             1.0,
-            0.97
+            0.95
           ]
         }
       ]
@@ -1551,13 +1551,13 @@
             "ar": "الرسم: Patrick J. Lynch و C. Carl Jaffe, MD (Yale) · CC BY 2.5 · معدَّل (خلفية فاتحة)"
           },
           "schemaAsset": "schema/plax_standard.svg",
-          "schemaAspect": 1.6884,
+          "schemaAspect": 1.6446,
           "orientationAsset": "orientation/plax_standard.svg",
           "schemaCrop": [
-            0.05,
-            0.018,
-            0.91,
-            0.68
+            0.07,
+            0.038,
+            0.89,
+            0.686
           ]
         },
         {
@@ -2036,13 +2036,13 @@
             "ar": "الرسم: Patrick J. Lynch و C. Carl Jaffe, MD (Yale) · CC BY 2.5 · معدَّل (خلفية فاتحة)"
           },
           "schemaAsset": "schema/psax_av.svg",
-          "schemaAspect": 1.1783,
+          "schemaAspect": 1.2601,
           "orientationAsset": "orientation/psax_av.svg",
           "schemaCrop": [
-            0.115,
-            0.023,
-            0.89,
-            0.9
+            0.135,
+            0.043,
+            0.926,
+            0.88
           ]
         },
         {
@@ -2547,13 +2547,13 @@
             "ar": "الرسم: Patrick J. Lynch و C. Carl Jaffe, MD (Yale) · CC BY 2.5 · معدَّل (خلفية فاتحة)"
           },
           "schemaAsset": "schema/psax_papillary.svg",
-          "schemaAspect": 1.6444,
+          "schemaAspect": 1.4515,
           "orientationAsset": "orientation/psax_papillary.svg",
           "schemaCrop": [
-            0.19,
-            0.225,
-            0.81,
-            0.715
+            0.21,
+            0.199,
+            0.793,
+            0.721
           ]
         }
       ]
@@ -3282,13 +3282,13 @@
             "ar": "الرسم: Patrick J. Lynch و C. Carl Jaffe, MD (Yale) · CC BY 2.5 · معدَّل (خلفية فاتحة)"
           },
           "schemaAsset": "schema/apical_4c.svg",
-          "schemaAspect": 0.8854,
+          "schemaAspect": 1.0039,
           "orientationAsset": "orientation/apical_4c.svg",
           "schemaCrop": [
-            0.205,
-            0.02,
-            0.75,
-            0.82
+            0.177,
+            0.04,
+            0.788,
+            0.831
           ]
         },
         {
@@ -3711,13 +3711,13 @@
             "ar": "الرسم: Patrick J. Lynch و C. Carl Jaffe, MD (Yale) · CC BY 2.5 · معدَّل (خلفية فاتحة)"
           },
           "schemaAsset": "schema/apical_5c.svg",
-          "schemaAspect": 0.9704,
+          "schemaAspect": 0.9535,
           "orientationAsset": "orientation/apical_5c.svg",
           "schemaCrop": [
-            0.18,
-            0.023,
-            0.835,
-            0.923
+            0.2,
+            0.043,
+            0.815,
+            0.903
           ]
         },
         {
@@ -3732,15 +3732,15 @@
             "de": "Aus dem 4K-Blick ≈ 60° gegen den Uhrzeigersinn drehen (RV verschwindet) für den 2K-Blick; weitere ≈ 60° für den 3K-Blick / apikale lange Achse mit LVOT und Aorta.",
             "ar": "من المقطع رباعي الحجرات دوّر المسبار عكس عقارب الساعة نحو 60° (يختفي البطين الأيمن) للمقطع ثنائي الحجرات، ثم 60° إضافية للمقطع ثلاثي الحجرات."
           },
-          "notchClock": "1–2 / 10–11",
+          "notchClock": "12–1 / 10–11",
           "notchHours": [
-            1.5,
+            12.5,
             10.5
           ],
           "notchDescription": {
-            "en": "A2C: notch at 1–2 o'clock. A3C: notch at 10–11 o'clock.",
-            "de": "2K: Markierung bei 1–2 Uhr. 3K: Markierung bei 10–11 Uhr.",
-            "ar": "ثنائي الحجرات: العلامة عند الساعة 1–2. ثلاثي الحجرات: العلامة عند الساعة 10–11."
+            "en": "A2C: notch at 12–1 o'clock. A3C: notch at 10–11 o'clock.",
+            "de": "2K: Markierung bei 12–1 Uhr. 3K: Markierung bei 10–11 Uhr.",
+            "ar": "ثنائي الحجرات: العلامة عند الساعة 12–1. ثلاثي الحجرات: العلامة عند الساعة 10–11."
           },
           "videoAsset": "loops/apical_2c_3c.mp4",
           "svgAsset": "svg/apical_2c_3c.svg",
@@ -4099,13 +4099,13 @@
             "ar": "الرسم: Patrick J. Lynch و C. Carl Jaffe, MD (Yale) · CC BY 2.5 · معدَّل (خلفية فاتحة)"
           },
           "schemaAsset": "schema/apical_2c_3c.svg",
-          "schemaAspect": 0.7268,
+          "schemaAspect": 0.9603,
           "orientationAsset": "orientation/apical_2c_3c.svg",
           "schemaCrop": [
-            0.305,
-            0.04,
-            0.73,
-            0.8
+            0.254,
+            0.06,
+            0.786,
+            0.78
           ]
         }
       ]
@@ -4608,13 +4608,13 @@
             "ar": "صورة إيكو مرجعية موسومة (مقدَّمة من المستخدم؛ المصدر الأصلي والترخيص بحاجة إلى تأكيد)"
           },
           "schemaAsset": "schema/suprasternal_arch.svg",
-          "schemaAspect": 0.842,
+          "schemaAspect": 0.9977,
           "orientationAsset": "orientation/suprasternal_arch.svg",
           "schemaCrop": [
-            0.2,
-            0.0,
-            0.66,
-            0.71
+            0.204,
+            0.01,
+            0.726,
+            0.69
           ]
         }
       ]

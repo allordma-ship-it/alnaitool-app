@@ -18,6 +18,7 @@ from __future__ import annotations
 import json
 import math
 import os
+from xml.sax.saxutils import escape
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 ASSETS = os.path.join(ROOT, "app", "src", "main", "assets")
@@ -27,15 +28,19 @@ DB = os.path.join(ASSETS, "echo_protocol_full.json")
 BG = "#0B1220"
 SECTOR = "#111C2E"
 SECTOR_EDGE = "#33435C"
-MYO = "#B84A5E"
+MYO = "#9F3A4E"
 MYO_EDGE = "#F4A9B7"
-CAV = {"L": "#33171F", "R": "#14213D", "A": "#2A1520", "RA": "#18284A"}
-ARTERY_WALL = "#E07A8A"
-VEIN_WALL = "#86A2DC"
-VALVE = "#F1F5F9"
+# Physiological shading: right heart & IVC cool blue, left heart & aorta warm crimson (fill, opacity).
+RIGHT, LEFT = ("#1D4ED8", 0.35), ("#E11D48", 0.35)
+CAV = {"L": LEFT, "A": LEFT, "R": RIGHT, "RA": RIGHT}
+ARTERY_WALL = "#FB7185"
+VEIN_WALL = "#93C5FD"
+VALVE = "#FFFFFF"
 PERI = "#E2E8F0"
-LIVER = "#3D2C24"
+LIVER = ("#92400E", 0.45)
 LABEL = "#F8FAFC"
+PILL = "#0F172A"
+STROKE = 3.0  # ≈ 2 dp once the schema is fitted into the stage panel
 
 
 # ---------------------------------------------------------------------------------------------
@@ -324,7 +329,8 @@ def simulated_views() -> dict:
 
 # ---------------------------------------------------------------------------------------------
 
-def crop_box(spec: dict, overlays: list[list[float]], pad: float = 0.05) -> list[float]:
+def crop_box(spec_id: str, spec: dict, overlays: list[list[float]], width: int, height: int,
+             pad: float = 0.03) -> list[float]:
     """Region around the anatomy and every caliper, so the small stage panel shows the heart large."""
     xs, ys = [], []
     for shape in spec["shapes"]:
@@ -338,12 +344,17 @@ def crop_box(spec: dict, overlays: list[list[float]], pad: float = 0.05) -> list
         elif kind == "ellipse":
             (cx, cy), (rx, ry) = shape[1], shape[2]
             pts = [(cx - rx, cy - ry), (cx + rx, cy + ry)]
-        elif kind == "label":
-            pts = [shape[2]]
         else:
             pts = []
         xs += [p[0] for p in pts]
         ys += [p[1] for p in pts]
+    for text, pos, size, target in LABELS.get(spec_id, []):
+        w, h = pill_size(text, size)
+        xs += [pos[0] - w / 2 / width, pos[0] + w / 2 / width]
+        ys += [pos[1] - h / 2 / height, pos[1] + h / 2 / height]
+        if target:
+            xs.append(target[0])
+            ys.append(target[1])
     for c in overlays:
         xs += [c[0], c[2]]
         ys += [c[1], c[3]]
@@ -360,19 +371,20 @@ def render(view_id: str, spec: dict, width: int, height: int, crop: list[float] 
     for shape in spec["shapes"]:
         kind = shape[0]
         if kind == "liver":
-            body.append(f'<path d="{c.smooth(shape[1], True)}" fill="{LIVER}"/>')
+            body.append(f'<path d="{c.smooth(shape[1], True)}" fill="{LIVER[0]}" fill-opacity="{LIVER[1]}"/>')
         elif kind == "cav":
-            body.append(f'<path d="{c.smooth(shape[1], True)}" fill="{CAV[shape[2]]}"/>')
+            colour, alpha = CAV[shape[2]]
+            body.append(f'<path d="{c.smooth(shape[1], True)}" fill="{colour}" fill-opacity="{alpha}"/>')
         elif kind == "myo":
             outer, inner = shape[1], shape[2]
             d = c.smooth(outer + inner, True)
-            body.append(f'<path d="{d}" fill="{MYO}" stroke="{MYO_EDGE}" stroke-width="1.6" stroke-linejoin="round"/>')
+            body.append(f'<path d="{d}" fill="{MYO}" stroke="{MYO_EDGE}" stroke-width="{STROKE}" stroke-linejoin="round"/>')
         elif kind == "band":
             top, bottom = shape[1], shape[2]
             d = c.smooth(top, False) + " L " + c.smooth(bottom, False)[2:] + " Z"
-            body.append(f'<path d="{d}" fill="{MYO}" stroke="{MYO_EDGE}" stroke-width="1.6" stroke-linejoin="round"/>')
+            body.append(f'<path d="{d}" fill="{MYO}" stroke="{MYO_EDGE}" stroke-width="{STROKE}" stroke-linejoin="round"/>')
         elif kind == "valve":
-            body.append(f'<path d="{c.smooth(shape[1], False)}" fill="none" stroke="{VALVE}" stroke-width="3.5" '
+            body.append(f'<path d="{c.smooth(shape[1], False)}" fill="none" stroke="{VALVE}" stroke-width="4" '
                         f'stroke-linecap="round"/>')
         elif kind == "peri":
             body.append(f'<path d="{c.smooth(shape[1], False)}" fill="none" stroke="{PERI}" stroke-width="2.2" '
@@ -384,20 +396,17 @@ def render(view_id: str, spec: dict, width: int, height: int, crop: list[float] 
             pts, w = shape[1], shape[2] * c.w / 400
             d = c.smooth(pts, False)
             body.append(f'<path d="{d}" fill="none" stroke="{ARTERY_WALL}" stroke-width="{w + 8:.1f}" stroke-linecap="round"/>')
-            body.append(f'<path d="{d}" fill="none" stroke="{CAV["L"]}" stroke-width="{w:.1f}" stroke-linecap="round"/>')
+            body.append(f'<path d="{d}" fill="none" stroke="#3A1420" stroke-width="{w:.1f}" stroke-linecap="round"/>')
+            body.append(f'<path d="{d}" fill="none" stroke="{LEFT[0]}" stroke-opacity="{LEFT[1]}" stroke-width="{w:.1f}" stroke-linecap="round"/>')
         elif kind == "ellipse":
             (cx, cy), (rx, ry), fill, wall = shape[1], shape[2], shape[3], shape[4]
             X, Y = c.p((cx, cy))
-            colour = MYO if fill == "myo" else CAV[fill]
-            stroke = MYO_EDGE if fill == "myo" else (ARTERY_WALL if wall else "none")
+            colour, alpha = (MYO, 1.0) if fill == "myo" else CAV[fill]
+            stroke = MYO_EDGE if fill == "myo" else ((ARTERY_WALL if fill in ("L", "A") else VEIN_WALL) if wall else "none")
             body.append(f'<ellipse cx="{X:.1f}" cy="{Y:.1f}" rx="{rx * c.w:.1f}" ry="{ry * c.h:.1f}" fill="{colour}" '
-                        f'stroke="{stroke}" stroke-width="{4 if wall else 1.6}"/>')
+                        f'fill-opacity="{alpha}" stroke="{stroke}" stroke-width="{STROKE}"/>')
         elif kind == "label":
-            text, (x, y) = shape[1], shape[2]
-            size = shape[3] if len(shape) > 3 else 16
-            X, Y = c.p((x, y))
-            labels.append(f'<text x="{X:.1f}" y="{Y:.1f}" font-size="{size}" text-anchor="middle" '
-                          f'dominant-baseline="middle">{text}</text>')
+            pass  # labels come from LABELS below
     x0, y0, x1, y1 = crop or [0.0, 0.0, 1.0, 1.0]
     vb = (x0 * width, y0 * height, (x1 - x0) * width, (y1 - y0) * height)
     return f'''<svg xmlns="http://www.w3.org/2000/svg" width="{vb[2]:.0f}" height="{vb[3]:.0f}" viewBox="{vb[0]:.1f} {vb[1]:.1f} {vb[2]:.1f} {vb[3]:.1f}">
@@ -409,11 +418,115 @@ def render(view_id: str, spec: dict, width: int, height: int, crop: list[float] 
     {chr(10).join("    " + b for b in body).strip()}
   </g>
   <path d="{sector}" fill="none" stroke="{SECTOR_EDGE}" stroke-width="1.5"/>
-  <g font-family="sans-serif" font-weight="700" fill="{LABEL}" stroke="{BG}" stroke-width="3" paint-order="stroke">
-    {chr(10).join("    " + t for t in labels).strip()}
-  </g>
+  {label_layer(c, LABELS.get(view_id, []))}
 </svg>
 '''
+
+
+# ---------------------------------------------------------------------------------------------
+# Labels: white text on a dark pill (#0F172A, 80 %), with a leader line + dot when the pill sits
+# beside a small structure. (text, pill centre, font size, leader target or None), normalised to
+# the video frame. No stroke / paint-order: Android's SVG renderer ignores paint-order and would
+# paint a dark outline over the letters.
+# ---------------------------------------------------------------------------------------------
+
+BIG, SMALL = 24, 19
+
+LABELS = {
+    "plax_standard": [
+        ("RV", (0.52, 0.165), BIG, None),
+        ("IVS", (0.27, 0.16), SMALL, (0.38, 0.245)),
+        ("LV", (0.27, 0.38), BIG, None),
+        ("Ao", (0.81, 0.29), SMALL, (0.67, 0.355)),
+        ("LA", (0.76, 0.49), BIG, None),
+        ("MV", (0.565, 0.39), SMALL, (0.535, 0.468)),
+        ("PW", (0.20, 0.63), SMALL, (0.30, 0.53)),
+    ],
+    "psax_papillary": [
+        ("RV", (0.31, 0.47), BIG, None),
+        ("LV", (0.425, 0.525), SMALL, None),
+        ("IVS", (0.30, 0.28), SMALL, (0.385, 0.36)),
+        ("PM", (0.735, 0.43), SMALL, (0.545, 0.47)),
+        ("PM", (0.735, 0.565), SMALL, (0.56, 0.53)),
+        ("ANT", (0.64, 0.255), SMALL, (0.515, 0.30)),
+        ("INF", (0.64, 0.665), SMALL, (0.515, 0.60)),
+    ],
+    "apical_4c": [
+        ("LV", (0.575, 0.30), BIG, None),
+        ("RV", (0.345, 0.40), BIG, None),
+        ("RA", (0.37, 0.65), BIG, None),
+        ("LA", (0.59, 0.70), BIG, None),
+        ("TV", (0.235, 0.68), SMALL, (0.33, 0.55)),
+        ("MV", (0.73, 0.65), SMALL, (0.62, 0.567)),
+        ("IAS", (0.40, 0.775), SMALL, (0.468, 0.70)),
+    ],
+    "apical_2c_3c": [
+        ("LV", (0.575, 0.36), BIG, None),
+        ("LA", (0.575, 0.68), BIG, None),
+        ("MV", (0.70, 0.62), SMALL, (0.60, 0.556)),
+        ("INF", (0.32, 0.25), SMALL, (0.39, 0.32)),
+        ("ANT", (0.72, 0.25), SMALL, (0.65, 0.32)),
+    ],
+    "subcostal_4c": [
+        ("Liver", (0.43, 0.20), BIG, None),
+        ("RV", (0.63, 0.255), SMALL, (0.53, 0.365)),
+        ("RA", (0.385, 0.475), BIG, None),
+        ("LA", (0.42, 0.60), BIG, None),
+        ("LV", (0.585, 0.51), BIG, None),
+        ("IVS", (0.68, 0.36), SMALL, (0.54, 0.40)),
+        ("IAS", (0.22, 0.50), SMALL, (0.36, 0.545)),
+    ],
+    "subcostal_ivc": [
+        ("Liver", (0.50, 0.30), BIG, None),
+        ("IVC", (0.36, 0.556), SMALL, None),
+        ("RA", (0.70, 0.67), BIG, None),
+        ("Diaphragm", (0.16, 0.73), SMALL, (0.24, 0.60)),
+    ],
+    "suprasternal_arch": [
+        ("BCV", (0.66, 0.08), SMALL, (0.52, 0.15)),
+        ("Arch", (0.51, 0.275), BIG, None),
+        ("Asc Ao", (0.295, 0.50), SMALL, None),
+        ("Desc Ao", (0.62, 0.52), SMALL, (0.515, 0.53)),
+    ],
+    "psax_av": [
+        ("RVOT", (0.50, 0.25), BIG, None),
+        ("AV", (0.33, 0.42), SMALL, (0.43, 0.47)),
+        ("RA", (0.275, 0.655), BIG, None),
+        ("LA", (0.52, 0.77), BIG, None),
+        ("MPA", (0.86, 0.43), SMALL, (0.71, 0.47)),
+        ("PV", (0.79, 0.30), SMALL, (0.668, 0.376)),
+        ("TV", (0.20, 0.53), SMALL, (0.32, 0.53)),
+    ],
+    "apical_5c": [
+        ("LV", (0.64, 0.36), BIG, None),
+        ("RV", (0.38, 0.38), BIG, None),
+        ("RA", (0.33, 0.745), BIG, None),
+        ("LA", (0.685, 0.755), BIG, None),
+        ("LVOT", (0.66, 0.66), SMALL, (0.53, 0.70)),
+        ("AV", (0.66, 0.59), SMALL, (0.525, 0.63)),
+    ],
+}
+
+
+def pill_size(text: str, size: float) -> tuple[float, float]:
+    return len(text) * size * 0.62 + size * 0.9, size * 1.5
+
+
+def label_layer(c: "Canvas", labels) -> str:
+    leaders, pills = [], []
+    for text, pos, size, target in labels:
+        X, Y = c.p(pos)
+        w, h = pill_size(text, size)
+        if target:
+            TX, TY = c.p(target)
+            leaders.append(f'<path d="M {X:.1f} {Y:.1f} L {TX:.1f} {TY:.1f}" stroke="{LABEL}" stroke-opacity="0.85" '
+                           f'stroke-width="2" fill="none"/>'
+                           f'<circle cx="{TX:.1f}" cy="{TY:.1f}" r="4" fill="{LABEL}"/>')
+        pills.append(f'<rect x="{X - w / 2:.1f}" y="{Y - h / 2:.1f}" width="{w:.1f}" height="{h:.1f}" rx="{h / 2:.1f}" '
+                     f'fill="{PILL}" fill-opacity="0.8" stroke="{LABEL}" stroke-opacity="0.25" stroke-width="1"/>'
+                     f'<text x="{X:.1f}" y="{Y + size * 0.36:.1f}" font-family="sans-serif" font-weight="700" '
+                     f'font-size="{size}" fill="{LABEL}" text-anchor="middle">{escape(text)}</text>')
+    return "\n  ".join(leaders + pills)
 
 
 def main():
@@ -432,7 +545,7 @@ def main():
             overlays = [o["video"] for st in view["steps"]
                         for o in ([st["caliperOverlay"]] if st.get("caliperOverlay") else []) + st.get("extraOverlays", [])
                         if o.get("video")]
-            crop = crop_box(specs[view["id"]], overlays)
+            crop = crop_box(view["id"], specs[view["id"]], overlays, width, height)
             svg = render(view["id"], specs[view["id"]], width, height, crop)
             path = os.path.join(OUT, f"{view['id']}.svg")
             with open(path, "w", encoding="utf-8") as f:

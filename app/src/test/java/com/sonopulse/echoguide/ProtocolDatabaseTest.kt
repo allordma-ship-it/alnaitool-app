@@ -205,6 +205,25 @@ class ProtocolDatabaseTest {
     }
 
     @Test
+    fun everySvgAssetIsWellFormedForAndroid() {
+        // Android's SVG parser rejects malformed XML (e.g. an unescaped "&" in a title) and shows
+        // nothing; it also ignores paint-order, which would hide labels under their outline.
+        val factory = javax.xml.parsers.DocumentBuilderFactory.newInstance()
+        val svgs = listOf("orientation", "schema", "svg").flatMap { dir ->
+            File(assetsDir, dir).listFiles { f -> f.name.endsWith(".svg") }.orEmpty().toList()
+        }
+        assertTrue("SVG assets found", svgs.size >= 9 * 3 + 9 + 9)
+        svgs.forEach { f ->
+            try {
+                factory.newDocumentBuilder().parse(f)
+            } catch (e: Exception) {
+                throw AssertionError("${f.name} is not well-formed XML: ${e.message}")
+            }
+            assertFalse("${f.name} uses paint-order", f.readText().contains("paint-order"))
+        }
+    }
+
+    @Test
     fun eccentricityIndexHasD1AndD2InDiastoleAndSystole() {
         val pap = protocol.allViews.first { it.id == "psax_papillary" }
         val phases = pap.steps.filter { s -> s.overlays.map { it.label }.containsAll(listOf("D1", "D2")) }.map { it.requiredPhase }

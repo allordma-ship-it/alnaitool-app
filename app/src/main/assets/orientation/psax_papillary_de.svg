@@ -26,19 +26,17 @@
   <path d="M 330.0 178.0 L 281.9 255.5 L 287.8 254.4 L 293.9 253.1 L 300.1 251.5 L 306.5 249.6 L 312.9 247.5 L 319.3 245.2 L 325.8 242.6 L 332.3 239.9 L 338.8 236.9 L 345.3 233.7 L 351.7 230.3 L 358.0 226.8 L 364.3 223.1 L 370.4 219.2 L 376.4 215.2 L 382.2 211.0 L 387.9 206.8 L 393.4 202.5 L 398.6 198.0 L 403.6 193.5 L 408.4 189.0 L 412.9 184.4 L 417.1 179.8 L 421.1 175.2 Z" fill="#2EE6D6" fill-opacity="0.26" stroke="#2EE6D6" stroke-width="2" stroke-linejoin="round"/>
   <path d="M 330.0 178.0 L 358.0 226.8" stroke="#FF4D6D" stroke-width="2.2"
         stroke-dasharray="7 5" fill="none"/>
-  <text x="428.0" y="167.2" font-family="sans-serif" font-size="12" fill="#2EE6D6" font-weight="700"
-        text-anchor="middle" stroke="#0B1220" stroke-width="3" paint-order="stroke">Schallebene</text>
+  <rect x="392.1" y="159.5" width="82.1" height="17.4" rx="8.7" fill="#0F172A" fill-opacity="0.8"/><text x="433.2" y="172.5" font-family="sans-serif" font-weight="700" font-size="12" fill="#2EE6D6" text-anchor="middle">Schallebene</text>
   <g transform="translate(330 178) rotate(-30.0)">
     <rect x="-30" y="-11" width="60" height="22" rx="10" fill="#E2E8F0" stroke="#0F172A" stroke-width="2"/>
     <rect x="-24" y="-5" width="48" height="10" rx="5" fill="#94A3B8"/>
   </g>
-  <circle cx="361.2" cy="160.0" r="7.5" fill="#3B82F6" stroke="#DBEAFE" stroke-width="2"/>
+  <circle cx="361.2" cy="160.0" r="17" fill="#3B82F6" fill-opacity="0.16"/><circle cx="361.2" cy="160.0" r="12" fill="#3B82F6" fill-opacity="0.32"/><circle cx="361.2" cy="160.0" r="7.5" fill="#60A5FA" stroke="#DBEAFE" stroke-width="2"/><rect x="369.0" y="132.6" width="46.8" height="18.8" rx="9.4" fill="#0F172A" fill-opacity="0.9"/><text x="392.4" y="146.7" font-family="sans-serif" font-weight="700" font-size="13" fill="#93C5FD" text-anchor="middle">2 Uhr</text>
   <g stroke="#94A3B8" stroke-width="2.5" fill="none" stroke-linecap="round">
     <path d="M 528 32 L 528 92 M 498 62 L 558 62"/>
     <path d="M 522 39 L 528 31 L 534 39"/>
   </g>
-  <g font-family="sans-serif" font-size="12" font-weight="700" fill="#F8FAFC" text-anchor="middle"
-     stroke="#0B1220" stroke-width="3" paint-order="stroke">
+  <g font-family="sans-serif" font-size="12" font-weight="700" fill="#F8FAFC" text-anchor="middle">
     <text x="528" y="24">Kranial</text>
     <text x="528" y="109">Kaudal</text>
     <text x="494" y="66" text-anchor="end">Rechts</text>
@@ -49,12 +47,8 @@
   <path d="M 62 352 L 88.8 336.5" stroke="#3B82F6" stroke-width="4" stroke-linecap="round"/><circle cx="88.8" cy="336.5" r="4.5" fill="#3B82F6" stroke="#3B82F6" stroke-width="2"/>
   <circle cx="62" cy="352" r="3" fill="#F8FAFC"/>
   <g font-family="sans-serif" font-size="10" font-weight="700" fill="#94A3B8" text-anchor="middle"><text x="62.0" y="305.0">12</text><text x="113.0" y="356.0">3</text><text x="62.0" y="407.0">6</text><text x="11.0" y="356.0">9</text></g>
-  <text x="124" y="346" font-family="sans-serif" font-size="13" font-weight="700" fill="#3B82F6"
-        stroke="#0B1220" stroke-width="3" paint-order="stroke">● Markierung</text>
-  <text x="124" y="365" font-family="sans-serif" font-size="13" font-weight="700" fill="#F8FAFC"
-        stroke="#0B1220" stroke-width="3" paint-order="stroke">2 Uhr</text>
-  <g font-family="sans-serif" font-weight="700" stroke="#0B1220" stroke-width="3" paint-order="stroke">
-    <text x="16" y="24" font-size="16" fill="#F8FAFC" text-anchor="start">PSAX – Papillarmuskelebene</text>
-    <text x="16" y="44" font-size="13" fill="#2EE6D6" text-anchor="start">Links parasternal · 3.–4. ICR</text>
-  </g>
+  <rect x="120.0" y="333.6" width="95.9" height="18.8" rx="9.4" fill="#0F172A" fill-opacity="0.8"/><text x="168.0" y="347.7" font-family="sans-serif" font-weight="700" font-size="13" fill="#93C5FD" text-anchor="middle">● Markierung</text>
+  <rect x="120.0" y="355.6" width="46.8" height="18.8" rx="9.4" fill="#0F172A" fill-opacity="0.8"/><text x="143.4" y="369.7" font-family="sans-serif" font-weight="700" font-size="13" fill="#F8FAFC" text-anchor="middle">2 Uhr</text>
+  <rect x="10.0" y="13.1" width="224.1" height="21.8" rx="10.9" fill="#0F172A" fill-opacity="0.8"/><text x="122.1" y="29.4" font-family="sans-serif" font-weight="700" font-size="15" fill="#F8FAFC" text-anchor="middle">PSAX – Papillarmuskelebene</text>
+  <rect x="10.0" y="39.3" width="198.7" height="17.4" rx="8.7" fill="#0F172A" fill-opacity="0.8"/><text x="109.4" y="52.3" font-family="sans-serif" font-weight="700" font-size="12" fill="#2EE6D6" text-anchor="middle">Links parasternal · 3.–4. ICR</text>
 </svg>

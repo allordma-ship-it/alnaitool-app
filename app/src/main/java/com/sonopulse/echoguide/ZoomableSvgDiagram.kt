@@ -95,7 +95,9 @@ fun ZoomableDiagram(
     background: Color = Color.Unspecified,
     /** Normalised measurements drawn on schema / atlas images, coordinates picked by [overlayCoords]. */
     overlays: List<CaliperOverlay> = emptyList(),
-    overlayCoords: (CaliperOverlay) -> List<Float>? = { it.diagram }
+    overlayCoords: (CaliperOverlay) -> List<Float>? = { it.diagram },
+    /** Shown instead of the asset path when the image cannot be loaded. */
+    fallback: (@Composable () -> Unit)? = null
 ) {
     val svgAsset = assetPath
     val isSvg = assetPath.endsWith(".svg", ignoreCase = true)
@@ -177,8 +179,12 @@ fun ZoomableDiagram(
                     }
                 },
                 error = {
-                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text("assets/$svgAsset", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    if (fallback != null) {
+                        fallback()
+                    } else {
+                        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            Text("assets/$svgAsset", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        }
                     }
                 },
                 modifier = Modifier.fillMaxSize()

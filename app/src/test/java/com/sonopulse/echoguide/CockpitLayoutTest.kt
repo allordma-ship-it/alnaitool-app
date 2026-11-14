@@ -144,4 +144,30 @@ class CockpitLayoutTest {
         compose.onNodeWithText("Atlas").assertIsSelected()
         screenshot("psax_ei_atlas")
     }
+
+    // The step-1 "Sonde" panel must show its illustration (it was blank for titles containing
+    // "&"); the screenshots are checked visually.
+    private fun probeScreen(id: String) {
+        showCockpit(id, AppLanguage.DE, stepIndex = 0)
+        compose.mainClock.advanceTimeBy(1_500)
+        compose.onNodeWithText("Sonde").assertIsSelected()
+        screenshot("probe_${id}_de")
+    }
+
+    @Test fun probePanelSubcostalIvc() = probeScreen("subcostal_ivc")
+
+    @Test fun probePanelSuprasternal() = probeScreen("suprasternal_arch")
+
+    @Test fun probePanelApical2c3c() = probeScreen("apical_2c_3c")
+
+    private fun schemaScreen(id: String) {
+        showCockpit(id, AppLanguage.DE, stepIndex = 1)
+        compose.mainClock.advanceTimeBy(1_500)
+        compose.onNodeWithText("Schema").assertIsSelected()
+        screenshot("${id}_schema_de")
+    }
+
+    @Test fun subcostalSchemaWithReadableLabels() = schemaScreen("subcostal_4c")
+
+    @Test fun ivcSchemaWithReadableLabels() = schemaScreen("subcostal_ivc")
 }
