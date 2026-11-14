@@ -18,10 +18,14 @@ Expected files (one per standard TTE view, names must match exactly):
 
 Bundled loops: real + simulated
 -------------------------------
-Real, openly licensed echocardiography clips from Wikimedia Commons (CardioNetworks
-ECHOpedia, CC BY-SA 3.0) are used where a NORMAL clip of the view exists:
-  psax_papillary, apical_2c_3c (A2C + A3C joined), apical_4c, suprasternal_arch
-The other views use clearly labelled simulated loops (scripts/simulate_loops.py).
+Real, openly licensed NORMAL echocardiography clips from Wikimedia Commons are used for
+7 views: apical_4c, apical_2c_3c, psax_papillary, suprasternal_arch, plax_standard,
+subcostal_4c (CardioNetworks ECHOpedia, CC BY-SA 3.0) and subcostal_ivc
+("Inferior vena cava ultrasound.gif", CC BY-SA 4.0; no ECG, nominal timing).
+psax_av and apical_5c keep clearly labelled simulated loops (scripts/simulate_loops.py):
+no normal clip of these views was found under a redistributable licence on Commons,
+Zenodo, Figshare or The POCUS Atlas (scripts/global_echo_hunter.py). Replace them with
+anonymised normal clips when available (convert_real_loops.py, MAPPING).
 Credits for every clip: ATTRIBUTION.txt. Each view's "videoSource" in
 echo_protocol_full.json says which kind it is; the app shows the credit or a
 "simulated" note under the player.
