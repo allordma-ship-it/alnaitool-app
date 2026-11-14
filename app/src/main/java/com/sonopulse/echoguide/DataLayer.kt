@@ -116,6 +116,17 @@ data class EchoView(
     /** Width / height of [diagramAsset]. */
     val diagramAspect: Float = 1.15f,
     val diagramCredit: LocalizedText? = null,
+    /**
+     * Clean vector schema traced from the loop's end-diastolic frame, in the same normalised
+     * coordinates as the video (so `caliperOverlay.video` lines up), e.g. `schema/apical_4c.svg`.
+     */
+    val schemaAsset: String? = null,
+    /** Part of the video frame `[x0, y0, x1, y1]` (normalised) that [schemaAsset] shows. */
+    val schemaCrop: List<Float> = listOf(0f, 0f, 1f, 1f),
+    /** Width / height of [schemaAsset]. */
+    val schemaAspect: Float = 4f / 3f,
+    /** Step-1 torso & transducer illustration (English file; `_de` / `_ar` variants beside it). */
+    val orientationAsset: String? = null,
     val timingNote: LocalizedText? = null,
     val machineControls: List<MachineControlStep> = emptyList()
 )
@@ -217,8 +228,29 @@ data class GuideStep(
     val requiredPhase: String = StepPhase.LIVE,
     /** Exact frame for [StepPhase.EXP] steps (ms into the loop). */
     val freezeAtMs: Long? = null,
-    val caliperOverlay: CaliperOverlay? = null
-)
+    val caliperOverlay: CaliperOverlay? = null,
+    /** Further calipers shown together with [caliperOverlay] (D1 + D2, e' septal + lateral). */
+    val extraOverlays: List<CaliperOverlay> = emptyList()
+) {
+    /** Every caliper of the step, [caliperOverlay] first. */
+    val overlays: List<CaliperOverlay> get() = listOfNotNull(caliperOverlay) + extraOverlays
+}
+
+/** Maps a normalised video-frame line `[x1, y1, x2, y2]` into the schema crop [EchoView.schemaCrop]. */
+fun mapToCrop(coords: List<Float>?, crop: List<Float>): List<Float>? {
+    if (coords == null || coords.size != 4 || crop.size != 4) return coords
+    val w = crop[2] - crop[0]
+    val h = crop[3] - crop[1]
+    if (w <= 0f || h <= 0f) return coords
+    return listOf((coords[0] - crop[0]) / w, (coords[1] - crop[1]) / h, (coords[2] - crop[0]) / w, (coords[3] - crop[1]) / h)
+}
+
+/** Width / height of the step-1 orientation illustrations (600 x 420). */
+const val ORIENTATION_ASPECT = 600f / 420f
+
+/** Language variant of an orientation illustration: `x.svg` → `x_de.svg` / `x_ar.svg`. */
+fun localizedOrientationAsset(path: String, language: AppLanguage): String =
+    if (language == AppLanguage.EN) path else path.removeSuffix(".svg") + "_${language.tag}.svg"
 
 @Immutable
 @Serializable

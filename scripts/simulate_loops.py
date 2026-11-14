@@ -370,14 +370,15 @@ def scenes():
                                (260, 96), (200, 94), (140, 100), (112, 124), (110, 150)], "V", None, 4),
                 Shape("ellipse", [(110, 196), (40, 30)], "A", None, 3),
                 Shape("ellipse", [(208, 230), (52, 25)], "A", None, 3),
-                Shape("tube", [(306, 108), (330, 140), (334, 176)], "P", None, 3, width=26),
-                Shape("tube", [(334, 176), (320, 222)], "P", None, 2, width=12),
-                Shape("tube", [(334, 176), (364, 208)], "P", None, 2, width=12),
+                # Main PA kept inside the 40° sector so it can be measured (MPA, PW at the PV).
+                Shape("tube", [(268, 114), (282, 140), (290, 168)], "P", None, 3, width=26),
+                Shape("tube", [(290, 168), (280, 214)], "P", None, 2, width=12),
+                Shape("tube", [(290, 168), (322, 198)], "P", None, 2, width=12),
                 Shape("ellipse", [(200, 150), (38, 38)], "S", None, 4),
             ],
             valves=[
                 Valve((200, 150), (38,), (0, 0), "TRI"),
-                Valve((292, 98), (312, 116), (0.7, 0.4), "SL"),
+                Valve((256, 118), (278, 106), (0.5, 0.85), "SL"),
                 Valve((116, 150), (140, 168), (0.6, -0.8), "AV"),
             ],
         )],
@@ -492,10 +493,23 @@ def encode(view_id, scene_list):
 
 
 def main():
+    # --only <view_id>[,<view_id>] re-renders selected views and prepares only those, so the
+    # real clips already in assets/loops are never overwritten.
+    only = sys.argv[sys.argv.index("--only") + 1].split(",") if "--only" in sys.argv else None
     for view_id, scene_list in scenes().items():
-        encode(view_id, scene_list)
-    if "--skip-prepare" not in sys.argv:
+        if only is None or view_id in only:
+            encode(view_id, scene_list)
+    if "--skip-prepare" in sys.argv:
+        return
+    if only is None:
         subprocess.run([os.path.join(ROOT, "scripts", "prepare_loops.sh"), RAW_DIR], check=True)
+        return
+    import tempfile
+    with tempfile.TemporaryDirectory() as tmp:
+        for view_id in only:
+            src = os.path.join(RAW_DIR, f"{view_id}.mp4")
+            os.symlink(src, os.path.join(tmp, f"{view_id}.mp4"))
+        subprocess.run([os.path.join(ROOT, "scripts", "prepare_loops.sh"), tmp], check=True)
 
 
 if __name__ == "__main__":

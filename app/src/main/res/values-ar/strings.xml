@@ -83,8 +83,6 @@
     <string name="phase_ed_hint">نهاية الانبساط · موجة R</string>
     <string name="phase_es_hint">نهاية الانقباض · نهاية T</string>
     <string name="player_real_credit">مقطع إيكو حقيقي · %1$s · %2$s · Wikimedia Commons</string>
-    <string name="anatomy_atlas">الأطلس</string>
-    <string name="anatomy_schematic">المخطط</string>
     <string name="about_title">حول EchoScope</string>
     <string name="about_version">الإصدار %1$s</string>
     <string name="about_illustrations_title">الرسوم التشريحية</string>
@@ -116,4 +114,8 @@
     <string name="caliper_on">تشغيل</string>
     <string name="caliper_off">إيقاف</string>
     <string name="caliper_toggle">إظهار أداة القياس</string>
+    <string name="caliper_reset">إعادة</string>
+    <string name="diagram_probe">المسبار</string>
+    <string name="diagram_schema">مخطط</string>
+    <string name="diagram_atlas">أطلس</string>
 </resources>

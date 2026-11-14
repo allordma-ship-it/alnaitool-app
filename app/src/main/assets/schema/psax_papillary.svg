@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="446" height="271" viewBox="136.8 124.7 446.4 271.5">
+  <title>psax_papillary schema</title>
+  <defs><clipPath id="sector"><path d="M 360.0 22.2 L 89.4 344.7 A 421.0 421.0 0 0 0 630.6 344.7 Z"/></clipPath></defs>
+  <rect x="136.8" y="124.7" width="446.4" height="271.5" fill="#0B1220"/>
+  <path d="M 360.0 22.2 L 89.4 344.7 A 421.0 421.0 0 0 0 630.6 344.7 Z" fill="#111C2E"/>
+  <g clip-path="url(#sector)">
+    <path d="M 259.2 166.2 C 251.4 168.0 240.0 184.7 230.4 199.4 C 220.8 214.2 204.0 236.4 201.6 254.8 C 199.2 273.3 207.6 297.3 216.0 310.2 C 224.4 323.2 243.0 336.1 252.0 332.4 C 261.0 328.7 267.6 304.7 270.0 288.1 C 272.4 271.5 265.2 249.3 266.4 232.7 C 267.6 216.1 278.4 199.4 277.2 188.4 C 276.0 177.3 267.0 164.4 259.2 166.2 Z" fill="#14213D"/>
+    <ellipse cx="370.8" cy="249.3" rx="118.8" ry="96.9" fill="#B84A5E" stroke="#F4A9B7" stroke-width="1.6"/>
+    <ellipse cx="368.6" cy="254.8" rx="77.0" ry="58.2" fill="#33171F" stroke="none" stroke-width="1.6"/>
+    <ellipse cx="386.6" cy="260.4" rx="25.2" ry="16.6" fill="#B84A5E" stroke="#F4A9B7" stroke-width="1.6"/>
+    <ellipse cx="398.2" cy="292.0" rx="21.6" ry="15.5" fill="#B84A5E" stroke="#F4A9B7" stroke-width="1.6"/>
+    <path d="M 172.8 332.4 C 187.2 336.6 228.0 351.3 259.2 357.3 C 290.4 363.3 326.4 368.4 360.0 368.4 C 393.6 368.4 429.6 363.3 460.8 357.3 C 492.0 351.3 532.8 336.6 547.2 332.4" fill="none" stroke="#E2E8F0" stroke-width="2.2" stroke-opacity="0.85" stroke-linecap="round"/>
+  </g>
+  <path d="M 360.0 22.2 L 89.4 344.7 A 421.0 421.0 0 0 0 630.6 344.7 Z" fill="none" stroke="#33435C" stroke-width="1.5"/>
+  <g font-family="sans-serif" font-weight="700" fill="#F8FAFC" stroke="#0B1220" stroke-width="3" paint-order="stroke">
+    <text x="226.8" y="260.4" font-size="16" text-anchor="middle" dominant-baseline="middle">RV</text>
+    <text x="306.0" y="293.6" font-size="16" text-anchor="middle" dominant-baseline="middle">LV</text>
+    <text x="277.2" y="160.7" font-size="12" text-anchor="middle" dominant-baseline="middle">IVS</text>
+    <text x="432.0" y="260.4" font-size="11" text-anchor="middle" dominant-baseline="middle">PM</text>
+    <text x="432.0" y="301.9" font-size="11" text-anchor="middle" dominant-baseline="middle">PM</text>
+    <text x="370.8" y="174.5" font-size="11" text-anchor="middle" dominant-baseline="middle">ANT</text>
+    <text x="370.8" y="331.3" font-size="11" text-anchor="middle" dominant-baseline="middle">INF</text>
+  </g>
+</svg>

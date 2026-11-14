@@ -2,7 +2,9 @@ package com.sonopulse.echoguide
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Bitmap
 import android.view.LayoutInflater
+import android.view.TextureView
 import androidx.annotation.OptIn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -49,6 +51,7 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.lang.ref.WeakReference
 
 /** Duration of one frame at ~30 fps, used for frame-by-frame stepping. */
 const val FRAME_STEP_MS = 33L
@@ -141,6 +144,24 @@ class LoopState internal constructor(private val player: ExoPlayer) {
     internal var mediaReady = false
 
     private var pending: PhaseRequest? = null
+
+    /** The player view currently showing the video (for frame capture by the caliper loupe). */
+    private var surface: WeakReference<PlayerView>? = null
+
+    internal fun registerSurface(view: PlayerView) {
+        surface = WeakReference(view)
+    }
+
+    /**
+     * Copy of the frame on screen (the TextureView is sized to the video, so the bitmap covers
+     * exactly the video frame), or null when no frame is available.
+     */
+    @OptIn(UnstableApi::class)
+    fun captureFrame(): Bitmap? = try {
+        (surface?.get()?.videoSurfaceView as? TextureView)?.takeIf { it.isAvailable }?.bitmap
+    } catch (_: RuntimeException) {
+        null
+    }
 
     private class PhaseRequest(val phase: String, val timing: EcgTiming, val freezeAtMs: Long?)
 
@@ -270,7 +291,12 @@ fun rememberLoopState(player: ExoPlayer, assetPath: String): LoopState {
  */
 @OptIn(UnstableApi::class)
 @Composable
-fun LoopSurface(player: ExoPlayer, attached: Boolean, modifier: Modifier = Modifier) {
+fun LoopSurface(
+    player: ExoPlayer,
+    attached: Boolean,
+    modifier: Modifier = Modifier,
+    onAttached: (PlayerView) -> Unit = {}
+) {
     AndroidView(
         modifier = modifier,
         factory = { ctx ->
@@ -284,6 +310,7 @@ fun LoopSurface(player: ExoPlayer, attached: Boolean, modifier: Modifier = Modif
         update = { view ->
             val target = if (attached) player else null
             if (view.player !== target) view.player = target
+            if (attached) onAttached(view)
         },
         onRelease = { view -> view.player = null }
     )
@@ -341,7 +368,7 @@ fun LoopBox(
         if (loop.showFallback) {
             LoopFallback(assetPath, compact = compactFallback)
         } else {
-            LoopSurface(player, attached, Modifier.fillMaxSize())
+            LoopSurface(player, attached, Modifier.fillMaxSize(), onAttached = loop::registerSurface)
         }
     }
 }

@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.getBoundsInRoot
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
@@ -124,5 +125,23 @@ class CockpitLayoutTest {
         compose.onNodeWithText("OFF").assertExists()
         compose.onNodeWithContentDescription("Caliper overlay").performClick() // restore the saved default
         compose.mainClock.advanceTimeBy(300)
+    }
+
+    @Test
+    fun stepOneShowsProbeOrientationAndLaterStepsTheSchema() {
+        showCockpit("plax_standard", stepIndex = 0)
+        compose.onNodeWithText("Probe").assertIsSelected()
+        screenshot("plax_step1_probe")
+    }
+
+    @Test
+    fun measurementStepDefaultsToSchemaWithAtlasToggle() {
+        showCockpit("psax_papillary", stepIndex = 3) // D1 + D2 at end-diastole
+        compose.onNodeWithText("Schema").assertIsSelected()
+        screenshot("psax_ei_schema")
+        compose.onNodeWithText("Atlas").performClick()
+        compose.mainClock.advanceTimeBy(1_500)
+        compose.onNodeWithText("Atlas").assertIsSelected()
+        screenshot("psax_ei_atlas")
     }
 }

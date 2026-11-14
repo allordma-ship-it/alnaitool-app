@@ -79,7 +79,7 @@ class ProtocolDatabaseTest {
     @Test
     fun guidedExamHasTranslatedStepsWithValidCalipers() {
         val steps = protocol.allViews.flatMap { it.steps }
-        assertEquals(45, steps.size)
+        assertEquals(46, steps.size)
         protocol.allViews.forEach { assertTrue("no steps for ${it.id}", it.steps.isNotEmpty()) }
         steps.forEach { step ->
             listOfNotNull(step.title, step.instruction, step.normal, step.note).forEach { t ->
@@ -166,7 +166,7 @@ class ProtocolDatabaseTest {
                 val where = "${view.id}: ${step.title.en}"
                 assertTrue("$where phase ${step.requiredPhase}", step.requiredPhase in StepPhase.all)
                 if (step.requiredPhase == StepPhase.EXP) assertTrue("$where needs freezeAtMs", step.freezeAtMs != null)
-                step.caliperOverlay?.let { o ->
+                step.overlays.forEach { o ->
                     assertTrue("$where type ${o.type}", o.type in CaliperOverlay.types)
                     assertTrue("$where label", o.label.isNotBlank())
                     assertTrue("$where video coords", isNormalizedBox(o.video))
@@ -182,6 +182,35 @@ class ProtocolDatabaseTest {
             }
         }
         assertTrue("ED / ES steps present", frozen >= 15)
+    }
+
+    @Test
+    fun everyViewHasASchemaAndOrientationIllustrations() {
+        protocol.allViews.forEach { view ->
+            val schema = view.schemaAsset
+            assertTrue("${view.id} schema", schema != null && File(assetsDir, schema).isFile)
+            assertTrue("${view.id} schema aspect", view.schemaAspect in 0.6f..2.0f)
+            // Every caliper must stay inside the cropped schema.
+            view.steps.flatMap { it.overlays }.forEach { o ->
+                assertTrue("${view.id} ${o.label} outside schema crop", isNormalizedBox(mapToCrop(o.video, view.schemaCrop)))
+            }
+            val orientation = view.orientationAsset
+            assertTrue("${view.id} orientation", orientation != null)
+            AppLanguage.entries.forEach { lang ->
+                val path = localizedOrientationAsset(orientation!!, lang)
+                assertTrue("missing $path", File(assetsDir, path).isFile)
+                assertTrue("$path is not an SVG", File(assetsDir, path).readText().contains("<svg"))
+            }
+        }
+    }
+
+    @Test
+    fun eccentricityIndexHasD1AndD2InDiastoleAndSystole() {
+        val pap = protocol.allViews.first { it.id == "psax_papillary" }
+        val phases = pap.steps.filter { s -> s.overlays.map { it.label }.containsAll(listOf("D1", "D2")) }.map { it.requiredPhase }
+        assertEquals(listOf(StepPhase.ED, StepPhase.ES), phases)
+        val tdi = protocol.allViews.first { it.id == "apical_4c" }.steps.first { s -> s.overlays.size == 2 }
+        assertTrue(tdi.overlays.all { it.type == CaliperOverlay.DOPPLER_GATE })
     }
 
     @Test

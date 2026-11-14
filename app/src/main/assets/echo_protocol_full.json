@@ -314,10 +314,10 @@
                 "type": "AREA",
                 "label": "Color · IAS",
                 "video": [
-                  0.33,
-                  0.36,
-                  0.56,
-                  0.5
+                  0.32,
+                  0.47,
+                  0.48,
+                  0.62
                 ],
                 "diagram": [
                   0.48,
@@ -354,10 +354,10 @@
                 "type": "LINE",
                 "label": "Pericardium",
                 "video": [
-                  0.5,
-                  0.272,
-                  0.5,
-                  0.31
+                  0.47,
+                  0.298,
+                  0.47,
+                  0.333
                 ],
                 "diagram": [
                   0.535,
@@ -456,7 +456,16 @@
             "en": "Illustration: Patrick J. Lynch & C. Carl Jaffe, MD (Yale) · CC BY 2.5 · adapted (light background)",
             "de": "Illustration: Patrick J. Lynch & C. Carl Jaffe, MD (Yale) · CC BY 2.5 · bearbeitet (heller Hintergrund)",
             "ar": "الرسم: Patrick J. Lynch و C. Carl Jaffe, MD (Yale) · CC BY 2.5 · معدَّل (خلفية فاتحة)"
-          }
+          },
+          "schemaAsset": "schema/subcostal_4c.svg",
+          "schemaAspect": 1.4032,
+          "orientationAsset": "orientation/subcostal_4c.svg",
+          "schemaCrop": [
+            0.15,
+            0.15,
+            0.76,
+            0.715
+          ]
         },
         {
           "id": "subcostal_ivc",
@@ -728,10 +737,10 @@
                 "type": "LINE",
                 "label": "IVC",
                 "video": [
-                  0.56,
-                  0.585,
-                  0.56,
-                  0.67
+                  0.555,
+                  0.583,
+                  0.536,
+                  0.652
                 ],
                 "diagram": [
                   0.36,
@@ -767,10 +776,10 @@
                 "type": "CURSOR",
                 "label": "M-mode · IVC",
                 "video": [
-                  0.47,
-                  0.05,
-                  0.58,
-                  0.9
+                  0.5,
+                  0.02,
+                  0.567,
+                  0.92
                 ],
                 "diagram": [
                   0.36,
@@ -864,7 +873,16 @@
             "en": "Labelled ultrasound reference image (supplied; original source and licence to be confirmed)",
             "de": "Beschriftetes Ultraschall-Referenzbild (bereitgestellt; Originalquelle und Lizenz noch zu klären)",
             "ar": "صورة إيكو مرجعية موسومة (مقدَّمة من المستخدم؛ المصدر الأصلي والترخيص بحاجة إلى تأكيد)"
-          }
+          },
+          "schemaAsset": "schema/subcostal_ivc.svg",
+          "schemaAspect": 1.5087,
+          "orientationAsset": "orientation/subcostal_ivc.svg",
+          "schemaCrop": [
+            0.0,
+            0.0,
+            1.0,
+            0.97
+          ]
         }
       ]
     },
@@ -1257,10 +1275,10 @@
                 "type": "LINE",
                 "label": "IVSd",
                 "video": [
-                  0.47,
-                  0.245,
-                  0.47,
-                  0.285
+                  0.478,
+                  0.243,
+                  0.472,
+                  0.291
                 ],
                 "diagram": [
                   0.47,
@@ -1297,10 +1315,10 @@
                 "type": "LINE",
                 "label": "LVIDd",
                 "video": [
-                  0.47,
-                  0.29,
-                  0.47,
-                  0.555
+                  0.472,
+                  0.291,
+                  0.436,
+                  0.553
                 ],
                 "diagram": [
                   0.47,
@@ -1337,10 +1355,10 @@
                 "type": "LINE",
                 "label": "LVPWd",
                 "video": [
-                  0.47,
-                  0.56,
-                  0.47,
-                  0.605
+                  0.436,
+                  0.553,
+                  0.43,
+                  0.595
                 ],
                 "diagram": [
                   0.47,
@@ -1377,16 +1395,16 @@
                 "type": "LINE",
                 "label": "Ao root",
                 "video": [
-                  0.66,
-                  0.295,
-                  0.66,
-                  0.405
+                  0.626,
+                  0.255,
+                  0.654,
+                  0.412
                 ],
                 "diagram": [
-                  0.6,
-                  0.45,
-                  0.71,
-                  0.43
+                  0.612,
+                  0.455,
+                  0.705,
+                  0.528
                 ]
               }
             },
@@ -1422,10 +1440,10 @@
                 "type": "LINE",
                 "label": "LA",
                 "video": [
-                  0.63,
-                  0.42,
-                  0.63,
-                  0.58
+                  0.645,
+                  0.405,
+                  0.684,
+                  0.575
                 ],
                 "diagram": [
                   0.74,
@@ -1531,7 +1549,16 @@
             "en": "Illustration: Patrick J. Lynch & C. Carl Jaffe, MD (Yale) · CC BY 2.5 · adapted (light background)",
             "de": "Illustration: Patrick J. Lynch & C. Carl Jaffe, MD (Yale) · CC BY 2.5 · bearbeitet (heller Hintergrund)",
             "ar": "الرسم: Patrick J. Lynch و C. Carl Jaffe, MD (Yale) · CC BY 2.5 · معدَّل (خلفية فاتحة)"
-          }
+          },
+          "schemaAsset": "schema/plax_standard.svg",
+          "schemaAspect": 1.6884,
+          "orientationAsset": "orientation/plax_standard.svg",
+          "schemaCrop": [
+            0.05,
+            0.018,
+            0.91,
+            0.68
+          ]
         },
         {
           "id": "psax_av",
@@ -1847,10 +1874,10 @@
                 "type": "LINE",
                 "label": "MPA",
                 "video": [
-                  0.851,
-                  0.441,
-                  0.799,
-                  0.493
+                  0.7315,
+                  0.4523,
+                  0.6785,
+                  0.481
                 ],
                 "diagram": [
                   0.78,
@@ -1889,8 +1916,8 @@
                 "video": [
                   0.5,
                   0.073,
-                  0.755,
-                  0.357
+                  0.675,
+                  0.4
                 ],
                 "diagram": [
                   0.8,
@@ -1916,10 +1943,10 @@
                 "type": "AREA",
                 "label": "Color · PDA",
                 "video": [
-                  0.76,
+                  0.66,
                   0.5,
-                  0.93,
-                  0.7
+                  0.84,
+                  0.68
                 ],
                 "diagram": [
                   0.75,
@@ -2007,7 +2034,16 @@
             "en": "Illustration: Patrick J. Lynch & C. Carl Jaffe, MD (Yale) · CC BY 2.5 · adapted (light background)",
             "de": "Illustration: Patrick J. Lynch & C. Carl Jaffe, MD (Yale) · CC BY 2.5 · bearbeitet (heller Hintergrund)",
             "ar": "الرسم: Patrick J. Lynch و C. Carl Jaffe, MD (Yale) · CC BY 2.5 · معدَّل (خلفية فاتحة)"
-          }
+          },
+          "schemaAsset": "schema/psax_av.svg",
+          "schemaAspect": 1.1783,
+          "orientationAsset": "orientation/psax_av.svg",
+          "schemaCrop": [
+            0.115,
+            0.023,
+            0.89,
+            0.9
+          ]
         },
         {
           "id": "psax_papillary",
@@ -2279,29 +2315,29 @@
                 "type": "LINE",
                 "label": "LVIDd (FS)",
                 "video": [
-                  0.47,
-                  0.37,
-                  0.47,
-                  0.6
+                  0.465,
+                  0.355,
+                  0.465,
+                  0.565
                 ],
                 "diagram": [
-                  0.68,
-                  0.17,
-                  0.68,
-                  0.52
+                  0.725,
+                  0.2,
+                  0.725,
+                  0.51
                 ]
               }
             },
             {
               "title": {
-                "en": "Eccentricity index",
-                "de": "Exzentrizitätsindex",
-                "ar": "مؤشر اللامركزية"
+                "en": "Eccentricity index (diastole)",
+                "de": "Exzentrizitätsindex (Diastole)",
+                "ar": "مؤشر اللامركزية (الانبساط)"
               },
               "instruction": {
-                "en": "Measure the diameter parallel to the septum and divide it by the diameter perpendicular to it.",
-                "de": "Den Durchmesser parallel zum Septum messen und durch den senkrecht dazu stehenden Durchmesser teilen.",
-                "ar": "قِس القطر الموازي للحاجز واقسمه على القطر العمودي عليه."
+                "en": "At end-diastole measure D1 parallel to the septum and D2 perpendicular to it, endocardium to endocardium, passing between the papillary muscles. EI = D1 / D2.",
+                "de": "In der Enddiastole D1 parallel zum Septum und D2 senkrecht dazu messen, Endokard zu Endokard, zwischen den Papillarmuskeln hindurch. EI = D1 / D2.",
+                "ar": "في نهاية الانبساط قِس D1 موازياً للحاجز وD2 عمودياً عليه، من الشغاف إلى الشغاف، مروراً بين العضلتين الحليميتين. EI = D1 / D2."
               },
               "normal": {
                 "en": "≈ 1.0 (> 1.1 = D-shaped LV)",
@@ -2322,20 +2358,95 @@
               "requiredPhase": "ED",
               "caliperOverlay": {
                 "type": "LINE",
-                "label": "D1 (EI)",
+                "label": "D1",
                 "video": [
-                  0.33,
-                  0.48,
-                  0.64,
-                  0.48
+                  0.46,
+                  0.355,
+                  0.46,
+                  0.565
                 ],
                 "diagram": [
-                  0.53,
-                  0.36,
-                  0.79,
-                  0.36
+                  0.735,
+                  0.2,
+                  0.735,
+                  0.51
                 ]
-              }
+              },
+              "extraOverlays": [
+                {
+                  "type": "LINE",
+                  "label": "D2",
+                  "video": [
+                    0.405,
+                    0.415,
+                    0.585,
+                    0.415
+                  ],
+                  "diagram": [
+                    0.618,
+                    0.255,
+                    0.808,
+                    0.255
+                  ]
+                }
+              ]
+            },
+            {
+              "title": {
+                "en": "Eccentricity index (systole)",
+                "de": "Exzentrizitätsindex (Systole)",
+                "ar": "مؤشر اللامركزية (الانقباض)"
+              },
+              "instruction": {
+                "en": "Repeat D1 and D2 at end-systole (end of the T-wave). Compare with diastole to tell volume from pressure overload.",
+                "de": "D1 und D2 in der Endsystole (Ende der T-Welle) wiederholen. Der Vergleich mit der Diastole trennt Volumen- von Druckbelastung.",
+                "ar": "كرّر قياس D1 وD2 في نهاية الانقباض (نهاية موجة T). المقارنة مع الانبساط تميّز الحمل الحجمي من الحمل الضغطي."
+              },
+              "normal": {
+                "en": "≈ 1.0 in systole and diastole",
+                "de": "≈ 1,0 in Systole und Diastole",
+                "ar": "≈ 1.0 في الانقباض والانبساط"
+              },
+              "note": {
+                "en": "EI > 1 in systole (septum flattened at end-systole) points to RV pressure overload, e.g. pulmonary hypertension.",
+                "de": "EI > 1 in der Systole (Septum endsystolisch abgeflacht) spricht für RV-Druckbelastung, z. B. pulmonale Hypertonie.",
+                "ar": "EI > 1 في الانقباض (تسطّح الحاجز في نهاية الانقباض) يشير إلى حمل ضغطي على البطين الأيمن، مثل ارتفاع الضغط الرئوي."
+              },
+              "requiredPhase": "ES",
+              "caliperOverlay": {
+                "type": "LINE",
+                "label": "D1",
+                "video": [
+                  0.455,
+                  0.375,
+                  0.455,
+                  0.548
+                ],
+                "diagram": [
+                  0.735,
+                  0.2,
+                  0.735,
+                  0.51
+                ]
+              },
+              "extraOverlays": [
+                {
+                  "type": "LINE",
+                  "label": "D2",
+                  "video": [
+                    0.42,
+                    0.4,
+                    0.51,
+                    0.4
+                  ],
+                  "diagram": [
+                    0.618,
+                    0.255,
+                    0.808,
+                    0.255
+                  ]
+                }
+              ]
             },
             {
               "title": {
@@ -2434,7 +2545,16 @@
             "en": "Illustration: Patrick J. Lynch & C. Carl Jaffe, MD (Yale) · CC BY 2.5 · adapted (light background)",
             "de": "Illustration: Patrick J. Lynch & C. Carl Jaffe, MD (Yale) · CC BY 2.5 · bearbeitet (heller Hintergrund)",
             "ar": "الرسم: Patrick J. Lynch و C. Carl Jaffe, MD (Yale) · CC BY 2.5 · معدَّل (خلفية فاتحة)"
-          }
+          },
+          "schemaAsset": "schema/psax_papillary.svg",
+          "schemaAspect": 1.6444,
+          "orientationAsset": "orientation/psax_papillary.svg",
+          "schemaCrop": [
+            0.19,
+            0.225,
+            0.81,
+            0.715
+          ]
         }
       ]
     },
@@ -2824,16 +2944,16 @@
                 "type": "LINE",
                 "label": "LV length (EDV)",
                 "video": [
-                  0.49,
-                  0.14,
-                  0.54,
-                  0.57
+                  0.495,
+                  0.13,
+                  0.55,
+                  0.59
                 ],
                 "diagram": [
                   0.69,
-                  0.15,
-                  0.76,
-                  0.62
+                  0.19,
+                  0.725,
+                  0.595
                 ]
               }
             },
@@ -2864,16 +2984,16 @@
                 "type": "CURSOR",
                 "label": "M-mode · TAPSE",
                 "video": [
-                  0.48,
-                  0.08,
-                  0.2,
-                  0.6
+                  0.5,
+                  0.07,
+                  0.272,
+                  0.64
                 ],
                 "diagram": [
                   0.68,
                   0.06,
-                  0.47,
-                  0.62
+                  0.475,
+                  0.665
                 ]
               }
             },
@@ -2904,16 +3024,16 @@
                 "type": "LINE",
                 "label": "RVD1",
                 "video": [
-                  0.235,
-                  0.47,
-                  0.385,
-                  0.47
+                  0.29,
+                  0.52,
+                  0.4,
+                  0.52
                 ],
                 "diagram": [
-                  0.505,
                   0.5,
-                  0.595,
-                  0.5
+                  0.55,
+                  0.588,
+                  0.55
                 ]
               }
             },
@@ -2944,16 +3064,16 @@
                 "type": "DOPPLER_GATE",
                 "label": "PW · E/A",
                 "video": [
-                  0.48,
-                  0.08,
-                  0.53,
-                  0.5
+                  0.5,
+                  0.07,
+                  0.545,
+                  0.55
                 ],
                 "diagram": [
                   0.68,
                   0.06,
-                  0.76,
-                  0.55
+                  0.72,
+                  0.52
                 ]
               }
             },
@@ -2982,20 +3102,38 @@
               "requiredPhase": "LIVE",
               "caliperOverlay": {
                 "type": "DOPPLER_GATE",
-                "label": "TDI · e'",
+                "label": "e' septal",
                 "video": [
-                  0.48,
-                  0.08,
-                  0.45,
-                  0.58
+                  0.5,
+                  0.07,
+                  0.455,
+                  0.592
                 ],
                 "diagram": [
                   0.68,
                   0.06,
-                  0.66,
-                  0.63
+                  0.675,
+                  0.6
                 ]
-              }
+              },
+              "extraOverlays": [
+                {
+                  "type": "DOPPLER_GATE",
+                  "label": "e' lateral",
+                  "video": [
+                    0.5,
+                    0.07,
+                    0.645,
+                    0.585
+                  ],
+                  "diagram": [
+                    0.68,
+                    0.06,
+                    0.785,
+                    0.575
+                  ]
+                }
+              ]
             },
             {
               "title": {
@@ -3024,9 +3162,9 @@
                 "type": "LINE",
                 "label": "LA length",
                 "video": [
-                  0.52,
-                  0.565,
-                  0.52,
+                  0.53,
+                  0.555,
+                  0.525,
                   0.765
                 ],
                 "diagram": [
@@ -3142,7 +3280,16 @@
             "en": "Illustration: Patrick J. Lynch & C. Carl Jaffe, MD (Yale) · CC BY 2.5 · adapted (light background)",
             "de": "Illustration: Patrick J. Lynch & C. Carl Jaffe, MD (Yale) · CC BY 2.5 · bearbeitet (heller Hintergrund)",
             "ar": "الرسم: Patrick J. Lynch و C. Carl Jaffe, MD (Yale) · CC BY 2.5 · معدَّل (خلفية فاتحة)"
-          }
+          },
+          "schemaAsset": "schema/apical_4c.svg",
+          "schemaAspect": 0.8854,
+          "orientationAsset": "orientation/apical_4c.svg",
+          "schemaCrop": [
+            0.205,
+            0.02,
+            0.75,
+            0.82
+          ]
         },
         {
           "id": "apical_5c",
@@ -3562,7 +3709,16 @@
             "en": "Illustration: Patrick J. Lynch & C. Carl Jaffe, MD (Yale) · CC BY 2.5 · adapted (light background)",
             "de": "Illustration: Patrick J. Lynch & C. Carl Jaffe, MD (Yale) · CC BY 2.5 · bearbeitet (heller Hintergrund)",
             "ar": "الرسم: Patrick J. Lynch و C. Carl Jaffe, MD (Yale) · CC BY 2.5 · معدَّل (خلفية فاتحة)"
-          }
+          },
+          "schemaAsset": "schema/apical_5c.svg",
+          "schemaAspect": 0.9704,
+          "orientationAsset": "orientation/apical_5c.svg",
+          "schemaCrop": [
+            0.18,
+            0.023,
+            0.835,
+            0.923
+          ]
         },
         {
           "id": "apical_2c_3c",
@@ -3821,10 +3977,10 @@
                 "type": "LINE",
                 "label": "LV length (A2C)",
                 "video": [
-                  0.49,
-                  0.11,
-                  0.52,
-                  0.59
+                  0.495,
+                  0.125,
+                  0.53,
+                  0.595
                 ],
                 "diagram": [
                   0.55,
@@ -3941,7 +4097,16 @@
             "en": "Illustration: Patrick J. Lynch & C. Carl Jaffe, MD (Yale) · CC BY 2.5 · adapted (light background)",
             "de": "Illustration: Patrick J. Lynch & C. Carl Jaffe, MD (Yale) · CC BY 2.5 · bearbeitet (heller Hintergrund)",
             "ar": "الرسم: Patrick J. Lynch و C. Carl Jaffe, MD (Yale) · CC BY 2.5 · معدَّل (خلفية فاتحة)"
-          }
+          },
+          "schemaAsset": "schema/apical_2c_3c.svg",
+          "schemaAspect": 0.7268,
+          "orientationAsset": "orientation/apical_2c_3c.svg",
+          "schemaCrop": [
+            0.305,
+            0.04,
+            0.73,
+            0.8
+          ]
         }
       ]
     },
@@ -4264,9 +4429,9 @@
                 "label": "Arch",
                 "video": [
                   0.44,
-                  0.205,
+                  0.215,
                   0.44,
-                  0.34
+                  0.345
                 ],
                 "diagram": [
                   0.5,
@@ -4303,10 +4468,10 @@
                 "type": "LINE",
                 "label": "Isthmus",
                 "video": [
-                  0.5,
-                  0.38,
-                  0.58,
-                  0.38
+                  0.475,
+                  0.4,
+                  0.545,
+                  0.4
                 ],
                 "diagram": [
                   0.57,
@@ -4350,8 +4515,8 @@
                 "video": [
                   0.49,
                   0.04,
-                  0.55,
-                  0.62
+                  0.525,
+                  0.66
                 ],
                 "diagram": [
                   0.5,
@@ -4441,7 +4606,16 @@
             "en": "Labelled ultrasound reference image (supplied; original source and licence to be confirmed)",
             "de": "Beschriftetes Ultraschall-Referenzbild (bereitgestellt; Originalquelle und Lizenz noch zu klären)",
             "ar": "صورة إيكو مرجعية موسومة (مقدَّمة من المستخدم؛ المصدر الأصلي والترخيص بحاجة إلى تأكيد)"
-          }
+          },
+          "schemaAsset": "schema/suprasternal_arch.svg",
+          "schemaAspect": 0.842,
+          "orientationAsset": "orientation/suprasternal_arch.svg",
+          "schemaCrop": [
+            0.2,
+            0.0,
+            0.66,
+            0.71
+          ]
         }
       ]
     }

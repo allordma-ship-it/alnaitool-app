@@ -1,6 +1,24 @@
 package com.sonopulse.echoguide
 
 import android.content.Context
+import android.graphics.Bitmap
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.waitForUpOrCancellation
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateMap
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.drawscope.clipPath
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntSize
+import kotlin.math.roundToInt
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -179,21 +197,243 @@ private fun DrawScope.drawOverlayLabel(overlay: CaliperOverlay, a: Offset, b: Of
 }
 
 /**
- * Canvas drawing [overlay] over an image of [aspect] that is fitted (letter-boxed) into this
- * layout's bounds; with [aspect] ≤ 0 the image is assumed to fill the bounds.
+ * Canvas drawing [overlays] over an image of [aspect] that is fitted (letter-boxed) into this
+ * layout's bounds; with [aspect] ≤ 0 the image is assumed to fill the bounds. [coords] picks
+ * the coordinate set (video / diagram) of each overlay.
  */
 @Composable
 internal fun CaliperCanvas(
-    overlay: CaliperOverlay,
-    coords: List<Float>?,
+    overlays: List<CaliperOverlay>,
+    coords: (CaliperOverlay) -> List<Float>?,
     aspect: Float,
     modifier: Modifier = Modifier,
     zoom: Float = 1f
 ) {
-    if (!isNormalizedBox(coords)) return
+    val drawable = overlays.filter { isNormalizedBox(coords(it)) }
+    if (drawable.isEmpty()) return
     val textMeasurer = rememberTextMeasurer()
     Canvas(modifier = modifier) {
-        drawCaliperOverlay(overlay, coords!!, fitRect(size, aspect), textMeasurer, zoom)
+        val rect = fitRect(size, aspect)
+        drawable.forEach { drawCaliperOverlay(it, coords(it)!!, rect, textMeasurer, zoom) }
+    }
+}
+
+// ---------------------------------------------------------------------------------------------
+// Drag-to-practice
+// ---------------------------------------------------------------------------------------------
+
+/** Key of a trainee-moved caliper in the practice map: "<view>#<step>#<overlay index>". */
+internal fun practiceKey(prefix: String, index: Int) = "$prefix#$index"
+
+private data class Grab(val overlay: Int, val end: Int)
+
+/**
+ * Interactive caliper layer on the frozen video frame: the two "+" ends of every LINE caliper
+ * can be dragged to practise the measurement. While dragging, a 2.5x loupe above the finger
+ * shows the frame under the end point. The reference position stays visible as a faint dashed
+ * line once a caliper has been moved. A tap that does not grab an end calls [onTap].
+ */
+@Composable
+internal fun CaliperPracticeLayer(
+    overlays: List<CaliperOverlay>,
+    practice: SnapshotStateMap<String, List<Float>>,
+    keyPrefix: String,
+    videoAspect: Float,
+    captureFrame: () -> Bitmap?,
+    modifier: Modifier = Modifier,
+    onTap: (() -> Unit)? = null
+) {
+    val textMeasurer = rememberTextMeasurer()
+    var drag by remember { mutableStateOf<Pair<Grab, Offset>?>(null) }
+    var frame by remember { mutableStateOf<ImageBitmap?>(null) }
+    fun current(i: Int): List<Float>? = practice[practiceKey(keyPrefix, i)] ?: overlays[i].video
+
+    Canvas(
+        modifier = modifier.pointerInput(overlays, keyPrefix, videoAspect) {
+            val grabRadius = 26.dp.toPx()
+            awaitEachGesture {
+                val down = awaitFirstDown(requireUnconsumed = false)
+                val rect = fitRect(Size(size.width.toFloat(), size.height.toFloat()), videoAspect)
+                var best: Grab? = null
+                var bestDistance = grabRadius
+                overlays.forEachIndexed { i, o ->
+                    val c = current(i)
+                    if (o.type == CaliperOverlay.LINE && isNormalizedBox(c)) {
+                        for (end in 0..1) {
+                            val p = Offset(rect.left + c!![2 * end] * rect.width, rect.top + c[2 * end + 1] * rect.height)
+                            val d = (p - down.position).getDistance()
+                            if (d < bestDistance) {
+                                bestDistance = d
+                                best = Grab(i, end)
+                            }
+                        }
+                    }
+                }
+                val grab = best
+                if (grab == null) {
+                    val up = waitForUpOrCancellation()
+                    if (up != null && onTap != null) {
+                        up.consume()
+                        onTap()
+                    }
+                    return@awaitEachGesture
+                }
+                down.consume()
+                frame = captureFrame()?.asImageBitmap()
+                drag = grab to down.position
+                while (true) {
+                    val event = awaitPointerEvent()
+                    val change = event.changes.firstOrNull { it.id == down.id } ?: break
+                    if (!change.pressed) break
+                    val p = change.position
+                    val c = (current(grab.overlay) ?: break).toMutableList()
+                    c[2 * grab.end] = ((p.x - rect.left) / rect.width).coerceIn(0f, 1f)
+                    c[2 * grab.end + 1] = ((p.y - rect.top) / rect.height).coerceIn(0f, 1f)
+                    practice[practiceKey(keyPrefix, grab.overlay)] = c
+                    drag = grab to p
+                    change.consume()
+                }
+                drag = null
+                frame = null
+            }
+        }
+    ) {
+        val rect = fitRect(size, videoAspect)
+        overlays.forEachIndexed { i, o ->
+            val reference = o.video
+            val moved = practice[practiceKey(keyPrefix, i)]
+            if (moved != null && isNormalizedBox(reference)) drawReferenceGhost(reference!!, rect)
+            val c = current(i) ?: return@forEachIndexed
+            drawCaliperOverlay(o, c, rect, textMeasurer)
+            if (o.type == CaliperOverlay.LINE && isNormalizedBox(c)) {
+                for (end in 0..1) {
+                    val p = Offset(rect.left + c[2 * end] * rect.width, rect.top + c[2 * end + 1] * rect.height)
+                    drawCircle(CaliperYellow.copy(alpha = 0.22f), radius = 11.dp.toPx(), center = p)
+                    drawCircle(CaliperYellow.copy(alpha = 0.8f), radius = 11.dp.toPx(), center = p, style = Stroke(1.dp.toPx()))
+                }
+            }
+        }
+        drag?.let { (grab, finger) ->
+            val c = current(grab.overlay) ?: return@let
+            val handle = Offset(rect.left + c[2 * grab.end] * rect.width, rect.top + c[2 * grab.end + 1] * rect.height)
+            drawLoupe(handle, finger, rect, frame, c)
+        }
+    }
+}
+
+/** Faint dashed reference line, shown once the trainee has moved the caliper. */
+private fun DrawScope.drawReferenceGhost(coords: List<Float>, rect: Rect) {
+    val a = Offset(rect.left + coords[0] * rect.width, rect.top + coords[1] * rect.height)
+    val b = Offset(rect.left + coords[2] * rect.width, rect.top + coords[3] * rect.height)
+    drawLine(
+        Color.White.copy(alpha = 0.55f), a, b, strokeWidth = 1.5.dp.toPx(),
+        pathEffect = PathEffect.dashPathEffect(floatArrayOf(4.dp.toPx(), 3.dp.toPx()))
+    )
+}
+
+/** Magnifier circle above the finger: the frame around [handle] at 2.5x with a crosshair. */
+private fun DrawScope.drawLoupe(handle: Offset, finger: Offset, rect: Rect, frame: ImageBitmap?, coords: List<Float>) {
+    val r = 40.dp.toPx()
+    val gap = 30.dp.toPx()
+    val magnification = 2.5f
+    var center = Offset(finger.x, finger.y - r - gap)
+    if (center.y - r < 0f) center = Offset(finger.x, finger.y + r + gap)
+    center = Offset(center.x.coerceIn(r, size.width - r), center.y.coerceIn(r, (size.height - r).coerceAtLeast(r)))
+    val circle = Path().apply { addOval(Rect(center, r)) }
+    clipPath(circle) {
+        drawRect(Color.Black, topLeft = center - Offset(r, r), size = Size(2 * r, 2 * r))
+        if (frame != null && rect.width > 0f && rect.height > 0f) {
+            val sx = frame.width / rect.width
+            val sy = frame.height / rect.height
+            val halfW = (r / magnification * sx).coerceAtMost(frame.width / 2f)
+            val halfH = (r / magnification * sy).coerceAtMost(frame.height / 2f)
+            val bx = ((handle.x - rect.left) * sx).coerceIn(halfW, frame.width - halfW)
+            val by = ((handle.y - rect.top) * sy).coerceIn(halfH, frame.height - halfH)
+            // Keep the magnified frame aligned with the handle even where the source was clamped.
+            val shift = Offset(
+                ((handle.x - rect.left) * sx - bx) / sx * magnification,
+                ((handle.y - rect.top) * sy - by) / sy * magnification
+            )
+            drawImage(
+                frame,
+                srcOffset = IntOffset((bx - halfW).roundToInt(), (by - halfH).roundToInt()),
+                srcSize = IntSize((2 * halfW).roundToInt(), (2 * halfH).roundToInt()),
+                dstOffset = IntOffset((center.x - r - shift.x).roundToInt(), (center.y - r - shift.y).roundToInt()),
+                dstSize = IntSize((2 * r).roundToInt(), (2 * r).roundToInt())
+            )
+        }
+        // The caliper inside the loupe, magnified around the handle.
+        fun m(x: Float, y: Float) = center + (Offset(rect.left + x * rect.width, rect.top + y * rect.height) - handle) * magnification
+        drawLine(CaliperYellow, m(coords[0], coords[1]), m(coords[2], coords[3]), strokeWidth = 1.5.dp.toPx())
+        val t = 7.dp.toPx()
+        drawLine(Color.White.copy(alpha = 0.9f), center - Offset(t, 0f), center + Offset(t, 0f), strokeWidth = 1.dp.toPx())
+        drawLine(Color.White.copy(alpha = 0.9f), center - Offset(0f, t), center + Offset(0f, t), strokeWidth = 1.dp.toPx())
+    }
+    drawCircle(CaliperYellow, radius = r, center = center, style = Stroke(2.dp.toPx()))
+}
+
+/** Snaps every practised caliper of the step back to the reference position. */
+@Composable
+internal fun CaliperResetChip(onReset: () -> Unit, modifier: Modifier = Modifier) {
+    Row(
+        modifier = modifier
+            .height(22.dp)
+            .clip(RoundedCornerShape(11.dp))
+            .background(Color.Black.copy(alpha = 0.6f))
+            .border(1.dp, CursorTeal.copy(alpha = 0.8f), RoundedCornerShape(11.dp))
+            .clickable(onClick = onReset)
+            .padding(horizontal = 6.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(Icons.Filled.Refresh, contentDescription = null, tint = CursorTeal, modifier = Modifier.size(13.dp))
+        Spacer(Modifier.width(3.dp))
+        Text(stringResource(R.string.caliper_reset), color = CursorTeal, fontSize = 9.sp, fontWeight = FontWeight.Bold)
+    }
+}
+
+// ---------------------------------------------------------------------------------------------
+// Right-hand panel: probe orientation | schema | atlas
+// ---------------------------------------------------------------------------------------------
+
+/** What the right-hand stage panel shows. */
+enum class DiagramMode(val labelRes: Int) {
+    PROBE(R.string.diagram_probe),
+    SCHEMA(R.string.diagram_schema),
+    ATLAS(R.string.diagram_atlas)
+}
+
+/** Compact segmented pills ("Probe | Schema | Atlas") for the diagram panel. */
+@Composable
+internal fun DiagramModePills(
+    selected: DiagramMode,
+    available: List<DiagramMode>,
+    onSelect: (DiagramMode) -> Unit,
+    modifier: Modifier = Modifier,
+    large: Boolean = false
+) {
+    Row(
+        modifier = modifier
+            .clip(RoundedCornerShape(11.dp))
+            .background(Color.Black.copy(alpha = 0.62f))
+            .padding(2.dp),
+        horizontalArrangement = Arrangement.spacedBy(2.dp)
+    ) {
+        available.forEach { mode ->
+            val active = mode == selected
+            Text(
+                text = stringResource(mode.labelRes),
+                color = if (active) EchoBackground else Color.White.copy(alpha = 0.85f),
+                fontSize = if (large) 13.sp else 9.sp,
+                fontWeight = FontWeight.Bold,
+                maxLines = 1,
+                modifier = Modifier
+                    .clip(RoundedCornerShape(9.dp))
+                    .background(if (active) EchoTeal else Color.Transparent)
+                    .clickable { onSelect(mode) }
+                    .semantics { this.selected = active; role = Role.Tab }
+                    .padding(horizontal = if (large) 12.dp else 6.dp, vertical = if (large) 5.dp else 2.dp)
+            )
+        }
     }
 }
 

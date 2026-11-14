@@ -76,8 +76,6 @@
     <string name="phase_ed_hint">End-diastole · R-wave</string>
     <string name="phase_es_hint">End-systole · T-end</string>
     <string name="player_real_credit">Real echo clip · %1$s · %2$s · Wikimedia Commons</string>
-    <string name="anatomy_atlas">Atlas</string>
-    <string name="anatomy_schematic">Schematic</string>
     <string name="about_title">About EchoScope</string>
     <string name="about_version">Version %1$s</string>
     <string name="about_illustrations_title">Anatomical illustrations</string>
@@ -109,4 +107,8 @@
     <string name="caliper_on">ON</string>
     <string name="caliper_off">OFF</string>
     <string name="caliper_toggle">Caliper overlay</string>
+    <string name="caliper_reset">Reset</string>
+    <string name="diagram_probe">Probe</string>
+    <string name="diagram_schema">Schema</string>
+    <string name="diagram_atlas">Atlas</string>
 </resources>

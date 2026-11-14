@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="472" height="486" viewBox="129.6 12.4 471.6 486.0">
+  <title>apical_5c schema</title>
+  <defs><clipPath id="sector"><path d="M 360.0 39.6 L 49.9 409.1 A 482.4 482.4 0 0 0 670.1 409.1 Z"/></clipPath></defs>
+  <rect x="129.6" y="12.4" width="471.6" height="486.0" fill="#0B1220"/>
+  <path d="M 360.0 39.6 L 49.9 409.1 A 482.4 482.4 0 0 0 670.1 409.1 Z" fill="#111C2E"/>
+  <g clip-path="url(#sector)">
+    <path d="M 352.8 82.8 C 345.0 57.6 294.0 108.0 270.0 144.0 C 246.0 180.0 201.0 273.6 208.8 298.8 C 216.6 324.0 292.8 331.2 316.8 295.2 C 340.8 259.2 360.6 108.0 352.8 82.8 Z" fill="#14213D"/>
+    <path d="M 367.2 82.8 C 378.0 50.4 442.8 87.0 471.6 126.0 C 500.4 165.0 550.8 284.4 540.0 316.8 C 529.2 349.2 435.6 359.4 406.8 320.4 C 378.0 281.4 356.4 115.2 367.2 82.8 Z" fill="#33171F"/>
+    <ellipse cx="237.6" cy="399.6" rx="72.0" ry="57.6" fill="#18284A" stroke="#E07A8A" stroke-width="4"/>
+    <ellipse cx="493.2" cy="406.8" rx="72.0" ry="57.6" fill="#2A1520" stroke="#E07A8A" stroke-width="4"/>
+    <path d="M 345.6 72.0 C 331.2 82.8 284.4 98.4 259.2 136.8 C 234.0 175.2 205.2 274.8 194.4 302.4 L 208.8 298.8 C 219.0 273.0 246.0 180.0 270.0 144.0 C 294.0 108.0 339.0 93.0 352.8 82.8 Z" fill="#B84A5E" stroke="#F4A9B7" stroke-width="1.6" stroke-linejoin="round"/>
+    <path d="M 352.8 82.8 C 349.8 100.5 340.8 153.6 334.8 189.0 C 328.8 224.4 319.8 277.5 316.8 295.2 L 406.8 320.4 C 403.2 300.0 391.8 237.6 385.2 198.0 C 378.6 158.4 370.2 102.0 367.2 82.8 Z" fill="#B84A5E" stroke="#F4A9B7" stroke-width="1.6" stroke-linejoin="round"/>
+    <path d="M 374.4 72.0 C 392.4 79.8 452.4 77.4 482.4 118.8 C 512.4 160.2 542.4 286.8 554.4 320.4 L 540.0 316.8 C 528.6 285.0 500.4 165.0 471.6 126.0 C 442.8 87.0 384.6 90.0 367.2 82.8 Z" fill="#B84A5E" stroke="#F4A9B7" stroke-width="1.6" stroke-linejoin="round"/>
+    <path d="M 365.4 316.8 L 365.4 471.6" fill="none" stroke="#E07A8A" stroke-width="69.2" stroke-linecap="round"/>
+    <path d="M 365.4 316.8 L 365.4 471.6" fill="none" stroke="#33171F" stroke-width="61.2" stroke-linecap="round"/>
+    <path d="M 219.6 302.4 L 316.8 302.4" fill="none" stroke="#F1F5F9" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M 410.4 327.6 L 532.8 327.6" fill="none" stroke="#F1F5F9" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M 336.6 334.8 L 365.4 352.8" fill="none" stroke="#F1F5F9" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M 394.2 334.8 L 365.4 352.8" fill="none" stroke="#F1F5F9" stroke-width="3.5" stroke-linecap="round"/>
+  </g>
+  <path d="M 360.0 39.6 L 49.9 409.1 A 482.4 482.4 0 0 0 670.1 409.1 Z" fill="none" stroke="#33435C" stroke-width="1.5"/>
+  <g font-family="sans-serif" font-weight="700" fill="#F8FAFC" stroke="#0B1220" stroke-width="3" paint-order="stroke">
+    <text x="460.8" y="194.4" font-size="16" text-anchor="middle" dominant-baseline="middle">LV</text>
+    <text x="273.6" y="205.2" font-size="16" text-anchor="middle" dominant-baseline="middle">RV</text>
+    <text x="237.6" y="405.0" font-size="16" text-anchor="middle" dominant-baseline="middle">RA</text>
+    <text x="493.2" y="410.4" font-size="16" text-anchor="middle" dominant-baseline="middle">LA</text>
+    <text x="399.6" y="367.2" font-size="11" text-anchor="middle" dominant-baseline="middle">LVOT</text>
+    <text x="399.6" y="334.8" font-size="11" text-anchor="middle" dominant-baseline="middle">AV</text>
+  </g>
+</svg>
