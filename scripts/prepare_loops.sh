@@ -17,7 +17,7 @@
 # RAW_DIR defaults to ./raw_loops. Every input file must be named after a view
 # id from echo_protocol_full.json, e.g.:
 #   subcostal_4c.avi  subcostal_ivc.mov  plax_standard.mp4  psax_av.wmv
-#   psax_papillary.*  apical_4c.*  apical_5c.*  apical_2c_3c.*  suprasternal_arch.*
+#   psax_papillary.*  apical_4c.*  apical_5c.*  apical_2c.*  apical_3c.*  suprasternal_arch.*
 #
 # Output: app/src/main/assets/loops/<view_id>.mp4
 
@@ -36,7 +36,8 @@ VIEW_IDS=(
   psax_papillary
   apical_4c
   apical_5c
-  apical_2c_3c
+  apical_2c
+  apical_3c
   suprasternal_arch
 )
 

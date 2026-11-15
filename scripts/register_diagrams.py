@@ -32,7 +32,7 @@ SUPPLIED = {
 }
 SOURCE = {
     "subcostal_4c": LYNCH, "plax_standard": LYNCH, "psax_av": LYNCH, "psax_papillary": LYNCH,
-    "apical_4c": LYNCH, "apical_5c": LYNCH, "apical_2c_3c": LYNCH,
+    "apical_4c": LYNCH, "apical_5c": LYNCH, "apical_2c": LYNCH,
     "subcostal_ivc": SUPPLIED, "suprasternal_arch": SUPPLIED,
 }
 

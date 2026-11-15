@@ -50,7 +50,7 @@ import coil.compose.AsyncImage
 // Echo-Room OLED dark theme
 // ---------------------------------------------------------------------------------------------
 
-internal val EchoBackground = Color(0xFF0A0E14)
+internal val EchoBackground = Color(0xFF0F1419)  // EchoBgPrimary: charcoal slate, never pure black (OLED smearing)
 internal val EchoSurface = Color(0xFF111824)
 internal val EchoSurfaceHigh = Color(0xFF1A2333)
 internal val EchoTeal = Color(0xFF00D2B8)

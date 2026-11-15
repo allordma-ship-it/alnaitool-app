@@ -79,7 +79,7 @@ VALVES = [
         "id": "aortic",
         "title": t("Aortic valve", "Aortenklappe", "الصمام الأبهري"),
         "short": "AV",
-        "views": ["plax_standard", "psax_av", "apical_5c", "suprasternal_arch"],
+        "views": ["plax_standard", "psax_av", "apical_5c", "apical_3c", "suprasternal_arch"],
         "morphology": [
             item("PLAX: cusp thickening, calcification and opening; systolic doming suggests a bicuspid valve.",
                  "PLAX: Taschenverdickung, Verkalkung und Öffnung; systolisches Doming spricht für eine bikuspide Klappe.",
@@ -167,7 +167,7 @@ VALVES = [
         "id": "mitral",
         "title": t("Mitral valve", "Mitralklappe", "الصمام التاجي"),
         "short": "MV",
-        "views": ["plax_standard", "psax_papillary", "apical_4c", "apical_2c_3c"],
+        "views": ["plax_standard", "psax_papillary", "apical_4c", "apical_2c", "apical_3c"],
         "morphology": [
             item("PLAX: leaflet thickening, calcification, mobility; prolapse or flail beyond the annular line.",
                  "PLAX: Segelverdickung, Verkalkung, Beweglichkeit; Prolaps oder Flail über die Anulusebene.",
@@ -188,7 +188,7 @@ VALVES = [
                  "رباعي/ثنائي/ثلاثي الحجرات: اتجاه النفث (مركزي غالباً ثانوي، لا مركزي غالباً أولي) ونسبة مساحة النفث إلى الأذين.", "apical_4c"),
             item("PLAX or A3C zoom: vena contracta perpendicular to the commissural line.",
                  "PLAX- oder 3K-Zoom: Vena contracta senkrecht zur Kommissurenlinie.",
-                 "PLAX أو ثلاثي الحجرات مكبّر: الوريد المنقبض عمودياً على خط الصوارين.", "apical_2c_3c"),
+                 "PLAX أو ثلاثي الحجرات مكبّر: الوريد المنقبض عمودياً على خط الصوارين.", "apical_3c"),
             item("PISA: zoom, shift the colour baseline toward the jet (Nyquist ≈ 30–40 cm/s), measure the radius in mid-systole.",
                  "PISA: zoomen, Farb-Baseline in Jetrichtung verschieben (Nyquist ≈ 30–40 cm/s), Radius mesosystolisch messen.",
                  "PISA: كبّر، أزح خط الأساس اللوني باتجاه النفث (Nyquist ≈ 30–40 سم/ث)، قِس نصف القطر في منتصف الانقباض.", "apical_4c"),

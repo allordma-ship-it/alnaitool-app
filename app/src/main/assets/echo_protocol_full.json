@@ -458,11 +458,11 @@
             "ar": "الرسم: Patrick J. Lynch و C. Carl Jaffe, MD (Yale) · CC BY 2.5 · معدَّل (خلفية فاتحة)"
           },
           "schemaAsset": "schema/subcostal_4c.svg",
-          "schemaAspect": 1.3813,
+          "schemaAspect": 1.107,
           "orientationAsset": "orientation/subcostal_4c.svg",
           "schemaCrop": [
             0.154,
-            0.138,
+            0.0,
             0.746,
             0.695
           ],
@@ -1639,11 +1639,11 @@
             "ar": "الرسم: Patrick J. Lynch و C. Carl Jaffe, MD (Yale) · CC BY 2.5 · معدَّل (خلفية فاتحة)"
           },
           "schemaAsset": "schema/plax_standard.svg",
-          "schemaAspect": 1.6446,
+          "schemaAspect": 1.5535,
           "orientationAsset": "orientation/plax_standard.svg",
           "schemaCrop": [
             0.07,
-            0.038,
+            0.0,
             0.89,
             0.686
           ],
@@ -2209,11 +2209,11 @@
             "ar": "الرسم: Patrick J. Lynch و C. Carl Jaffe, MD (Yale) · CC BY 2.5 · معدَّل (خلفية فاتحة)"
           },
           "schemaAsset": "schema/psax_av.svg",
-          "schemaAspect": 1.2601,
+          "schemaAspect": 1.2095,
           "orientationAsset": "orientation/psax_av.svg",
           "schemaCrop": [
             0.135,
-            0.043,
+            0.008,
             0.926,
             0.88
           ],
@@ -2792,11 +2792,11 @@
             "ar": "الرسم: Patrick J. Lynch و C. Carl Jaffe, MD (Yale) · CC BY 2.5 · معدَّل (خلفية فاتحة)"
           },
           "schemaAsset": "schema/psax_papillary.svg",
-          "schemaAspect": 1.4515,
+          "schemaAspect": 1.0509,
           "orientationAsset": "orientation/psax_papillary.svg",
           "schemaCrop": [
             0.21,
-            0.199,
+            0.0,
             0.793,
             0.721
           ],
@@ -3636,11 +3636,11 @@
             "ar": "الرسم: Patrick J. Lynch و C. Carl Jaffe, MD (Yale) · CC BY 2.5 · معدَّل (خلفية فاتحة)"
           },
           "schemaAsset": "schema/apical_4c.svg",
-          "schemaAspect": 1.0039,
+          "schemaAspect": 0.9556,
           "orientationAsset": "orientation/apical_4c.svg",
           "schemaCrop": [
             0.177,
-            0.04,
+            0.0,
             0.788,
             0.831
           ],
@@ -4150,11 +4150,11 @@
             "ar": "الرسم: Patrick J. Lynch و C. Carl Jaffe, MD (Yale) · CC BY 2.5 · معدَّل (خلفية فاتحة)"
           },
           "schemaAsset": "schema/apical_5c.svg",
-          "schemaAspect": 0.9535,
+          "schemaAspect": 0.9162,
           "orientationAsset": "orientation/apical_5c.svg",
           "schemaCrop": [
             0.2,
-            0.043,
+            0.008,
             0.815,
             0.903
           ],
@@ -4208,75 +4208,47 @@
           ]
         },
         {
-          "id": "apical_2c_3c",
+          "id": "apical_2c",
           "title": {
-            "en": "Apical 2-Chamber & 3-Chamber",
-            "de": "Apikaler Zwei- & Dreikammerblick",
-            "ar": "المقطع القمي ثنائي وثلاثي الحجرات"
+            "en": "Apical 2-Chamber",
+            "de": "Apikaler Zweikammerblick",
+            "ar": "المقطع القمي ثنائي الحجرات"
           },
           "probePosition": {
-            "en": "From the A4C rotate counter-clockwise ≈ 60° (RV disappears) for A2C; continue ≈ 60° further for the A3C / apical long-axis showing LVOT and aorta.",
-            "de": "Aus dem 4K-Blick ≈ 60° gegen den Uhrzeigersinn drehen (RV verschwindet) für den 2K-Blick; weitere ≈ 60° für den 3K-Blick / apikale lange Achse mit LVOT und Aorta.",
-            "ar": "من المقطع رباعي الحجرات دوّر المسبار عكس عقارب الساعة نحو 60° (يختفي البطين الأيمن) للمقطع ثنائي الحجرات، ثم 60° إضافية للمقطع ثلاثي الحجرات."
+            "en": "From the A4C rotate the probe about 60° counter-clockwise until the RV disappears completely.",
+            "de": "Aus dem 4K-Blick den Schallkopf etwa 60° gegen den Uhrzeigersinn drehen, bis der RV vollständig verschwindet.",
+            "ar": "من المقطع رباعي الحجرات دوّر المسبار نحو 60° عكس عقارب الساعة حتى يختفي البطين الأيمن تماماً."
           },
-          "notchClock": "12–1 / 10–11",
+          "notchClock": "12–1",
           "notchHours": [
-            12.5,
-            10.5
+            12.5
           ],
           "notchDescription": {
-            "en": "A2C: notch at 12–1 o'clock. A3C: notch at 10–11 o'clock.",
-            "de": "2K: Markierung bei 12–1 Uhr. 3K: Markierung bei 10–11 Uhr.",
-            "ar": "ثنائي الحجرات: العلامة عند الساعة 12–1. ثلاثي الحجرات: العلامة عند الساعة 10–11."
+            "en": "Notch at 12–1 o'clock.",
+            "de": "Markierung bei 12–1 Uhr.",
+            "ar": "العلامة عند الساعة 12–1."
           },
-          "videoAsset": "loops/apical_2c_3c.mp4",
-          "svgAsset": "svg/apical_2c_3c.svg",
+          "videoAsset": "loops/apical_2c.mp4",
+          "svgAsset": "svg/apical_2c.svg",
           "keyStructures": [
             {
-              "en": "A2C: anterior wall (right of image) & inferior wall (left)",
-              "de": "2K: Vorderwand (rechts im Bild) & Hinterwand/inferior (links)",
-              "ar": "ثنائي الحجرات: الجدار الأمامي (يمين الصورة) والسفلي (يسارها)"
+              "en": "LV with inferior wall (left of image) and anterior wall (right)",
+              "de": "LV mit inferiorer Wand (links im Bild) und Vorderwand (rechts)",
+              "ar": "البطين الأيسر مع الجدار السفلي (يسار الصورة) والأمامي (يمينها)"
             },
             {
-              "en": "A2C: left atrial appendage",
-              "de": "2K: linkes Vorhofohr",
-              "ar": "ثنائي الحجرات: زائدة الأذين الأيسر"
+              "en": "Left atrium and left atrial appendage",
+              "de": "Linker Vorhof und linkes Vorhofohr",
+              "ar": "الأذين الأيسر وزائدته"
             },
             {
-              "en": "A3C: anteroseptal & inferolateral walls",
-              "de": "3K: anteroseptale & inferolaterale Wand",
-              "ar": "ثلاثي الحجرات: الجدار الأمامي الحاجزي والسفلي الجانبي"
-            },
-            {
-              "en": "A3C: LVOT, aortic valve, aortic root",
-              "de": "3K: LVOT, Aortenklappe, Aortenwurzel",
-              "ar": "ثلاثي الحجرات: مخرج البطين الأيسر، الصمام الأبهري، جذر الأبهر"
-            },
-            {
-              "en": "Mitral valve (P1–P3 / A2–P2 scallops)",
-              "de": "Mitralklappe (Segmente P1–P3 / A2–P2)",
-              "ar": "الصمام التاجي (القطع P1–P3 / A2–P2)"
+              "en": "Mitral valve (P1 / A2 / P3 scallops)",
+              "de": "Mitralklappe (Segmente P1 / A2 / P3)",
+              "ar": "الصمام التاجي (القطع P1 / A2 / P3)"
             }
           ],
           "referenceMeasurements": {
             "adult": [
-              {
-                "parameter": {
-                  "en": "Global longitudinal strain (GLS)",
-                  "de": "Globaler longitudinaler Strain (GLS)",
-                  "ar": "الإجهاد الطولي العام (GLS)"
-                },
-                "normal": {
-                  "en": "−18 % to −22 %",
-                  "de": "−18 % bis −22 %",
-                  "ar": "−18٪ إلى −22٪"
-                },
-                "note": {
-                  "en": "Less negative than −16 % is abnormal; vendor-specific",
-                  "de": "Weniger negativ als −16 % ist pathologisch; herstellerabhängig",
-                  "ar": "القيم الأقل سلبية من −16٪ غير طبيعية؛ تختلف حسب الشركة المصنّعة"
-                }
-              },
               {
                 "parameter": {
                   "en": "LVEF (biplane, with A4C)",
@@ -4296,23 +4268,6 @@
                   "ED",
                   "ES"
                 ]
-              },
-              {
-                "parameter": {
-                  "en": "Regional wall motion",
-                  "de": "Regionale Wandbewegung",
-                  "ar": "حركة الجدار القطاعية"
-                },
-                "normal": {
-                  "en": "Normokinesis of all 17 segments",
-                  "de": "Normokinesie aller 17 Segmente",
-                  "ar": "حركة طبيعية لجميع القطع الـ17"
-                },
-                "note": {
-                  "en": "A2C: LAD (anterior) & RCA (inferior); A3C: LAD (anteroseptal) & LCx (inferolateral)",
-                  "de": "2K: RIVA (anterior) & RCA (inferior); 3K: RIVA (anteroseptal) & RCX (inferolateral)",
-                  "ar": "ثنائي الحجرات: LAD (أمامي) وRCA (سفلي)؛ ثلاثي الحجرات: LAD (أمامي حاجزي) وLCx (سفلي جانبي)"
-                }
               },
               {
                 "parameter": {
@@ -4388,41 +4343,107 @@
           },
           "checklist": [
             {
-              "en": "Rotate counter-clockwise until the RV disappears (A2C)",
-              "de": "Gegen den Uhrzeigersinn drehen, bis der RV verschwindet (2K)",
-              "ar": "التدوير عكس عقارب الساعة حتى يختفي البطين الأيمن (ثنائي الحجرات)"
+              "en": "Rotate counter-clockwise until the RV disappears",
+              "de": "Gegen den Uhrzeigersinn drehen, bis der RV verschwindet",
+              "ar": "التدوير عكس عقارب الساعة حتى يختفي البطين الأيمن"
             },
             {
-              "en": "Assess anterior and inferior walls and the left atrial appendage",
-              "de": "Vorder- und Hinterwand (inferior) sowie linkes Vorhofohr beurteilen",
-              "ar": "تقييم الجدارين الأمامي والسفلي وزائدة الأذين الأيسر"
+              "en": "Apex not foreshortened (LV length within 10 % of A4C)",
+              "de": "Apex nicht verkürzt (LV-Länge ±10 % zum 4K-Blick)",
+              "ar": "القمة غير مقصّرة (طول البطين ضمن 10 % من الرباعي)"
             },
             {
-              "en": "Keep rotating to show LVOT and aorta (A3C)",
-              "de": "Weiter drehen, bis LVOT und Aorta erscheinen (3K)",
-              "ar": "متابعة التدوير لإظهار مخرج البطين الأيسر والأبهر (ثلاثي الحجرات)"
+              "en": "Assess anterior and inferior walls",
+              "de": "Vorder- und Hinterwand (inferior) beurteilen",
+              "ar": "تقييم الجدارين الأمامي والسفلي"
             },
             {
-              "en": "Assess anteroseptal and inferolateral walls",
-              "de": "Anteroseptale und inferolaterale Wand beurteilen",
-              "ar": "تقييم الجدارين الأمامي الحاجزي والسفلي الجانبي"
+              "en": "Trace ED and ES endocardium for the biplane EF",
+              "de": "Endokard in ED und ES für die biplane EF umfahren",
+              "ar": "تتبّع الشغاف في نهاية الانبساط والانقباض للكسر القذفي ثنائي المستوى"
             },
             {
-              "en": "Trace the endocardium for biplane EF",
-              "de": "Endokard für die biplane EF umfahren",
-              "ar": "تتبّع الشغاف للكسر القذفي ثنائي المستوى"
-            },
-            {
-              "en": "Measure GLS from all three apical views (normal −18 % to −22 %)",
-              "de": "GLS aus allen drei apikalen Schnitten messen (normal −18 % bis −22 %)",
-              "ar": "قياس الإجهاد الطولي العام (GLS) من المقاطع القمية الثلاثة (الطبيعي −18٪ إلى −22٪)"
-            },
-            {
-              "en": "Match regional wall motion abnormalities to coronary territories",
-              "de": "Regionale Wandbewegungsstörungen den Koronarterritorien zuordnen",
-              "ar": "ربط اضطرابات الحركة القطاعية بالشرايين التاجية المغذية"
+              "en": "LA volume at end-systole (biplane with A4C)",
+              "de": "LA-Volumen endsystolisch (biplan mit 4K)",
+              "ar": "حجم الأذين الأيسر في نهاية الانقباض (ثنائي المستوى مع الرباعي)"
             }
           ],
+          "ecg": {
+            "beatMs": 595,
+            "edMs": 0,
+            "esMs": 301,
+            "rWavesMs": [
+              0,
+              595,
+              1190,
+              1785,
+              2380,
+              2975
+            ],
+            "nominal": false
+          },
+          "timingNote": {
+            "en": "Simpson and LA volume in A2C: ED at the R-wave, ES at the T-wave end (smallest LV, largest LA).",
+            "de": "Simpson und LA-Volumen im 2K-Blick: ED bei der R-Zacke, ES am T-Ende (kleinster LV, größter LA).",
+            "ar": "سيمبسون وحجم الأذين في ثنائي الحجرات: نهاية الانبساط عند موجة R، ونهاية الانقباض عند نهاية T (أصغر بطين وأكبر أذين)."
+          },
+          "machineControls": [
+            {
+              "control": "2D",
+              "instruction": {
+                "en": "Rotate counter-clockwise from A4C until the RV disappears.",
+                "de": "Vom 4K-Blick gegen den Uhrzeigersinn drehen, bis der RV verschwindet.",
+                "ar": "دوّر عكس عقارب الساعة من الرباعي حتى يختفي البطين الأيمن."
+              }
+            },
+            {
+              "control": "DEPTH",
+              "instruction": {
+                "en": "Set the depth so the whole LA is shown.",
+                "de": "Tiefe so wählen, dass der ganze LA sichtbar ist.",
+                "ar": "اضبط العمق ليظهر الأذين الأيسر كاملاً."
+              }
+            },
+            {
+              "control": "FREEZE",
+              "instruction": {
+                "en": "Freeze and select the ED and ES frames.",
+                "de": "Einfrieren und ED- und ES-Bild auswählen.",
+                "ar": "جمّد واختر إطاري نهاية الانبساط والانقباض."
+              }
+            },
+            {
+              "control": "CALIPER",
+              "instruction": {
+                "en": "Trace the endocardium (biplane EF) and the LA (volume).",
+                "de": "Endokard (biplane EF) und LA (Volumen) umfahren.",
+                "ar": "تتبّع الشغاف (الكسر القذفي) والأذين الأيسر (الحجم)."
+              }
+            },
+            {
+              "control": "STORE",
+              "instruction": {
+                "en": "Store the loop at a high frame rate for strain.",
+                "de": "Loop mit hoher Bildrate für Strain speichern.",
+                "ar": "احفظ المقطع بمعدل إطارات عالٍ لتحليل الإجهاد."
+              }
+            }
+          ],
+          "videoSource": {
+            "type": "real",
+            "title": "A2Cnormal (CardioNetworks ECGpedia).avi.webm",
+            "author": "CardioNetworks: Vdbilt",
+            "license": "CC BY-SA 3.0",
+            "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:A2Cnormal_(CardioNetworks_ECGpedia).avi.webm"
+          },
+          "diagramAsset": "diagrams/apical_2c_3c.png",
+          "diagramAspect": 1.1527,
+          "diagramCredit": {
+            "en": "Illustration: Patrick J. Lynch & C. Carl Jaffe, MD (Yale) · CC BY 2.5 · adapted (light background)",
+            "de": "Illustration: Patrick J. Lynch & C. Carl Jaffe, MD (Yale) · CC BY 2.5 · bearbeitet (heller Hintergrund)",
+            "ar": "الرسم: Patrick J. Lynch و C. Carl Jaffe, MD (Yale) · CC BY 2.5 · معدَّل (خلفية فاتحة)"
+          },
           "steps": [
             {
               "title": {
@@ -4434,6 +4455,11 @@
                 "en": "From A4C rotate about 60° counter-clockwise until the right ventricle disappears completely. The inferior wall is on the left of the screen, the anterior wall on the right.",
                 "de": "Aus dem 4K-Blick etwa 60° gegen den Uhrzeigersinn drehen, bis der rechte Ventrikel ganz verschwindet. Die inferiore Wand liegt links, die Vorderwand rechts im Bild.",
                 "ar": "من A4C دوّر المجس نحو 60° عكس عقارب الساعة حتى يختفي البطين الأيمن تماماً. يظهر الجدار السفلي (يسار الشاشة) والأمامي (يمينها)."
+              },
+              "note": {
+                "en": "The apex must stay pointed and still – a rounded apex means foreshortening.",
+                "de": "Die Spitze muss spitz und unbewegt bleiben – eine runde Spitze bedeutet Verkürzung.",
+                "ar": "يجب أن تبقى القمة مدببة وثابتة – القمة المدوّرة تعني تقصيراً."
               },
               "requiredPhase": "LIVE"
             },
@@ -4447,6 +4473,11 @@
                 "en": "Trace the endocardium at end-diastole and end-systole to complete the biplane LVEF.",
                 "de": "Endokard enddiastolisch und endsystolisch umfahren, um die biplane LVEF zu vervollständigen.",
                 "ar": "ارسم حدود الشغاف في نهاية الانبساط والانقباض لإكمال حساب LVEF ثنائي المستوى."
+              },
+              "normal": {
+                "en": "LVEF 52–72 % (M) · 54–74 % (F)",
+                "de": "LVEF 52–72 % (M) · 54–74 % (F)",
+                "ar": "LVEF ‏52–72٪ (ذكور) · 54–74٪ (إناث)"
               },
               "note": {
                 "en": "LV length in A4C and A2C should not differ by more than 10 %.",
@@ -4479,16 +4510,37 @@
             },
             {
               "title": {
-                "en": "A3C view",
-                "de": "3K-Blick",
-                "ar": "مقطع A3C"
+                "en": "Left atrial volume (A2C)",
+                "de": "LA-Volumen (2K)",
+                "ar": "حجم الأذين الأيسر (A2C)"
               },
               "instruction": {
-                "en": "Keep rotating (about 120° from A4C) until the LVOT and aortic valve appear: an image like PLAX, seen from the apex.",
-                "de": "Weiter drehen (etwa 120° vom 4K-Blick), bis LVOT und Aortenklappe erscheinen: ein Bild wie die PLAX, von apikal gesehen.",
-                "ar": "تابع التدوير (نحو 120° من A4C) حتى يظهر مخرج البطين الأيسر والصمام الأبهري: صورة تشبه PLAX لكن من القمة."
+                "en": "At end-systole trace the LA without the appendage and pulmonary veins; combine with A4C (biplane) and index to BSA.",
+                "de": "Endsystolisch den LA ohne Vorhofohr und Pulmonalvenen umfahren; mit dem 4K-Blick kombinieren (biplan) und auf die KOF indizieren.",
+                "ar": "في نهاية الانقباض ارسم الأذين الأيسر دون الزائدة والأوردة الرئوية؛ اجمعه مع الرباعي (ثنائي المستوى) وفهرسه لمساحة الجسم."
               },
-              "requiredPhase": "LIVE"
+              "normal": {
+                "en": "LAVI ≤ 34 mL/m²",
+                "de": "LAVI ≤ 34 ml/m²",
+                "ar": "LAVI ≤ 34 مل/م²"
+              },
+              "requiredPhase": "ES",
+              "caliperOverlay": {
+                "type": "LINE",
+                "label": "LA length (A2C)",
+                "video": [
+                  0.535,
+                  0.6,
+                  0.545,
+                  0.765
+                ],
+                "diagram": [
+                  0.56,
+                  0.66,
+                  0.56,
+                  0.86
+                ]
+              }
             },
             {
               "title": {
@@ -4497,9 +4549,9 @@
                 "ar": "الإجهاد الطولي GLS"
               },
               "instruction": {
-                "en": "Record all three views (A4C, A2C, A3C) at a high frame rate without foreshortening for speckle-tracking analysis.",
-                "de": "Alle drei Schnitte (4K, 2K, 3K) mit hoher Bildrate und ohne Verkürzung für die Speckle-Tracking-Analyse aufzeichnen.",
-                "ar": "سجّل المقاطع الثلاثة (A4C, A2C, A3C) بمعدل إطارات عالٍ ودون تقصير القمة لتحليل speckle tracking."
+                "en": "Store the A2C loop at a high frame rate without foreshortening for speckle tracking (with A4C and A3C).",
+                "de": "2K-Loop mit hoher Bildrate und ohne Verkürzung für Speckle-Tracking speichern (mit 4K und 3K).",
+                "ar": "احفظ مقطع A2C بمعدل إطارات عالٍ ودون تقصير لتحليل speckle tracking (مع A4C وA3C)."
               },
               "normal": {
                 "en": "−18 % to −22 %",
@@ -4508,91 +4560,6 @@
               },
               "requiredPhase": "LIVE"
             }
-          ],
-          "ecg": {
-            "beatMs": 595,
-            "edMs": 0,
-            "esMs": 301,
-            "rWavesMs": [
-              0,
-              595,
-              1190,
-              1785,
-              2458,
-              3132
-            ],
-            "nominal": false
-          },
-          "timingNote": {
-            "en": "Simpson in A2C at ED (R-wave) and ES (T-end); GLS uses QRS onset as the end-diastolic reference.",
-            "de": "Simpson im 2K-Blick in ED (R-Zacke) und ES (T-Ende); GLS nutzt den QRS-Beginn als enddiastolische Referenz.",
-            "ar": "سيمبسون في ثنائي الحجرات عند نهاية الانبساط (موجة R) ونهاية الانقباض (نهاية T)؛ GLS يعتمد بداية QRS مرجعاً لنهاية الانبساط."
-          },
-          "machineControls": [
-            {
-              "control": "2D",
-              "instruction": {
-                "en": "Rotate counter-clockwise from A4C to A2C, then to A3C.",
-                "de": "Vom 4K-Blick gegen den Uhrzeigersinn in den 2K-, dann den 3K-Blick drehen.",
-                "ar": "دوّر عكس عقارب الساعة من الرباعي إلى الثنائي ثم الثلاثي."
-              }
-            },
-            {
-              "control": "FREEZE",
-              "instruction": {
-                "en": "Freeze A2C and select the ED and ES frames.",
-                "de": "2K-Blick einfrieren und ED- und ES-Bild auswählen.",
-                "ar": "جمّد المقطع الثنائي واختر إطاري نهاية الانبساط والانقباض."
-              }
-            },
-            {
-              "control": "CALIPER",
-              "instruction": {
-                "en": "Trace the endocardium for the biplane EF.",
-                "de": "Endokard für die biplane EF umfahren.",
-                "ar": "تتبّع الشغاف لحساب الكسر القذفي ثنائي المستوى."
-              }
-            },
-            {
-              "control": "COLOR",
-              "instruction": {
-                "en": "In A3C check the mitral and aortic valves with colour.",
-                "de": "Im 3K-Blick Mitral- und Aortenklappe mit Farbe prüfen.",
-                "ar": "في المقطع الثلاثي افحص الصمامين التاجي والأبهري بالدوبلر الملون."
-              }
-            },
-            {
-              "control": "STORE",
-              "instruction": {
-                "en": "Store A2C and A3C loops at a high frame rate for strain.",
-                "de": "2K- und 3K-Loops mit hoher Bildrate für Strain speichern.",
-                "ar": "احفظ مقطعي الثنائي والثلاثي بمعدل إطارات عالٍ لتحليل الإجهاد."
-              }
-            }
-          ],
-          "videoSource": {
-            "type": "real",
-            "title": "A2Cnormal (CardioNetworks ECGpedia).avi.webm + A3Cnormal (CardioNetworks ECGpedia).avi.webm",
-            "author": "CardioNetworks: Vdbilt",
-            "license": "CC BY-SA 3.0",
-            "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
-            "sourceUrl": "https://commons.wikimedia.org/wiki/File:A2Cnormal_(CardioNetworks_ECGpedia).avi.webm https://commons.wikimedia.org/wiki/File:A3Cnormal_(CardioNetworks_ECGpedia).avi.webm"
-          },
-          "diagramAsset": "diagrams/apical_2c_3c.png",
-          "diagramAspect": 1.1527,
-          "diagramCredit": {
-            "en": "Illustration: Patrick J. Lynch & C. Carl Jaffe, MD (Yale) · CC BY 2.5 · adapted (light background)",
-            "de": "Illustration: Patrick J. Lynch & C. Carl Jaffe, MD (Yale) · CC BY 2.5 · bearbeitet (heller Hintergrund)",
-            "ar": "الرسم: Patrick J. Lynch و C. Carl Jaffe, MD (Yale) · CC BY 2.5 · معدَّل (خلفية فاتحة)"
-          },
-          "schemaAsset": "schema/apical_2c_3c.svg",
-          "schemaAspect": 0.9603,
-          "orientationAsset": "orientation/apical_2c_3c.svg",
-          "schemaCrop": [
-            0.254,
-            0.06,
-            0.786,
-            0.78
           ],
           "probeGallery": [
             {
@@ -4611,28 +4578,6 @@
               "aspect": 1.0446,
               "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
               "source": "https://www.echocardiographer.org/tte-apical2",
-              "caption": {
-                "en": "How the beam cuts the heart",
-                "de": "So schneidet die Schallebene das Herz",
-                "ar": "كيف تقطع الحزمة القلب"
-              }
-            },
-            {
-              "asset": "echoorg/apical-long-axis_00.jpg",
-              "aspect": 1.5,
-              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
-              "source": "https://www.echocardiographer.org/tte-apical-long-axis",
-              "caption": {
-                "en": "Probe on the chest (photo)",
-                "de": "Schallkopf auf dem Thorax (Foto)",
-                "ar": "المسبار على الصدر (صورة)"
-              }
-            },
-            {
-              "asset": "echoorg/apical-long-axis_01.jpg",
-              "aspect": 0.8608,
-              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
-              "source": "https://www.echocardiographer.org/tte-apical-long-axis",
               "caption": {
                 "en": "How the beam cuts the heart",
                 "de": "So schneidet die Schallebene das Herz",
@@ -4662,18 +4607,350 @@
                 "de": "Ergebnisbild (Zeichnung)",
                 "ar": "المقطع الناتج (رسم)"
               }
+            }
+          ],
+          "schemaAsset": "schema/apical_2c.svg",
+          "schemaCrop": [
+            0.254,
+            0.0,
+            0.786,
+            0.795
+          ],
+          "schemaAspect": 0.8697,
+          "orientationAsset": "orientation/apical_2c.svg"
+        },
+        {
+          "id": "apical_3c",
+          "title": {
+            "en": "Apical 3-Chamber (Apical Long Axis)",
+            "de": "Apikaler Dreikammerblick (apikale lange Achse)",
+            "ar": "المقطع القمي ثلاثي الحجرات (المحور الطويل القمي)"
+          },
+          "probePosition": {
+            "en": "From the A2C keep rotating counter-clockwise (about 120° from A4C) until the LVOT, aortic valve and aorta appear.",
+            "de": "Aus dem 2K-Blick weiter gegen den Uhrzeigersinn drehen (etwa 120° vom 4K-Blick), bis LVOT, Aortenklappe und Aorta erscheinen.",
+            "ar": "من المقطع ثنائي الحجرات تابع التدوير عكس عقارب الساعة (نحو 120° من الرباعي) حتى يظهر مخرج البطين الأيسر والصمام الأبهري والأبهر."
+          },
+          "notchClock": "10–11",
+          "notchHours": [
+            10.5
+          ],
+          "notchDescription": {
+            "en": "Notch at 10–11 o'clock.",
+            "de": "Markierung bei 10–11 Uhr.",
+            "ar": "العلامة عند الساعة 10–11."
+          },
+          "videoAsset": "loops/apical_3c.mp4",
+          "svgAsset": "svg/apical_3c.svg",
+          "keyStructures": [
+            {
+              "en": "LV with inferolateral wall (left of image) and anteroseptal wall (right)",
+              "de": "LV mit inferolateraler Wand (links im Bild) und anteroseptaler Wand (rechts)",
+              "ar": "البطين الأيسر مع الجدار السفلي الجانبي (يسار الصورة) والأمامي الحاجزي (يمينها)"
             },
             {
-              "asset": "echoorg/apical-long-axis_03.jpg",
-              "aspect": 1.4859,
+              "en": "LVOT, aortic valve and aortic root",
+              "de": "LVOT, Aortenklappe und Aortenwurzel",
+              "ar": "مخرج البطين الأيسر والصمام الأبهري وجذر الأبهر"
+            },
+            {
+              "en": "Left atrium and mitral valve (A2 / P2)",
+              "de": "Linker Vorhof und Mitralklappe (A2 / P2)",
+              "ar": "الأذين الأيسر والصمام التاجي (A2 / P2)"
+            }
+          ],
+          "referenceMeasurements": {
+            "adult": [
+              {
+                "parameter": {
+                  "en": "Global longitudinal strain (GLS)",
+                  "de": "Globaler longitudinaler Strain (GLS)",
+                  "ar": "الإجهاد الطولي العام (GLS)"
+                },
+                "normal": {
+                  "en": "−18 % to −22 %",
+                  "de": "−18 % bis −22 %",
+                  "ar": "−18٪ إلى −22٪"
+                },
+                "note": {
+                  "en": "Less negative than −16 % is abnormal; vendor-specific",
+                  "de": "Weniger negativ als −16 % ist pathologisch; herstellerabhängig",
+                  "ar": "القيم الأقل سلبية من −16٪ غير طبيعية؛ تختلف حسب الشركة المصنّعة"
+                }
+              }
+            ],
+            "pediatric": [
+              {
+                "parameter": {
+                  "en": "Coronary territory assessment",
+                  "de": "Beurteilung der Koronarversorgungsgebiete",
+                  "ar": "تقييم مناطق التروية التاجية"
+                },
+                "focus": {
+                  "en": "ALCAPA: anterolateral dysfunction, papillary muscle echogenicity, MR.",
+                  "de": "ALCAPA: anterolaterale Dysfunktion, echoreiche Papillarmuskeln, MI.",
+                  "ar": "ALCAPA: خلل وظيفي أمامي جانبي، صدوية العضلات الحليمية، قلس تاجي."
+                }
+              },
+              {
+                "parameter": {
+                  "en": "Left atrial appendage",
+                  "de": "Linkes Vorhofohr",
+                  "ar": "زائدة الأذين الأيسر"
+                },
+                "focus": {
+                  "en": "Morphology for atrial isomerism (broad vs. finger-like).",
+                  "de": "Morphologie bei Vorhofisomerie (breitbasig vs. fingerförmig).",
+                  "ar": "الشكل في التماثل الأذيني (عريض مقابل إصبعي)."
+                }
+              },
+              {
+                "parameter": {
+                  "en": "Global longitudinal strain",
+                  "de": "Globaler longitudinaler Strain",
+                  "ar": "الإجهاد الطولي العام"
+                },
+                "focus": {
+                  "en": "Age-specific normal ≈ −20 % to −24 %; early marker in anthracycline cardiotoxicity, DMD.",
+                  "de": "Altersabhängiger Normalwert ≈ −20 % bis −24 %; früher Marker bei Anthrazyklin-Kardiotoxizität, DMD.",
+                  "ar": "الطبيعي حسب العمر ≈ −20٪ إلى −24٪؛ مؤشر مبكر للسمية القلبية بالأنثراسيكلين وحثل دوشين."
+                }
+              },
+              {
+                "parameter": {
+                  "en": "Mitral valve scallops",
+                  "de": "Mitralklappensegmente",
+                  "ar": "قطع الصمام التاجي"
+                },
+                "focus": {
+                  "en": "Cleft MV, MV prolapse; pediatric MR quantification.",
+                  "de": "Mitralklappen-Cleft, Mitralklappenprolaps; MI-Quantifizierung bei Kindern.",
+                  "ar": "شقّ التاجي، تدلّي التاجي؛ تقدير القلس التاجي عند الأطفال."
+                }
+              }
+            ]
+          },
+          "checklist": [
+            {
+              "en": "Rotate further until LVOT and aorta appear",
+              "de": "Weiter drehen, bis LVOT und Aorta erscheinen",
+              "ar": "متابعة التدوير حتى يظهر مخرج البطين الأيسر والأبهر"
+            },
+            {
+              "en": "Assess anteroseptal and inferolateral walls",
+              "de": "Anteroseptale und inferolaterale Wand beurteilen",
+              "ar": "تقييم الجدارين الأمامي الحاجزي والسفلي الجانبي"
+            },
+            {
+              "en": "Colour Doppler over mitral and aortic valve",
+              "de": "Farbdoppler über Mitral- und Aortenklappe",
+              "ar": "الدوبلر الملوّن فوق الصمامين التاجي والأبهري"
+            },
+            {
+              "en": "CW through the aortic valve (alternative to A5C)",
+              "de": "CW durch die Aortenklappe (Alternative zum 5K-Blick)",
+              "ar": "دوبلر مستمر عبر الصمام الأبهري (بديل عن الخماسي)"
+            },
+            {
+              "en": "Store at a high frame rate for strain (GLS)",
+              "de": "Mit hoher Bildrate für Strain (GLS) speichern",
+              "ar": "احفظ بمعدل إطارات عالٍ لتحليل الإجهاد (GLS)"
+            }
+          ],
+          "ecg": {
+            "beatMs": 673,
+            "edMs": 0,
+            "esMs": 320,
+            "rWavesMs": [
+              0,
+              673,
+              1347
+            ],
+            "nominal": false
+          },
+          "timingNote": {
+            "en": "Aortic valve closure in A3C marks end-systole (also for strain); colour and CW cover the whole cycle.",
+            "de": "Der Aortenklappenschluss im 3K-Blick markiert die Endsystole (auch für Strain); Farbe und CW decken den ganzen Zyklus ab.",
+            "ar": "انغلاق الصمام الأبهري في الثلاثي يحدد نهاية الانقباض (وللإجهاد أيضاً)؛ الألوان وCW تغطي الدورة كاملة."
+          },
+          "machineControls": [
+            {
+              "control": "2D",
+              "instruction": {
+                "en": "Rotate further from A2C until LVOT and aorta appear.",
+                "de": "Vom 2K-Blick weiter drehen, bis LVOT und Aorta erscheinen.",
+                "ar": "تابع التدوير من الثنائي حتى يظهر مخرج البطين الأيسر والأبهر."
+              }
+            },
+            {
+              "control": "COLOR",
+              "instruction": {
+                "en": "Colour box over LVOT, aortic and mitral valve.",
+                "de": "Farbbox über LVOT, Aorten- und Mitralklappe.",
+                "ar": "صندوق الألوان فوق مخرج البطين الأيسر والصمامين الأبهري والتاجي."
+              }
+            },
+            {
+              "control": "CW",
+              "instruction": {
+                "en": "Align CW through the aortic valve.",
+                "de": "CW durch die Aortenklappe legen.",
+                "ar": "مرّر CW عبر الصمام الأبهري."
+              }
+            },
+            {
+              "control": "SCALE",
+              "instruction": {
+                "en": "Adjust scale and baseline for the full envelope.",
+                "de": "Skala und Nulllinie für die ganze Hüllkurve anpassen.",
+                "ar": "اضبط المقياس وخط الأساس للغلاف كاملاً."
+              }
+            },
+            {
+              "control": "STORE",
+              "instruction": {
+                "en": "Store the loop at a high frame rate for strain.",
+                "de": "Loop mit hoher Bildrate für Strain speichern.",
+                "ar": "احفظ المقطع بمعدل إطارات عالٍ لتحليل الإجهاد."
+              }
+            }
+          ],
+          "videoSource": {
+            "type": "real",
+            "title": "A3Cnormal (CardioNetworks ECGpedia).avi.webm",
+            "author": "CardioNetworks: Vdbilt",
+            "license": "CC BY-SA 3.0",
+            "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:A3Cnormal_(CardioNetworks_ECGpedia).avi.webm"
+          },
+          "diagramAsset": "echoorg/apical-long-axis_03.jpg",
+          "diagramAspect": 1.4859,
+          "diagramCredit": {
+            "en": "Labelled echo image: Echocardiographer.org – Atif Qasim, MD MSCE (echocardiographer.org, free reuse with credit)",
+            "de": "Beschriftetes Echobild: Echocardiographer.org – Atif Qasim, MD MSCE (echocardiographer.org, freie Nutzung mit Quellenangabe)",
+            "ar": "صورة إيكو موسومة: Echocardiographer.org – Atif Qasim, MD MSCE (echocardiographer.org، استخدام مجاني مع ذكر المصدر)"
+          },
+          "steps": [
+            {
+              "title": {
+                "en": "A3C view",
+                "de": "3K-Blick",
+                "ar": "مقطع A3C"
+              },
+              "instruction": {
+                "en": "Keep rotating (about 120° from A4C) until the LVOT and aortic valve appear: an image like PLAX, seen from the apex. Inferolateral wall left, anteroseptal wall right.",
+                "de": "Weiter drehen (etwa 120° vom 4K-Blick), bis LVOT und Aortenklappe erscheinen: ein Bild wie die PLAX, von apikal gesehen. Inferolaterale Wand links, anteroseptale Wand rechts.",
+                "ar": "تابع التدوير (نحو 120° من A4C) حتى يظهر مخرج البطين الأيسر والصمام الأبهري: صورة تشبه PLAX من القمة. الجدار السفلي الجانبي يساراً والأمامي الحاجزي يميناً."
+              },
+              "requiredPhase": "LIVE"
+            },
+            {
+              "title": {
+                "en": "Colour over mitral and aortic valve",
+                "de": "Farbe über Mitral- und Aortenklappe",
+                "ar": "الدوبلر الملوّن فوق الصمامين التاجي والأبهري"
+              },
+              "instruction": {
+                "en": "Place the colour box over the LVOT, aortic valve and mitral valve: look for AR and MR jets and their direction.",
+                "de": "Farbbox über LVOT, Aortenklappe und Mitralklappe legen: auf AI- und MI-Jets und deren Richtung achten.",
+                "ar": "ضع صندوق الألوان فوق مخرج البطين الأيسر والصمامين الأبهري والتاجي: ابحث عن نفث القلس الأبهري والتاجي واتجاهه."
+              },
+              "requiredPhase": "LIVE",
+              "caliperOverlay": {
+                "type": "AREA",
+                "label": "Color · AV/MV",
+                "video": [
+                  0.44,
+                  0.47,
+                  0.67,
+                  0.66
+                ],
+                "diagram": [
+                  0.1,
+                  0.5,
+                  0.75,
+                  0.8
+                ]
+              }
+            },
+            {
+              "title": {
+                "en": "CW through the aortic valve",
+                "de": "CW durch die Aortenklappe",
+                "ar": "دوبلر مستمر عبر الصمام الأبهري"
+              },
+              "instruction": {
+                "en": "The LVOT runs almost parallel to the beam: align CW through the aortic valve for Vmax and mean gradient (compare with A5C).",
+                "de": "Der LVOT verläuft fast parallel zum Schallstrahl: CW durch die Aortenklappe für Vmax und mittleren Gradienten legen (mit 5K vergleichen).",
+                "ar": "مخرج البطين الأيسر شبه موازٍ للحزمة: مرّر CW عبر الصمام الأبهري لقياس Vmax والممال المتوسط (قارن مع الخماسي)."
+              },
+              "normal": {
+                "en": "Vmax < 2.5 m/s",
+                "de": "Vmax < 2,5 m/s",
+                "ar": "Vmax < 2.5 م/ث"
+              },
+              "requiredPhase": "LIVE",
+              "caliperOverlay": {
+                "type": "CURSOR",
+                "label": "CW · AV",
+                "video": [
+                  0.48,
+                  0.04,
+                  0.605,
+                  0.76
+                ],
+                "diagram": [
+                  0.52,
+                  0.06,
+                  0.62,
+                  0.8
+                ]
+              }
+            },
+            {
+              "title": {
+                "en": "Global longitudinal strain",
+                "de": "Globaler longitudinaler Strain",
+                "ar": "الإجهاد الطولي GLS"
+              },
+              "instruction": {
+                "en": "Record A4C, A2C and A3C at a high frame rate without foreshortening; aortic valve closure in A3C marks end-systole for strain.",
+                "de": "4K, 2K und 3K mit hoher Bildrate ohne Verkürzung aufzeichnen; der Aortenklappenschluss im 3K-Blick markiert die Endsystole für den Strain.",
+                "ar": "سجّل الرباعي والثنائي والثلاثي بمعدل إطارات عالٍ دون تقصير؛ انغلاق الصمام الأبهري في الثلاثي يحدد نهاية الانقباض للإجهاد."
+              },
+              "normal": {
+                "en": "−18 % to −22 %",
+                "de": "−18 % bis −22 %",
+                "ar": "−18٪ إلى −22٪"
+              },
+              "requiredPhase": "LIVE"
+            }
+          ],
+          "probeGallery": [
+            {
+              "asset": "echoorg/apical-long-axis_00.jpg",
+              "aspect": 1.5,
               "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
               "source": "https://www.echocardiographer.org/tte-apical-long-axis",
               "caption": {
-                "en": "Apical long axis (A3C)",
-                "de": "Apikale lange Achse (3K)",
-                "ar": "المحور الطويل القمي (ثلاثي الحجرات)"
+                "en": "Probe on the chest (photo)",
+                "de": "Schallkopf auf dem Thorax (Foto)",
+                "ar": "المسبار على الصدر (صورة)"
               }
             },
+            {
+              "asset": "echoorg/apical-long-axis_01.jpg",
+              "aspect": 0.8608,
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-apical-long-axis",
+              "caption": {
+                "en": "How the beam cuts the heart",
+                "de": "So schneidet die Schallebene das Herz",
+                "ar": "كيف تقطع الحزمة القلب"
+              }
+            }
+          ],
+          "atlasGallery": [
             {
               "asset": "echoorg/apical-long-axis_02.jpg",
               "aspect": 0.6718,
@@ -4685,7 +4962,16 @@
                 "ar": "المقطع الناتج (رسم)"
               }
             }
-          ]
+          ],
+          "schemaAsset": "schema/apical_3c.svg",
+          "schemaCrop": [
+            0.232,
+            0.0,
+            0.835,
+            0.81
+          ],
+          "schemaAspect": 0.9675,
+          "orientationAsset": "orientation/apical_3c.svg"
         }
       ]
     },
@@ -5211,11 +5497,11 @@
             "ar": "صورة إيكو موسومة: Echocardiographer.org – Atif Qasim, MD MSCE (echocardiographer.org، استخدام مجاني مع ذكر المصدر)"
           },
           "schemaAsset": "schema/suprasternal_arch.svg",
-          "schemaAspect": 0.9977,
+          "schemaAspect": 0.9832,
           "orientationAsset": "orientation/suprasternal_arch.svg",
           "schemaCrop": [
             0.204,
-            0.01,
+            0.0,
             0.726,
             0.69
           ],
@@ -5350,6 +5636,7 @@
         "plax_standard",
         "psax_av",
         "apical_5c",
+        "apical_3c",
         "suprasternal_arch"
       ],
       "morphology": [
@@ -5868,7 +6155,8 @@
         "plax_standard",
         "psax_papillary",
         "apical_4c",
-        "apical_2c_3c"
+        "apical_2c",
+        "apical_3c"
       ],
       "morphology": [
         {
@@ -5919,7 +6207,7 @@
             "de": "PLAX- oder 3K-Zoom: Vena contracta senkrecht zur Kommissurenlinie.",
             "ar": "PLAX أو ثلاثي الحجرات مكبّر: الوريد المنقبض عمودياً على خط الصوارين."
           },
-          "view": "apical_2c_3c"
+          "view": "apical_3c"
         },
         {
           "text": {

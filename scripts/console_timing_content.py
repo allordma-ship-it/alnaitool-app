@@ -182,16 +182,28 @@ VIEWS = {
             s("STORE", "Store the Doppler traces.", "Dopplerkurven speichern.", "احفظ منحنيات الدوبلر."),
         ],
     },
-    "apical_2c_3c": {
-        "timingNote": t("Simpson in A2C at ED (R-wave) and ES (T-end); GLS uses QRS onset as the end-diastolic reference.",
-                        "Simpson im 2K-Blick in ED (R-Zacke) und ES (T-Ende); GLS nutzt den QRS-Beginn als enddiastolische Referenz.",
-                        "سيمبسون في ثنائي الحجرات عند نهاية الانبساط (موجة R) ونهاية الانقباض (نهاية T)؛ GLS يعتمد بداية QRS مرجعاً لنهاية الانبساط."),
+    "apical_2c": {
+        "timingNote": t("Simpson and LA volume in A2C: ED at the R-wave, ES at the T-wave end (smallest LV, largest LA).",
+                        "Simpson und LA-Volumen im 2K-Blick: ED bei der R-Zacke, ES am T-Ende (kleinster LV, größter LA).",
+                        "سيمبسون وحجم الأذين في ثنائي الحجرات: نهاية الانبساط عند موجة R، ونهاية الانقباض عند نهاية T (أصغر بطين وأكبر أذين)."),
         "machineControls": [
-            s("2D", "Rotate counter-clockwise from A4C to A2C, then to A3C.", "Vom 4K-Blick gegen den Uhrzeigersinn in den 2K-, dann den 3K-Blick drehen.", "دوّر عكس عقارب الساعة من الرباعي إلى الثنائي ثم الثلاثي."),
-            s("FREEZE", "Freeze A2C and select the ED and ES frames.", "2K-Blick einfrieren und ED- und ES-Bild auswählen.", "جمّد المقطع الثنائي واختر إطاري نهاية الانبساط والانقباض."),
-            s("CALIPER", "Trace the endocardium for the biplane EF.", "Endokard für die biplane EF umfahren.", "تتبّع الشغاف لحساب الكسر القذفي ثنائي المستوى."),
-            s("COLOR", "In A3C check the mitral and aortic valves with colour.", "Im 3K-Blick Mitral- und Aortenklappe mit Farbe prüfen.", "في المقطع الثلاثي افحص الصمامين التاجي والأبهري بالدوبلر الملون."),
-            s("STORE", "Store A2C and A3C loops at a high frame rate for strain.", "2K- und 3K-Loops mit hoher Bildrate für Strain speichern.", "احفظ مقطعي الثنائي والثلاثي بمعدل إطارات عالٍ لتحليل الإجهاد."),
+            s("2D", "Rotate counter-clockwise from A4C until the RV disappears.", "Vom 4K-Blick gegen den Uhrzeigersinn drehen, bis der RV verschwindet.", "دوّر عكس عقارب الساعة من الرباعي حتى يختفي البطين الأيمن."),
+            s("DEPTH", "Set the depth so the whole LA is shown.", "Tiefe so wählen, dass der ganze LA sichtbar ist.", "اضبط العمق ليظهر الأذين الأيسر كاملاً."),
+            s("FREEZE", "Freeze and select the ED and ES frames.", "Einfrieren und ED- und ES-Bild auswählen.", "جمّد واختر إطاري نهاية الانبساط والانقباض."),
+            s("CALIPER", "Trace the endocardium (biplane EF) and the LA (volume).", "Endokard (biplane EF) und LA (Volumen) umfahren.", "تتبّع الشغاف (الكسر القذفي) والأذين الأيسر (الحجم)."),
+            s("STORE", "Store the loop at a high frame rate for strain.", "Loop mit hoher Bildrate für Strain speichern.", "احفظ المقطع بمعدل إطارات عالٍ لتحليل الإجهاد."),
+        ],
+    },
+    "apical_3c": {
+        "timingNote": t("Aortic valve closure in A3C marks end-systole (also for strain); colour and CW cover the whole cycle.",
+                        "Der Aortenklappenschluss im 3K-Blick markiert die Endsystole (auch für Strain); Farbe und CW decken den ganzen Zyklus ab.",
+                        "انغلاق الصمام الأبهري في الثلاثي يحدد نهاية الانقباض (وللإجهاد أيضاً)؛ الألوان وCW تغطي الدورة كاملة."),
+        "machineControls": [
+            s("2D", "Rotate further from A2C until LVOT and aorta appear.", "Vom 2K-Blick weiter drehen, bis LVOT und Aorta erscheinen.", "تابع التدوير من الثنائي حتى يظهر مخرج البطين الأيسر والأبهر."),
+            s("COLOR", "Colour box over LVOT, aortic and mitral valve.", "Farbbox über LVOT, Aorten- und Mitralklappe.", "صندوق الألوان فوق مخرج البطين الأيسر والصمامين الأبهري والتاجي."),
+            s("CW", "Align CW through the aortic valve.", "CW durch die Aortenklappe legen.", "مرّر CW عبر الصمام الأبهري."),
+            s("SCALE", "Adjust scale and baseline for the full envelope.", "Skala und Nulllinie für die ganze Hüllkurve anpassen.", "اضبط المقياس وخط الأساس للغلاف كاملاً."),
+            s("STORE", "Store the loop at a high frame rate for strain.", "Loop mit hoher Bildrate für Strain speichern.", "احفظ المقطع بمعدل إطارات عالٍ لتحليل الإجهاد."),
         ],
     },
     "suprasternal_arch": {

@@ -420,7 +420,7 @@ def scenes():
                 Valve((187, 186), (219, 186), (0, 1), "SL"),
             ],
         )],
-        "apical_2c_3c": [
+        "apical_2c": [
             Scene(
                 "APICAL 2C",
                 shapes=[
@@ -431,6 +431,8 @@ def scenes():
                 ],
                 valves=[Valve((138, 190), (264, 190), (0, -1))],
             ),
+        ],
+        "apical_3c": [
             Scene(
                 "APICAL 3C (APLAX)",
                 shapes=[

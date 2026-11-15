@@ -56,7 +56,8 @@ BEAM = {
     "psax_papillary": ((0.5, 0.87), 0.45, 125),
     "apical_4c": ((-0.55, -0.83), 1.0, 175),
     "apical_5c": ((-0.50, -0.86), 0.95, 175),
-    "apical_2c_3c": ((-0.55, -0.83), 0.9, 175),
+    "apical_2c": ((-0.55, -0.83), 0.9, 175),
+    "apical_3c": ((-0.60, -0.80), 0.85, 175),
     "suprasternal_arch": ((0.05, 1.0), 0.85, 170),
 }
 HALF_FAN = math.radians(40)
@@ -244,13 +245,7 @@ def render(view: dict, window_id: str, lang: str) -> str:
 
 # Index directions the guide teaches (clock face seen facing the patient). Apical 2C: rotate
 # counter-clockwise from 3 o'clock to 12–1 o'clock; apical 3C: on to 10–11 o'clock.
-NOTCH = {
-    "apical_2c_3c": ("12–1 / 10–11", [12.5, 10.5], {
-        "en": "A2C: notch at 12–1 o'clock. A3C: notch at 10–11 o'clock.",
-        "de": "2K: Markierung bei 12–1 Uhr. 3K: Markierung bei 10–11 Uhr.",
-        "ar": "ثنائي الحجرات: العلامة عند الساعة 12–1. ثلاثي الحجرات: العلامة عند الساعة 10–11.",
-    }),
-}
+NOTCH: dict = {}  # notch data lives in the views (apical_2c: 12–1, apical_3c: 10–11)
 
 
 def main():

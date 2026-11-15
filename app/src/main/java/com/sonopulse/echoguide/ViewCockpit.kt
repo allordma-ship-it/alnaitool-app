@@ -456,7 +456,7 @@ private fun diagramSource(
     }
 }
 
-private val SchemaBackground = Color(0xFF0B1220)
+private val SchemaBackground = Color(0xFF0F1419)
 
 private fun probeFallback(source: DiagramSource, view: EchoView, language: AppLanguage): (@Composable () -> Unit)? =
     if (source.isProbe) ({ ProbeOrientationFallback(view, language) }) else null

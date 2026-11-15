@@ -111,10 +111,18 @@ STEPS = {
         ("LIVE", ov(G, "PW · LVOT", [0.50, 0.073, 0.5075, 0.573], [0.68, 0.06, 0.66, 0.57])),
         ("LIVE", ov(C, "CW · AV", [0.50, 0.073, 0.5075, 0.873], [0.68, 0.06, 0.66, 0.72])),
     ],
-    "apical_2c_3c": [
+    "apical_2c": [
         ("LIVE", None),
         ("ED", ov(L, "LV length (A2C)", [0.495, 0.125, 0.53, 0.595], [0.55, 0.15, 0.56, 0.64])),
+        ("ES", ov(L, "LA length (A2C)", [0.535, 0.60, 0.545, 0.765], [0.56, 0.66, 0.56, 0.86])),
         ("LIVE", None),
+    ],
+    "apical_3c": [
+        ("LIVE", None),
+        # Colour box over LVOT, aortic and mitral valve.
+        ("LIVE", ov(A, "Color · AV/MV", [0.44, 0.47, 0.67, 0.66], [0.10, 0.50, 0.75, 0.80])),
+        # CW from the apex through the aortic valve.
+        ("LIVE", ov(C, "CW · AV", [0.48, 0.04, 0.605, 0.76], [0.52, 0.06, 0.62, 0.80])),
         ("LIVE", None),
     ],
     "suprasternal_arch": [

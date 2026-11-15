@@ -28,12 +28,12 @@ class ProtocolDatabaseTest {
 
         private val expectedViews = listOf(
             "subcostal_4c", "subcostal_ivc", "plax_standard", "psax_av", "psax_papillary",
-            "apical_4c", "apical_5c", "apical_2c_3c", "suprasternal_arch"
+            "apical_4c", "apical_5c", "apical_2c", "apical_3c", "suprasternal_arch"
         )
     }
 
     @Test
-    fun hasFourWindowsAndNineViewsInOrder() {
+    fun hasFourWindowsAndTenViewsInOrder() {
         assertEquals(listOf("subcostal", "parasternal", "apical", "suprasternal"), protocol.windows.map { it.id })
         assertEquals(expectedViews, protocol.allViews.map { it.id })
     }
@@ -79,7 +79,7 @@ class ProtocolDatabaseTest {
     @Test
     fun guidedExamHasTranslatedStepsWithValidCalipers() {
         val steps = protocol.allViews.flatMap { it.steps }
-        assertEquals(46, steps.size)
+        assertEquals(50, steps.size)
         protocol.allViews.forEach { assertTrue("no steps for ${it.id}", it.steps.isNotEmpty()) }
         steps.forEach { step ->
             listOfNotNull(step.title, step.instruction, step.normal, step.note).forEach { t ->
@@ -212,7 +212,7 @@ class ProtocolDatabaseTest {
         val svgs = listOf("orientation", "schema", "svg").flatMap { dir ->
             File(assetsDir, dir).listFiles { f -> f.name.endsWith(".svg") }.orEmpty().toList()
         }
-        assertTrue("SVG assets found", svgs.size >= 9 * 3 + 9 + 9)
+        assertTrue("SVG assets found", svgs.size >= 10 * 3 + 10 + 9)
         svgs.forEach { f ->
             try {
                 factory.newDocumentBuilder().parse(f)

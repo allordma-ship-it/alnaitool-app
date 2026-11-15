@@ -25,22 +25,33 @@ ASSETS = os.path.join(ROOT, "app", "src", "main", "assets")
 OUT = os.path.join(ASSETS, "schema")
 DB = os.path.join(ASSETS, "echo_protocol_full.json")
 
-BG = "#0B1220"
-SECTOR = "#111C2E"
-SECTOR_EDGE = "#33435C"
-MYO = "#9F3A4E"
-MYO_EDGE = "#F4A9B7"
-# Physiological shading: right heart & IVC cool blue, left heart & aorta warm crimson (fill, opacity).
-RIGHT, LEFT = ("#1D4ED8", 0.35), ("#E11D48", 0.35)
-CAV = {"L": LEFT, "A": LEFT, "R": RIGHT, "RA": RIGHT}
-ARTERY_WALL = "#FB7185"
-VEIN_WALL = "#93C5FD"
-VALVE = "#FFFFFF"
-PERI = "#E2E8F0"
-LIVER = ("#92400E", 0.45)
-LABEL = "#F8FAFC"
-PILL = "#0F172A"
-STROKE = 3.0  # ≈ 2 dp once the schema is fitted into the stage panel
+# Luminous dark-mode style: charcoal slate background, glowing outlines over soft translucent
+# fills – cool medical blue for the right heart / veins, warm coral-amber for the left heart /
+# aorta – and a translucent emerald-teal ultrasound sector.
+BG = "#0F1419"
+SECTOR = "#00897B"
+SECTOR_FILL_OPACITY = 0.13
+BLUE_LINE, BLUE_FILL = "#38BDF8", "#1E88E5"
+CORAL_LINE, CORAL_FILL = "#FB923C", "#E53935"
+# Cavities (fill colour, opacity) and outline colour per side.
+CAV = {"L": (CORAL_FILL, 0.20), "A": (CORAL_FILL, 0.16), "R": (BLUE_FILL, 0.22), "RA": (BLUE_FILL, 0.18)}
+EDGE = {"L": CORAL_LINE, "R": BLUE_LINE}
+ARTERY_WALL = CORAL_LINE
+VEIN_WALL = BLUE_LINE
+VALVE = "#F1F5F9"
+PERI = "#CBD5E1"
+LIVER = ("#92400E", 0.40)
+LABEL = "#F1F5F9"
+PILL = "#0F1419"
+STROKE = 2.6   # crisp outline (≈ 2 dp once fitted into the stage panel)
+GLOW = 9.0     # soft halo under every outline
+
+
+def glow_path(d: str, colour: str, fill: str = "none", fill_opacity: float = 0.0, width: float = STROKE) -> str:
+    """Soft wide halo + crisp line in the same colour (no filters: Android's SVG renderer has none)."""
+    return (f'<path d="{d}" fill="{fill}" fill-opacity="{fill_opacity}" stroke="{colour}" stroke-opacity="0.22" '
+            f'stroke-width="{GLOW}" stroke-linejoin="round" stroke-linecap="round"/>'
+            f'<path d="{d}" fill="none" stroke="{colour}" stroke-width="{width}" stroke-linejoin="round" stroke-linecap="round"/>')
 
 
 # ---------------------------------------------------------------------------------------------
@@ -95,7 +106,7 @@ VIEWS = {
         shapes=[
             ("cav", [(0.36, 0.20), (0.42, 0.105), (0.58, 0.105), (0.64, 0.24), (0.55, 0.258),
                      (0.47, 0.243), (0.40, 0.226)], "R"),
-            ("band", [(0.40, 0.078), (0.50, 0.068), (0.60, 0.078)], [(0.60, 0.105), (0.50, 0.095), (0.40, 0.105)]),
+            ("band", [(0.40, 0.078), (0.50, 0.068), (0.60, 0.078)], [(0.60, 0.105), (0.50, 0.095), (0.40, 0.105)], "R"),
             ("cav", [(0.10, 0.24), (0.34, 0.258), (0.40, 0.272), (0.47, 0.291), (0.55, 0.315), (0.60, 0.31),
                      (0.645, 0.30), (0.70, 0.31), (0.72, 0.39), (0.654, 0.412), (0.60, 0.432), (0.57, 0.462),
                      (0.50, 0.478), (0.475, 0.545), (0.436, 0.553), (0.38, 0.535), (0.30, 0.50), (0.22, 0.47),
@@ -167,7 +178,7 @@ VIEWS = {
                     [(0.645, 0.585), (0.65, 0.50), (0.645, 0.40), (0.60, 0.25), (0.52, 0.13), (0.50, 0.13),
                      (0.48, 0.15), (0.45, 0.25), (0.43, 0.40), (0.435, 0.52), (0.455, 0.585)]),
             ("band", [(0.42, 0.18), (0.34, 0.29), (0.28, 0.40), (0.255, 0.50), (0.26, 0.57)],
-                     [(0.30, 0.565), (0.29, 0.50), (0.31, 0.40), (0.36, 0.30), (0.43, 0.20)]),
+                     [(0.30, 0.565), (0.29, 0.50), (0.31, 0.40), (0.36, 0.30), (0.43, 0.20)], "R"),
             ("band", [(0.45, 0.60), (0.46, 0.68), (0.47, 0.76)], [(0.485, 0.76), (0.475, 0.68), (0.465, 0.60)]),
             ("valve", [(0.305, 0.565), (0.33, 0.53)]),
             ("valve", [(0.42, 0.578), (0.395, 0.545)]),
@@ -182,8 +193,8 @@ VIEWS = {
             ("label", "IAS", (0.425, 0.735), 11),
         ],
     ),
-    # Apical 2-chamber; ED frame of the first (A2C) clip in loops/apical_2c_3c.mp4.
-    "apical_2c_3c": dict(
+    # Apical 2-chamber; ED frame of loops/apical_2c.mp4.
+    "apical_2c": dict(
         sector=((0.50, 0.05), 39, 0.74),
         shapes=[
             ("cav", [(0.48, 0.13), (0.50, 0.125), (0.52, 0.13), (0.58, 0.25), (0.62, 0.40), (0.63, 0.50),
@@ -202,6 +213,27 @@ VIEWS = {
             ("label", "ANT", (0.665, 0.30), 11),
         ],
     ),
+    # Apical 3-chamber (apical long axis); ED frame of loops/apical_3c.mp4. Inferolateral wall
+    # left, anteroseptum right, LA bottom left, LVOT / aortic valve / aorta bottom right.
+    "apical_3c": dict(
+        sector=((0.48, 0.03), 38, 0.75),
+        shapes=[
+            ("cav", [(0.475, 0.12), (0.50, 0.11), (0.53, 0.14), (0.56, 0.25), (0.585, 0.38), (0.59, 0.50),
+                     (0.56, 0.565), (0.50, 0.52), (0.45, 0.50), (0.43, 0.42), (0.43, 0.32), (0.45, 0.20)], "L"),
+            ("cav", [(0.44, 0.585), (0.54, 0.59), (0.55, 0.70), (0.52, 0.77), (0.46, 0.76), (0.43, 0.68)], "A"),
+            ("cav", [(0.57, 0.585), (0.635, 0.56), (0.655, 0.66), (0.66, 0.77), (0.60, 0.78), (0.575, 0.68)], "L"),
+            ("myo", [(0.40, 0.56), (0.37, 0.45), (0.38, 0.32), (0.42, 0.18), (0.47, 0.08), (0.51, 0.07), (0.56, 0.11),
+                     (0.61, 0.24), (0.645, 0.37), (0.665, 0.52)],
+                    [(0.62, 0.52), (0.60, 0.40), (0.575, 0.27), (0.535, 0.14), (0.50, 0.11), (0.475, 0.12), (0.45, 0.20),
+                     (0.43, 0.32), (0.43, 0.42), (0.44, 0.53)]),
+            ("band", [(0.545, 0.56), (0.555, 0.67), (0.565, 0.78)], [(0.578, 0.78), (0.568, 0.67), (0.562, 0.565)]),
+            ("line", [(0.635, 0.53), (0.65, 0.65), (0.665, 0.78)], ARTERY_WALL, 4),
+            ("valve", [(0.555, 0.565), (0.52, 0.535), (0.50, 0.52)]),
+            ("valve", [(0.44, 0.555), (0.465, 0.53)]),
+            ("valve", [(0.57, 0.59), (0.60, 0.612)]),
+            ("valve", [(0.635, 0.585), (0.605, 0.612)]),
+        ],
+    ),
     # Subcostal 4-chamber; ED frame of loops/subcostal_4c.mp4.
     "subcostal_4c": dict(
         sector=((0.50, 0.03), 37, 0.75),
@@ -213,7 +245,7 @@ VIEWS = {
             ("cav", [(0.47, 0.47), (0.56, 0.42), (0.62, 0.40), (0.66, 0.45), (0.66, 0.55), (0.60, 0.62),
                      (0.52, 0.61), (0.48, 0.56)], "L"),
             ("band", [(0.20, 0.335), (0.30, 0.322), (0.40, 0.314), (0.47, 0.30), (0.55, 0.302), (0.70, 0.29)],
-                     [(0.70, 0.322), (0.55, 0.33), (0.47, 0.333), (0.40, 0.336), (0.30, 0.345), (0.20, 0.36)]),
+                     [(0.70, 0.322), (0.55, 0.33), (0.47, 0.333), (0.40, 0.336), (0.30, 0.345), (0.20, 0.36)], "R"),
             ("band", [(0.415, 0.50), (0.47, 0.42), (0.53, 0.38), (0.59, 0.352)],
                      [(0.625, 0.375), (0.56, 0.415), (0.50, 0.455), (0.45, 0.525)]),
             ("band", [(0.33, 0.535), (0.44, 0.52)], [(0.45, 0.548), (0.34, 0.562)]),
@@ -284,7 +316,7 @@ def simulated_views() -> dict:
         ("myo", [n(p) for p in [(66, 152), (80, 94), (128, 60), (200, 54), (272, 58), (316, 90), (290, 116),
                                 (260, 100), (200, 98), (140, 104), (114, 126), (114, 152)]],
                 [n(p) for p in [(110, 150), (112, 124), (140, 100), (200, 94), (260, 96), (290, 112),
-                                (312, 92), (270, 62), (200, 58), (130, 64), (84, 96), (70, 150)]]),
+                                (312, 92), (270, 62), (200, 58), (130, 64), (84, 96), (70, 150)]], "R"),
         ("cav", [n(p) for p in [(84, 96), (130, 64), (200, 58), (270, 62), (312, 92), (290, 112), (260, 96),
                                 (200, 94), (140, 100), (112, 124), (110, 150), (70, 150)]], "R"),
         ("vessel", [n(p) for p in [(268, 114), (282, 140), (290, 168)]], 26, True),
@@ -309,7 +341,7 @@ def simulated_views() -> dict:
         ("cav", [n(p) for p in [(204, 46), (262, 70), (300, 176), (226, 178)]], "L"),
         ("ellipse", n((132, 222)), (40 / 400, 32 / 300), "RA", "wall"),
         ("ellipse", n((274, 226)), (40 / 400, 32 / 300), "A", "wall"),
-        ("band", [n(p) for p in [(192, 40), (144, 76), (108, 168)]], [n(p) for p in [(116, 166), (150, 80), (196, 46)]]),
+        ("band", [n(p) for p in [(192, 40), (144, 76), (108, 168)]], [n(p) for p in [(116, 166), (150, 80), (196, 46)]], "R"),
         ("band", [n(p) for p in [(196, 46), (186, 105), (176, 164)]], [n(p) for p in [(226, 178), (214, 110), (204, 46)]]),
         ("band", [n(p) for p in [(208, 40), (268, 66), (308, 178)]], [n(p) for p in [(300, 176), (262, 70), (204, 46)]]),
         ("vessel", [n((203, 176)), n((203, 262))], 34, True),
@@ -328,6 +360,27 @@ def simulated_views() -> dict:
 
 
 # ---------------------------------------------------------------------------------------------
+
+def sector_decor(c: Canvas, apex, half_deg: float, radius_y: float) -> str:
+    """Probe footprint at the apex and an orientation arc arrow (index side → far side) near the far field."""
+    ax, ay = c.p(apex)
+    r = radius_y * c.h * 0.9
+    a = math.radians(half_deg * 0.8)
+    x1, y1 = ax - r * math.sin(a), ay + r * math.cos(a)
+    x2, y2 = ax + r * math.sin(a), ay + r * math.cos(a)
+    # arrowhead at the right end, tangent to the arc
+    tx, ty = math.cos(a), -math.sin(a)
+    nx, ny = -ty, tx
+    head = 11
+    p1 = (x2 - tx * head + nx * head * 0.6, y2 - ty * head + ny * head * 0.6)
+    p2 = (x2 - tx * head - nx * head * 0.6, y2 - ty * head - ny * head * 0.6)
+    return (f'<path d="M {x1:.1f} {y1:.1f} A {r:.1f} {r:.1f} 0 0 0 {x2:.1f} {y2:.1f}" fill="none" stroke="{SECTOR}" '
+            f'stroke-opacity="0.9" stroke-width="2.4" stroke-dasharray="10 6"/>'
+            f'<path d="M {p1[0]:.1f} {p1[1]:.1f} L {x2:.1f} {y2:.1f} L {p2[0]:.1f} {p2[1]:.1f}" fill="none" stroke="#26A69A" '
+            f'stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>'
+            f'<rect x="{ax - 26:.1f}" y="{ay - 12:.1f}" width="52" height="14" rx="7" fill="#E2E8F0" fill-opacity="0.9"/>'
+            f'<circle cx="{ax - 32:.1f}" cy="{ay - 5:.1f}" r="5" fill="#38BDF8"/>')
+
 
 def crop_box(spec_id: str, spec: dict, overlays: list[list[float]], width: int, height: int,
              pad: float = 0.03) -> list[float]:
@@ -355,6 +408,9 @@ def crop_box(spec_id: str, spec: dict, overlays: list[list[float]], width: int, 
         if target:
             xs.append(target[0])
             ys.append(target[1])
+    (ax, ay), _, _ = spec["sector"]
+    xs += [ax - 0.06, ax + 0.06]          # probe footprint and index dot at the apex
+    ys += [max(0.0, ay - 0.035)]
     for c in overlays:
         xs += [c[0], c[2]]
         ys += [c[1], c[3]]
@@ -374,37 +430,43 @@ def render(view_id: str, spec: dict, width: int, height: int, crop: list[float] 
             body.append(f'<path d="{c.smooth(shape[1], True)}" fill="{LIVER[0]}" fill-opacity="{LIVER[1]}"/>')
         elif kind == "cav":
             colour, alpha = CAV[shape[2]]
-            body.append(f'<path d="{c.smooth(shape[1], True)}" fill="{colour}" fill-opacity="{alpha}"/>')
+            edge = BLUE_LINE if shape[2] in ("R", "RA") else CORAL_LINE
+            body.append(f'<path d="{c.smooth(shape[1], True)}" fill="{colour}" fill-opacity="{alpha}" '
+                        f'stroke="{edge}" stroke-opacity="0.35" stroke-width="1.2"/>')
         elif kind == "myo":
             outer, inner = shape[1], shape[2]
+            side = shape[3] if len(shape) > 3 else "L"
             d = c.smooth(outer + inner, True)
-            body.append(f'<path d="{d}" fill="{MYO}" stroke="{MYO_EDGE}" stroke-width="{STROKE}" stroke-linejoin="round"/>')
+            body.append(glow_path(d, EDGE[side], fill=CORAL_FILL if side == "L" else BLUE_FILL, fill_opacity=0.30))
         elif kind == "band":
             top, bottom = shape[1], shape[2]
+            side = shape[3] if len(shape) > 3 else "L"
             d = c.smooth(top, False) + " L " + c.smooth(bottom, False)[2:] + " Z"
-            body.append(f'<path d="{d}" fill="{MYO}" stroke="{MYO_EDGE}" stroke-width="{STROKE}" stroke-linejoin="round"/>')
+            body.append(glow_path(d, EDGE[side], fill=CORAL_FILL if side == "L" else BLUE_FILL, fill_opacity=0.30))
         elif kind == "valve":
-            body.append(f'<path d="{c.smooth(shape[1], False)}" fill="none" stroke="{VALVE}" stroke-width="4" '
-                        f'stroke-linecap="round"/>')
+            body.append(glow_path(c.smooth(shape[1], False), VALVE, width=3.4))
         elif kind == "peri":
             body.append(f'<path d="{c.smooth(shape[1], False)}" fill="none" stroke="{PERI}" stroke-width="2.2" '
                         f'stroke-opacity="0.85" stroke-linecap="round"/>')
         elif kind == "line":
-            body.append(f'<path d="{c.smooth(shape[1], False)}" fill="none" stroke="{shape[2]}" '
-                        f'stroke-width="{shape[3]}" stroke-linecap="round"/>')
+            body.append(glow_path(c.smooth(shape[1], False), shape[2], width=shape[3]))
         elif kind == "vessel":
             pts, w = shape[1], shape[2] * c.w / 400
             d = c.smooth(pts, False)
-            body.append(f'<path d="{d}" fill="none" stroke="{ARTERY_WALL}" stroke-width="{w + 8:.1f}" stroke-linecap="round"/>')
-            body.append(f'<path d="{d}" fill="none" stroke="#3A1420" stroke-width="{w:.1f}" stroke-linecap="round"/>')
-            body.append(f'<path d="{d}" fill="none" stroke="{LEFT[0]}" stroke-opacity="{LEFT[1]}" stroke-width="{w:.1f}" stroke-linecap="round"/>')
+            body.append(f'<path d="{d}" fill="none" stroke="{ARTERY_WALL}" stroke-opacity="0.22" stroke-width="{w + 14:.1f}" stroke-linecap="round"/>')
+            body.append(f'<path d="{d}" fill="none" stroke="{ARTERY_WALL}" stroke-width="{w + 5:.1f}" stroke-linecap="round"/>')
+            body.append(f'<path d="{d}" fill="none" stroke="#2A1512" stroke-width="{w:.1f}" stroke-linecap="round"/>')
+            body.append(f'<path d="{d}" fill="none" stroke="{CORAL_FILL}" stroke-opacity="0.25" stroke-width="{w:.1f}" stroke-linecap="round"/>')
         elif kind == "ellipse":
             (cx, cy), (rx, ry), fill, wall = shape[1], shape[2], shape[3], shape[4]
             X, Y = c.p((cx, cy))
-            colour, alpha = (MYO, 1.0) if fill == "myo" else CAV[fill]
-            stroke = MYO_EDGE if fill == "myo" else ((ARTERY_WALL if fill in ("L", "A") else VEIN_WALL) if wall else "none")
+            colour, alpha = (CORAL_FILL, 0.30) if fill == "myo" else CAV[fill]
+            line = CORAL_LINE if fill in ("myo", "L", "A") else BLUE_LINE
+            stroke_op = 1.0 if (fill == "myo" or wall) else 0.35
+            body.append(f'<ellipse cx="{X:.1f}" cy="{Y:.1f}" rx="{rx * c.w:.1f}" ry="{ry * c.h:.1f}" fill="none" '
+                        f'stroke="{line}" stroke-opacity="{0.22 * stroke_op:.2f}" stroke-width="{GLOW}"/>')
             body.append(f'<ellipse cx="{X:.1f}" cy="{Y:.1f}" rx="{rx * c.w:.1f}" ry="{ry * c.h:.1f}" fill="{colour}" '
-                        f'fill-opacity="{alpha}" stroke="{stroke}" stroke-width="{STROKE}"/>')
+                        f'fill-opacity="{alpha}" stroke="{line}" stroke-opacity="{stroke_op}" stroke-width="{STROKE}"/>')
         elif kind == "label":
             pass  # labels come from LABELS below
     x0, y0, x1, y1 = crop or [0.0, 0.0, 1.0, 1.0]
@@ -413,11 +475,11 @@ def render(view_id: str, spec: dict, width: int, height: int, crop: list[float] 
   <title>{view_id} schema</title>
   <defs><clipPath id="sector"><path d="{sector}"/></clipPath></defs>
   <rect x="{vb[0]:.1f}" y="{vb[1]:.1f}" width="{vb[2]:.1f}" height="{vb[3]:.1f}" fill="{BG}"/>
-  <path d="{sector}" fill="{SECTOR}"/>
   <g clip-path="url(#sector)">
     {chr(10).join("    " + b for b in body).strip()}
   </g>
-  <path d="{sector}" fill="none" stroke="{SECTOR_EDGE}" stroke-width="1.5"/>
+  <path d="{sector}" fill="{SECTOR}" fill-opacity="{SECTOR_FILL_OPACITY}" stroke="{SECTOR}" stroke-opacity="0.9" stroke-width="2"/>
+  {sector_decor(c, apex, half, radius)}
   {label_layer(c, LABELS.get(view_id, []))}
 </svg>
 '''
@@ -460,7 +522,17 @@ LABELS = {
         ("MV", (0.73, 0.65), SMALL, (0.62, 0.567)),
         ("IAS", (0.40, 0.775), SMALL, (0.468, 0.70)),
     ],
-    "apical_2c_3c": [
+    "apical_3c": [
+        ("LV", (0.51, 0.30), BIG, None),
+        ("LA", (0.49, 0.69), BIG, None),
+        ("Ao", (0.75, 0.70), SMALL, (0.62, 0.70)),
+        ("LVOT", (0.76, 0.55), SMALL, (0.59, 0.545)),
+        ("AV", (0.76, 0.62), SMALL, (0.605, 0.605)),
+        ("MV", (0.33, 0.64), SMALL, (0.50, 0.53)),
+        ("IL", (0.29, 0.30), SMALL, (0.40, 0.32)),
+        ("AS", (0.72, 0.30), SMALL, (0.625, 0.34)),
+    ],
+    "apical_2c": [
         ("LV", (0.575, 0.36), BIG, None),
         ("LA", (0.575, 0.68), BIG, None),
         ("MV", (0.70, 0.62), SMALL, (0.60, 0.556)),
@@ -523,7 +595,7 @@ def label_layer(c: "Canvas", labels) -> str:
                            f'stroke-width="2" fill="none"/>'
                            f'<circle cx="{TX:.1f}" cy="{TY:.1f}" r="4" fill="{LABEL}"/>')
         pills.append(f'<rect x="{X - w / 2:.1f}" y="{Y - h / 2:.1f}" width="{w:.1f}" height="{h:.1f}" rx="{h / 2:.1f}" '
-                     f'fill="{PILL}" fill-opacity="0.8" stroke="{LABEL}" stroke-opacity="0.25" stroke-width="1"/>'
+                     f'fill="{PILL}" fill-opacity="0.72"/>'
                      f'<text x="{X:.1f}" y="{Y + size * 0.36:.1f}" font-family="sans-serif" font-weight="700" '
                      f'font-size="{size}" fill="{LABEL}" text-anchor="middle">{escape(text)}</text>')
     return "\n  ".join(leaders + pills)

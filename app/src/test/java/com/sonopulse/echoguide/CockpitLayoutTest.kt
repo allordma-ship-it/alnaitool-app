@@ -159,7 +159,9 @@ class CockpitLayoutTest {
 
     @Test fun probePanelSuprasternal() = probeScreen("suprasternal_arch")
 
-    @Test fun probePanelApical2c3c() = probeScreen("apical_2c_3c")
+    @Test fun probePanelApical2c() = probeScreen("apical_2c")
+
+    @Test fun probePanelApical3c() = probeScreen("apical_3c")
 
     private fun schemaScreen(id: String) {
         showCockpit(id, AppLanguage.DE, stepIndex = 1)

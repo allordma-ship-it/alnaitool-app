@@ -693,7 +693,8 @@ def suprasternal_arch() -> Svg:
 VIEWS = {
     "apical_4c": apical_4c,
     "apical_5c": apical_5c,
-    "apical_2c_3c": apical_2c_3c,
+    "apical_2c": apical_2c_3c,   # legacy schematic shared by the split apical 2C / 3C views
+    "apical_3c": apical_2c_3c,
     "plax_standard": plax,
     "psax_av": psax_av,
     "psax_papillary": psax_papillary,
@@ -709,7 +710,7 @@ def main():
     os.makedirs(out_dir, exist_ok=True)
     for name, build in VIEWS.items():
         svg = build()
-        if name not in ("apical_2c_3c", "suprasternal_arch"):
+        if name not in ("apical_2c", "apical_3c", "suprasternal_arch"):
             svg.legend()
         with open(os.path.join(out_dir, f"{name}.svg"), "w", encoding="utf-8") as fh:
             fh.write(svg.render())

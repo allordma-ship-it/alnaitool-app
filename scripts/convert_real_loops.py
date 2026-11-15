@@ -33,10 +33,8 @@ DB = os.path.join(ROOT, "app", "src", "main", "assets", "echo_protocol_full.json
 # view id -> list of (Commons title, number of whole beats in that clip)
 MAPPING: dict[str, list[tuple[str, int]]] = {
     "psax_papillary": [("File:SAXPAP normal (CardioNetworks ECHOpedia).webm", 3)],
-    "apical_2c_3c": [
-        ("File:A2Cnormal (CardioNetworks ECGpedia).avi.webm", 3),
-        ("File:A3Cnormal (CardioNetworks ECGpedia).avi.webm", 3),
-    ],
+    "apical_2c": [("File:A2Cnormal (CardioNetworks ECGpedia).avi.webm", 3)],
+    "apical_3c": [("File:A3Cnormal (CardioNetworks ECGpedia).avi.webm", 3)],
     "apical_4c": [("File:A4C normal (CardioNetworks ECHOpedia).webm", 1)],
     "suprasternal_arch": [("File:SuprasternalNormal (CardioNetworks ECHOpedia).webm", 1)],
     "plax_standard": [("File:PLAXnormal (CardioNetworks ECHOpedia).webm", 1)],

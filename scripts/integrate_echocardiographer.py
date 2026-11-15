@@ -83,10 +83,11 @@ GALLERIES = {
                   [("tte-apical4/03.jpg", "label"), ("tte-apical4/02.jpg", "view"), ("tte-apical4/04.jpg", "lv_zoom")]),
     "apical_5c": ([("tte-apical5/00.jpg", "photo"), ("tte-apical5/01.jpg", "cut")],
                   [("tte-apical5/03.jpg", "label"), ("tte-apical5/02.jpg", "view")]),
-    "apical_2c_3c": ([("tte-apical2/00.jpg", "photo"), ("tte-apical2/01.jpg", "cut"),
-                      ("tte-apical-long-axis/00.jpg", "photo"), ("tte-apical-long-axis/01.jpg", "cut")],
-                     [("tte-apical2/03.jpg", "label"), ("tte-apical2/02.jpg", "view"),
-                      ("tte-apical-long-axis/03.jpg", "a3c"), ("tte-apical-long-axis/02.jpg", "view")]),
+    "apical_2c": ([("tte-apical2/00.jpg", "photo"), ("tte-apical2/01.jpg", "cut")],
+                  [("tte-apical2/03.jpg", "label"), ("tte-apical2/02.jpg", "view")]),
+    # A3C: the labelled frame is the main atlas image (see A3C_ATLAS); the drawing is page 2.
+    "apical_3c": ([("tte-apical-long-axis/00.jpg", "photo"), ("tte-apical-long-axis/01.jpg", "cut")],
+                  [("tte-apical-long-axis/02.jpg", "view")]),
     "suprasternal_arch": ([("tte-suprasternal/00.jpg", "photo"), ("tte-suprasternal/01.jpg", "cut")],
                           [("tte-suprasternal/02.jpg", "view")]),
 }
@@ -108,6 +109,8 @@ EXAMPLES = {
 
 # The previous SSN atlas was this site's labelled frame, scaled ×0.3825 and cropped 7 px left.
 SSN_ATLAS = "tte-suprasternal/03.jpg"
+# No Lynch illustration exists for the apical 3-chamber view: its atlas is the site's labelled A3C frame.
+A3C_ATLAS = "tte-apical-long-axis/03.jpg"
 
 
 def convert(rel: str, used: dict) -> dict:
@@ -145,8 +148,8 @@ def main():
                     examples += len(ex)
                 else:
                     step.pop("examples", None)
-            if view["id"] == "suprasternal_arch":
-                src = convert(SSN_ATLAS, used)
+            if view["id"] in ("suprasternal_arch", "apical_3c"):
+                src = convert(SSN_ATLAS if view["id"] == "suprasternal_arch" else A3C_ATLAS, used)
                 view["diagramAsset"] = src["asset"]
                 view["diagramAspect"] = src["aspect"]
                 view["diagramCredit"] = t(
