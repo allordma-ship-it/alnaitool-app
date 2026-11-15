@@ -130,6 +130,10 @@ internal fun ValveAssessmentContent(
             }
         }
 
+        if (valve.measurements.isNotEmpty()) {
+            MeasurementGuide(valve, protocol, language, onOpenView)
+        }
+
         listOf(
             R.string.valve_section_morphology to valve.morphology,
             R.string.valve_section_color to valve.color,
@@ -281,4 +285,90 @@ private fun GradeHeader(text: String, color: Color, modifier: Modifier) {
 private fun GradeCell(text: String, color: Color, modifier: Modifier) {
     Text(text, color = color, style = CellText.copy(fontSize = 11.5.sp), textAlign = TextAlign.Center,
         modifier = modifier.padding(horizontal = 2.dp))
+}
+
+
+/**
+ * Interactive measurement guide: choose a measurement, see the real loop (2D or colour Doppler)
+ * with the cursor / gate / caliper where it belongs, and a schematic trace showing how to
+ * measure it (Vmax, VTI, PHT, E/A, DT, AcT, TAPSE, PISA, VC), with steps, formula and normals.
+ */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun MeasurementGuide(valve: HeartValve, protocol: EchoProtocol, language: AppLanguage, onOpenView: (String) -> Unit) {
+    var selectedId by rememberSaveable(valve.id) { mutableStateOf(valve.measurements.first().id) }
+    val meas = valve.measurements.firstOrNull { it.id == selectedId } ?: valve.measurements.first()
+    var exampleOpen by remember { mutableStateOf(false) }
+    val player = rememberEchoPlayer()
+    val loop = rememberLoopState(player, meas.loop)
+    val viewTitle = protocol.allViews.firstOrNull { it.id == meas.view }?.title?.get(language).orEmpty()
+
+    ValveCard(stringResource(R.string.valve_section_measure)) {
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            valve.measurements.forEach { m ->
+                val active = m.id == meas.id
+                Text(
+                    m.title.get(language),
+                    color = if (active) EchoOnAccent else EchoText,
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(if (active) EchoPrimary else EchoSurfaceHigh)
+                        .clickable { selectedId = m.id }
+                        .padding(horizontal = 10.dp, vertical = 6.dp)
+                )
+            }
+        }
+        Spacer(Modifier.height(6.dp))
+        // 1) Where: the cursor / gate on the real loop
+        Text(stringResource(R.string.valve_where, viewTitle), color = EchoSky, style = MaterialTheme.typography.labelMedium,
+            fontWeight = FontWeight.Bold)
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(4f / 3f)
+                .clip(RoundedCornerShape(10.dp))
+                .background(Color.Black)
+        ) {
+            LoopBox(player, loop, meas.loop, attached = true, modifier = Modifier.fillMaxSize())
+            meas.overlay?.let { o ->
+                if (loop.videoAspect > 0f) CaliperCanvas(listOf(o), { it.video }, loop.videoAspect, Modifier.fillMaxSize())
+            }
+            meas.nyquistCmS?.let { NyquistBar(it, Modifier.align(Alignment.CenterStart).padding(4.dp).width(44.dp).height(120.dp)) }
+            Text(
+                stringResource(if (meas.nyquistCmS != null) R.string.valve_loop_color else R.string.valve_loop_2d),
+                color = EchoOnAccent, fontSize = 10.sp, fontWeight = FontWeight.Bold,
+                modifier = Modifier.align(Alignment.TopEnd).padding(6.dp).clip(RoundedCornerShape(6.dp))
+                    .background((if (meas.nyquistCmS != null) EchoCritical else EchoPrimary).copy(alpha = 0.85f))
+                    .padding(horizontal = 6.dp, vertical = 2.dp)
+            )
+        }
+        // 2) How: the measurement on the trace
+        Spacer(Modifier.height(6.dp))
+        Text(stringResource(R.string.valve_how), color = EchoSky, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
+        SpectralGuide(meas.spectral, Modifier.fillMaxWidth().height(150.dp).clip(RoundedCornerShape(10.dp)))
+        meas.steps.forEachIndexed { i, step ->
+            Row(modifier = Modifier.padding(top = 4.dp)) {
+                Text("${i + 1}.", color = EchoPrimary, fontWeight = FontWeight.Bold, modifier = Modifier.width(18.dp))
+                Text(step.get(language), color = EchoText, style = MaterialTheme.typography.bodySmall)
+            }
+        }
+        meas.formula?.let {
+            Text(it.get(language), color = EchoCaution, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(top = 6.dp))
+        }
+        meas.normal?.let {
+            Text(it.get(language), color = EchoNormal, style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.padding(top = 2.dp))
+        }
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 6.dp)) {
+            ViewLinkChip(viewTitle) { onOpenView(meas.view) }
+            if (meas.example != null) ViewLinkChip(stringResource(R.string.step_example)) { exampleOpen = true }
+        }
+    }
+    if (exampleOpen && meas.example != null) {
+        val img = GalleryImage(meas.example, 1.4f, meas.title, credit = "Echocardiographer.org – Atif Qasim, MD MSCE")
+        ExampleDialog(listOf(img), meas.title.get(language), language) { exampleOpen = false }
+    }
 }

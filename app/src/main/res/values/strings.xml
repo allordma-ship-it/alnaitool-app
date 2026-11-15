@@ -129,4 +129,10 @@
     <string name="valve_grade_moderate">Moderate</string>
     <string name="valve_grade_severe">Severe</string>
     <string name="valve_disclaimer">Educational summary of the ASE/EACVI recommendations (stenosis 2009/2017, regurgitation 2017). Grade by integrating all parameters and follow the full guideline.</string>
+    <string name="valve_section_measure">Measurement guide</string>
+    <string name="valve_where">Where to place it · %1$s</string>
+    <string name="valve_how">How to measure on the trace</string>
+    <string name="valve_loop_2d">2D</string>
+    <string name="valve_loop_color">COLOUR</string>
+    <string name="color_toggle">Colour Doppler</string>
 </resources>

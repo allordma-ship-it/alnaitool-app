@@ -13,3 +13,4 @@ raw_loops/
 __pycache__/
 temp_real/
 debug_calipers/
+debug_overlays/

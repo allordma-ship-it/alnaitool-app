@@ -104,7 +104,13 @@ fun ViewCockpit(
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val player = rememberEchoPlayer()
-    val loop = rememberLoopState(player, view.videoAsset)
+    // 2D ⇄ colour Doppler: -1 = the view's 2D loop, otherwise an index into its colour loops.
+    val colorLoops = remember(view.id) { protocol.colorLoopsFor(view.id) }
+    var colorIndex by rememberSaveable(view.id) { mutableIntStateOf(-1) }
+    val colorLoop = colorLoops.getOrNull(colorIndex)
+    val cycleColor: () -> Unit = { colorIndex = if (colorIndex + 1 < colorLoops.size) colorIndex + 1 else -1 }
+    val videoAsset = colorLoop?.asset ?: view.videoAsset
+    val loop = rememberLoopState(player, videoAsset)
 
     var tab by rememberSaveable { mutableStateOf(DeckTab.STEPS) }
     var videoOverlay by rememberSaveable { mutableStateOf(false) }
@@ -144,8 +150,10 @@ fun ViewCockpit(
 
     // Measurement steps open on the frame they are measured on (ED / ES / end-expiration);
     // orientation, Doppler and colour steps keep the loop running.
-    LaunchedEffect(view.id, step) {
-        loop.requestPhase(step?.requiredPhase ?: StepPhase.LIVE, view.ecg, step?.freezeAtMs)
+    LaunchedEffect(view.id, step, videoAsset) {
+        // Colour loops have no ECG: they always play.
+        val phase = if (colorLoop != null) StepPhase.LIVE else step?.requiredPhase ?: StepPhase.LIVE
+        loop.requestPhase(phase, view.ecg, step?.freezeAtMs)
     }
 
     BackHandler(enabled = drawerState.isOpen) { scope.launch { drawerState.close() } }
@@ -190,6 +198,9 @@ fun ViewCockpit(
                     practice = practice,
                     practicePrefix = practicePrefix,
                     onResetPractice = if (practised) resetPractice else null,
+                    colorLoop = colorLoop,
+                    onCycleColor = if (colorLoops.isNotEmpty()) cycleColor else null,
+                    videoAsset = videoAsset,
                     diagramMode = diagramMode,
                     modes = modes,
                     onSelectMode = selectMode,
@@ -205,7 +216,8 @@ fun ViewCockpit(
                 Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
                     when (tab) {
                         DeckTab.STEPS -> StepCard(view, navigator, language, onOpenReference = { referenceOpen = true })
-                        DeckTab.CONSOLE -> EchoControlConsole(view, protocol.consoleControls, language)
+                        DeckTab.CONSOLE -> EchoControlConsole(view, protocol.consoleControls, language,
+                            onColorKey = if (colorLoops.isNotEmpty()) cycleColor else null)
                         DeckTab.TIMING -> TimingProbePanel(view, language) {
                             selectMode(DiagramMode.PROBE)
                             diagramOverlay = true
@@ -218,7 +230,7 @@ fun ViewCockpit(
 
     if (videoOverlay) {
         VideoOverlay(
-            player, loop, view.videoAsset, step, caliperOn, toggleCaliper,
+            player, loop, videoAsset, if (colorLoop == null) step else null, caliperOn, toggleCaliper,
             practice, practicePrefix, if (practised) resetPractice else null
         ) { videoOverlay = false }
     }
@@ -494,6 +506,9 @@ private fun SplitStage(
     practice: SnapshotStateMap<String, List<Float>>,
     practicePrefix: String,
     onResetPractice: (() -> Unit)?,
+    colorLoop: ColorLoop?,
+    onCycleColor: (() -> Unit)?,
+    videoAsset: String,
     diagramMode: DiagramMode,
     modes: List<DiagramMode>,
     onSelectMode: (DiagramMode) -> Unit,
@@ -504,7 +519,8 @@ private fun SplitStage(
     onOpenDiagram: () -> Unit,
     language: AppLanguage
 ) {
-    val overlays = step?.overlays.orEmpty()
+    // 2D calipers belong to the 2D loop: hidden while a colour loop plays.
+    val overlays = if (colorLoop == null) step?.overlays.orEmpty() else emptyList()
     val practising = videoAttached && practiceActive(step, loop, caliperOn)
     Row(
         modifier = Modifier
@@ -527,22 +543,24 @@ private fun SplitStage(
                         onTap = onOpenVideo
                     )
                 }
-                if (overlays.isNotEmpty()) {
+                if (overlays.isNotEmpty() || onCycleColor != null) {
                     Row(
                         modifier = Modifier.align(Alignment.TopEnd).padding(5.dp),
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
-                        if (onResetPractice != null) CaliperResetChip(onResetPractice)
-                        CaliperToggle(caliperOn, onToggleCaliper)
+                        if (onCycleColor != null) ColorToggleChip(colorLoop, onCycleColor)
+                        if (onResetPractice != null && overlays.isNotEmpty()) CaliperResetChip(onResetPractice)
+                        if (overlays.isNotEmpty()) CaliperToggle(caliperOn, onToggleCaliper)
                     }
                 }
             }
         ) {
-            LoopBox(player, loop, view.videoAsset, attached = videoAttached, modifier = Modifier.fillMaxSize())
+            LoopBox(player, loop, videoAsset, attached = videoAttached, modifier = Modifier.fillMaxSize())
+            colorLoop?.let { NyquistBar(it.nyquistCmS, Modifier.align(Alignment.CenterStart).padding(start = 3.dp).width(36.dp).height(96.dp)) }
             if (!practising && videoAttached && videoCaliperVisible(step, loop, caliperOn) && loop.videoAspect > 0f) {
                 CaliperCanvas(overlays, { it.video }, loop.videoAspect, Modifier.fillMaxSize())
             }
-            SourceBadge(simulated = view.videoSource.isSimulated, modifier = Modifier.align(Alignment.TopStart).padding(5.dp))
+            SourceBadge(simulated = colorLoop == null && view.videoSource.isSimulated, modifier = Modifier.align(Alignment.TopStart).padding(5.dp))
             loop.frozenPhase?.let { FrozenBadge(it, Modifier.align(Alignment.BottomStart).padding(5.dp)) }
         }
         val source = diagramSource(view, diagramMode, step, caliperOn, language, diagramPage)
@@ -935,6 +953,26 @@ internal fun ExampleDialog(examples: List<GalleryImage>, title: String, language
         }
         GalleryFooter(image.caption.get(language), image.credit, page, examples.size) { page = it }
     }
+}
+
+/** "2D | Farbe MV" chip: cycles the view's 2D loop and its colour Doppler loops. */
+@Composable
+private fun ColorToggleChip(colorLoop: ColorLoop?, onCycle: () -> Unit) {
+    val active = colorLoop != null
+    Text(
+        text = if (active) "${stringResource(R.string.color_toggle)} ${colorLoop!!.valve}" else stringResource(R.string.color_toggle),
+        color = if (active) EchoOnAccent else EchoText,
+        fontSize = 9.sp,
+        fontWeight = FontWeight.Bold,
+        maxLines = 1,
+        modifier = Modifier
+            .height(22.dp)
+            .clip(RoundedCornerShape(11.dp))
+            .background(if (active) EchoCritical else Color.Black.copy(alpha = 0.6f))
+            .border(1.dp, EchoCritical.copy(alpha = 0.8f), RoundedCornerShape(11.dp))
+            .clickable(onClick = onCycle)
+            .padding(horizontal = 7.dp, vertical = 4.dp)
+    )
 }
 
 /** Frozen-phase badge and Caliper ON/OFF toggle above a full-screen overlay. */

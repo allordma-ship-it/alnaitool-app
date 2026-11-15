@@ -427,5 +427,205 @@ def main():
     print(f"{len(out)} valves, {items} checklist items, {rows} grading rows, {sum(len(v['examples']) for v in out)} examples")
 
 
+
+
+# ---------------------------------------------------------------------------------------------
+# Interactive measurement guide: where to put the cursor (on the real 2D / colour loop) and how to
+# measure on the spectral or M-mode trace. "spectral" names the schematic trace drawn by the app.
+# ---------------------------------------------------------------------------------------------
+
+def m(mid, title, view, label, spectral, steps, formula=None, normal=None, loop=None, example=None):
+    if "@" in spectral:          # "VC@a4c_mv_color": schematic type @ colour loop to show
+        spectral, loop = spectral.split("@")
+    return {"id": mid, "title": title, "view": view, "overlayLabel": label, "loop": loop, "spectral": spectral,
+            "steps": steps, "formula": formula, "normal": normal, "example": example}
+
+
+GUIDE = {
+    "aortic": [
+        m("av_cw", t("CW through the aortic valve", "CW durch die Aortenklappe", "CW عبر الصمام الأبهري"),
+          "apical_5c", "CW · AV", "AV_CW",
+          [t("A5C: align the CW beam through the centre of the LVOT and aortic orifice (diamond = valve plane).",
+             "5K: CW-Strahl durch die Mitte von LVOT und Aortenklappenöffnung legen (Raute = Klappenebene).",
+             "الخماسي: مرّر حزمة CW عبر منتصف LVOT وفتحة الصمام الأبهري (المعيّن = مستوى الصمام)."),
+           t("On the trace: mark the peak (Vmax) and trace the outer envelope (VTI, mean gradient).",
+             "Auf der Kurve: Spitze markieren (Vmax) und äußere Hüllkurve umfahren (VTI, mittlerer Gradient).",
+             "على المنحنى: علّم الذروة (Vmax) وتتبّع الغلاف الخارجي (VTI، الممال المتوسط)."),
+           t("Also try right parasternal and suprasternal windows; report the highest velocity.",
+             "Auch rechts parasternal und suprasternal versuchen; die höchste Geschwindigkeit angeben.",
+             "جرّب أيضاً النافذة جانب القص اليمنى وفوق القص؛ اعتمد أعلى سرعة.")],
+          t("peak PG = 4 × Vmax²", "Spitzengradient = 4 × Vmax²", "الممال الأقصى = 4 × Vmax²"),
+          t("Vmax 1.0–1.7 m/s · severe AS ≥ 4 m/s, mean PG ≥ 40 mmHg", "Vmax 1,0–1,7 m/s · schwere AS ≥ 4 m/s, mittl. Gradient ≥ 40 mmHg",
+            "Vmax 1.0–1.7 م/ث · تضيّق شديد ≥ 4 م/ث، الممال المتوسط ≥ 40"), example="echoorg/apical5_05.jpg"),
+        m("lvot_pw", t("PW in the LVOT (VTI)", "PW im LVOT (VTI)", "PW في LVOT (VTI)"),
+          "apical_5c", "PW · LVOT", "LVOT_PW",
+          [t("Place the PW gate 0.5–1 cm proximal to the aortic cusps, centred in the LVOT, parallel to flow.",
+             "PW-Messvolumen 0,5–1 cm vor den Aortentaschen mittig im LVOT, parallel zum Fluss.",
+             "ضع بوابة PW قبل شرفات الأبهري بـ 0.5–1 سم في منتصف LVOT وبموازاة الجريان."),
+           t("Trace the modal velocity (densest line) of the envelope → LVOT VTI; no aliasing, narrow envelope.",
+             "Modale Geschwindigkeit (dichteste Linie) umfahren → LVOT-VTI; kein Aliasing, schmale Hüllkurve.",
+             "تتبّع السرعة السائدة (أكثف خط) → VTI في LVOT؛ دون تعرّج وبغلاف ضيق.")],
+          t("SV = π·(LVOT d / 2)² × LVOT VTI", "SV = π·(LVOT-d / 2)² × LVOT-VTI", "حجم الضربة = π·(قطر LVOT / 2)² × VTI"),
+          t("LVOT VTI 18–22 cm", "LVOT-VTI 18–22 cm", "VTI في LVOT ‏18–22 سم"), example="echoorg/apical5_04.jpg"),
+        m("lvot_d", t("LVOT diameter (PLAX zoom)", "LVOT-Durchmesser (PLAX-Zoom)", "قطر LVOT (PLAX مكبّر)"),
+          "plax_standard", "LVOT d", "CONTINUITY",
+          [t("Zoomed PLAX, mid-systole: inner edge to inner edge, 0.5–1 cm below the annulus, parallel to the valve.",
+             "PLAX gezoomt, mesosystolisch: Innenkante zu Innenkante, 0,5–1 cm unterhalb des Anulus, parallel zur Klappe.",
+             "PLAX مكبّر في منتصف الانقباض: من الحافة الداخلية إلى الداخلية، 0.5–1 سم تحت الحلقة."),
+           t("Combine with LVOT VTI and AV VTI in the continuity equation.",
+             "Mit LVOT-VTI und AK-VTI in die Kontinuitätsgleichung einsetzen.",
+             "استخدمه مع VTI في LVOT وVTI عبر الأبهري في معادلة الاستمرارية.")],
+          t("AVA (KÖF) = π·(d/2)² × VTI(LVOT) / VTI(AV)", "AÖF (KÖF) = π·(d/2)² × VTI(LVOT) / VTI(AK)",
+            "مساحة الصمام = π·(d/2)² × VTI(LVOT) / VTI(AV)"),
+          t("LVOT d 1.8–2.2 cm · AVA 3–4 cm² (severe < 1.0)", "LVOT-d 1,8–2,2 cm · AÖF 3–4 cm² (schwer < 1,0)",
+            "قطر LVOT ‏1.8–2.2 سم · المساحة 3–4 سم² (شديد < 1.0)"), example="echoorg/plax_04.jpg"),
+        m("ar_vc", t("AR: vena contracta (colour)", "AI: Vena contracta (Farbe)", "القلس الأبهري: الوريد المنقبض (ألوان)"),
+          "plax_standard", "VC · AR", "VC@plax_color",
+          [t("Zoomed PLAX with colour: find the narrowest neck of the AR jet just below the valve.",
+             "PLAX gezoomt mit Farbe: engste Stelle des AI-Jets direkt unterhalb der Klappe suchen.",
+             "PLAX مكبّر بالألوان: ابحث عن أضيق عنق لنفث القلس تحت الصمام مباشرة."),
+           t("Measure it perpendicular to the jet direction.", "Senkrecht zur Jetrichtung messen.", "قِسه عمودياً على اتجاه النفث.")],
+          normal=t("VC < 0.3 cm mild · > 0.6 cm severe", "VC < 0,3 cm leicht · > 0,6 cm schwer", "< 0.3 سم خفيف · > 0.6 سم شديد")),
+        m("ar_pht", t("AR: pressure half-time (CW)", "AI: Druckhalbwertszeit (CW)", "القلس الأبهري: زمن نصف الضغط (CW)"),
+          "apical_5c", "CW · AV", "AR_PHT",
+          [t("A5C: CW through the AR jet (above the baseline in diastole).",
+             "5K: CW durch den AI-Jet (diastolisch oberhalb der Nulllinie).",
+             "الخماسي: CW عبر نفث القلس (فوق خط الأساس في الانبساط)."),
+           t("Draw the deceleration slope from the early-diastolic peak; PHT = time for the pressure to halve.",
+             "Dezelerationssteigung vom frühdiastolischen Gipfel einzeichnen; PHT = Zeit bis zur Halbierung des Drucks.",
+             "ارسم ميل التباطؤ من الذروة في بداية الانبساط؛ PHT = زمن انخفاض الضغط إلى النصف.")],
+          normal=t("PHT > 500 ms mild · < 200 ms severe", "PHT > 500 ms leicht · < 200 ms schwer", "> 500 خفيف · < 200 مللي ثانية شديد")),
+    ],
+    "mitral": [
+        m("mv_pw", t("PW at the leaflet tips (E/A, DT)", "PW an den Segelspitzen (E/A, DT)", "PW عند رؤوس الوريقات (E/A، DT)"),
+          "apical_4c", "PW · E/A", "MV_PW",
+          [t("A4C: PW gate (1–3 mm) at the tips of the open mitral leaflets, cursor parallel to inflow.",
+             "4K: PW-Messvolumen (1–3 mm) an den Spitzen der geöffneten Mitralsegel, Cursor parallel zum Einstrom.",
+             "الرباعي: بوابة PW (1–3 ملم) عند رؤوس الوريقات المفتوحة، المؤشر موازٍ للجريان."),
+           t("Measure E and A peaks; DT from the E peak along the deceleration slope to the baseline.",
+             "E- und A-Gipfel messen; DT vom E-Gipfel entlang der Dezeleration bis zur Nulllinie.",
+             "قِس ذروتي E وA؛ زمن التباطؤ من ذروة E على منحدر التباطؤ حتى خط الأساس.")],
+          normal=t("E/A 0.8–2.0 · DT 160–240 ms", "E/A 0,8–2,0 · DT 160–240 ms", "E/A ‏0.8–2.0 · DT ‏160–240 مللي ثانية"),
+          example="echoorg/apical4_07.jpg"),
+        m("ms_cw", t("CW across the MV (mean PG, PHT)", "CW über die MK (mittl. Gradient, PHT)", "CW عبر التاجي (الممال المتوسط، PHT)"),
+          "apical_4c", "CW · MV", "MS_CW",
+          [t("A4C: CW through the mitral orifice; trace the diastolic envelope → mean gradient (note heart rate).",
+             "4K: CW durch die Mitralöffnung; diastolische Hüllkurve umfahren → mittlerer Gradient (Herzfrequenz notieren).",
+             "الرباعي: CW عبر الفتحة التاجية؛ تتبّع الغلاف الانبساطي ← الممال المتوسط (سجّل النبض)."),
+           t("Draw the E-wave deceleration slope → PHT.", "E-Wellen-Dezelerationssteigung einzeichnen → PHT.",
+             "ارسم منحدر تباطؤ الموجة E ← PHT.")],
+          t("MVA (MÖF) = 220 / PHT", "MÖF = 220 / PHT", "مساحة التاجي = 220 / PHT"),
+          t("mean PG < 5 mmHg · MS severe: MVA < 1.0 cm², mean PG > 10 mmHg",
+            "mittl. Gradient < 5 mmHg · schwere MS: MÖF < 1,0 cm², mittl. Gradient > 10 mmHg",
+            "الممال المتوسط < 5 · تضيّق شديد: المساحة < 1.0 سم²، الممال > 10")),
+        m("mr_vc", t("MR: vena contracta (colour)", "MI: Vena contracta (Farbe)", "القلس التاجي: الوريد المنقبض (ألوان)"),
+          "apical_4c", "VC · MR", "VC@a4c_mv_color",
+          [t("Zoom on the valve; find the narrowest neck of the jet just beyond the leaflets.",
+             "Auf die Klappe zoomen; engste Stelle des Jets direkt hinter den Segeln suchen.",
+             "كبّر على الصمام؛ ابحث عن أضيق عنق للنفث بعد الوريقات مباشرة."),
+           t("Measure perpendicular to the jet (A4C, better in PLAX / A3C).", "Senkrecht zum Jet messen (4K, besser PLAX / 3K).",
+             "قِس عمودياً على النفث (الرباعي، والأفضل PLAX / الثلاثي).")],
+          normal=t("VC < 0.3 cm mild · ≥ 0.7 cm severe", "VC < 0,3 cm leicht · ≥ 0,7 cm schwer", "< 0.3 سم خفيف · ≥ 0.7 سم شديد")),
+        m("mr_pisa", t("MR: PISA radius & EROA", "MI: PISA-Radius & EROA", "القلس التاجي: نصف قطر PISA وEROA"),
+          "apical_4c", None, "PISA@a4c_mv_color",
+          [t("Zoom on the LV side of the valve; shift the colour baseline toward the jet to Nyquist 30–40 cm/s.",
+             "Auf die LV-Seite der Klappe zoomen; Farb-Baseline in Jetrichtung auf Nyquist 30–40 cm/s verschieben.",
+             "كبّر على جهة البطين من الصمام؛ أزح خط الأساس اللوني باتجاه النفث حتى Nyquist ‏30–40 سم/ث."),
+           t("Mid-systole: measure the radius from the orifice to the first aliasing (blue→red) border.",
+             "Mesosystolisch: Radius von der Öffnung bis zur ersten Aliasing-Grenze (blau→rot) messen.",
+             "في منتصف الانقباض: قِس نصف القطر من الفتحة حتى أول حدّ تعرّج (أزرق←أحمر)."),
+           t("CW of the MR jet gives the peak velocity for EROA.", "CW des MI-Jets liefert die Spitzengeschwindigkeit für EROA.",
+             "CW لنفث القلس يعطي السرعة القصوى لحساب EROA.")],
+          t("EROA = 2πr² × Va / Vmax(MR)", "EROA = 2πr² × Va / Vmax(MI)", "EROA = 2πr² × Va / Vmax"),
+          t("EROA < 0.20 cm² mild · ≥ 0.40 cm² severe", "EROA < 0,20 cm² leicht · ≥ 0,40 cm² schwer", "< 0.20 سم² خفيف · ≥ 0.40 سم² شديد")),
+    ],
+    "tricuspid": [
+        m("tr_cw", t("CW of the TR jet (sPAP / RVSP)", "CW des TI-Jets (sPAP / RVSP)", "CW لنفث القلس ثلاثي الشرف (الضغط الرئوي)"),
+          "apical_4c", "CW · TR", "TR_CW",
+          [t("A4C (or PSAX-AV / subcostal): CW through the tricuspid coaptation, parallel to the jet.",
+             "4K (oder PSAX-AV / subkostal): CW durch die Trikuspidal-Koaptation, parallel zum Jet.",
+             "الرباعي (أو PSAX-AV / تحت الضلع): CW عبر نقطة الالتقاء بموازاة النفث."),
+           t("Measure the peak velocity of a complete, dense envelope.", "Spitzengeschwindigkeit einer vollständigen, dichten Hüllkurve messen.",
+             "قِس السرعة القصوى لغلاف كامل وكثيف."),
+           t("Add RA pressure (ZVD) from the IVC.", "RA-Druck (ZVD) aus der VCI addieren.", "أضف ضغط الأذين الأيمن من الوريد الأجوف.")],
+          t("sPAP = 4 × Vmax² + RAP", "sPAP = 4 × Vmax² + ZVD", "الضغط الرئوي الانقباضي = 4 × Vmax² + ضغط الأذين الأيمن"),
+          t("TR Vmax ≤ 2.8 m/s · sPAP < 35 mmHg", "TI-Vmax ≤ 2,8 m/s · sPAP < 35 mmHg", "Vmax ≤ 2.8 م/ث · الضغط < 35"),
+          example="echoorg/apical4_05.jpg"),
+        m("tapse", t("TAPSE (M-mode)", "TAPSE (M-Mode)", "TAPSE (نمط M)"),
+          "apical_4c", "M-mode · TAPSE", "TAPSE",
+          [t("A4C: M-mode cursor through the lateral tricuspid annulus, as parallel to its motion as possible.",
+             "4K: M-Mode-Cursor durch den lateralen Trikuspidalanulus, möglichst parallel zu seiner Bewegung.",
+             "الرباعي: مؤشر نمط M عبر الحلقة ثلاثية الشرف الوحشية بموازاة حركتها قدر الإمكان."),
+           t("Measure the excursion from end-diastole (lowest point) to peak systole.",
+             "Exkursion von der Enddiastole (tiefster Punkt) bis zur Spitze der Systole messen.",
+             "قِس الإزاحة من نهاية الانبساط (أدنى نقطة) إلى ذروة الانقباض.")],
+          normal=t("TAPSE ≥ 17 mm", "TAPSE ≥ 17 mm", "TAPSE ≥ 17 ملم"), example="echoorg/apical4_12.jpg"),
+        m("tr_color", t("TR jet (colour)", "TI-Jet (Farbe)", "نفث القلس ثلاثي الشرف (ألوان)"),
+          "apical_4c", None, "VC@a4c_tv_color",
+          [t("Colour box over the tricuspid valve and RA; Nyquist 50–60 cm/s.",
+             "Farbbox über Trikuspidalklappe und RA; Nyquist 50–60 cm/s.",
+             "صندوق الألوان فوق الصمام ثلاثي الشرف والأذين الأيمن؛ Nyquist ‏50–60 سم/ث."),
+           t("Assess jet direction and vena contracta; use the jet to align CW.",
+             "Jetrichtung und Vena contracta beurteilen; den Jet zur Ausrichtung des CW nutzen.",
+             "قيّم اتجاه النفث والوريد المنقبض؛ استعمل النفث لمحاذاة CW.")],
+          normal=t("VC < 0.3 cm mild · ≥ 0.7 cm severe", "VC < 0,3 cm leicht · ≥ 0,7 cm schwer", "< 0.3 سم خفيف · ≥ 0.7 سم شديد")),
+    ],
+    "pulmonary": [
+        m("pv_pw", t("PW / CW across the pulmonary valve", "PW / CW über die Pulmonalklappe", "PW / CW عبر الصمام الرئوي"),
+          "psax_av", "PW · PV", "PV_PW",
+          [t("PSAX-AV: gate in the RVOT just below the pulmonary valve (right of the image, 2–3 o'clock).",
+             "PSAX-AV: Messvolumen im RVOT direkt unter der Pulmonalklappe (rechts im Bild, 2–3 Uhr).",
+             "PSAX-AV: البوابة في RVOT تحت الصمام الرئوي مباشرة (يمين الصورة، الساعة 2–3)."),
+           t("PW: measure acceleration time (onset to peak) and Vmax; CW for stenosis gradients.",
+             "PW: Akzelerationszeit (Beginn bis Gipfel) und Vmax messen; CW für Stenosegradienten.",
+             "PW: قِس زمن التسارع (من البداية إلى الذروة) وVmax؛ CW لممالات التضيّق.")],
+          normal=t("PV Vmax 0.6–0.9 m/s · AcT > 130 ms (< 100 ms: pulmonary hypertension)",
+                   "PK-Vmax 0,6–0,9 m/s · AcT > 130 ms (< 100 ms: pulmonale Hypertonie)",
+                   "Vmax ‏0.6–0.9 م/ث · AcT > 130 مللي ثانية (< 100: ارتفاع الضغط الرئوي)")),
+        m("pv_tr", t("TR in PSAX (CW)", "TI in PSAX (CW)", "القلس ثلاثي الشرف في PSAX (CW)"),
+          "psax_av", "CW · TR", "TR_CW",
+          [t("PSAX-AV: CW through the tricuspid coaptation between RA (left) and RVOT.",
+             "PSAX-AV: CW durch die Trikuspidal-Koaptation zwischen RA (links) und RVOT.",
+             "PSAX-AV: CW عبر نقطة التقاء ثلاثي الشرف بين الأذين الأيمن (يساراً) وRVOT.")],
+          t("sPAP = 4 × Vmax² + RAP", "sPAP = 4 × Vmax² + ZVD", "الضغط الرئوي الانقباضي = 4 × Vmax² + ضغط الأذين الأيمن"),
+          t("TR Vmax ≤ 2.8 m/s", "TI-Vmax ≤ 2,8 m/s", "Vmax ≤ 2.8 م/ث")),
+    ],
+}
+
+
+def add_guide():
+    """Attach the measurement guide (with verified overlay coordinates) to the valves."""
+    from measurement_overlays import GUIDE_OVERLAYS
+    with open(DB, encoding="utf-8") as f:
+        db = json.load(f)
+    views = {v["id"]: v for w in db["windows"] for v in w["views"]}
+    colour = db.get("colorLoops", {})
+    total = 0
+    for valve in db["valves"]:
+        out = []
+        for entry in GUIDE[valve["id"]]:
+            e = dict(entry)
+            view = views[e["view"]]
+            overlay = None
+            if e["overlayLabel"] in GUIDE_OVERLAYS:
+                overlay = GUIDE_OVERLAYS[e["overlayLabel"]][1]
+            elif e["overlayLabel"]:
+                overlay = next(o for s in view["steps"]
+                               for o in ([s["caliperOverlay"]] if s.get("caliperOverlay") else []) + s.get("extraOverlays", [])
+                               if o["label"] == e["overlayLabel"])
+            e["overlay"] = overlay
+            e["loop"] = colour[e["loop"]]["asset"] if e["loop"] else view["videoAsset"]
+            e["nyquistCmS"] = colour[entry["loop"]]["nyquistCmS"] if entry["loop"] else None
+            e.pop("overlayLabel")
+            out.append({k: v for k, v in e.items() if v is not None})
+            total += 1
+        valve["measurements"] = out
+    with open(DB, "w", encoding="utf-8") as f:
+        json.dump(db, f, ensure_ascii=False, indent=2)
+        f.write("\n")
+    print(f"measurement guide: {total} measurements")
+
+
 if __name__ == "__main__":
     main()
+    add_guide()

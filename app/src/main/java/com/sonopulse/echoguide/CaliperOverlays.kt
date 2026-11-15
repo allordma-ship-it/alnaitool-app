@@ -73,6 +73,9 @@ internal val CursorTeal = EchoPalette.Cursor
 /** PW sample gate and colour-Doppler box. */
 internal val GateRed = EchoPalette.Gate
 
+/** Position of the CW focus diamond along the cursor (valve plane). */
+internal const val CW_FOCUS = 0.82f
+
 // ---------------------------------------------------------------------------------------------
 // Geometry
 // ---------------------------------------------------------------------------------------------
@@ -155,6 +158,16 @@ internal fun DrawScope.drawCaliperOverlay(
             } else {
                 val tick = 4.dp.toPx() / zoom
                 drawLine(CursorTeal, Offset(b.x - nx * tick, b.y - ny * tick), Offset(b.x + nx * tick, b.y + ny * tick), strokeWidth = stroke)
+                if (overlay.label.startsWith("CW")) {
+                    // CW focus marker "--◇--" at the valve plane (82 % of the cursor, as in the audit script).
+                    val f = Offset(a.x + (b.x - a.x) * CW_FOCUS, a.y + (b.y - a.y) * CW_FOCUS)
+                    val r = 5.dp.toPx() / zoom
+                    val diamond = Path().apply {
+                        moveTo(f.x, f.y - r); lineTo(f.x + r, f.y); lineTo(f.x, f.y + r); lineTo(f.x - r, f.y); close()
+                    }
+                    drawPath(diamond, Color.Black)
+                    drawPath(diamond, CursorTeal, style = Stroke(stroke))
+                }
             }
         }
 

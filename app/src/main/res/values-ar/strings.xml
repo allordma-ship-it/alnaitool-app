@@ -136,4 +136,10 @@
     <string name="valve_grade_moderate">متوسط</string>
     <string name="valve_grade_severe">شديد</string>
     <string name="valve_disclaimer">ملخص تعليمي لتوصيات ASE/EACVI (التضيّق 2009/2017، القلس 2017). حدّد الشدة بدمج كل المؤشرات واتبع الدليل الكامل.</string>
+    <string name="valve_section_measure">دليل القياس</string>
+    <string name="valve_where">مكان الوضع · %1$s</string>
+    <string name="valve_how">طريقة القياس على المنحنى</string>
+    <string name="valve_loop_2d">2D</string>
+    <string name="valve_loop_color">ألوان</string>
+    <string name="color_toggle">الدوبلر الملوّن</string>
 </resources>

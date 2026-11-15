@@ -203,6 +203,13 @@ STEPS = {
               "Farbdoppler auf die Bifurkation: Ein kontinuierlicher roter Fluss in den Truncus nahe dem linken Ast spricht für einen persistierenden Ductus arteriosus.",
               "ضع الدوبلر الملون على التفرّع: جريان أحمر مستمر يدخل الجذع الرئوي قرب الفرع الأيسر يدل على قناة شريانية سالكة."),
         ),
+        step(
+            t("TR in PSAX", "TI in PSAX", "القلس ثلاثي الشرف في PSAX"),
+            t("The tricuspid valve lies between RA (left) and RVOT: the TR jet here is often better aligned than in A4C. Put CW through the coaptation and measure TR Vmax.",
+              "Die Trikuspidalklappe liegt zwischen RA (links) und RVOT: der TI-Jet ist hier oft besser ausgerichtet als im 4K-Blick. CW durch die Koaptation legen und TI-Vmax messen.",
+              "يقع الصمام ثلاثي الشرف بين الأذين الأيمن (يساراً) ومخرج البطين الأيمن: غالباً ما يكون النفث هنا أفضل محاذاة من الرباعي. ضع CW عبر نقطة الالتقاء وقِس Vmax."),
+            normal=t("TR Vmax ≤ 2.8 m/s", "TI-Vmax ≤ 2,8 m/s", "Vmax ≤ 2.8 م/ث"),
+        ),
     ],
     "psax_papillary": [
         step(
@@ -311,6 +318,16 @@ STEPS = {
               "فعّل TDI وضع العينة على الحلقة التاجية الحاجزية ثم الوحشية. احسب E ÷ متوسط e'."),
             normal=t("Average E/e' < 14", "Gemitteltes E/e' < 14", "E/e' المتوسط < 14"),
             caliper=[316, 262, 400, 262],
+        ),
+        step(
+            t("TR velocity (CW)", "TI-Geschwindigkeit (CW)", "سرعة القلس ثلاثي الشرف (CW)"),
+            t("Align the CW cursor through the tricuspid coaptation into the RA (use colour to find the jet). Measure the peak TR velocity: sPAP = 4 × Vmax² + RA pressure (from the IVC).",
+              "CW-Cursor durch die Trikuspidal-Koaptation in den RA legen (Jet mit Farbe suchen). Spitzengeschwindigkeit der TI messen: sPAP = 4 × Vmax² + RA-Druck (aus der VCI).",
+              "مرّر مؤشر CW عبر نقطة التقاء الصمام ثلاثي الشرف إلى الأذين الأيمن (ابحث عن النفث بالألوان). قِس السرعة القصوى: الضغط الرئوي الانقباضي = 4 × Vmax² + ضغط الأذين الأيمن (من الوريد الأجوف)."),
+            normal=t("TR Vmax ≤ 2.8 m/s", "TI-Vmax ≤ 2,8 m/s", "Vmax ≤ 2.8 م/ث"),
+            note=t("Underestimated when the beam is not parallel to the jet – try PSAX-AV and subcostal windows too.",
+                   "Unterschätzt, wenn der Strahl nicht parallel zum Jet liegt – auch PSAX-AV und subkostal versuchen.",
+                   "تُقدَّر بأقل من الحقيقة إذا لم تكن الحزمة موازية للنفث – جرّب أيضاً PSAX-AV والنافذة تحت الضلع."),
         ),
         step(
             t("Left atrial volume", "Volumen des linken Vorhofs", "حجم الأذين الأيسر"),

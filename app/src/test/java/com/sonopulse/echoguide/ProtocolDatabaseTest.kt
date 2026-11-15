@@ -79,7 +79,7 @@ class ProtocolDatabaseTest {
     @Test
     fun guidedExamHasTranslatedStepsWithValidCalipers() {
         val steps = protocol.allViews.flatMap { it.steps }
-        assertEquals(50, steps.size)
+        assertEquals(52, steps.size)
         protocol.allViews.forEach { assertTrue("no steps for ${it.id}", it.steps.isNotEmpty()) }
         steps.forEach { step ->
             listOfNotNull(step.title, step.instruction, step.normal, step.note).forEach { t ->
@@ -157,8 +157,35 @@ class ProtocolDatabaseTest {
         assertEquals(listOf(0L, 1100L), a5c.ecg.rWavesMs)
         val labels = a5c.steps.flatMap { it.overlays }.map { it.label }
         assertTrue(labels.containsAll(listOf("PW · LVOT", "CW · AV")))
-        // Only PSAX-AV is still simulated (no openly licensed normal adult clip found).
-        assertEquals(listOf("psax_av"), protocol.allViews.filter { it.videoSource.isSimulated }.map { it.id })
+        // Every view now plays a real clip.
+        assertEquals(emptyList<String>(), protocol.allViews.filter { it.videoSource.isSimulated }.map { it.id })
+    }
+
+    @Test
+    fun colourLoopsAndMeasurementGuideAreComplete() {
+        val attribution = File(assetsDir, "loops/ATTRIBUTION.txt").readText()
+        val viewIds = protocol.allViews.map { it.id }.toSet()
+        assertEquals(setOf("plax_color", "a4c_mv_color", "a4c_tv_color", "a5c_av_color"), protocol.colorLoops.keys)
+        protocol.colorLoops.forEach { (id, c) ->
+            assertTrue("missing ${c.asset}", File(assetsDir, c.asset).isFile)
+            assertTrue("$id not credited", attribution.contains(c.asset))
+            assertTrue("$id nyquist", c.nyquistCmS in 30..80)
+            assertTrue("$id views", c.views.isNotEmpty() && c.views.all { it in viewIds })
+        }
+        val spectral = setOf("AV_CW", "LVOT_PW", "AR_PHT", "MV_PW", "MS_CW", "TR_CW", "TAPSE", "PV_PW", "PISA", "VC", "CONTINUITY")
+        protocol.valves.forEach { v ->
+            assertTrue("${v.id} measurements", v.measurements.size >= 2)
+            v.measurements.forEach { m ->
+                assertTrue("${m.id} view", m.view in viewIds)
+                assertTrue("${m.id} loop ${m.loop}", File(assetsDir, m.loop).isFile)
+                assertTrue("${m.id} spectral ${m.spectral}", m.spectral in spectral)
+                m.overlay?.let { assertTrue("${m.id} overlay", isNormalizedBox(it.video)) }
+                assertTrue("${m.id} translated", m.steps.all { it.de != null && it.ar != null })
+            }
+        }
+        // CW cursors carry the focus diamond at the valve plane; Doppler steps cover all valves.
+        val labels = protocol.allViews.flatMap { v -> v.steps.flatMap { it.overlays } }.map { it.label }
+        assertTrue(labels.containsAll(listOf("PW · E/A", "e' septal", "e' lateral", "PW · LVOT", "CW · AV", "CW · TR", "PW · PV")))
     }
 
     @Test

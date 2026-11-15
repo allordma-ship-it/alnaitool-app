@@ -41,6 +41,18 @@ def ov(kind, label, video, diagram):
 
 L, G, A, C = "LINE", "DOPPLER_GATE", "AREA", "CURSOR"
 
+# Extra overlays used only by the valve measurement guide (scripts/valve_content.py), keyed by
+# label; video coordinates on the view's 2D loop or on a colour loop (verified like the others).
+GUIDE_OVERLAYS = {
+    # PLAX, mid-systole: LVOT diameter inner edge to inner edge just proximal to the aortic annulus.
+    "LVOT d": ("plax_standard", ov(L, "LVOT d", [0.59, 0.312, 0.60, 0.44], [0.58, 0.47, 0.60, 0.56])),
+    # A4C: CW through the mitral orifice into the LA (diamond at the valve plane).
+    "CW · MV": ("apical_4c", ov(C, "CW · MV", [0.50, 0.07, 0.565, 0.686], [0.68, 0.06, 0.75, 0.70])),
+    # Colour loops (POCUS Atlas): narrowest jet neck just beyond the valve.
+    "VC · MR": ("loops/color/a4c_mv_color.mp4", ov(L, "VC · MR", [0.555, 0.46, 0.615, 0.46], None)),
+    "VC · AR": ("loops/color/plax_color.mp4", ov(L, "VC · AR", [0.49, 0.445, 0.49, 0.50], None)),
+}
+
 # view id -> one entry per step: (phase, overlay | [overlays] | None[, freezeAtMs])
 # Every video coordinate below was read from the frozen frame with scripts/verify_calipers.py
 # (debug_calipers/*.png); lines are drawn perpendicular to the structure they measure.
@@ -74,10 +86,14 @@ STEPS = {
     ],
     "psax_av": [
         ("LIVE", None),
+        # Real POCUS Atlas loop: AV ring centred ≈ 0.57 / 0.52, RVOT arching over it to the PV and
+        # main PA on the right of the image; RA left, LA below. CW through the tricuspid coaptation.
         ("LIVE", None),
-        ("ED", ov(L, "MPA", [0.7315, 0.4523, 0.6785, 0.481], [0.78, 0.56, 0.91, 0.56])),
-        ("LIVE", ov(G, "PW · PV", [0.50, 0.073, 0.675, 0.40], [0.80, 0.28, 0.83, 0.43])),
-        ("LIVE", ov(A, "Color · PDA", [0.66, 0.50, 0.84, 0.68], [0.75, 0.45, 0.93, 0.65])),
+        ("ED", ov(L, "MPA", [0.655, 0.47, 0.72, 0.505], [0.78, 0.56, 0.91, 0.56])),
+        ("LIVE", ov(G, "PW · PV", [0.53, 0.12, 0.645, 0.455], [0.80, 0.28, 0.83, 0.43])),
+        ("LIVE", ov(A, "Color · PDA", [0.62, 0.45, 0.80, 0.65], [0.75, 0.45, 0.93, 0.65])),
+        # CW through the tricuspid coaptation (diamond = valve plane at 82 % of the cursor).
+        ("LIVE", ov(C, "CW · TR", [0.53, 0.12, 0.40, 0.545], [0.70, 0.22, 0.605, 0.64])),
     ],
     "psax_papillary": [
         ("LIVE", None),
@@ -100,19 +116,21 @@ STEPS = {
         # Basal RV: free-wall to septal endocardium just above the tricuspid annulus.
         ("ED", ov(L, "RVD1", [0.29, 0.52, 0.40, 0.52], [0.50, 0.55, 0.588, 0.55])),
         # PW sample volume at the mitral leaflet tips.
-        ("LIVE", ov(G, "PW · E/A", [0.50, 0.07, 0.545, 0.55], [0.68, 0.06, 0.72, 0.52])),
+        ("LIVE", ov(G, "PW · E/A", [0.50, 0.07, 0.555, 0.525], [0.68, 0.06, 0.72, 0.52])),
         # TDI at the septal and lateral mitral annulus.
         ("LIVE", [ov(G, "e' septal", [0.50, 0.07, 0.455, 0.592], [0.68, 0.06, 0.675, 0.60]),
                   ov(G, "e' lateral", [0.50, 0.07, 0.645, 0.585], [0.68, 0.06, 0.785, 0.575])]),
+        # CW through the tricuspid coaptation (diamond = valve plane at 82 % of the cursor).
+        ("LIVE", ov(C, "CW · TR", [0.50, 0.07, 0.33, 0.68], [0.68, 0.06, 0.50, 0.70])),
         ("ES", ov(L, "LA length", [0.53, 0.555, 0.525, 0.765], [0.78, 0.66, 0.78, 0.95])),
     ],
     "apical_5c": [
         ("LIVE", None),
         # Real POCUS Atlas loop: PW sample volume in the LVOT just below the aortic valve
         # (aortic root ring centred at ≈ 0.585 / 0.635 in systole).
-        ("LIVE", ov(G, "PW · LVOT", [0.52, 0.06, 0.565, 0.565], [0.68, 0.06, 0.66, 0.57])),
+        ("LIVE", ov(G, "PW · LVOT", [0.52, 0.06, 0.576, 0.55], [0.68, 0.06, 0.66, 0.57])),
         # CW from the apex through the aortic valve into the ascending aorta.
-        ("LIVE", ov(C, "CW · AV", [0.52, 0.06, 0.60, 0.82], [0.68, 0.06, 0.66, 0.72])),
+        ("LIVE", ov(C, "CW · AV", [0.52, 0.06, 0.60, 0.75], [0.68, 0.06, 0.66, 0.72])),
     ],
     "apical_2c": [
         ("LIVE", None),
@@ -125,7 +143,8 @@ STEPS = {
         # Colour box over LVOT, aortic and mitral valve.
         ("LIVE", ov(A, "Color · AV/MV", [0.44, 0.47, 0.67, 0.66], [0.10, 0.50, 0.75, 0.80])),
         # CW from the apex through the aortic valve.
-        ("LIVE", ov(C, "CW · AV", [0.48, 0.04, 0.605, 0.76], [0.52, 0.06, 0.62, 0.80])),
+        ("LIVE", [ov(G, "PW · LVOT", [0.48, 0.04, 0.589, 0.55], [0.52, 0.06, 0.58, 0.62]),
+                  ov(C, "CW · AV", [0.48, 0.04, 0.626, 0.72], [0.52, 0.06, 0.62, 0.80])]),
         ("LIVE", None),
     ],
     "suprasternal_arch": [

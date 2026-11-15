@@ -128,4 +128,10 @@
     <string name="valve_grade_moderate">Mittel</string>
     <string name="valve_grade_severe">Schwer</string>
     <string name="valve_disclaimer">Lehrzusammenfassung der ASE/EACVI-Empfehlungen (Stenosen 2009/2017, Insuffizienzen 2017). Schweregrad immer aus allen Parametern integrieren und die vollständige Leitlinie beachten.</string>
+    <string name="valve_section_measure">Messanleitung</string>
+    <string name="valve_where">Wo platzieren · %1$s</string>
+    <string name="valve_how">So wird auf der Kurve gemessen</string>
+    <string name="valve_loop_2d">2D</string>
+    <string name="valve_loop_color">FARBE</string>
+    <string name="color_toggle">Farbdoppler</string>
 </resources>

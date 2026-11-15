@@ -44,7 +44,12 @@ class AppNavigationTest {
     private fun launch(language: AppLanguage) {
         LanguagePreferences.save(ApplicationProvider.getApplicationContext(), language)
         compose.mainClock.autoAdvance = false
-        compose.setContent { EchoScopeTheme { EchoScopeApp() } }
+        compose.setContent {
+            // Robolectric cannot draw the TextureView video surface.
+            androidx.compose.runtime.CompositionLocalProvider(LocalVideoSurfaceEnabled provides false) {
+                EchoScopeTheme { EchoScopeApp() }
+            }
+        }
         // The protocol JSON is parsed on an IO thread while the test clock is frozen: give it
         // real time and step the clock (no idle-waiting – the loading spinner never idles).
         repeat(15) {
@@ -103,5 +108,19 @@ class AppNavigationTest {
             compose.mainClock.advanceTimeBy(1_000)
         }
         screenshot("valves_de_grading")
+    }
+
+    @Test
+    fun valveMeasurementGuideShowsTraceSchematics() {
+        launch(AppLanguage.EN)
+        compose.onNodeWithText("Valves").performClick()
+        compose.mainClock.advanceTimeBy(1_000)
+        compose.onNodeWithText("Measurement guide").assertExists()
+        compose.onRoot().performTouchInput { swipeUp(startY = bottom * 0.75f, endY = bottom * 0.45f) }
+        compose.mainClock.advanceTimeBy(1_000)
+        screenshot("valves_guide_av_cw")
+        compose.onNodeWithText("AR: pressure half-time (CW)").performClick()
+        compose.mainClock.advanceTimeBy(1_000)
+        screenshot("valves_guide_ar_pht")
     }
 }

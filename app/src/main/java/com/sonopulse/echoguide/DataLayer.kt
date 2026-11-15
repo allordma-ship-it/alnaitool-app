@@ -80,8 +80,12 @@ data class EchoProtocol(
     /** Function of every console key / knob, keyed by control id (e.g. "GAIN", "PW"). */
     val consoleControls: Map<String, LocalizedText> = emptyMap(),
     /** Structured heart-valve assessment (AV, MV, TV, PV). */
-    val valves: List<HeartValve> = emptyList()
+    val valves: List<HeartValve> = emptyList(),
+    /** Real colour Doppler loops (assets/loops/color), keyed by id. */
+    val colorLoops: Map<String, ColorLoop> = emptyMap()
 ) {
+    /** Colour loops offered by a view's 2D ⇄ colour toggle. */
+    fun colorLoopsFor(viewId: String): List<ColorLoop> = colorLoops.values.filter { viewId in it.views }
     val allViews: List<EchoView> get() = windows.flatMap { it.views }
 }
 
@@ -310,7 +314,46 @@ data class HeartValve(
     val spectral: List<ValveCheckItem>,
     val normals: List<ValveNormal>,
     val grading: List<GradingTable>,
-    val examples: List<GalleryImage> = emptyList()
+    val examples: List<GalleryImage> = emptyList(),
+    /** Step-by-step measurement guide: cursor on the loop + how to measure on the trace. */
+    val measurements: List<ValveMeasurement> = emptyList()
+)
+
+/** A real colour Doppler cine loop with its Nyquist limit and credit. */
+@Immutable
+@Serializable
+data class ColorLoop(
+    val asset: String,
+    val title: String,
+    val author: String,
+    val license: String,
+    val licenseUrl: String? = null,
+    val sourceUrl: String,
+    val nyquistCmS: Int,
+    val views: List<String> = emptyList(),
+    /** Valve the colour box covers ("AV", "MV", "TV"). */
+    val valve: String = ""
+)
+
+/**
+ * One measurement of the valve guide: [loop] (2D or colour) with the cursor / gate / caliper
+ * [overlay] where it belongs, a schematic [spectral] trace showing how to measure on it, the
+ * steps, formula and normal values, and an optional real example recording.
+ */
+@Immutable
+@Serializable
+data class ValveMeasurement(
+    val id: String,
+    val title: LocalizedText,
+    val view: String,
+    val loop: String,
+    val overlay: CaliperOverlay? = null,
+    val spectral: String,
+    val steps: List<LocalizedText>,
+    val formula: LocalizedText? = null,
+    val normal: LocalizedText? = null,
+    val example: String? = null,
+    val nyquistCmS: Int? = null
 )
 
 /** Valve to open first from a view's cockpit. */

@@ -28,6 +28,7 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -354,6 +355,12 @@ fun LoopFallback(assetPath: String, modifier: Modifier = Modifier, compact: Bool
     }
 }
 
+/**
+ * False where a TextureView cannot be drawn (Robolectric layout tests): loops then show their
+ * fallback card. Always true in the app.
+ */
+val LocalVideoSurfaceEnabled = staticCompositionLocalOf { true }
+
 /** Black video box containing either the live surface or the fallback card. */
 @Composable
 fun LoopBox(
@@ -365,7 +372,7 @@ fun LoopBox(
     compactFallback: Boolean = true
 ) {
     Box(modifier = modifier.background(Color.Black), contentAlignment = Alignment.Center) {
-        if (loop.showFallback) {
+        if (loop.showFallback || !LocalVideoSurfaceEnabled.current) {
             LoopFallback(assetPath, compact = compactFallback)
         } else {
             LoopSurface(player, attached, Modifier.fillMaxSize(), onAttached = loop::registerSurface)

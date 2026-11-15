@@ -88,7 +88,9 @@ fun EchoControlConsole(
     view: EchoView,
     controls: Map<String, LocalizedText>,
     language: AppLanguage,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    /** COLOR key switches the cockpit loop to the view's colour Doppler loop (when it has one). */
+    onColorKey: (() -> Unit)? = null
 ) {
     val steps = view.machineControls
     var currentStep by rememberSaveable(view.id) { mutableIntStateOf(0) }
@@ -110,6 +112,7 @@ fun EchoControlConsole(
         hostView.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
         selected = control
         stepsFor(control).firstOrNull { it >= currentStep }?.let { currentStep = it }
+        if (control == "COLOR") onColorKey?.invoke()
     }
     fun advance() {
         if (steps.isEmpty()) return
