@@ -225,23 +225,27 @@ class ProtocolDatabaseTest {
         assertTrue("ED / ES steps present", frozen >= 15)
     }
 
+    /** (width, height) and colour type from a PNG's IHDR chunk. */
+    private fun pngInfo(f: File): Pair<Pair<Int, Int>, Int> {
+        val b = f.readBytes()
+        fun int(o: Int) = ((b[o].toInt() and 0xFF) shl 24) or ((b[o + 1].toInt() and 0xFF) shl 16) or
+            ((b[o + 2].toInt() and 0xFF) shl 8) or (b[o + 3].toInt() and 0xFF)
+        return (int(16) to int(20)) to (b[25].toInt() and 0xFF)
+    }
+
     @Test
     fun everyViewHasASchemaAndOrientationIllustrations() {
         protocol.allViews.forEach { view ->
             val schema = view.schemaAsset
             assertTrue("${view.id} schema", schema != null && File(assetsDir, schema).isFile)
-            // Anatomical B-mode style everywhere: speckled myocardium, acoustic-black sector,
-            // navy / burgundy lumens; clean by default with a labelled twin of the same size.
-            val clean = File(assetsDir, schema!!).readText()
-            val labelled = File(assetsDir, schema.removeSuffix(".svg") + "_labels.svg")
-            assertTrue("${view.id} labelled schema", labelled.isFile)
-            listOf("#12A08C", "#CDD5DE", "url(#depth)").forEach { assertTrue("${view.id} style $it", clean.contains(it)) }
-            assertTrue("${view.id} tissue", clean.contains("url(#myoS)") || clean.contains("url(#liverS)"))
-            assertTrue("${view.id} lumens", clean.contains("url(#bloodR)") || clean.contains("url(#bloodL)"))
-            assertFalse("${view.id} clean schema has labels", clean.contains("<text"))
-            assertTrue("${view.id} labelled schema", labelled.readText().contains("<text"))
-            assertEquals(Regex("viewBox=\"[^\"]+\"").find(clean)?.value,
-                Regex("viewBox=\"[^\"]+\"").find(labelled.readText())?.value)
+            // Pre-rendered schema PNG + transparent label layer of exactly the same size.
+            assertEquals("diagrams/schema/${view.id}_schema.png", schema)
+            val clean = pngInfo(File(assetsDir, schema!!))
+            val labels = pngInfo(File(assetsDir, "diagrams/schema/${view.id}_schema_labels.png"))
+            assertEquals("${view.id} label layer size", clean.first, labels.first)
+            assertTrue("${view.id} resolution", clean.first.first >= 1000)
+            assertEquals("${view.id} aspect", view.schemaAspect, clean.first.first.toFloat() / clean.first.second, 0.02f)
+            assertTrue("${view.id} labels transparent (RGBA)", labels.second == 6)
             assertTrue("${view.id} schema aspect", view.schemaAspect in 0.6f..2.0f)
             // Every caliper must stay inside the cropped schema.
             view.steps.flatMap { it.overlays }.forEach { o ->
@@ -262,10 +266,10 @@ class ProtocolDatabaseTest {
         // Android's SVG parser rejects malformed XML (e.g. an unescaped "&" in a title) and shows
         // nothing; it also ignores paint-order, which would hide labels under their outline.
         val factory = javax.xml.parsers.DocumentBuilderFactory.newInstance()
-        val svgs = listOf("orientation", "schema", "svg").flatMap { dir ->
+        val svgs = listOf("orientation", "svg").flatMap { dir ->
             File(assetsDir, dir).listFiles { f -> f.name.endsWith(".svg") }.orEmpty().toList()
         }
-        assertTrue("SVG assets found", svgs.size >= 10 * 3 + 10 + 9)
+        assertTrue("SVG assets found", svgs.size >= 10 * 3 + 9)
         svgs.forEach { f ->
             try {
                 factory.newDocumentBuilder().parse(f)

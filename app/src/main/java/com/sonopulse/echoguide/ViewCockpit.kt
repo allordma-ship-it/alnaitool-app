@@ -57,6 +57,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.media3.exoplayer.ExoPlayer
 import coil.ImageLoader
+import coil.compose.AsyncImage
 import coil.compose.SubcomposeAsyncImage
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
@@ -418,7 +419,9 @@ private class DiagramSource(
     val caption: String? = null,
     val credit: String? = null,
     /** Vector schema: offers the labels AN/AUS toggle. */
-    val isSchema: Boolean = false
+    val isSchema: Boolean = false,
+    /** Transparent label image drawn over the schema when labels are on. */
+    val labelLayer: String? = null
 )
 
 /** Number of pages a panel mode has: the illustration plus its Echocardiographer.org gallery. */
@@ -465,8 +468,11 @@ private fun diagramSource(
         view.schemaAsset != null ->
             // The schema is traced in the video frame's coordinates: the video calipers fit as they are.
             // "ohne Labels" by default; the _labels variant has the same crop, so calipers stay aligned.
-            DiagramSource(if (schemaLabels) view.schemaAsset.removeSuffix(".svg") + "_labels.svg" else view.schemaAsset,
-                view.schemaAspect, SchemaBackground, overlays, { mapToCrop(it.video, view.schemaCrop) }, isSchema = true)
+            // Pre-rendered PNG (diagrams/schema/<view>_schema.png); labels are a transparent layer of
+            // the same size, so the AN/AUS toggle and the calipers never shift.
+            DiagramSource(view.schemaAsset, view.schemaAspect, SchemaBackground, overlays, { mapToCrop(it.video, view.schemaCrop) },
+                isSchema = true,
+                labelLayer = if (schemaLabels) view.schemaAsset.removeSuffix(".png") + "_labels.png" else null)
         else ->
             DiagramSource(view.svgAsset, SVG_WIDTH / SVG_HEIGHT, EchoPalette.BgPrimary, emptyList(), { null },
                 svgCaliper = if (caliperOn) step?.caliper else null)
@@ -594,6 +600,7 @@ private fun SplitStage(
                 contentDescription = view.title.get(language),
                 overlays = source.overlays,
                 overlayCoords = source.coords,
+                labelLayer = source.labelLayer,
                 topInset = if (modes.size > 1) PillsHeight else 0.dp,
                 fallback = probeFallback(source, view, language)
             )
@@ -671,7 +678,8 @@ private fun DiagramThumb(
     /** Space kept free above the image (e.g. for the mode pills). */
     topInset: Dp = 0.dp,
     /** Shown instead of a blank box when the asset is missing or cannot be decoded. */
-    fallback: (@Composable () -> Unit)? = null
+    fallback: (@Composable () -> Unit)? = null,
+    labelLayer: String? = null
 ) {
     val context = LocalContext.current
     val imageLoader = remember(context) {
@@ -694,6 +702,15 @@ private fun DiagramThumb(
                 error = { fallback?.invoke() },
                 modifier = Modifier.fillMaxSize()
             )
+            if (labelLayer != null) {
+                AsyncImage(
+                    model = ImageRequest.Builder(context).data("file:///android_asset/$labelLayer").build(),
+                    imageLoader = imageLoader,
+                    contentDescription = null,
+                    contentScale = ContentScale.FillBounds,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
             if (overlays.isNotEmpty()) {
                 CaliperCanvas(overlays, overlayCoords, aspect = 0f, modifier = Modifier.fillMaxSize())
             }
@@ -906,6 +923,7 @@ private fun DiagramOverlay(
                 background = source.background,
                 overlays = source.overlays,
                 overlayCoords = source.coords,
+                labelLayer = source.labelLayer,
                 fallback = probeFallback(source, view, language)
             )
         }

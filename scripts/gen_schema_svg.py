@@ -549,12 +549,31 @@ def heart_body(c: Canvas, spec: dict, grow: float = 7.0) -> str:
     return c.smooth(dense, True)
 
 
+# RASTER = True: the SVG is only an intermediate for scripts/export_schema_png.py (Chromium), so the
+# reference's real SVG filters are used – feTurbulence acoustic speckle and Gaussian glow – which
+# Android's own SVG renderer would ignore.
+RASTER = False
+_clip_ids = [0]
+
+
+def speckled(d: str, base_fill: str, pattern: str, light: float = 0.38, dark: float = 0.42) -> str:
+    """Area fill + speckle: filter noise clipped to the shape (raster) or a speckle pattern (vector)."""
+    if not RASTER:
+        return f'<path d="{d}" fill="{base_fill}"/><path d="{d}" fill="url(#{pattern})"/>'
+    _clip_ids[0] += 1
+    cid = f"cl{_clip_ids[0]}"
+    return (f'<clipPath id="{cid}"><path d="{d}"/></clipPath><path d="{d}" fill="{base_fill}"/>'
+            f'<g clip-path="url(#{cid})"><rect x="-200" y="-200" width="1400" height="1200" filter="url(#spk)" opacity="{light}"/>'
+            f'<rect x="-200" y="-200" width="1400" height="1200" filter="url(#spkD)" opacity="{dark}"/></g>')
+
+
 def tissue(d: str, outline: bool = True) -> str:
     """Myocardium: warm-taupe gradient + speckle, ivory epicardial outline with a soft glow."""
-    out = f'<path d="{d}" fill="url(#myoG)"/><path d="{d}" fill="url(#myoS)"/>'
+    out = speckled(d, "url(#myoG)", "myoS")
     if outline:
-        out = (f'<path d="{d}" fill="none" stroke="{OUTLINE}" stroke-opacity="0.18" stroke-width="14" stroke-linejoin="round"/>'
-               + out + f'<path d="{d}" fill="none" stroke="{OUTLINE}" stroke-width="3" stroke-linejoin="round"/>')
+        halo = (f'<path d="{d}" fill="none" stroke="{OUTLINE}" stroke-opacity="0.22" stroke-width="16" '
+                f'stroke-linejoin="round"{" filter=\"url(#glow)\"" if RASTER else ""}/>')
+        out = halo + out + f'<path d="{d}" fill="none" stroke="{OUTLINE}" stroke-width="3.2" stroke-linejoin="round"/>'
     return out
 
 
@@ -574,7 +593,7 @@ def render(view_id: str, spec: dict, width: int, height: int, crop: list[float] 
             hull_drawn = True
         if kind == "liver":
             d = c.smooth(shape[1], True)
-            body.append(f'<path d="{d}" fill="url(#liverG)"/><path d="{d}" fill="url(#liverS)"/>')
+            body.append(speckled(d, "url(#liverG)", "liverS", 0.30, 0.45))
         elif kind == "hv":
             pts, w = shape[1], shape[2]
             body.append(f'<path d="{c.smooth(pts, False)}" fill="none" stroke="{HEPATIC_VEIN}" stroke-width="{w * 1.6:.1f}" '
@@ -663,16 +682,24 @@ def render(view_id: str, spec: dict, width: int, height: int, crop: list[float] 
     <radialGradient id="bloodL" cx="0.45" cy="0.5" r="0.7">
       <stop offset="0" stop-color="{BLOOD_L[0]}"/><stop offset="1" stop-color="{BLOOD_L[1]}"/></radialGradient>
     {speckle_pattern("myoS", None, "#F0DED2", "#6F5A51", 23)}
+    <filter id="spk" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.22 0.34" numOctaves="2" seed="7"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  2.4 0 0 0 -1.05"/></filter>
+    <filter id="spkD" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.2 0.3" numOctaves="2" seed="23"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 2.4 0 0 -1.0"/></filter>
+    <filter id="glow"><feGaussianBlur stdDeviation="5"/></filter>
     {speckle_pattern("liverS", None, "#B3A585", "#4E4434", 27)}
   </defs>
   <rect x="{vb[0]:.1f}" y="{vb[1]:.1f}" width="{vb[2]:.1f}" height="{vb[3]:.1f}" fill="{BG}"/>
   <g clip-path="url(#sector)">
     <path d="{sector}" fill="url(#bg)"/>
     {chr(10).join("    " + b for b in body).strip()}
+    {('<rect x="-200" y="-200" width="1400" height="1200" filter="url(#spk)" opacity="0.10"/>') if RASTER else ""}
     <path d="{sector}" fill="url(#depth)"/>
   </g>
   {sector_decor(c, apex, half, radius)}
-  {label_svg}
+  <!--labels-->{label_svg}
 </svg>
 '''
 
@@ -834,4 +861,6 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    # The app ships pre-rendered PNGs (assets/diagrams/schema/); this module only holds the anatomy.
+    import export_schema_png
+    export_schema_png.main()
