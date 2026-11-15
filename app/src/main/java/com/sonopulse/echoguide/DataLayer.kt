@@ -217,7 +217,9 @@ data class CaliperOverlay(
     val type: String,
     val label: String,
     val video: List<Float>? = null,
-    val diagram: List<Float>? = null
+    val diagram: List<Float>? = null,
+    /** The same measurement on the pre-rendered Schema image (diagrams/schema/<view>_schema.png). */
+    val schema: List<Float>? = null
 ) {
     companion object {
         const val LINE = "LINE"

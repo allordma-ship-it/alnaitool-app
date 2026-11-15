@@ -324,6 +324,12 @@
                   0.7,
                   0.62,
                   0.86
+                ],
+                "schema": [
+                  0.228,
+                  0.5581,
+                  0.4213,
+                  0.7318
                 ]
               }
             },
@@ -364,6 +370,12 @@
                   0.375,
                   0.565,
                   0.415
+                ],
+                "schema": [
+                  0.4947,
+                  0.363,
+                  0.5046,
+                  0.4106
                 ]
               }
             }
@@ -458,14 +470,8 @@
             "ar": "الرسم: Patrick J. Lynch و C. Carl Jaffe, MD (Yale) · CC BY 2.5 · معدَّل (خلفية فاتحة)"
           },
           "schemaAsset": "diagrams/schema/subcostal_4c_schema.png",
-          "schemaAspect": 1.0612,
+          "schemaAspect": 1.1111,
           "orientationAsset": "orientation/subcostal_4c.svg",
-          "schemaCrop": [
-            0.154,
-            -0.03,
-            0.746,
-            0.695
-          ],
           "probeGallery": [
             {
               "asset": "echoorg/subcostal_00.jpg",
@@ -795,6 +801,12 @@
                   0.42,
                   0.36,
                   0.535
+                ],
+                "schema": [
+                  0.62,
+                  0.6422,
+                  0.614,
+                  0.7178
                 ]
               }
             },
@@ -834,6 +846,12 @@
                   0.3,
                   0.36,
                   0.7
+                ],
+                "schema": [
+                  0.5,
+                  0.0378,
+                  0.612,
+                  0.8
                 ]
               },
               "examples": [
@@ -936,14 +954,8 @@
             "ar": "صورة إيكو مرجعية موسومة (مقدَّمة من المستخدم؛ المصدر الأصلي والترخيص بحاجة إلى تأكيد)"
           },
           "schemaAsset": "diagrams/schema/subcostal_ivc_schema.png",
-          "schemaAspect": 1.4933,
+          "schemaAspect": 1.1111,
           "orientationAsset": "orientation/subcostal_ivc.svg",
-          "schemaCrop": [
-            0.0,
-            -0.03,
-            1.0,
-            0.95
-          ],
           "probeGallery": [
             {
               "asset": "echoorg/subcostal-greatvessels_00.jpg",
@@ -1360,6 +1372,12 @@
                   0.555,
                   0.47,
                   0.605
+                ],
+                "schema": [
+                  0.45,
+                  0.4822,
+                  0.45,
+                  0.5511
                 ]
               }
             },
@@ -1400,6 +1418,12 @@
                   0.612,
                   0.47,
                   0.8
+                ],
+                "schema": [
+                  0.45,
+                  0.5533,
+                  0.45,
+                  0.7444
                 ]
               }
             },
@@ -1440,6 +1464,12 @@
                   0.807,
                   0.47,
                   0.89
+                ],
+                "schema": [
+                  0.45,
+                  0.7467,
+                  0.45,
+                  0.8267
                 ]
               }
             },
@@ -1480,6 +1510,12 @@
                   0.455,
                   0.705,
                   0.528
+                ],
+                "schema": [
+                  0.76,
+                  0.4933,
+                  0.76,
+                  0.64
                 ]
               },
               "examples": [
@@ -1538,6 +1574,12 @@
                   0.52,
                   0.74,
                   0.78
+                ],
+                "schema": [
+                  0.82,
+                  0.6667,
+                  0.82,
+                  0.8
                 ]
               }
             }
@@ -1639,14 +1681,8 @@
             "ar": "الرسم: Patrick J. Lynch و C. Carl Jaffe, MD (Yale) · CC BY 2.5 · معدَّل (خلفية فاتحة)"
           },
           "schemaAsset": "diagrams/schema/plax_standard_schema.png",
-          "schemaAspect": 1.3745,
+          "schemaAspect": 1.1111,
           "orientationAsset": "orientation/plax_standard.svg",
-          "schemaCrop": [
-            0.07,
-            -0.025,
-            0.896,
-            0.756
-          ],
           "probeGallery": [
             {
               "asset": "echoorg/plax_00.jpg",
@@ -2044,6 +2080,12 @@
                   0.56,
                   0.91,
                   0.56
+                ],
+                "schema": [
+                  0.774,
+                  0.7111,
+                  0.836,
+                  0.7111
                 ]
               },
               "examples": [
@@ -2097,6 +2139,12 @@
                   0.28,
                   0.83,
                   0.43
+                ],
+                "schema": [
+                  0.5,
+                  0.0378,
+                  0.744,
+                  0.5622
                 ]
               }
             },
@@ -2126,6 +2174,12 @@
                   0.45,
                   0.93,
                   0.65
+                ],
+                "schema": [
+                  0.73,
+                  0.6667,
+                  0.87,
+                  0.8
                 ]
               }
             },
@@ -2160,6 +2214,12 @@
                   0.22,
                   0.605,
                   0.64
+                ],
+                "schema": [
+                  0.5,
+                  0.0378,
+                  0.2341,
+                  0.7939
                 ]
               }
             }
@@ -2253,14 +2313,8 @@
             "ar": "الرسم: Patrick J. Lynch و C. Carl Jaffe, MD (Yale) · CC BY 2.5 · معدَّل (خلفية فاتحة)"
           },
           "schemaAsset": "diagrams/schema/psax_av_schema.png",
-          "schemaAspect": 1.309,
+          "schemaAspect": 1.1111,
           "orientationAsset": "orientation/psax_av.svg",
-          "schemaCrop": [
-            0.192,
-            0.055,
-            0.946,
-            0.823
-          ],
           "probeGallery": [
             {
               "asset": "echoorg/psax_00.jpg",
@@ -2614,6 +2668,12 @@
                   0.2,
                   0.725,
                   0.51
+                ],
+                "schema": [
+                  0.568,
+                  0.4933,
+                  0.568,
+                  0.8667
                 ]
               }
             },
@@ -2659,6 +2719,12 @@
                   0.2,
                   0.735,
                   0.51
+                ],
+                "schema": [
+                  0.56,
+                  0.4933,
+                  0.56,
+                  0.8667
                 ]
               },
               "extraOverlays": [
@@ -2676,6 +2742,12 @@
                     0.255,
                     0.808,
                     0.255
+                  ],
+                  "schema": [
+                    0.4,
+                    0.68,
+                    0.736,
+                    0.68
                   ]
                 }
               ]
@@ -2716,6 +2788,12 @@
                   0.2,
                   0.735,
                   0.51
+                ],
+                "schema": [
+                  0.56,
+                  0.5267,
+                  0.56,
+                  0.8333
                 ]
               },
               "extraOverlays": [
@@ -2733,6 +2811,12 @@
                     0.255,
                     0.808,
                     0.255
+                  ],
+                  "schema": [
+                    0.428,
+                    0.68,
+                    0.708,
+                    0.68
                   ]
                 }
               ]
@@ -2836,14 +2920,8 @@
             "ar": "الرسم: Patrick J. Lynch و C. Carl Jaffe, MD (Yale) · CC BY 2.5 · معدَّل (خلفية فاتحة)"
           },
           "schemaAsset": "diagrams/schema/psax_papillary_schema.png",
-          "schemaAspect": 1.0157,
+          "schemaAspect": 1.1111,
           "orientationAsset": "orientation/psax_papillary.svg",
-          "schemaCrop": [
-            0.21,
-            -0.025,
-            0.793,
-            0.721
-          ],
           "probeGallery": [
             {
               "asset": "echoorg/psax_00.jpg",
@@ -3302,6 +3380,12 @@
                   0.19,
                   0.725,
                   0.595
+                ],
+                "schema": [
+                  0.512,
+                  0.2289,
+                  0.636,
+                  0.6644
                 ]
               }
             },
@@ -3342,6 +3426,12 @@
                   0.06,
                   0.475,
                   0.665
+                ],
+                "schema": [
+                  0.5,
+                  0.0378,
+                  0.226,
+                  0.7222
                 ]
               },
               "examples": [
@@ -3395,6 +3485,12 @@
                   0.55,
                   0.588,
                   0.55
+                ],
+                "schema": [
+                  0.23,
+                  0.6222,
+                  0.466,
+                  0.6222
                 ]
               }
             },
@@ -3435,6 +3531,12 @@
                   0.06,
                   0.72,
                   0.52
+                ],
+                "schema": [
+                  0.5,
+                  0.0378,
+                  0.636,
+                  0.6422
                 ]
               },
               "examples": [
@@ -3488,6 +3590,12 @@
                   0.06,
                   0.675,
                   0.6
+                ],
+                "schema": [
+                  0.5,
+                  0.0378,
+                  0.51,
+                  0.6711
                 ]
               },
               "extraOverlays": [
@@ -3505,6 +3613,12 @@
                     0.06,
                     0.785,
                     0.575
+                  ],
+                  "schema": [
+                    0.5,
+                    0.0378,
+                    0.762,
+                    0.6711
                   ]
                 }
               ],
@@ -3569,6 +3683,12 @@
                   0.06,
                   0.5,
                   0.7
+                ],
+                "schema": [
+                  0.5,
+                  0.0378,
+                  0.3195,
+                  0.7912
                 ]
               }
             },
@@ -3609,6 +3729,12 @@
                   0.66,
                   0.78,
                   0.95
+                ],
+                "schema": [
+                  0.636,
+                  0.6911,
+                  0.64,
+                  0.9
                 ]
               }
             }
@@ -3719,14 +3845,8 @@
             "ar": "الرسم: Patrick J. Lynch و C. Carl Jaffe, MD (Yale) · CC BY 2.5 · معدَّل (خلفية فاتحة)"
           },
           "schemaAsset": "diagrams/schema/apical_4c_schema.png",
-          "schemaAspect": 0.9386,
+          "schemaAspect": 1.1111,
           "orientationAsset": "orientation/apical_4c.svg",
-          "schemaCrop": [
-            0.177,
-            -0.015,
-            0.788,
-            0.831
-          ],
           "probeGallery": [
             {
               "asset": "echoorg/apical4_00.jpg",
@@ -4079,6 +4199,12 @@
                   0.06,
                   0.66,
                   0.57
+                ],
+                "schema": [
+                  0.5,
+                  0.0378,
+                  0.51,
+                  0.6556
                 ]
               },
               "examples": [
@@ -4137,6 +4263,12 @@
                   0.06,
                   0.66,
                   0.72
+                ],
+                "schema": [
+                  0.5,
+                  0.0378,
+                  0.5122,
+                  0.8725
                 ]
               },
               "examples": [
@@ -4243,14 +4375,8 @@
             "ar": "الرسم: Patrick J. Lynch و C. Carl Jaffe, MD (Yale) · CC BY 2.5 · معدَّل (خلفية فاتحة)"
           },
           "schemaAsset": "diagrams/schema/apical_5c_schema.png",
-          "schemaAspect": 0.8629,
+          "schemaAspect": 1.1111,
           "orientationAsset": "orientation/apical_5c.svg",
-          "schemaCrop": [
-            0.17,
-            -0.015,
-            0.918,
-            0.911
-          ],
           "probeGallery": [
             {
               "asset": "echoorg/apical5_00.jpg",
@@ -4598,6 +4724,12 @@
                   0.15,
                   0.56,
                   0.64
+                ],
+                "schema": [
+                  0.5,
+                  0.2289,
+                  0.5,
+                  0.6622
                 ]
               }
             },
@@ -4632,6 +4764,12 @@
                   0.66,
                   0.56,
                   0.86
+                ],
+                "schema": [
+                  0.5,
+                  0.6933,
+                  0.5,
+                  0.9067
                 ]
               }
             },
@@ -4703,13 +4841,7 @@
             }
           ],
           "schemaAsset": "diagrams/schema/apical_2c_schema.png",
-          "schemaCrop": [
-            0.254,
-            -0.015,
-            0.786,
-            0.795
-          ],
-          "schemaAspect": 0.8536,
+          "schemaAspect": 1.1111,
           "orientationAsset": "orientation/apical_2c.svg"
         },
         {
@@ -4963,6 +5095,12 @@
                   0.5,
                   0.75,
                   0.8
+                ],
+                "schema": [
+                  0.43,
+                  0.5778,
+                  0.72,
+                  0.7778
                 ]
               }
             },
@@ -4997,6 +5135,12 @@
                   0.06,
                   0.58,
                   0.62
+                ],
+                "schema": [
+                  0.5,
+                  0.0378,
+                  0.628,
+                  0.6556
                 ]
               },
               "extraOverlays": [
@@ -5014,6 +5158,12 @@
                     0.06,
                     0.62,
                     0.8
+                  ],
+                  "schema": [
+                    0.5,
+                    0.0378,
+                    0.6585,
+                    0.8616
                   ]
                 }
               ]
@@ -5075,13 +5225,7 @@
             }
           ],
           "schemaAsset": "diagrams/schema/apical_3c_schema.png",
-          "schemaCrop": [
-            0.232,
-            -0.03,
-            0.835,
-            0.81
-          ],
-          "schemaAspect": 0.933,
+          "schemaAspect": 1.1111,
           "orientationAsset": "orientation/apical_3c.svg"
         }
       ]
@@ -5414,6 +5558,12 @@
                   0.295,
                   0.4985,
                   0.439
+                ],
+                "schema": [
+                  0.47,
+                  0.4533,
+                  0.47,
+                  0.5733
                 ]
               }
             },
@@ -5454,6 +5604,12 @@
                   0.499,
                   0.651,
                   0.479
+                ],
+                "schema": [
+                  0.656,
+                  0.6667,
+                  0.768,
+                  0.6667
                 ]
               }
             },
@@ -5499,6 +5655,12 @@
                   0.2,
                   0.613,
                   0.719
+                ],
+                "schema": [
+                  0.5,
+                  0.0378,
+                  0.708,
+                  0.9667
                 ]
               },
               "examples": [
@@ -5608,14 +5770,8 @@
             "ar": "صورة إيكو موسومة: Echocardiographer.org – Atif Qasim, MD MSCE (echocardiographer.org، استخدام مجاني مع ذكر المصدر)"
           },
           "schemaAsset": "diagrams/schema/suprasternal_arch_schema.png",
-          "schemaAspect": 0.9852,
+          "schemaAspect": 1.1111,
           "orientationAsset": "orientation/suprasternal_arch.svg",
-          "schemaCrop": [
-            0.204,
-            -0.025,
-            0.746,
-            0.69
-          ],
           "probeGallery": [
             {
               "asset": "echoorg/suprasternal_00.jpg",

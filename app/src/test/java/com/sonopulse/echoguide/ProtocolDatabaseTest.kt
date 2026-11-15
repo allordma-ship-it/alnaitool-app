@@ -247,9 +247,9 @@ class ProtocolDatabaseTest {
             assertEquals("${view.id} aspect", view.schemaAspect, clean.first.first.toFloat() / clean.first.second, 0.02f)
             assertTrue("${view.id} labels transparent (RGBA)", labels.second == 6)
             assertTrue("${view.id} schema aspect", view.schemaAspect in 0.6f..2.0f)
-            // Every caliper must stay inside the cropped schema.
+            // Every caliper also has coordinates on the pre-rendered schema image.
             view.steps.flatMap { it.overlays }.forEach { o ->
-                assertTrue("${view.id} ${o.label} outside schema crop", isNormalizedBox(mapToCrop(o.video, view.schemaCrop)))
+                assertTrue("${view.id} ${o.label} schema coords", isNormalizedBox(o.schema))
             }
             val orientation = view.orientationAsset
             assertTrue("${view.id} orientation", orientation != null)

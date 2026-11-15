@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 900" width="1000" height="900">
+<title>apical_2c schema</title>
+<defs>
+<clipPath id="sec"><path d="M500,34 L2.9,693.7 A826,826 0 0 0 997.1,693.7 Z"/></clipPath>
+<clipPath id="liv"><path d="M-60,-10 L-60,500 L120,500 C190,440 245,392 300,380 C380,340 470,334 540,350 C650,378 770,440 900,540 L1060,540 L1060,-10 Z"/></clipPath>
+<clipPath id="epi"><path d="M3,-30 C0,-92 30,-150 100,-164 C150,-173 200,-164 234,-147 C300,-151 380,-131 440,-95 C492,-64 548,-24 574,32 C586,58 574,94 548,120 C510,166 420,188 330,188 C290,188 250,182 220,169 C170,180 80,178 34,139 C6,112 2,60 2,20 Z"/></clipPath>
+<radialGradient id="depth" gradientUnits="userSpaceOnUse" cx="500" cy="34" r="826">
+ <stop offset="0" stop-color="#000" stop-opacity="0"/><stop offset=".55" stop-color="#000" stop-opacity=".08"/><stop offset="1" stop-color="#000" stop-opacity=".55"/></radialGradient>
+<radialGradient id="bg" gradientUnits="userSpaceOnUse" cx="500" cy="34" r="826">
+ <stop offset="0" stop-color="#16232a"/><stop offset="1" stop-color="#0a1217"/></radialGradient>
+<linearGradient id="liverG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8a7a5c"/><stop offset="1" stop-color="#6b5f49"/></linearGradient>
+<linearGradient id="myo" gradientUnits="userSpaceOnUse" x1="0" y1="-170" x2="0" y2="190"><stop offset="0" stop-color="#c9a48f"/><stop offset="1" stop-color="#a47f6e"/></linearGradient>
+<radialGradient id="bloodL" cx=".45" cy=".5" r=".7"><stop offset="0" stop-color="#1d0f12"/><stop offset="1" stop-color="#2c1418"/></radialGradient>
+<radialGradient id="bloodR" cx=".5" cy=".5" r=".7"><stop offset="0" stop-color="#0b1622"/><stop offset="1" stop-color="#10253a"/></radialGradient>
+<filter id="spk" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+ <feTurbulence type="fractalNoise" baseFrequency="0.22 0.34" numOctaves="2" seed="7"/>
+ <feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  2.4 0 0 0 -1.05"/></filter>
+<filter id="spkD" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+ <feTurbulence type="fractalNoise" baseFrequency="0.2 0.3" numOctaves="2" seed="23"/>
+ <feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 2.4 0 0 -1.0"/></filter>
+<filter id="soft"><feGaussianBlur stdDeviation="1.6"/></filter>
+<filter id="glow"><feGaussianBlur stdDeviation="5"/></filter>
+<linearGradient id="myoA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c9a48f"/><stop offset="1" stop-color="#a47f6e"/></linearGradient></defs>
+<g clip-path="url(#sec)">
+ <rect width="1000" height="900" fill="url(#bg)"/>
+ <rect width="1000" height="900" filter="url(#spk)" opacity=".10"/>
+ <clipPath id="epi7"><path d="M500,168 C622,190 768,380 806,560 C834,690 792,806 652,834 C560,850 440,850 348,834 C208,806 166,690 194,560 C232,380 378,190 500,168 Z"/></clipPath><path d="M500,168 C622,190 768,380 806,560 C834,690 792,806 652,834 C560,850 440,850 348,834 C208,806 166,690 194,560 C232,380 378,190 500,168 Z" fill="none" stroke="#f4eee2" stroke-width="16" opacity=".22" filter="url(#glow)"/><path d="M500,168 C622,190 768,380 806,560 C834,690 792,806 652,834 C560,850 440,850 348,834 C208,806 166,690 194,560 C232,380 378,190 500,168 Z" fill="url(#myoA)" stroke="#f4eee2" stroke-width="3.5" stroke-linejoin="round"/><g clip-path="url(#epi7)"><rect width="1000" height="900" filter="url(#spk)" opacity=".38"/><rect width="1000" height="900" filter="url(#spkD)" opacity=".42"/></g><path d="M500,200 C580,224 720,360 762,480 C780,540 780,580 770,608 C640,588 360,588 230,608 C220,580 220,540 238,480 C280,360 420,224 500,200 Z" fill="url(#bloodL)"/><path d="M250,630 C240,740 320,814 500,818 C680,814 760,740 750,630 C620,612 380,612 250,630 Z" fill="url(#bloodL)"/><ellipse cx="292" cy="478" rx="22" ry="52" fill="url(#myoA)" stroke="#efe2d2" stroke-width="1"/><ellipse cx="708" cy="478" rx="22" ry="52" fill="url(#myoA)" stroke="#efe2d2" stroke-width="1"/><g stroke="#f4eee2" stroke-width="1.4" opacity=".55" fill="none"><path d="M294,528 L282,566"/><path d="M298,528 L330,570"/><path d="M706,528 L718,566"/><path d="M702,528 L670,570"/></g><g fill="#f7f1e6" stroke="#f7f1e6" stroke-width="1" stroke-linejoin="round"><path d="M244,614 C258,592 272,574 286,560 C280,584 270,604 258,620 Z"/><path d="M756,614 C742,592 728,574 714,560 C720,584 730,604 742,620 Z"/></g>
+ <rect width="1000" height="900" fill="url(#depth)"/>
+</g>
+<path d="M500,34 L2.9,693.7" stroke="#12a08c" stroke-width="3.5" fill="none"/>
+<path d="M500,34 L997.1,693.7" stroke="#12a08c" stroke-width="3.5" fill="none"/>
+<path d="M2.9,693.7 A826,826 0 0 0 997.1,693.7" stroke="#12a08c" stroke-width="3.5" stroke-dasharray="20 14" fill="none"/>
+<rect x="438" y="8" width="124" height="30" rx="15" fill="#cdd5de"/>
+<circle cx="422" cy="23" r="11" fill="#38b6f5"/>
+</svg>

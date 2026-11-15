@@ -861,6 +861,5 @@ def main():
 
 
 if __name__ == "__main__":
-    # The app ships pre-rendered PNGs (assets/diagrams/schema/); this module only holds the anatomy.
-    import export_schema_png
-    export_schema_png.main()
+    # Superseded: the Schema images are hand-authored in scripts/build_schema_art.py.
+    raise SystemExit("Use scripts/build_schema_art.py")

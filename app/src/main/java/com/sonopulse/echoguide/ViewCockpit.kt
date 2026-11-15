@@ -468,9 +468,9 @@ private fun diagramSource(
         view.schemaAsset != null ->
             // The schema is traced in the video frame's coordinates: the video calipers fit as they are.
             // "ohne Labels" by default; the _labels variant has the same crop, so calipers stay aligned.
-            // Pre-rendered PNG (diagrams/schema/<view>_schema.png); labels are a transparent layer of
-            // the same size, so the AN/AUS toggle and the calipers never shift.
-            DiagramSource(view.schemaAsset, view.schemaAspect, SchemaBackground, overlays, { mapToCrop(it.video, view.schemaCrop) },
+            // Pre-rendered PNG (diagrams/schema/<view>_schema.png, scripts/build_schema_art.py) with its own
+            // caliper coordinates; labels are a transparent layer of the same size.
+            DiagramSource(view.schemaAsset, view.schemaAspect, SchemaBackground, overlays, { it.schema },
                 isSchema = true,
                 labelLayer = if (schemaLabels) view.schemaAsset.removeSuffix(".png") + "_labels.png" else null)
         else ->
