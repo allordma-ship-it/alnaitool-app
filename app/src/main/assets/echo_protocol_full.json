@@ -465,6 +465,54 @@
             0.138,
             0.746,
             0.695
+          ],
+          "probeGallery": [
+            {
+              "asset": "echoorg/subcostal_00.jpg",
+              "aspect": 1.3333,
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-subcostal",
+              "caption": {
+                "en": "Probe on the chest (photo)",
+                "de": "Schallkopf auf dem Thorax (Foto)",
+                "ar": "المسبار على الصدر (صورة)"
+              }
+            },
+            {
+              "asset": "echoorg/subcostal_01.jpg",
+              "aspect": 0.9154,
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-subcostal",
+              "caption": {
+                "en": "How the beam cuts the heart",
+                "de": "So schneidet die Schallebene das Herz",
+                "ar": "كيف تقطع الحزمة القلب"
+              }
+            }
+          ],
+          "atlasGallery": [
+            {
+              "asset": "echoorg/subcostal_03.jpg",
+              "aspect": 1.3366,
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-subcostal",
+              "caption": {
+                "en": "Labelled echo frame",
+                "de": "Beschriftetes Echobild",
+                "ar": "صورة إيكو موسومة"
+              }
+            },
+            {
+              "asset": "echoorg/subcostal_02.jpg",
+              "aspect": 0.8083,
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-subcostal",
+              "caption": {
+                "en": "Resulting view (drawing)",
+                "de": "Ergebnisbild (Zeichnung)",
+                "ar": "المقطع الناتج (رسم)"
+              }
+            }
           ]
         },
         {
@@ -787,7 +835,20 @@
                   0.36,
                   0.7
                 ]
-              }
+              },
+              "examples": [
+                {
+                  "asset": "echoorg/subcostal-greatvessels_01.jpg",
+                  "aspect": 1.463,
+                  "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+                  "source": "https://www.echocardiographer.org/tte-subcostal-greatvessels",
+                  "caption": {
+                    "en": "IVC M-mode: expiration vs inspiration",
+                    "de": "VCI im M-Mode: Exspiration vs. Inspiration",
+                    "ar": "الوريد الأجوف بنمط M: زفير مقابل شهيق"
+                  }
+                }
+              ]
             }
           ],
           "ecg": {
@@ -882,7 +943,21 @@
             0.0,
             1.0,
             0.95
-          ]
+          ],
+          "probeGallery": [
+            {
+              "asset": "echoorg/subcostal-greatvessels_00.jpg",
+              "aspect": 1.5,
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-subcostal-greatvessels",
+              "caption": {
+                "en": "Probe on the chest (photo)",
+                "de": "Schallkopf auf dem Thorax (Foto)",
+                "ar": "المسبار على الصدر (صورة)"
+              }
+            }
+          ],
+          "atlasGallery": []
         }
       ]
     },
@@ -1406,7 +1481,20 @@
                   0.705,
                   0.528
                 ]
-              }
+              },
+              "examples": [
+                {
+                  "asset": "echoorg/plax_04.jpg",
+                  "aspect": 1.3831,
+                  "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+                  "source": "https://www.echocardiographer.org/tte-plax",
+                  "caption": {
+                    "en": "Zoom on aortic and mitral valve",
+                    "de": "Zoom auf Aorten- und Mitralklappe",
+                    "ar": "تكبير على الصمام الأبهري والتاجي"
+                  }
+                }
+              ]
             },
             {
               "title": {
@@ -1558,6 +1646,65 @@
             0.038,
             0.89,
             0.686
+          ],
+          "probeGallery": [
+            {
+              "asset": "echoorg/plax_00.jpg",
+              "aspect": 1.4793,
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-plax",
+              "caption": {
+                "en": "Probe on the chest (photo)",
+                "de": "Schallkopf auf dem Thorax (Foto)",
+                "ar": "المسبار على الصدر (صورة)"
+              }
+            },
+            {
+              "asset": "echoorg/plax_01.jpg",
+              "aspect": 1.0,
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-plax",
+              "caption": {
+                "en": "How the beam cuts the heart",
+                "de": "So schneidet die Schallebene das Herz",
+                "ar": "كيف تقطع الحزمة القلب"
+              }
+            }
+          ],
+          "atlasGallery": [
+            {
+              "asset": "echoorg/plax_02.jpg",
+              "aspect": 1.3839,
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-plax",
+              "caption": {
+                "en": "Labelled echo frame",
+                "de": "Beschriftetes Echobild",
+                "ar": "صورة إيكو موسومة"
+              }
+            },
+            {
+              "asset": "echoorg/plax_03.jpg",
+              "aspect": 1.0316,
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-plax",
+              "caption": {
+                "en": "Resulting view (drawing)",
+                "de": "Ergebnisbild (Zeichnung)",
+                "ar": "المقطع الناتج (رسم)"
+              }
+            },
+            {
+              "asset": "echoorg/plax_04.jpg",
+              "aspect": 1.3831,
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-plax",
+              "caption": {
+                "en": "Zoom on aortic and mitral valve",
+                "de": "Zoom auf Aorten- und Mitralklappe",
+                "ar": "تكبير على الصمام الأبهري والتاجي"
+              }
+            }
           ]
         },
         {
@@ -1845,7 +1992,20 @@
                 "de": "Bei Kindern hier die Abgänge der linken (≈ 4 Uhr) und rechten (≈ 11 Uhr) Koronararterie suchen.",
                 "ar": "عند الأطفال: ابحث هنا عن منشأ الشريانين التاجيين الأيسر (نحو الساعة 4) والأيمن (نحو الساعة 11)."
               },
-              "requiredPhase": "LIVE"
+              "requiredPhase": "LIVE",
+              "examples": [
+                {
+                  "asset": "echoorg/psax_03.jpg",
+                  "aspect": 1.3468,
+                  "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+                  "source": "https://www.echocardiographer.org/tte-psax",
+                  "caption": {
+                    "en": "Aortic valve zoom: RCC, LCC, NCC",
+                    "de": "Aortenklappe gezoomt: RCC, LCC, NCC",
+                    "ar": "تكبير الصمام الأبهري: الشرفات الثلاث"
+                  }
+                }
+              ]
             },
             {
               "title": {
@@ -1885,7 +2045,20 @@
                   0.91,
                   0.56
                 ]
-              }
+              },
+              "examples": [
+                {
+                  "asset": "echoorg/psax_04.jpg",
+                  "aspect": 1.3333,
+                  "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+                  "source": "https://www.echocardiographer.org/tte-psax",
+                  "caption": {
+                    "en": "Pulmonary artery and bifurcation",
+                    "de": "Pulmonalarterie und Bifurkation",
+                    "ar": "الشريان الرئوي وتفرعه"
+                  }
+                }
+              ]
             },
             {
               "title": {
@@ -2043,6 +2216,65 @@
             0.043,
             0.926,
             0.88
+          ],
+          "probeGallery": [
+            {
+              "asset": "echoorg/psax_00.jpg",
+              "aspect": 1.5,
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-psax",
+              "caption": {
+                "en": "Probe on the chest (photo)",
+                "de": "Schallkopf auf dem Thorax (Foto)",
+                "ar": "المسبار على الصدر (صورة)"
+              }
+            },
+            {
+              "asset": "echoorg/psax_01.jpg",
+              "aspect": 0.7727,
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-psax",
+              "caption": {
+                "en": "Short-axis levels: AV, MV, papillary muscles, apex",
+                "de": "Kurzachsen-Ebenen: AK, MK, Papillarmuskeln, Apex",
+                "ar": "مستويات المحور القصير: الأبهري، التاجي، العضلات الحليمية، القمة"
+              }
+            }
+          ],
+          "atlasGallery": [
+            {
+              "asset": "echoorg/psax_02.jpg",
+              "aspect": 1.4706,
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-psax",
+              "caption": {
+                "en": "Labelled echo frame",
+                "de": "Beschriftetes Echobild",
+                "ar": "صورة إيكو موسومة"
+              }
+            },
+            {
+              "asset": "echoorg/psax_03.jpg",
+              "aspect": 1.3468,
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-psax",
+              "caption": {
+                "en": "Aortic valve zoom: RCC, LCC, NCC",
+                "de": "Aortenklappe gezoomt: RCC, LCC, NCC",
+                "ar": "تكبير الصمام الأبهري: الشرفات الثلاث"
+              }
+            },
+            {
+              "asset": "echoorg/psax_04.jpg",
+              "aspect": 1.3333,
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-psax",
+              "caption": {
+                "en": "Pulmonary artery and bifurcation",
+                "de": "Pulmonalarterie und Bifurkation",
+                "ar": "الشريان الرئوي وتفرعه"
+              }
+            }
           ]
         },
         {
@@ -2286,7 +2518,20 @@
                 "de": "Das Kavum muss rund sein. Wirkt es oval, ist die Ebene schräg: Rotation korrigieren.",
                 "ar": "يجب أن يكون التجويف دائرياً. إذا كان بيضوياً فالمقطع مائل: عدّل الدوران."
               },
-              "requiredPhase": "LIVE"
+              "requiredPhase": "LIVE",
+              "examples": [
+                {
+                  "asset": "echoorg/psax_06.jpg",
+                  "aspect": 1.3369,
+                  "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+                  "source": "https://www.echocardiographer.org/tte-psax",
+                  "caption": {
+                    "en": "Papillary-muscle level",
+                    "de": "Papillarmuskel-Ebene",
+                    "ar": "مستوى العضلات الحليمية"
+                  }
+                }
+              ]
             },
             {
               "title": {
@@ -2554,6 +2799,65 @@
             0.199,
             0.793,
             0.721
+          ],
+          "probeGallery": [
+            {
+              "asset": "echoorg/psax_00.jpg",
+              "aspect": 1.5,
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-psax",
+              "caption": {
+                "en": "Probe on the chest (photo)",
+                "de": "Schallkopf auf dem Thorax (Foto)",
+                "ar": "المسبار على الصدر (صورة)"
+              }
+            },
+            {
+              "asset": "echoorg/psax_01.jpg",
+              "aspect": 0.7727,
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-psax",
+              "caption": {
+                "en": "Short-axis levels: AV, MV, papillary muscles, apex",
+                "de": "Kurzachsen-Ebenen: AK, MK, Papillarmuskeln, Apex",
+                "ar": "مستويات المحور القصير: الأبهري، التاجي، العضلات الحليمية، القمة"
+              }
+            }
+          ],
+          "atlasGallery": [
+            {
+              "asset": "echoorg/psax_06.jpg",
+              "aspect": 1.3369,
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-psax",
+              "caption": {
+                "en": "Papillary-muscle level",
+                "de": "Papillarmuskel-Ebene",
+                "ar": "مستوى العضلات الحليمية"
+              }
+            },
+            {
+              "asset": "echoorg/psax_05.jpg",
+              "aspect": 1.3405,
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-psax",
+              "caption": {
+                "en": "Mitral valve level",
+                "de": "Mitralklappen-Ebene",
+                "ar": "مستوى الصمام التاجي"
+              }
+            },
+            {
+              "asset": "echoorg/psax_07.jpg",
+              "aspect": 1.4706,
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-psax",
+              "caption": {
+                "en": "Apical level",
+                "de": "Apikale Ebene",
+                "ar": "المستوى القمي"
+              }
+            }
           ]
         }
       ]
@@ -2995,7 +3299,20 @@
                   0.475,
                   0.665
                 ]
-              }
+              },
+              "examples": [
+                {
+                  "asset": "echoorg/apical4_12.jpg",
+                  "aspect": 1.4793,
+                  "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+                  "source": "https://www.echocardiographer.org/tte-apical4",
+                  "caption": {
+                    "en": "TAPSE M-mode",
+                    "de": "TAPSE im M-Mode",
+                    "ar": "TAPSE بنمط M"
+                  }
+                }
+              ]
             },
             {
               "title": {
@@ -3075,7 +3392,20 @@
                   0.72,
                   0.52
                 ]
-              }
+              },
+              "examples": [
+                {
+                  "asset": "echoorg/apical4_07.jpg",
+                  "aspect": 1.7921,
+                  "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+                  "source": "https://www.echocardiographer.org/tte-apical4",
+                  "caption": {
+                    "en": "PW mitral inflow (E/A)",
+                    "de": "PW-Mitraleinstrom (E/A)",
+                    "ar": "دوبلر نبضي للتدفق التاجي (E/A)"
+                  }
+                }
+              ]
             },
             {
               "title": {
@@ -3132,6 +3462,30 @@
                     0.785,
                     0.575
                   ]
+                }
+              ],
+              "examples": [
+                {
+                  "asset": "echoorg/apical4_09.jpg",
+                  "aspect": 1.4641,
+                  "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+                  "source": "https://www.echocardiographer.org/tte-apical4",
+                  "caption": {
+                    "en": "TDI septal annulus (e', a')",
+                    "de": "TDI septaler Anulus (e', a')",
+                    "ar": "دوبلر نسيجي الحلقة الحاجزية"
+                  }
+                },
+                {
+                  "asset": "echoorg/apical4_08.jpg",
+                  "aspect": 1.4837,
+                  "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+                  "source": "https://www.echocardiographer.org/tte-apical4",
+                  "caption": {
+                    "en": "TDI lateral annulus (e', a')",
+                    "de": "TDI lateraler Anulus (e', a')",
+                    "ar": "دوبلر نسيجي الحلقة الوحشية"
+                  }
                 }
               ]
             },
@@ -3289,6 +3643,65 @@
             0.04,
             0.788,
             0.831
+          ],
+          "probeGallery": [
+            {
+              "asset": "echoorg/apical4_00.jpg",
+              "aspect": 1.1173,
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-apical4",
+              "caption": {
+                "en": "Probe on the chest (photo)",
+                "de": "Schallkopf auf dem Thorax (Foto)",
+                "ar": "المسبار على الصدر (صورة)"
+              }
+            },
+            {
+              "asset": "echoorg/apical4_01.jpg",
+              "aspect": 1.3333,
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-apical4",
+              "caption": {
+                "en": "How the beam cuts the heart",
+                "de": "So schneidet die Schallebene das Herz",
+                "ar": "كيف تقطع الحزمة القلب"
+              }
+            }
+          ],
+          "atlasGallery": [
+            {
+              "asset": "echoorg/apical4_03.jpg",
+              "aspect": 1.3469,
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-apical4",
+              "caption": {
+                "en": "Labelled echo frame",
+                "de": "Beschriftetes Echobild",
+                "ar": "صورة إيكو موسومة"
+              }
+            },
+            {
+              "asset": "echoorg/apical4_02.jpg",
+              "aspect": 0.7839,
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-apical4",
+              "caption": {
+                "en": "Resulting view (drawing)",
+                "de": "Ergebnisbild (Zeichnung)",
+                "ar": "المقطع الناتج (رسم)"
+              }
+            },
+            {
+              "asset": "echoorg/apical4_04.jpg",
+              "aspect": 1.4749,
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-apical4",
+              "caption": {
+                "en": "LV zoom",
+                "de": "LV-Zoom",
+                "ar": "تكبير البطين الأيسر"
+              }
+            }
           ]
         },
         {
@@ -3584,7 +3997,20 @@
                   0.66,
                   0.57
                 ]
-              }
+              },
+              "examples": [
+                {
+                  "asset": "echoorg/apical5_04.jpg",
+                  "aspect": 1.4654,
+                  "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+                  "source": "https://www.echocardiographer.org/tte-apical5",
+                  "caption": {
+                    "en": "PW LVOT (VTI)",
+                    "de": "PW LVOT (VTI)",
+                    "ar": "دوبلر نبضي في LVOT"
+                  }
+                }
+              ]
             },
             {
               "title": {
@@ -3629,7 +4055,20 @@
                   0.66,
                   0.72
                 ]
-              }
+              },
+              "examples": [
+                {
+                  "asset": "echoorg/apical5_05.jpg",
+                  "aspect": 1.4654,
+                  "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+                  "source": "https://www.echocardiographer.org/tte-apical5",
+                  "caption": {
+                    "en": "CW aortic valve",
+                    "de": "CW Aortenklappe",
+                    "ar": "دوبلر مستمر عبر الصمام الأبهري"
+                  }
+                }
+              ]
             }
           ],
           "ecg": {
@@ -3718,6 +4157,54 @@
             0.043,
             0.815,
             0.903
+          ],
+          "probeGallery": [
+            {
+              "asset": "echoorg/apical5_00.jpg",
+              "aspect": 1.1173,
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-apical5",
+              "caption": {
+                "en": "Probe on the chest (photo)",
+                "de": "Schallkopf auf dem Thorax (Foto)",
+                "ar": "المسبار على الصدر (صورة)"
+              }
+            },
+            {
+              "asset": "echoorg/apical5_01.jpg",
+              "aspect": 1.3333,
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-apical5",
+              "caption": {
+                "en": "How the beam cuts the heart",
+                "de": "So schneidet die Schallebene das Herz",
+                "ar": "كيف تقطع الحزمة القلب"
+              }
+            }
+          ],
+          "atlasGallery": [
+            {
+              "asset": "echoorg/apical5_03.jpg",
+              "aspect": 1.3323,
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-apical5",
+              "caption": {
+                "en": "Labelled echo frame",
+                "de": "Beschriftetes Echobild",
+                "ar": "صورة إيكو موسومة"
+              }
+            },
+            {
+              "asset": "echoorg/apical5_02.jpg",
+              "aspect": 0.8,
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-apical5",
+              "caption": {
+                "en": "Resulting view (drawing)",
+                "de": "Ergebnisbild (Zeichnung)",
+                "ar": "المقطع الناتج (رسم)"
+              }
+            }
           ]
         },
         {
@@ -4106,6 +4593,98 @@
             0.06,
             0.786,
             0.78
+          ],
+          "probeGallery": [
+            {
+              "asset": "echoorg/apical2_00.jpg",
+              "aspect": 1.5,
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-apical2",
+              "caption": {
+                "en": "Probe on the chest (photo)",
+                "de": "Schallkopf auf dem Thorax (Foto)",
+                "ar": "المسبار على الصدر (صورة)"
+              }
+            },
+            {
+              "asset": "echoorg/apical2_01.jpg",
+              "aspect": 1.0446,
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-apical2",
+              "caption": {
+                "en": "How the beam cuts the heart",
+                "de": "So schneidet die Schallebene das Herz",
+                "ar": "كيف تقطع الحزمة القلب"
+              }
+            },
+            {
+              "asset": "echoorg/apical-long-axis_00.jpg",
+              "aspect": 1.5,
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-apical-long-axis",
+              "caption": {
+                "en": "Probe on the chest (photo)",
+                "de": "Schallkopf auf dem Thorax (Foto)",
+                "ar": "المسبار على الصدر (صورة)"
+              }
+            },
+            {
+              "asset": "echoorg/apical-long-axis_01.jpg",
+              "aspect": 0.8608,
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-apical-long-axis",
+              "caption": {
+                "en": "How the beam cuts the heart",
+                "de": "So schneidet die Schallebene das Herz",
+                "ar": "كيف تقطع الحزمة القلب"
+              }
+            }
+          ],
+          "atlasGallery": [
+            {
+              "asset": "echoorg/apical2_03.jpg",
+              "aspect": 1.3364,
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-apical2",
+              "caption": {
+                "en": "Labelled echo frame",
+                "de": "Beschriftetes Echobild",
+                "ar": "صورة إيكو موسومة"
+              }
+            },
+            {
+              "asset": "echoorg/apical2_02.jpg",
+              "aspect": 0.5857,
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-apical2",
+              "caption": {
+                "en": "Resulting view (drawing)",
+                "de": "Ergebnisbild (Zeichnung)",
+                "ar": "المقطع الناتج (رسم)"
+              }
+            },
+            {
+              "asset": "echoorg/apical-long-axis_03.jpg",
+              "aspect": 1.4859,
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-apical-long-axis",
+              "caption": {
+                "en": "Apical long axis (A3C)",
+                "de": "Apikale lange Achse (3K)",
+                "ar": "المحور الطويل القمي (ثلاثي الحجرات)"
+              }
+            },
+            {
+              "asset": "echoorg/apical-long-axis_02.jpg",
+              "aspect": 0.6718,
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-apical-long-axis",
+              "caption": {
+                "en": "Resulting view (drawing)",
+                "de": "Ergebnisbild (Zeichnung)",
+                "ar": "المقطع الناتج (رسم)"
+              }
+            }
           ]
         }
       ]
@@ -4434,10 +5013,10 @@
                   0.345
                 ],
                 "diagram": [
-                  0.5,
-                  0.296,
-                  0.5,
-                  0.44
+                  0.4985,
+                  0.295,
+                  0.4985,
+                  0.439
                 ]
               }
             },
@@ -4474,10 +5053,10 @@
                   0.4
                 ],
                 "diagram": [
-                  0.57,
-                  0.5,
-                  0.66,
-                  0.48
+                  0.565,
+                  0.499,
+                  0.651,
+                  0.479
                 ]
               }
             },
@@ -4519,12 +5098,36 @@
                   0.66
                 ],
                 "diagram": [
-                  0.5,
+                  0.4985,
                   0.2,
-                  0.62,
-                  0.72
+                  0.613,
+                  0.719
                 ]
-              }
+              },
+              "examples": [
+                {
+                  "asset": "echoorg/suprasternal_05.jpg",
+                  "aspect": 1.4833,
+                  "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+                  "source": "https://www.echocardiographer.org/tte-suprasternal",
+                  "caption": {
+                    "en": "PW descending aorta",
+                    "de": "PW Aorta descendens",
+                    "ar": "دوبلر نبضي في الأبهر النازل"
+                  }
+                },
+                {
+                  "asset": "echoorg/suprasternal_04.jpg",
+                  "aspect": 1.6838,
+                  "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+                  "source": "https://www.echocardiographer.org/tte-suprasternal",
+                  "caption": {
+                    "en": "PW ascending aorta",
+                    "de": "PW Aorta ascendens",
+                    "ar": "دوبلر نبضي في الأبهر الصاعد"
+                  }
+                }
+              ]
             }
           ],
           "ecg": {
@@ -4600,12 +5203,12 @@
             "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
             "sourceUrl": "https://commons.wikimedia.org/wiki/File:SuprasternalNormal_(CardioNetworks_ECHOpedia).webm"
           },
-          "diagramAsset": "diagrams/suprasternal_arch.png",
-          "diagramAspect": 1.381,
+          "diagramAsset": "echoorg/suprasternal_03.jpg",
+          "diagramAspect": 1.4491,
           "diagramCredit": {
-            "en": "Labelled ultrasound reference image (supplied; original source and licence to be confirmed)",
-            "de": "Beschriftetes Ultraschall-Referenzbild (bereitgestellt; Originalquelle und Lizenz noch zu klären)",
-            "ar": "صورة إيكو مرجعية موسومة (مقدَّمة من المستخدم؛ المصدر الأصلي والترخيص بحاجة إلى تأكيد)"
+            "en": "Labelled echo image: Echocardiographer.org – Atif Qasim, MD MSCE (echocardiographer.org, free reuse with credit)",
+            "de": "Beschriftetes Echobild: Echocardiographer.org – Atif Qasim, MD MSCE (echocardiographer.org, freie Nutzung mit Quellenangabe)",
+            "ar": "صورة إيكو موسومة: Echocardiographer.org – Atif Qasim, MD MSCE (echocardiographer.org، استخدام مجاني مع ذكر المصدر)"
           },
           "schemaAsset": "schema/suprasternal_arch.svg",
           "schemaAspect": 0.9977,
@@ -4615,6 +5218,43 @@
             0.01,
             0.726,
             0.69
+          ],
+          "probeGallery": [
+            {
+              "asset": "echoorg/suprasternal_00.jpg",
+              "aspect": 1.5,
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-suprasternal",
+              "caption": {
+                "en": "Probe on the chest (photo)",
+                "de": "Schallkopf auf dem Thorax (Foto)",
+                "ar": "المسبار على الصدر (صورة)"
+              }
+            },
+            {
+              "asset": "echoorg/suprasternal_01.jpg",
+              "aspect": 0.9188,
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-suprasternal",
+              "caption": {
+                "en": "How the beam cuts the heart",
+                "de": "So schneidet die Schallebene das Herz",
+                "ar": "كيف تقطع الحزمة القلب"
+              }
+            }
+          ],
+          "atlasGallery": [
+            {
+              "asset": "echoorg/suprasternal_02.jpg",
+              "aspect": 0.6638,
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-suprasternal",
+              "caption": {
+                "en": "Resulting view (drawing)",
+                "de": "Ergebnisbild (Zeichnung)",
+                "ar": "المقطع الناتج (رسم)"
+              }
+            }
           ]
         }
       ]

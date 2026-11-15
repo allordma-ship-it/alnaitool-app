@@ -111,4 +111,11 @@
     <string name="diagram_probe">Probe</string>
     <string name="diagram_schema">Schema</string>
     <string name="diagram_atlas">Atlas</string>
+    <string name="step_example">Example</string>
+    <string name="gallery_previous">Previous image</string>
+    <string name="gallery_next">Next image</string>
+    <string name="about_echoorg_title">Probe photos, drawings &amp; example recordings</string>
+    <string name="about_echoorg_credit">Echocardiographer.org – Atif Qasim, MD MSCE (www.echocardiographer.org)</string>
+    <string name="about_echoorg_detail">Used with the author\'s permission for free reuse with credit (\"Feel free to use any of the content here … please provide credit to this site and me or other authors\"). Images resized, otherwise unchanged.</string>
+    <string name="about_view_gallery">%1$d reference images: %2$s</string>
 </resources>

@@ -564,10 +564,16 @@ internal fun AboutDialog(view: EchoView?, language: AppLanguage, onDismiss: () -
                             style = MaterialTheme.typography.bodySmall
                         )
                         view.diagramCredit?.let { Text(it.get(language), color = EchoText, style = MaterialTheme.typography.bodySmall) }
+                        val gallery = (view.probeGallery + view.atlasGallery + view.steps.flatMap { it.examples })
+                        gallery.firstOrNull()?.credit?.let { credit ->
+                            Text(stringResource(R.string.about_view_gallery, gallery.size, credit), color = EchoText,
+                                style = MaterialTheme.typography.bodySmall)
+                        }
                     }
                 }
                 AboutSection(R.string.about_illustrations_title, R.string.about_illustrations_credit, R.string.about_illustrations_detail)
                 AboutSection(R.string.about_clips_title, R.string.about_clips_credit, null)
+                AboutSection(R.string.about_echoorg_title, R.string.about_echoorg_credit, R.string.about_echoorg_detail)
                 AboutSection(R.string.about_reference_title, R.string.about_reference_credit, null)
                 AboutSection(R.string.about_disclaimer_title, R.string.about_disclaimer, null)
             }

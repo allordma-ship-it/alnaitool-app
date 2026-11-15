@@ -126,6 +126,9 @@ fun ViewCockpit(
         else -> DiagramMode.SCHEMA
     }
     val diagramMode = manualMode?.takeIf { it in modes } ?: autoMode
+    val pages = remember(view.id) { mutableStateMapOf<DiagramMode, Int>() }
+    val diagramPage = (pages[diagramMode] ?: 0).coerceIn(0, (pageCount(view, diagramMode) - 1).coerceAtLeast(0))
+    val selectPage: (Int) -> Unit = { pages[diagramMode] = it }
     val selectMode: (DiagramMode) -> Unit = { mode ->
         manualMode = mode
         if (mode != DiagramMode.PROBE) preferAtlas = mode == DiagramMode.ATLAS
@@ -187,6 +190,8 @@ fun ViewCockpit(
                     diagramMode = diagramMode,
                     modes = modes,
                     onSelectMode = selectMode,
+                    diagramPage = diagramPage,
+                    onSelectPage = selectPage,
                     videoAttached = !videoOverlay,
                     onOpenVideo = { videoOverlay = true },
                     onOpenDiagram = { diagramOverlay = true },
@@ -215,7 +220,9 @@ fun ViewCockpit(
         ) { videoOverlay = false }
     }
     if (diagramOverlay) {
-        DiagramOverlay(view, step, caliperOn, toggleCaliper, diagramMode, modes, selectMode, language) { diagramOverlay = false }
+        DiagramOverlay(view, step, caliperOn, toggleCaliper, diagramMode, modes, selectMode, diagramPage, selectPage, language) {
+            diagramOverlay = false
+        }
     }
     if (infoOpen) AboutDialog(view = view, language = language, onDismiss = { infoOpen = false })
     if (referenceOpen) {
@@ -369,13 +376,42 @@ private class DiagramSource(
     /** Legacy caliper in 600x420 SVG units, only for the old schematic fallback. */
     val svgCaliper: List<Float>? = null,
     /** Probe panel: falls back to a drawn clock badge so it can never stay blank. */
-    val isProbe: Boolean = false
+    val isProbe: Boolean = false,
+    /** Caption and licence credit of a gallery page (shown in full screen). */
+    val caption: String? = null,
+    val credit: String? = null
 )
 
-private fun diagramSource(view: EchoView, mode: DiagramMode, step: GuideStep?, caliperOn: Boolean, language: AppLanguage): DiagramSource {
+/** Number of pages a panel mode has: the illustration plus its Echocardiographer.org gallery. */
+internal fun pageCount(view: EchoView, mode: DiagramMode): Int = when (mode) {
+    DiagramMode.PROBE -> 1 + view.probeGallery.size
+    DiagramMode.ATLAS -> (if (view.diagramAsset != null) 1 else 0) + view.atlasGallery.size
+    DiagramMode.SCHEMA -> 1
+}
+
+private fun galleryPage(image: GalleryImage, language: AppLanguage, background: Color) =
+    DiagramSource(image.asset, image.aspect, background, emptyList(), { null },
+        caption = image.caption.get(language), credit = image.credit)
+
+private fun diagramSource(
+    view: EchoView,
+    mode: DiagramMode,
+    step: GuideStep?,
+    caliperOn: Boolean,
+    language: AppLanguage,
+    page: Int = 0
+): DiagramSource {
     val overlays = if (caliperOn) step?.overlays.orEmpty() else emptyList()
     val atlas = view.diagramAsset
     val orientation = view.orientationAsset
+    // Pages after the first come from the view's Echocardiographer.org gallery (no calipers).
+    if (mode == DiagramMode.PROBE && page >= 1) {
+        view.probeGallery.getOrNull(page - 1)?.let { return galleryPage(it, language, Color.Black) }
+    }
+    if (mode == DiagramMode.ATLAS) {
+        val galleryIndex = if (atlas != null) page - 1 else page
+        if (galleryIndex >= 0) view.atlasGallery.getOrNull(galleryIndex)?.let { return galleryPage(it, language, Color.Black) }
+    }
     return when {
         mode == DiagramMode.PROBE && orientation != null ->
             DiagramSource(localizedOrientationAsset(orientation, language), ORIENTATION_ASPECT, SchemaBackground, emptyList(), { null },
@@ -384,7 +420,8 @@ private fun diagramSource(view: EchoView, mode: DiagramMode, step: GuideStep?, c
             // A view without an illustration still gets the clock badge (see ProbeOrientationFallback).
             DiagramSource("orientation/${view.id}.svg", ORIENTATION_ASPECT, SchemaBackground, emptyList(), { null }, isProbe = true)
         mode == DiagramMode.ATLAS && atlas != null ->
-            DiagramSource(atlas, view.diagramAspect, AtlasCard, overlays, { it.diagram })
+            DiagramSource(atlas, view.diagramAspect, if (atlas.endsWith(".png")) AtlasCard else Color.Black, overlays, { it.diagram },
+                credit = view.diagramCredit?.get(language))
         view.schemaAsset != null ->
             // The schema is traced in the video frame's coordinates: the video calipers fit as they are.
             DiagramSource(view.schemaAsset, view.schemaAspect, SchemaBackground, overlays, { mapToCrop(it.video, view.schemaCrop) })
@@ -435,6 +472,8 @@ private fun SplitStage(
     diagramMode: DiagramMode,
     modes: List<DiagramMode>,
     onSelectMode: (DiagramMode) -> Unit,
+    diagramPage: Int,
+    onSelectPage: (Int) -> Unit,
     videoAttached: Boolean,
     onOpenVideo: () -> Unit,
     onOpenDiagram: () -> Unit,
@@ -481,7 +520,8 @@ private fun SplitStage(
             SourceBadge(simulated = view.videoSource.isSimulated, modifier = Modifier.align(Alignment.TopStart).padding(5.dp))
             loop.frozenPhase?.let { FrozenBadge(it, Modifier.align(Alignment.BottomStart).padding(5.dp)) }
         }
-        val source = diagramSource(view, diagramMode, step, caliperOn, language)
+        val source = diagramSource(view, diagramMode, step, caliperOn, language, diagramPage)
+        val pageTotal = pageCount(view, diagramMode)
         StageCard(
             modifier = Modifier.weight(0.48f),
             onClick = onOpenDiagram,
@@ -489,6 +529,9 @@ private fun SplitStage(
             controls = {
                 if (modes.size > 1) {
                     DiagramModePills(diagramMode, modes, onSelectMode, Modifier.align(Alignment.TopCenter).padding(top = 4.dp))
+                }
+                if (pageTotal > 1) {
+                    PageStepper(diagramPage, pageTotal, onSelectPage, Modifier.align(Alignment.BottomCenter).padding(bottom = 4.dp))
                 }
             }
         ) {
@@ -787,10 +830,13 @@ private fun DiagramOverlay(
     mode: DiagramMode,
     modes: List<DiagramMode>,
     onSelectMode: (DiagramMode) -> Unit,
+    page: Int,
+    onSelectPage: (Int) -> Unit,
     language: AppLanguage,
     onDismiss: () -> Unit
 ) {
-    val source = diagramSource(view, mode, step, caliperOn, language)
+    val source = diagramSource(view, mode, step, caliperOn, language, page)
+    val pageTotal = pageCount(view, mode)
     FullScreenDialog(onDismiss) {
         val hasCaliper = mode != DiagramMode.PROBE && (step?.overlays.orEmpty().isNotEmpty() || step?.caliper != null)
         OverlayStatusRow(frozenPhase = null, hasCaliper = hasCaliper, caliperOn, onToggleCaliper)
@@ -808,7 +854,61 @@ private fun DiagramOverlay(
             )
         }
         if (source.asset == view.svgAsset) LegendRow()
-        Text(stringResource(R.string.zoom_hint), style = MaterialTheme.typography.labelSmall, color = EchoMuted)
+        GalleryFooter(source.caption, source.credit, page, pageTotal, onSelectPage)
+    }
+}
+
+/** "‹ 2 / 4 ›" stepper through the pages of a diagram panel. */
+@Composable
+private fun PageStepper(page: Int, total: Int, onSelect: (Int) -> Unit, modifier: Modifier = Modifier, large: Boolean = false) {
+    val size = if (large) 36.dp else 22.dp
+    Row(
+        modifier = modifier
+            .clip(RoundedCornerShape(size / 2))
+            .background(Color.Black.copy(alpha = 0.62f)),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        IconButton(onClick = { onSelect((page - 1 + total) % total) }, modifier = Modifier.size(size)) {
+            Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = stringResource(R.string.gallery_previous),
+                tint = Color.White, modifier = Modifier.size(size * 0.75f))
+        }
+        Text("${page + 1} / $total", color = Color.White, fontSize = if (large) 14.sp else 9.sp, fontWeight = FontWeight.Bold)
+        IconButton(onClick = { onSelect((page + 1) % total) }, modifier = Modifier.size(size)) {
+            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = stringResource(R.string.gallery_next),
+                tint = Color.White, modifier = Modifier.size(size * 0.75f))
+        }
+    }
+}
+
+/** Caption, licence credit and page stepper under a full-screen diagram or example. */
+@Composable
+private fun GalleryFooter(caption: String?, credit: String?, page: Int, total: Int, onSelectPage: (Int) -> Unit) {
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Column(modifier = Modifier.weight(1f)) {
+            caption?.let { Text(it, color = EchoText, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold) }
+            credit?.let { Text("© $it", color = EchoMuted, style = MaterialTheme.typography.labelSmall) }
+            Text(stringResource(R.string.zoom_hint), style = MaterialTheme.typography.labelSmall, color = EchoMuted)
+        }
+        if (total > 1) PageStepper(page, total, onSelectPage, large = true)
+    }
+}
+
+/** Full-screen viewer for a step's real example recordings (PW / CW / TDI / M-mode). */
+@Composable
+private fun ExampleDialog(examples: List<GalleryImage>, title: String, language: AppLanguage, onDismiss: () -> Unit) {
+    var page by rememberSaveable { mutableStateOf(0) }
+    val image = examples[page.coerceIn(0, examples.size - 1)]
+    FullScreenDialog(onDismiss) {
+        Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = EchoText)
+        Box(modifier = Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
+            ZoomableDiagram(
+                assetPath = image.asset,
+                contentDescription = image.caption.get(language),
+                aspectRatio = image.aspect,
+                background = Color.Black
+            )
+        }
+        GalleryFooter(image.caption.get(language), image.credit, page, examples.size) { page = it }
     }
 }
 
@@ -919,6 +1019,7 @@ private fun DeckCard(modifier: Modifier = Modifier, content: @Composable ColumnS
 @Composable
 private fun StepCard(view: EchoView, nav: StepNavigator, language: AppLanguage, onOpenReference: () -> Unit) {
     var noteOpen by remember { mutableStateOf(false) }
+    var exampleOpen by remember { mutableStateOf(false) }
     val step = nav.step
     DeckCard {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -931,6 +1032,10 @@ private fun StepCard(view: EchoView, nav: StepNavigator, language: AppLanguage, 
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f)
             )
+            if (step != null && step.examples.isNotEmpty()) {
+                SmallPill(stringResource(R.string.step_example), EchoAmber) { exampleOpen = true }
+                Spacer(Modifier.width(6.dp))
+            }
             if (step?.note != null) {
                 SmallPill(stringResource(R.string.guided_note), EchoOrange) { noteOpen = true }
                 Spacer(Modifier.width(6.dp))
@@ -960,6 +1065,9 @@ private fun StepCard(view: EchoView, nav: StepNavigator, language: AppLanguage, 
             )
         }
         StepNavBar(nav)
+    }
+    if (exampleOpen && step != null && step.examples.isNotEmpty()) {
+        ExampleDialog(step.examples, step.title.get(language), language) { exampleOpen = false }
     }
     if (noteOpen && step?.note != null) {
         AlertDialog(

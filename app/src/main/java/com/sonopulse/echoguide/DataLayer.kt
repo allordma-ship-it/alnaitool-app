@@ -127,6 +127,10 @@ data class EchoView(
     val schemaAspect: Float = 4f / 3f,
     /** Step-1 torso & transducer illustration (English file; `_de` / `_ar` variants beside it). */
     val orientationAsset: String? = null,
+    /** Extra pages of the Sonde panel: probe photo, beam-cut drawing (Echocardiographer.org). */
+    val probeGallery: List<GalleryImage> = emptyList(),
+    /** Extra pages of the Atlas panel: labelled echo frame, view drawing, zooms. */
+    val atlasGallery: List<GalleryImage> = emptyList(),
     val timingNote: LocalizedText? = null,
     val machineControls: List<MachineControlStep> = emptyList()
 )
@@ -230,7 +234,9 @@ data class GuideStep(
     val freezeAtMs: Long? = null,
     val caliperOverlay: CaliperOverlay? = null,
     /** Further calipers shown together with [caliperOverlay] (D1 + D2, e' septal + lateral). */
-    val extraOverlays: List<CaliperOverlay> = emptyList()
+    val extraOverlays: List<CaliperOverlay> = emptyList(),
+    /** Real example recordings for this step (PW / CW / TDI / M-mode), opened from the step card. */
+    val examples: List<GalleryImage> = emptyList()
 ) {
     /** Every caliper of the step, [caliperOverlay] first. */
     val overlays: List<CaliperOverlay> get() = listOfNotNull(caliperOverlay) + extraOverlays
@@ -244,6 +250,17 @@ fun mapToCrop(coords: List<Float>?, crop: List<Float>): List<Float>? {
     if (w <= 0f || h <= 0f) return coords
     return listOf((coords[0] - crop[0]) / w, (coords[1] - crop[1]) / h, (coords[2] - crop[0]) / w, (coords[3] - crop[1]) / h)
 }
+
+/** A bundled reference image with caption and the credit its licence requires. */
+@Immutable
+@Serializable
+data class GalleryImage(
+    val asset: String,
+    val aspect: Float,
+    val caption: LocalizedText,
+    val credit: String? = null,
+    val source: String? = null
+)
 
 /** Width / height of the step-1 orientation illustrations (600 x 420). */
 const val ORIENTATION_ASPECT = 600f / 420f

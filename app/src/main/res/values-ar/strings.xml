@@ -118,4 +118,11 @@
     <string name="diagram_probe">المسبار</string>
     <string name="diagram_schema">مخطط</string>
     <string name="diagram_atlas">أطلس</string>
+    <string name="step_example">مثال</string>
+    <string name="gallery_previous">الصورة السابقة</string>
+    <string name="gallery_next">الصورة التالية</string>
+    <string name="about_echoorg_title">صور المسبار والرسوم والتسجيلات النموذجية</string>
+    <string name="about_echoorg_credit">Echocardiographer.org – Atif Qasim, MD MSCE (www.echocardiographer.org)</string>
+    <string name="about_echoorg_detail">مستخدمة بإذن المؤلف بالاستخدام المجاني مع ذكر المصدر. الصور مصغّرة دون أي تعديل آخر.</string>
+    <string name="about_view_gallery">%1$d صور مرجعية: %2$s</string>
 </resources>

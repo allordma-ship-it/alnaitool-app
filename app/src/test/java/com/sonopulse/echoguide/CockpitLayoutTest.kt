@@ -12,6 +12,7 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.isRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
 import androidx.test.core.app.ApplicationProvider
@@ -170,4 +171,28 @@ class CockpitLayoutTest {
     @Test fun subcostalSchemaWithReadableLabels() = schemaScreen("subcostal_4c")
 
     @Test fun ivcSchemaWithReadableLabels() = schemaScreen("subcostal_ivc")
+
+    @Test
+    fun tdiStepOpensRealExampleRecordings() {
+        showCockpit("apical_4c", stepIndex = 6)
+        compose.onNodeWithText("Example").performClick()
+        // Let Coil decode the JPEG on its IO thread while the frozen test clock steps forward.
+        repeat(10) {
+            Thread.sleep(150)
+            compose.mainClock.advanceTimeBy(300)
+        }
+        compose.onNodeWithText("1 / 2").assertExists()
+        // The example viewer is a dialog: capture its own window (the second root).
+        System.setProperty("roborazzi.test.record", "true")
+        compose.onAllNodes(isRoot())[1].captureRoboImage("build/cockpit-screens/apical_4c_tdi_example.png")
+    }
+
+    @Test
+    fun probePanelPagesToTheProbePhoto() {
+        showCockpit("plax_standard", stepIndex = 0)
+        compose.onNodeWithContentDescription("Next image").performClick()
+        compose.mainClock.advanceTimeBy(1_500)
+        compose.onNodeWithText("2 / 3").assertExists()
+        screenshot("plax_probe_photo")
+    }
 }

@@ -120,9 +120,10 @@ STEPS = {
     "suprasternal_arch": [
         ("LIVE", None),
         ("LIVE", None),
-        ("ED", ov(L, "Arch", [0.44, 0.215, 0.44, 0.345], [0.50, 0.296, 0.50, 0.44])),
-        ("ED", ov(L, "Isthmus", [0.475, 0.40, 0.545, 0.40], [0.57, 0.50, 0.66, 0.48])),
-        ("LIVE", ov(C, "CW · DAo", [0.49, 0.04, 0.525, 0.66], [0.50, 0.20, 0.62, 0.72])),
+        # Atlas = Echocardiographer.org labelled SSN frame (original resolution, see integrate_echocardiographer.py).
+        ("ED", ov(L, "Arch", [0.44, 0.215, 0.44, 0.345], [0.4985, 0.295, 0.4985, 0.439])),
+        ("ED", ov(L, "Isthmus", [0.475, 0.40, 0.545, 0.40], [0.565, 0.499, 0.651, 0.479])),
+        ("LIVE", ov(C, "CW · DAo", [0.49, 0.04, 0.525, 0.66], [0.4985, 0.20, 0.613, 0.719])),
     ],
 }
 

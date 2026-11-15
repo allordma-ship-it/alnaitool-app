@@ -110,4 +110,11 @@
     <string name="diagram_probe">Sonde</string>
     <string name="diagram_schema">Schema</string>
     <string name="diagram_atlas">Atlas</string>
+    <string name="step_example">Beispiel</string>
+    <string name="gallery_previous">Vorheriges Bild</string>
+    <string name="gallery_next">Nächstes Bild</string>
+    <string name="about_echoorg_title">Schallkopf-Fotos, Zeichnungen &amp; Beispielaufnahmen</string>
+    <string name="about_echoorg_credit">Echocardiographer.org – Atif Qasim, MD MSCE (www.echocardiographer.org)</string>
+    <string name="about_echoorg_detail">Genutzt mit der Erlaubnis des Autors zur freien Wiederverwendung mit Quellenangabe. Bilder verkleinert, sonst unverändert.</string>
+    <string name="about_view_gallery">%1$d Referenzbilder: %2$s</string>
 </resources>

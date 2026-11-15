@@ -224,6 +224,26 @@ class ProtocolDatabaseTest {
     }
 
     @Test
+    fun echocardiographerOrgImagesAreBundledAndCredited() {
+        val images = protocol.allViews.flatMap { v -> v.probeGallery + v.atlasGallery + v.steps.flatMap { it.examples } }
+        assertTrue("gallery images", images.size >= 40)
+        images.forEach { img ->
+            assertTrue("missing ${img.asset}", File(assetsDir, img.asset).isFile)
+            assertTrue("${img.asset} credit", img.credit?.contains("Echocardiographer.org") == true)
+            assertTrue("${img.asset} caption", img.caption.de != null && img.caption.ar != null)
+        }
+        val attribution = File(assetsDir, "echoorg/ATTRIBUTION.txt").readText()
+        images.map { it.asset }.distinct().forEach { assertTrue("$it not in ATTRIBUTION", attribution.contains(it)) }
+        // Every view has a probe photo; the Doppler steps have real example recordings.
+        protocol.allViews.forEach { assertTrue("${it.id} probe photo", it.probeGallery.isNotEmpty()) }
+        assertEquals(2, protocol.allViews.first { it.id == "apical_4c" }.steps[6].examples.size)
+        protocol.allViews.forEach { v ->
+            assertFalse("${v.id} atlas credit unresolved", v.diagramCredit?.en.orEmpty().contains("to be confirmed") &&
+                v.id == "suprasternal_arch")
+        }
+    }
+
+    @Test
     fun eccentricityIndexHasD1AndD2InDiastoleAndSystole() {
         val pap = protocol.allViews.first { it.id == "psax_papillary" }
         val phases = pap.steps.filter { s -> s.overlays.map { it.label }.containsAll(listOf("D1", "D2")) }.map { it.requiredPhase }
