@@ -458,11 +458,11 @@
             "ar": "الرسم: Patrick J. Lynch و C. Carl Jaffe, MD (Yale) · CC BY 2.5 · معدَّل (خلفية فاتحة)"
           },
           "schemaAsset": "schema/subcostal_4c.svg",
-          "schemaAspect": 1.107,
+          "schemaAspect": 1.0612,
           "orientationAsset": "orientation/subcostal_4c.svg",
           "schemaCrop": [
             0.154,
-            0.0,
+            -0.03,
             0.746,
             0.695
           ],
@@ -936,11 +936,11 @@
             "ar": "صورة إيكو مرجعية موسومة (مقدَّمة من المستخدم؛ المصدر الأصلي والترخيص بحاجة إلى تأكيد)"
           },
           "schemaAsset": "schema/subcostal_ivc.svg",
-          "schemaAspect": 1.5404,
+          "schemaAspect": 1.4933,
           "orientationAsset": "orientation/subcostal_ivc.svg",
           "schemaCrop": [
             0.0,
-            0.0,
+            -0.03,
             1.0,
             0.95
           ],
@@ -1639,13 +1639,13 @@
             "ar": "الرسم: Patrick J. Lynch و C. Carl Jaffe, MD (Yale) · CC BY 2.5 · معدَّل (خلفية فاتحة)"
           },
           "schemaAsset": "schema/plax_standard.svg",
-          "schemaAspect": 1.5535,
+          "schemaAspect": 1.3745,
           "orientationAsset": "orientation/plax_standard.svg",
           "schemaCrop": [
             0.07,
-            0.0,
-            0.89,
-            0.686
+            -0.025,
+            0.896,
+            0.756
           ],
           "probeGallery": [
             {
@@ -2836,11 +2836,11 @@
             "ar": "الرسم: Patrick J. Lynch و C. Carl Jaffe, MD (Yale) · CC BY 2.5 · معدَّل (خلفية فاتحة)"
           },
           "schemaAsset": "schema/psax_papillary.svg",
-          "schemaAspect": 1.0509,
+          "schemaAspect": 1.0157,
           "orientationAsset": "orientation/psax_papillary.svg",
           "schemaCrop": [
             0.21,
-            0.0,
+            -0.025,
             0.793,
             0.721
           ],
@@ -3719,11 +3719,11 @@
             "ar": "الرسم: Patrick J. Lynch و C. Carl Jaffe, MD (Yale) · CC BY 2.5 · معدَّل (خلفية فاتحة)"
           },
           "schemaAsset": "schema/apical_4c.svg",
-          "schemaAspect": 0.9556,
+          "schemaAspect": 0.9386,
           "orientationAsset": "orientation/apical_4c.svg",
           "schemaCrop": [
             0.177,
-            0.0,
+            -0.015,
             0.788,
             0.831
           ],
@@ -4243,11 +4243,11 @@
             "ar": "الرسم: Patrick J. Lynch و C. Carl Jaffe, MD (Yale) · CC BY 2.5 · معدَّل (خلفية فاتحة)"
           },
           "schemaAsset": "schema/apical_5c.svg",
-          "schemaAspect": 0.8771,
+          "schemaAspect": 0.8629,
           "orientationAsset": "orientation/apical_5c.svg",
           "schemaCrop": [
             0.17,
-            0.0,
+            -0.015,
             0.918,
             0.911
           ],
@@ -4705,11 +4705,11 @@
           "schemaAsset": "schema/apical_2c.svg",
           "schemaCrop": [
             0.254,
-            0.0,
+            -0.015,
             0.786,
             0.795
           ],
-          "schemaAspect": 0.8697,
+          "schemaAspect": 0.8536,
           "orientationAsset": "orientation/apical_2c.svg"
         },
         {
@@ -5077,11 +5077,11 @@
           "schemaAsset": "schema/apical_3c.svg",
           "schemaCrop": [
             0.232,
-            0.0,
+            -0.03,
             0.835,
             0.81
           ],
-          "schemaAspect": 0.9675,
+          "schemaAspect": 0.933,
           "orientationAsset": "orientation/apical_3c.svg"
         }
       ]
@@ -5608,12 +5608,12 @@
             "ar": "صورة إيكو موسومة: Echocardiographer.org – Atif Qasim, MD MSCE (echocardiographer.org، استخدام مجاني مع ذكر المصدر)"
           },
           "schemaAsset": "schema/suprasternal_arch.svg",
-          "schemaAspect": 0.9832,
+          "schemaAspect": 0.9852,
           "orientationAsset": "orientation/suprasternal_arch.svg",
           "schemaCrop": [
             0.204,
-            0.0,
-            0.726,
+            -0.025,
+            0.746,
             0.69
           ],
           "probeGallery": [

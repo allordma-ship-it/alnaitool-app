@@ -134,4 +134,5 @@
     <string name="valve_loop_2d">2D</string>
     <string name="valve_loop_color">FARBE</string>
     <string name="color_toggle">Farbdoppler</string>
+    <string name="schema_labels">Labels</string>
 </resources>

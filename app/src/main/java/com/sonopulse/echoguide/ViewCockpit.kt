@@ -416,7 +416,9 @@ private class DiagramSource(
     val isProbe: Boolean = false,
     /** Caption and licence credit of a gallery page (shown in full screen). */
     val caption: String? = null,
-    val credit: String? = null
+    val credit: String? = null,
+    /** Vector schema: offers the labels AN/AUS toggle. */
+    val isSchema: Boolean = false
 )
 
 /** Number of pages a panel mode has: the illustration plus its Echocardiographer.org gallery. */
@@ -436,7 +438,8 @@ private fun diagramSource(
     step: GuideStep?,
     caliperOn: Boolean,
     language: AppLanguage,
-    page: Int = 0
+    page: Int = 0,
+    schemaLabels: Boolean = false
 ): DiagramSource {
     val overlays = if (caliperOn) step?.overlays.orEmpty() else emptyList()
     val atlas = view.diagramAsset
@@ -461,7 +464,9 @@ private fun diagramSource(
                 credit = view.diagramCredit?.get(language))
         view.schemaAsset != null ->
             // The schema is traced in the video frame's coordinates: the video calipers fit as they are.
-            DiagramSource(view.schemaAsset, view.schemaAspect, SchemaBackground, overlays, { mapToCrop(it.video, view.schemaCrop) })
+            // "ohne Labels" by default; the _labels variant has the same crop, so calipers stay aligned.
+            DiagramSource(if (schemaLabels) view.schemaAsset.removeSuffix(".svg") + "_labels.svg" else view.schemaAsset,
+                view.schemaAspect, SchemaBackground, overlays, { mapToCrop(it.video, view.schemaCrop) }, isSchema = true)
         else ->
             DiagramSource(view.svgAsset, SVG_WIDTH / SVG_HEIGHT, EchoPalette.BgPrimary, emptyList(), { null },
                 svgCaliper = if (caliperOn) step?.caliper else null)
@@ -563,7 +568,8 @@ private fun SplitStage(
             SourceBadge(simulated = colorLoop == null && view.videoSource.isSimulated, modifier = Modifier.align(Alignment.TopStart).padding(5.dp))
             loop.frozenPhase?.let { FrozenBadge(it, Modifier.align(Alignment.BottomStart).padding(5.dp)) }
         }
-        val source = diagramSource(view, diagramMode, step, caliperOn, language, diagramPage)
+        val (schemaLabels, toggleLabels) = rememberSchemaLabels()
+        val source = diagramSource(view, diagramMode, step, caliperOn, language, diagramPage, schemaLabels)
         val pageTotal = pageCount(view, diagramMode)
         StageCard(
             modifier = Modifier.weight(0.48f),
@@ -575,6 +581,9 @@ private fun SplitStage(
                 }
                 if (pageTotal > 1) {
                     PageStepper(diagramPage, pageTotal, onSelectPage, Modifier.align(Alignment.BottomCenter).padding(bottom = 4.dp))
+                }
+                if (source.isSchema) {
+                    SchemaLabelToggle(schemaLabels, toggleLabels, Modifier.align(Alignment.BottomStart).padding(5.dp))
                 }
             }
         ) {
@@ -878,12 +887,16 @@ private fun DiagramOverlay(
     language: AppLanguage,
     onDismiss: () -> Unit
 ) {
-    val source = diagramSource(view, mode, step, caliperOn, language, page)
+    val (schemaLabels, toggleLabels) = rememberSchemaLabels()
+    val source = diagramSource(view, mode, step, caliperOn, language, page, schemaLabels)
     val pageTotal = pageCount(view, mode)
     FullScreenDialog(onDismiss) {
         val hasCaliper = mode != DiagramMode.PROBE && (step?.overlays.orEmpty().isNotEmpty() || step?.caliper != null)
         OverlayStatusRow(frozenPhase = null, hasCaliper = hasCaliper, caliperOn, onToggleCaliper)
-        if (modes.size > 1) DiagramModePills(mode, modes, onSelectMode, large = true)
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            if (modes.size > 1) DiagramModePills(mode, modes, onSelectMode, large = true)
+            if (source.isSchema) SchemaLabelToggle(schemaLabels, toggleLabels)
+        }
         Box(modifier = Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
             ZoomableDiagram(
                 assetPath = source.asset,

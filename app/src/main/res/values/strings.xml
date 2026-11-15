@@ -135,4 +135,5 @@
     <string name="valve_loop_2d">2D</string>
     <string name="valve_loop_color">COLOUR</string>
     <string name="color_toggle">Colour Doppler</string>
+    <string name="schema_labels">Labels</string>
 </resources>

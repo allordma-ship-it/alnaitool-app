@@ -142,4 +142,5 @@
     <string name="valve_loop_2d">2D</string>
     <string name="valve_loop_color">ألوان</string>
     <string name="color_toggle">الدوبلر الملوّن</string>
+    <string name="schema_labels">التسميات</string>
 </resources>

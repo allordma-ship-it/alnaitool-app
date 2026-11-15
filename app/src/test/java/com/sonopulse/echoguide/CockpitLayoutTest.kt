@@ -70,7 +70,14 @@ class CockpitLayoutTest {
         compose.mainClock.advanceTimeBy(1_000)
     }
 
+    /** Coil decodes the SVG on an IO thread: give it real time while stepping the frozen clock. */
+    private fun waitForImages() = repeat(10) {
+        Thread.sleep(150)
+        compose.mainClock.advanceTimeBy(300)
+    }
+
     private fun screenshot(name: String) {
+        waitForImages()
         System.setProperty("roborazzi.test.record", "true")
         compose.onRoot().captureRoboImage("build/cockpit-screens/$name.png")
     }

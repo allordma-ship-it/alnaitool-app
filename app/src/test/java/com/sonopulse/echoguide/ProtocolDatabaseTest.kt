@@ -230,6 +230,18 @@ class ProtocolDatabaseTest {
         protocol.allViews.forEach { view ->
             val schema = view.schemaAsset
             assertTrue("${view.id} schema", schema != null && File(assetsDir, schema).isFile)
+            // Anatomical B-mode style everywhere: speckled myocardium, acoustic-black sector,
+            // navy / burgundy lumens; clean by default with a labelled twin of the same size.
+            val clean = File(assetsDir, schema!!).readText()
+            val labelled = File(assetsDir, schema.removeSuffix(".svg") + "_labels.svg")
+            assertTrue("${view.id} labelled schema", labelled.isFile)
+            listOf("#12A08C", "#CDD5DE", "url(#depth)").forEach { assertTrue("${view.id} style $it", clean.contains(it)) }
+            assertTrue("${view.id} tissue", clean.contains("url(#myoS)") || clean.contains("url(#liverS)"))
+            assertTrue("${view.id} lumens", clean.contains("url(#bloodR)") || clean.contains("url(#bloodL)"))
+            assertFalse("${view.id} clean schema has labels", clean.contains("<text"))
+            assertTrue("${view.id} labelled schema", labelled.readText().contains("<text"))
+            assertEquals(Regex("viewBox=\"[^\"]+\"").find(clean)?.value,
+                Regex("viewBox=\"[^\"]+\"").find(labelled.readText())?.value)
             assertTrue("${view.id} schema aspect", view.schemaAspect in 0.6f..2.0f)
             // Every caliper must stay inside the cropped schema.
             view.steps.flatMap { it.overlays }.forEach { o ->

@@ -25,33 +25,82 @@ ASSETS = os.path.join(ROOT, "app", "src", "main", "assets")
 OUT = os.path.join(ASSETS, "schema")
 DB = os.path.join(ASSETS, "echo_protocol_full.json")
 
-# Luminous dark-mode style: charcoal slate background, glowing outlines over soft translucent
-# fills – cool medical blue for the right heart / veins, warm coral-amber for the left heart /
-# aorta – and a translucent emerald-teal ultrasound sector.
+# Anatomical B-mode style (reference: subcostal_4ch_ohne_labels.svg spec): acoustic black sector,
+# speckled warm-taupe myocardium with crisp endocardial borders, ultra-dark navy right-heart /
+# venous lumens, ultra-dark burgundy left-heart / arterial lumens, tapered ivory valves with
+# chordae to brown papillary muscles, ivory pericardium, olive-tan speckled liver with dark
+# hepatic veins; emerald-teal sector walls, light-slate probe bar with a glowing blue index dot.
 BG = "#0F1419"
-SECTOR = "#00897B"
-SECTOR_FILL_OPACITY = 0.13
-BLUE_LINE, BLUE_FILL = "#38BDF8", "#1E88E5"
-CORAL_LINE, CORAL_FILL = "#FB923C", "#E53935"
-# Cavities (fill colour, opacity) and outline colour per side.
-CAV = {"L": (CORAL_FILL, 0.20), "A": (CORAL_FILL, 0.16), "R": (BLUE_FILL, 0.22), "RA": (BLUE_FILL, 0.18)}
-EDGE = {"L": CORAL_LINE, "R": BLUE_LINE}
-ARTERY_WALL = CORAL_LINE
-VEIN_WALL = BLUE_LINE
-VALVE = "#F1F5F9"
-PERI = "#CBD5E1"
-LIVER = ("#92400E", 0.40)
+CAVITY = "#0A0E12"
+SECTOR = "#12A08C"     # reference sector frame (emerald-teal)
+RIGHT_LUMEN = "#0B192C"
+LEFT_LUMEN = "#1F0D12"
+MYO_BASE, MYO_LIGHT, MYO_DARK = "#8D7368", "#A1887F", "#6F5A51"
+ENDO = "#D7CCC8"
+PERI = "#E2E8F0"
+VALVE = "#E6DFD5"
+CHORD = "#9E9E9E"
+PM_BASE, PM_LIGHT = "#795548", "#8D6E63"
+LIVER_BASE, LIVER_LIGHT, LIVER_DARK = "#786B52", "#8E8064", "#5F5440"
+HEPATIC_VEIN = "#111820"
+PROBE = "#CDD5DE"
+INDEX_DOT, INDEX_GLOW = "#38B6F5", "#29B6F6"
+OUTLINE = "#F4EEE2"    # epicardial / pericardial ivory outline
+BG_NEAR, BG_FAR = "#16232A", "#0A1217"
+MYO_TOP, MYO_BOTTOM = "#C9A48F", "#A47F6E"
+LIVER_TOP, LIVER_BOTTOM = "#8A7A5C", "#6B5F49"
+BLOOD_R = ("#0B1622", "#10253A")
+BLOOD_L = ("#1D0F12", "#2C1418")
+# Views drawn as one organic heart body (myocardium) with the chambers carved out of it.
+HEART_BODY = {"subcostal_4c", "plax_standard", "psax_av", "psax_papillary", "apical_4c", "apical_5c",
+              "apical_2c", "apical_3c"}
+LUMEN = {"L": LEFT_LUMEN, "A": LEFT_LUMEN, "R": RIGHT_LUMEN, "RA": RIGHT_LUMEN}
+# Kept for the view specs (wall lines); all walls are drawn as speckled myocardium now.
+ARTERY_WALL = VEIN_WALL = MYO_BASE
 LABEL = "#F1F5F9"
 PILL = "#0F1419"
-STROKE = 2.6   # crisp outline (≈ 2 dp once fitted into the stage panel)
-GLOW = 9.0     # soft halo under every outline
 
 
-def glow_path(d: str, colour: str, fill: str = "none", fill_opacity: float = 0.0, width: float = STROKE) -> str:
-    """Soft wide halo + crisp line in the same colour (no filters: Android's SVG renderer has none)."""
-    return (f'<path d="{d}" fill="{fill}" fill-opacity="{fill_opacity}" stroke="{colour}" stroke-opacity="0.22" '
-            f'stroke-width="{GLOW}" stroke-linejoin="round" stroke-linecap="round"/>'
-            f'<path d="{d}" fill="none" stroke="{colour}" stroke-width="{width}" stroke-linejoin="round" stroke-linecap="round"/>')
+def speckle_pattern(pid: str, base: str | None, light: str, dark: str, size: int = 14) -> str:
+    """Fine acoustic speckle: an irregular scatter of tiny, semi-transparent light and dark grains
+    (the reference uses feTurbulence filters, which Android's SVG renderer ignores)."""
+    dots = []
+    seed = 7
+    for k in range(size * 2):
+        seed = (seed * 1103515245 + 12345) & 0x7FFFFFFF
+        x = seed % (size * 100) / 100
+        seed = (seed * 1103515245 + 12345) & 0x7FFFFFFF
+        y = seed % (size * 100) / 100
+        seed = (seed * 1103515245 + 12345) & 0x7FFFFFFF
+        r = 0.35 + (seed % 100) / 160
+        op = 0.25 + (seed % 37) / 80
+        dots.append(f'<ellipse cx="{x:.2f}" cy="{y:.2f}" rx="{r * 1.6:.2f}" ry="{r:.2f}" '
+                    f'fill="{light if k % 2 == 0 else dark}" fill-opacity="{op:.2f}"/>')
+    return (f'<pattern id="{pid}" width="{size}" height="{size}" patternUnits="userSpaceOnUse">'
+            + (f'<rect width="{size}" height="{size}" fill="{base}"/>' if base else "") + "".join(dots) + "</pattern>")
+
+
+def wall_stroke(d: str, width: float) -> str:
+    """Speckle-coloured wall line with crisp endocardial borders on both sides."""
+    return (f'<path d="{d}" fill="none" stroke="{ENDO}" stroke-width="{width + 3:.1f}" stroke-linecap="round" stroke-linejoin="round"/>'
+            f'<path d="{d}" fill="none" stroke="{MYO_BASE}" stroke-width="{width:.1f}" stroke-linecap="round" stroke-linejoin="round"/>')
+
+
+def taper_path(pts: list[tuple[float, float]], w0: float, w1: float) -> str:
+    """Leaflet: polygon along the points, width tapering from w0 (hinge) to w1 (tip)."""
+    n = len(pts)
+    left, right = [], []
+    for i, (x, y) in enumerate(pts):
+        a = pts[max(0, i - 1)]
+        b = pts[min(n - 1, i + 1)]
+        dx, dy = b[0] - a[0], b[1] - a[1]
+        length = math.hypot(dx, dy) or 1.0
+        nx, ny = -dy / length, dx / length
+        w = (w0 + (w1 - w0) * i / max(1, n - 1)) / 2
+        left.append((x + nx * w, y + ny * w))
+        right.append((x - nx * w, y - ny * w))
+    poly = left + right[::-1]
+    return "M " + " L ".join(f"{x:.1f} {y:.1f}" for x, y in poly) + " Z"
 
 
 # ---------------------------------------------------------------------------------------------
@@ -94,8 +143,10 @@ def sector_path(c: Canvas, apex, half_deg: float, radius_y: float) -> str:
 
 
 # ---------------------------------------------------------------------------------------------
-# Views. Shapes: ("liver", pts) ("cav", pts, kind) ("myo", outer, inner) ("band", top, bottom)
-#   ("valve", pts) ("peri", pts) ("vessel", pts, width, artery?) ("ellipse", c, r, kind, wall)
+# Views. Shapes: ("liver", pts) ("hv", pts, width) ("cav", pts, kind) ("myo", outer, inner)
+#   ("band", top, bottom) ("trab", pts) ("pm", c, r) ("chord", from, [to…]) ("valve", pts)
+#   ("peri", pts) ("line", pts, colour, width) ("vessel" = venous / PA tube, pts, width)
+#   ("artery", pts, width) ("ellipse", c, r, kind, wall)
 #   ("label", text, (x, y)[, size])
 # ---------------------------------------------------------------------------------------------
 
@@ -104,6 +155,8 @@ VIEWS = {
     "plax_standard": dict(
         sector=((0.50, 0.04), 39, 0.75),
         shapes=[
+            # LV inflow between the mitral leaflets (part of the LV cavity).
+            ("cav", [(0.50, 0.478), (0.585, 0.47), (0.60, 0.57), (0.475, 0.545)], "L"),
             ("cav", [(0.36, 0.20), (0.42, 0.105), (0.58, 0.105), (0.64, 0.24), (0.55, 0.258),
                      (0.47, 0.243), (0.40, 0.226)], "R"),
             ("band", [(0.40, 0.078), (0.50, 0.068), (0.60, 0.078)], [(0.60, 0.105), (0.50, 0.095), (0.40, 0.105)], "R"),
@@ -139,6 +192,10 @@ VIEWS = {
             ("label", "LA", (0.75, 0.50)),
             ("label", "MV", (0.545, 0.515), 12),
             ("label", "PW", (0.30, 0.533), 12),
+            # Descending aorta in cross-section behind the LA; posteromedial papillary muscle + chordae.
+            ("ellipse", (0.705, 0.668), (0.03, 0.032), "A", "wall"),
+            ("pm", (0.33, 0.492), (0.038, 0.02)),
+            ("chord", (0.355, 0.49), [(0.475, 0.545), (0.50, 0.478), (0.44, 0.548)]),
         ],
     ),
     # Parasternal short axis, papillary level; ED frame of loops/psax_papillary.mp4.
@@ -149,8 +206,9 @@ VIEWS = {
                      (0.37, 0.42), (0.385, 0.34)], "R"),
             ("ellipse", (0.515, 0.45), (0.165, 0.175), "myo", None),
             ("ellipse", (0.512, 0.46), (0.107, 0.105), "L", None),
-            ("ellipse", (0.537, 0.47), (0.035, 0.03), "myo", None),
-            ("ellipse", (0.553, 0.527), (0.03, 0.028), "myo", None),
+            # Papillary muscles where they are on the real frame (≈ 3–4 and 4–5 o'clock).
+            ("pm", (0.537, 0.47), (0.035, 0.03)),
+            ("pm", (0.553, 0.527), (0.03, 0.028)),
             ("peri", [(0.24, 0.60), (0.36, 0.645), (0.50, 0.665), (0.64, 0.645), (0.76, 0.60)]),
             ("label", "RV", (0.315, 0.47)),
             ("label", "LV", (0.425, 0.53)),
@@ -191,6 +249,10 @@ VIEWS = {
             ("label", "TV", (0.36, 0.53), 11),
             ("label", "MV", (0.62, 0.535), 11),
             ("label", "IAS", (0.425, 0.735), 11),
+            # RV moderator band; anterolateral papillary muscle with chordae to both mitral leaflets.
+            ("trab", [(0.305, 0.44), (0.395, 0.465)]),
+            ("pm", (0.625, 0.43), (0.022, 0.045)),
+            ("chord", (0.622, 0.47), [(0.60, 0.555), (0.50, 0.56), (0.62, 0.567)]),
         ],
     ),
     # Apical 2-chamber; ED frame of loops/apical_2c.mp4.
@@ -211,6 +273,11 @@ VIEWS = {
             ("label", "MV", (0.66, 0.535), 11),
             ("label", "INF", (0.355, 0.31), 11),
             ("label", "ANT", (0.665, 0.30), 11),
+            # Papillary muscles on the inferior (left) and anterior (right) walls with chordae.
+            ("pm", (0.455, 0.42), (0.02, 0.042)),
+            ("pm", (0.60, 0.42), (0.02, 0.042)),
+            ("chord", (0.457, 0.46), [(0.50, 0.565), (0.48, 0.58)]),
+            ("chord", (0.598, 0.46), [(0.58, 0.545), (0.60, 0.56)]),
         ],
     ),
     # Apical 3-chamber (apical long axis); ED frame of loops/apical_3c.mp4. Inferolateral wall
@@ -232,6 +299,8 @@ VIEWS = {
             ("valve", [(0.44, 0.555), (0.465, 0.53)]),
             ("valve", [(0.57, 0.59), (0.60, 0.612)]),
             ("valve", [(0.635, 0.585), (0.605, 0.612)]),
+            ("pm", (0.447, 0.42), (0.018, 0.042)),
+            ("chord", (0.449, 0.46), [(0.465, 0.53), (0.50, 0.52)]),
         ],
     ),
     # Apical 5-chamber; systolic frame (400 ms) of the real POCUS Atlas loop loops/apical_5c.mp4.
@@ -257,6 +326,9 @@ VIEWS = {
             ("valve", [(0.78, 0.60), (0.745, 0.575)]),
             ("valve", [(0.555, 0.635), (0.585, 0.612)]),
             ("valve", [(0.615, 0.635), (0.585, 0.612)]),
+            ("trab", [(0.29, 0.45), (0.45, 0.47)]),
+            ("pm", (0.665, 0.46), (0.02, 0.04)),
+            ("chord", (0.663, 0.50), [(0.675, 0.575), (0.645, 0.598)]),
         ],
     ),
     # PSAX at aortic-valve level; closed-valve frame (400 ms) of the real POCUS Atlas loop.
@@ -278,6 +350,8 @@ VIEWS = {
             ("valve", [(0.57, 0.52), (0.52, 0.553)]),
             ("valve", [(0.40, 0.49), (0.44, 0.465)]),
             ("valve", [(0.665, 0.455), (0.70, 0.47)]),
+            # Interatrial septum between RA and LA.
+            ("band", [(0.455, 0.605), (0.49, 0.632)], [(0.50, 0.622), (0.465, 0.592)]),
         ],
     ),
     # Subcostal 4-chamber; ED frame of loops/subcostal_4c.mp4.
@@ -306,6 +380,13 @@ VIEWS = {
             ("label", "LA", (0.42, 0.605)),
             ("label", "LV", (0.585, 0.51)),
             ("label", "IAS", (0.27, 0.55), 11),
+            # Hepatic veins branching in the liver; LV papillary muscle; RV trabeculation.
+            ("hv", [(0.62, 0.02), (0.585, 0.14), (0.55, 0.26)], 9),
+            ("hv", [(0.585, 0.14), (0.67, 0.19)], 5),
+            ("hv", [(0.40, 0.06), (0.45, 0.17), (0.49, 0.27)], 6),
+            ("trab", [(0.46, 0.345), (0.50, 0.385)]),
+            ("pm", (0.625, 0.515), (0.03, 0.02)),
+            ("chord", (0.60, 0.515), [(0.50, 0.545), (0.47, 0.56)]),
         ],
     ),
     # Subcostal IVC long axis; first frame (end-expiration) of loops/subcostal_ivc.mp4.
@@ -326,6 +407,10 @@ VIEWS = {
             ("label", "IVC", (0.36, 0.555), 13),
             ("label", "RA", (0.70, 0.67)),
             ("label", "Diaphragm", (0.36, 0.71), 11),
+            # Hepatic vein joining the IVC just proximal to the RA junction, plus branches.
+            ("hv", [(0.68, 0.28), (0.645, 0.44), (0.615, 0.58)], 12),
+            ("hv", [(0.645, 0.44), (0.75, 0.40)], 6),
+            ("hv", [(0.30, 0.18), (0.36, 0.32), (0.40, 0.40)], 5),
         ],
     ),
     # Suprasternal long axis of the arch; ED frame of loops/suprasternal_arch.mp4.
@@ -345,6 +430,13 @@ VIEWS = {
             ("label", "Arch", (0.52, 0.275)),
             ("label", "Asc Ao", (0.295, 0.50), 12),
             ("label", "Desc Ao", (0.515, 0.53), 12),
+            # Right pulmonary artery in cross-section under the arch concavity.
+            ("ellipse", (0.405, 0.43), (0.035, 0.034), "R", "wall"),
+            # Brachiocephalic trunk, left common carotid and left subclavian artery from the arch top,
+            # crossing the brachiocephalic vein (drawn last so they stay visible in the narrow near field).
+            ("artery", [(0.44, 0.222), (0.443, 0.16), (0.447, 0.10)], 13),
+            ("artery", [(0.483, 0.214), (0.485, 0.15), (0.487, 0.09)], 11),
+            ("artery", [(0.522, 0.207), (0.527, 0.15), (0.532, 0.10)], 11),
         ],
     ),
 }
@@ -358,39 +450,33 @@ def simulated_views() -> dict:
 # ---------------------------------------------------------------------------------------------
 
 def sector_decor(c: Canvas, apex, half_deg: float, radius_y: float) -> str:
-    """Probe footprint at the apex and an orientation arc arrow (index side → far side) near the far field."""
+    """Solid teal side walls, dashed curved base arc, light-slate probe bar and index dot (screen right)."""
     ax, ay = c.p(apex)
-    r = radius_y * c.h * 0.9
-    a = math.radians(half_deg * 0.8)
-    x1, y1 = ax - r * math.sin(a), ay + r * math.cos(a)
-    x2, y2 = ax + r * math.sin(a), ay + r * math.cos(a)
-    # arrowhead at the right end, tangent to the arc
-    tx, ty = math.cos(a), -math.sin(a)
-    nx, ny = -ty, tx
-    head = 11
-    p1 = (x2 - tx * head + nx * head * 0.6, y2 - ty * head + ny * head * 0.6)
-    p2 = (x2 - tx * head - nx * head * 0.6, y2 - ty * head - ny * head * 0.6)
-    return (f'<path d="M {x1:.1f} {y1:.1f} A {r:.1f} {r:.1f} 0 0 0 {x2:.1f} {y2:.1f}" fill="none" stroke="{SECTOR}" '
-            f'stroke-opacity="0.9" stroke-width="2.4" stroke-dasharray="10 6"/>'
-            f'<path d="M {p1[0]:.1f} {p1[1]:.1f} L {x2:.1f} {y2:.1f} L {p2[0]:.1f} {p2[1]:.1f}" fill="none" stroke="#26A69A" '
-            f'stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>'
-            f'<rect x="{ax - 26:.1f}" y="{ay - 12:.1f}" width="52" height="14" rx="7" fill="#E2E8F0" fill-opacity="0.9"/>'
-            f'<circle cx="{ax - 32:.1f}" cy="{ay - 5:.1f}" r="5" fill="#38BDF8"/>')
+    r = radius_y * c.h
+    a = math.radians(half_deg)
+    lx, ly = ax - r * math.sin(a), ay + r * math.cos(a)
+    rx, ry = ax + r * math.sin(a), ay + r * math.cos(a)
+    return (f'<path d="M {lx:.1f} {ly:.1f} L {ax:.1f} {ay:.1f} L {rx:.1f} {ry:.1f}" fill="none" stroke="{SECTOR}" '
+            f'stroke-width="2.6" stroke-linejoin="round"/>'
+            f'<path d="M {lx:.1f} {ly:.1f} A {r:.1f} {r:.1f} 0 0 0 {rx:.1f} {ry:.1f}" fill="none" stroke="{SECTOR}" '
+            f'stroke-width="2.6" stroke-dasharray="14 10"/>'
+            f'<rect x="{ax - 34:.1f}" y="{ay - 15:.1f}" width="68" height="17" rx="8.5" fill="{PROBE}"/>'
+            f'<circle cx="{ax + 46:.1f}" cy="{ay - 6.5:.1f}" r="7" fill="{INDEX_DOT}"/>')
 
 
 def crop_box(spec_id: str, spec: dict, overlays: list[list[float]], width: int, height: int,
-             pad: float = 0.03) -> list[float]:
+             pad: float = 0.03, labels: bool = True) -> list[float]:
     """Region around the anatomy and every caliper, so the small stage panel shows the heart large."""
     xs, ys = [], []
     for shape in spec["shapes"]:
         kind = shape[0]
         if kind in ("liver",):
             continue
-        if kind in ("cav", "valve", "peri", "line", "vessel"):
+        if kind in ("cav", "valve", "peri", "line", "vessel", "artery", "trab"):
             pts = shape[1]
         elif kind in ("myo", "band"):
             pts = shape[1] + shape[2]
-        elif kind == "ellipse":
+        elif kind in ("ellipse", "pm"):
             (cx, cy), (rx, ry) = shape[1], shape[2]
             pts = [(cx - rx, cy - ry), (cx + rx, cy + ry)]
         else:
@@ -405,78 +491,188 @@ def crop_box(spec_id: str, spec: dict, overlays: list[list[float]], width: int, 
             xs.append(target[0])
             ys.append(target[1])
     (ax, ay), _, _ = spec["sector"]
-    xs += [ax - 0.06, ax + 0.06]          # probe footprint and index dot at the apex
+    xs += [ax - 0.06, ax + 0.075]         # probe bar and index dot at the apex
     ys += [max(0.0, ay - 0.035)]
     for c in overlays:
         xs += [c[0], c[2]]
         ys += [c[1], c[3]]
-    box = [max(0.0, min(xs) - pad), max(0.0, min(ys) - pad), min(1.0, max(xs) + pad), min(1.0, max(ys) + pad)]
+    box = [max(0.0, min(xs) - pad), min(ys) - pad, min(1.0, max(xs) + pad), min(1.0, max(ys) + pad)]
     return [round(v, 3) for v in box]
 
 
-def render(view_id: str, spec: dict, width: int, height: int, crop: list[float] | None = None) -> str:
+def cardiac_points(spec: dict) -> list[tuple[float, float]]:
+    pts = []
+    for shape in spec["shapes"]:
+        kind = shape[0]
+        if kind in ("cav", "valve"):
+            pts += shape[1]
+        elif kind in ("myo", "band"):
+            pts += shape[1] + shape[2]
+        elif kind in ("ellipse", "pm"):
+            (cx, cy), (rx, ry) = shape[1], shape[2]
+            pts += [(cx + rx * math.cos(a / 8 * math.pi), cy + ry * math.sin(a / 8 * math.pi)) for a in range(16)]
+        elif kind == "line" and shape[2] == ARTERY_WALL:
+            pts += shape[1]
+    return pts
+
+
+def heart_body(c: Canvas, spec: dict, grow: float = 7.0) -> str:
+    """Smooth organic outline around every cardiac structure (convex hull, pushed out by `grow` px)."""
+    P = sorted(set(c.p(q) for q in cardiac_points(spec)))
+    if len(P) < 3:
+        return ""
+
+    def cross(o, a, b):
+        return (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0])
+    lower, upper = [], []
+    for q in P:
+        while len(lower) >= 2 and cross(lower[-2], lower[-1], q) <= 0:
+            lower.pop()
+        lower.append(q)
+    for q in reversed(P):
+        while len(upper) >= 2 and cross(upper[-2], upper[-1], q) <= 0:
+            upper.pop()
+        upper.append(q)
+    hull = lower[:-1] + upper[:-1]
+    cx = sum(x for x, _ in hull) / len(hull)
+    cy = sum(y for _, y in hull) / len(hull)
+    grown = []
+    for x, y in hull:
+        d = math.hypot(x - cx, y - cy) or 1.0
+        grown.append(((x + (x - cx) / d * grow) / c.w, (y + (y - cy) / d * grow) / c.h))
+    # resample so the spline stays round between distant hull points
+    dense = []
+    for k in range(len(grown)):
+        a, b = grown[k], grown[(k + 1) % len(grown)]
+        n = max(1, int(math.hypot((b[0] - a[0]) * c.w, (b[1] - a[1]) * c.h) // 40))
+        dense += [(a[0] + (b[0] - a[0]) * t / n, a[1] + (b[1] - a[1]) * t / n) for t in range(n)]
+    return c.smooth(dense, True)
+
+
+def tissue(d: str, outline: bool = True) -> str:
+    """Myocardium: warm-taupe gradient + speckle, ivory epicardial outline with a soft glow."""
+    out = f'<path d="{d}" fill="url(#myoG)"/><path d="{d}" fill="url(#myoS)"/>'
+    if outline:
+        out = (f'<path d="{d}" fill="none" stroke="{OUTLINE}" stroke-opacity="0.18" stroke-width="14" stroke-linejoin="round"/>'
+               + out + f'<path d="{d}" fill="none" stroke="{OUTLINE}" stroke-width="3" stroke-linejoin="round"/>')
+    return out
+
+
+def render(view_id: str, spec: dict, width: int, height: int, crop: list[float] | None = None,
+           labels: bool = False) -> str:
     c = Canvas(width, height)
     apex, half, radius = spec["sector"]
     sector = sector_path(c, apex, half, radius)
+    ax, ay = c.p(apex)
     body = []
-    labels = []
+    in_body = view_id in HEART_BODY
+    hull_drawn = False
     for shape in spec["shapes"]:
         kind = shape[0]
+        if in_body and not hull_drawn and kind not in ("liver", "hv"):
+            body.append(tissue(heart_body(c, spec)))
+            hull_drawn = True
         if kind == "liver":
-            body.append(f'<path d="{c.smooth(shape[1], True)}" fill="{LIVER[0]}" fill-opacity="{LIVER[1]}"/>')
+            d = c.smooth(shape[1], True)
+            body.append(f'<path d="{d}" fill="url(#liverG)"/><path d="{d}" fill="url(#liverS)"/>')
+        elif kind == "hv":
+            pts, w = shape[1], shape[2]
+            body.append(f'<path d="{c.smooth(pts, False)}" fill="none" stroke="{HEPATIC_VEIN}" stroke-width="{w * 1.6:.1f}" '
+                        f'stroke-linecap="round" stroke-linejoin="round"/>')
         elif kind == "cav":
-            colour, alpha = CAV[shape[2]]
-            edge = BLUE_LINE if shape[2] in ("R", "RA") else CORAL_LINE
-            body.append(f'<path d="{c.smooth(shape[1], True)}" fill="{colour}" fill-opacity="{alpha}" '
-                        f'stroke="{edge}" stroke-opacity="0.35" stroke-width="1.2"/>')
-        elif kind == "myo":
-            outer, inner = shape[1], shape[2]
-            side = shape[3] if len(shape) > 3 else "L"
-            d = c.smooth(outer + inner, True)
-            body.append(glow_path(d, EDGE[side], fill=CORAL_FILL if side == "L" else BLUE_FILL, fill_opacity=0.30))
-        elif kind == "band":
-            top, bottom = shape[1], shape[2]
-            side = shape[3] if len(shape) > 3 else "L"
-            d = c.smooth(top, False) + " L " + c.smooth(bottom, False)[2:] + " Z"
-            body.append(glow_path(d, EDGE[side], fill=CORAL_FILL if side == "L" else BLUE_FILL, fill_opacity=0.30))
+            grad = "bloodR" if shape[2] in ("R", "RA") else "bloodL"
+            edge = "" if in_body else f' stroke="{OUTLINE}" stroke-width="2.5"'
+            body.append(f'<path d="{c.smooth(shape[1], True)}" fill="url(#{grad})"{edge}/>')
+        elif kind in ("myo", "band"):
+            if kind == "myo":
+                d = c.smooth(shape[1] + shape[2], True)
+            else:
+                d = c.smooth(shape[1], False) + " L " + c.smooth(shape[2], False)[2:] + " Z"
+            body.append(tissue(d, outline=not in_body))
+        elif kind == "trab":
+            body.append(f'<path d="{c.smooth(shape[1], False)}" fill="none" stroke="{MYO_TOP}" stroke-width="6" stroke-linecap="round"/>')
+        elif kind == "pm":
+            (cx, cy), (rx, ry) = shape[1], shape[2]
+            X, Y = c.p((cx, cy))
+            body.append(f'<ellipse cx="{X:.1f}" cy="{Y:.1f}" rx="{rx * c.w:.1f}" ry="{ry * c.h:.1f}" fill="url(#myoG)"/>'
+                        f'<ellipse cx="{X:.1f}" cy="{Y:.1f}" rx="{rx * c.w:.1f}" ry="{ry * c.h:.1f}" fill="url(#myoS)"/>')
+        elif kind == "chord":
+            (fx, fy) = c.p(shape[1])
+            for t in shape[2]:
+                tx, ty = c.p(t)
+                body.append(f'<path d="M {fx:.1f} {fy:.1f} L {tx:.1f} {ty:.1f}" stroke="{OUTLINE}" stroke-opacity="0.55" '
+                            f'stroke-width="1.4" fill="none"/>')
         elif kind == "valve":
-            body.append(glow_path(c.smooth(shape[1], False), VALVE, width=3.4))
+            pts = [c.p(q) for q in shape[1]]
+            if len(pts) == 2:
+                (x0, y0), (x1, y1) = pts
+                pts = [(x0 + (x1 - x0) * k / 6, y0 + (y1 - y0) * k / 6) for k in range(7)]
+            body.append(f'<path d="{taper_path(pts, 6.0, 1.2)}" fill="#F7F1E6" stroke="#F7F1E6" stroke-width="1" stroke-linejoin="round"/>')
         elif kind == "peri":
-            body.append(f'<path d="{c.smooth(shape[1], False)}" fill="none" stroke="{PERI}" stroke-width="2.2" '
-                        f'stroke-opacity="0.85" stroke-linecap="round"/>')
+            d = c.smooth(shape[1], False)
+            body.append(f'<path d="{d}" fill="none" stroke="#F1E9D8" stroke-opacity="0.35" stroke-width="12" stroke-linecap="round"/>'
+                        f'<path d="{d}" fill="none" stroke="{OUTLINE}" stroke-opacity="0.9" stroke-width="4" stroke-linecap="round"/>')
         elif kind == "line":
-            body.append(glow_path(c.smooth(shape[1], False), shape[2], width=shape[3]))
-        elif kind == "vessel":
+            d = c.smooth(shape[1], False)
+            w = shape[3] + 5
+            body.append(f'<path d="{d}" fill="none" stroke="{OUTLINE}" stroke-width="{w + 4:.1f}" stroke-linecap="round" stroke-linejoin="round"/>'
+                        f'<path d="{d}" fill="none" stroke="{MYO_TOP}" stroke-width="{w:.1f}" stroke-linecap="round" stroke-linejoin="round"/>'
+                        f'<path d="{d}" fill="none" stroke="url(#myoS)" stroke-width="{w:.1f}" stroke-linecap="round"/>')
+        elif kind in ("vessel", "artery"):
             pts, w = shape[1], shape[2] * c.w / 400
             d = c.smooth(pts, False)
-            body.append(f'<path d="{d}" fill="none" stroke="{ARTERY_WALL}" stroke-opacity="0.22" stroke-width="{w + 14:.1f}" stroke-linecap="round"/>')
-            body.append(f'<path d="{d}" fill="none" stroke="{ARTERY_WALL}" stroke-width="{w + 5:.1f}" stroke-linecap="round"/>')
-            body.append(f'<path d="{d}" fill="none" stroke="#2A1512" stroke-width="{w:.1f}" stroke-linecap="round"/>')
-            body.append(f'<path d="{d}" fill="none" stroke="{CORAL_FILL}" stroke-opacity="0.25" stroke-width="{w:.1f}" stroke-linecap="round"/>')
+            lumen = BLOOD_R[1] if kind == "vessel" else BLOOD_L[1]
+            body.append(f'<path d="{d}" fill="none" stroke="{OUTLINE}" stroke-width="{w + 12:.1f}" stroke-linecap="round"/>'
+                        f'<path d="{d}" fill="none" stroke="{MYO_TOP}" stroke-width="{w + 8:.1f}" stroke-linecap="round"/>'
+                        f'<path d="{d}" fill="none" stroke="{lumen}" stroke-width="{w:.1f}" stroke-linecap="round"/>')
         elif kind == "ellipse":
             (cx, cy), (rx, ry), fill, wall = shape[1], shape[2], shape[3], shape[4]
             X, Y = c.p((cx, cy))
-            colour, alpha = (CORAL_FILL, 0.30) if fill == "myo" else CAV[fill]
-            line = CORAL_LINE if fill in ("myo", "L", "A") else BLUE_LINE
-            stroke_op = 1.0 if (fill == "myo" or wall) else 0.35
-            body.append(f'<ellipse cx="{X:.1f}" cy="{Y:.1f}" rx="{rx * c.w:.1f}" ry="{ry * c.h:.1f}" fill="none" '
-                        f'stroke="{line}" stroke-opacity="{0.22 * stroke_op:.2f}" stroke-width="{GLOW}"/>')
-            body.append(f'<ellipse cx="{X:.1f}" cy="{Y:.1f}" rx="{rx * c.w:.1f}" ry="{ry * c.h:.1f}" fill="{colour}" '
-                        f'fill-opacity="{alpha}" stroke="{line}" stroke-opacity="{stroke_op}" stroke-width="{STROKE}"/>')
-        elif kind == "label":
-            pass  # labels come from LABELS below
+            e = f'cx="{X:.1f}" cy="{Y:.1f}" rx="{rx * c.w:.1f}" ry="{ry * c.h:.1f}"'
+            if fill == "myo":
+                body.append(f'<ellipse {e} fill="url(#myoG)"/><ellipse {e} fill="url(#myoS)"/>'
+                            + ("" if in_body else f'<ellipse {e} fill="none" stroke="{OUTLINE}" stroke-width="3"/>'))
+            else:
+                if wall and not in_body:
+                    body.append(f'<ellipse {e} fill="none" stroke="{OUTLINE}" stroke-width="11"/>'
+                                f'<ellipse {e} fill="none" stroke="{MYO_TOP}" stroke-width="7"/>')
+                elif wall:
+                    body.append(f'<ellipse {e} fill="none" stroke="{MYO_TOP}" stroke-width="7"/>')
+                grad = "bloodR" if fill in ("R", "RA") else "bloodL"
+                body.append(f'<ellipse {e} fill="url(#{grad})"/>')
     x0, y0, x1, y1 = crop or [0.0, 0.0, 1.0, 1.0]
     vb = (x0 * width, y0 * height, (x1 - x0) * width, (y1 - y0) * height)
+    label_svg = label_layer(c, LABELS.get(view_id, [])) if labels else ""
+    title = f"{view_id} schema" + ("" if labels else " (ohne Labels)")
+    r = radius * c.h
     return f'''<svg xmlns="http://www.w3.org/2000/svg" width="{vb[2]:.0f}" height="{vb[3]:.0f}" viewBox="{vb[0]:.1f} {vb[1]:.1f} {vb[2]:.1f} {vb[3]:.1f}">
-  <title>{view_id} schema</title>
-  <defs><clipPath id="sector"><path d="{sector}"/></clipPath></defs>
+  <title>{title}</title>
+  <defs>
+    <clipPath id="sector"><path d="{sector}"/></clipPath>
+    <radialGradient id="bg" gradientUnits="userSpaceOnUse" cx="{ax:.1f}" cy="{ay:.1f}" r="{r:.1f}">
+      <stop offset="0" stop-color="{BG_NEAR}"/><stop offset="1" stop-color="{BG_FAR}"/></radialGradient>
+    <radialGradient id="depth" gradientUnits="userSpaceOnUse" cx="{ax:.1f}" cy="{ay:.1f}" r="{r:.1f}">
+      <stop offset="0" stop-color="#000" stop-opacity="0"/><stop offset="0.55" stop-color="#000" stop-opacity="0.08"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0.55"/></radialGradient>
+    <linearGradient id="myoG" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="{MYO_TOP}"/><stop offset="1" stop-color="{MYO_BOTTOM}"/></linearGradient>
+    <linearGradient id="liverG" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="{LIVER_TOP}"/><stop offset="1" stop-color="{LIVER_BOTTOM}"/></linearGradient>
+    <radialGradient id="bloodR" cx="0.5" cy="0.5" r="0.7">
+      <stop offset="0" stop-color="{BLOOD_R[0]}"/><stop offset="1" stop-color="{BLOOD_R[1]}"/></radialGradient>
+    <radialGradient id="bloodL" cx="0.45" cy="0.5" r="0.7">
+      <stop offset="0" stop-color="{BLOOD_L[0]}"/><stop offset="1" stop-color="{BLOOD_L[1]}"/></radialGradient>
+    {speckle_pattern("myoS", None, "#F0DED2", "#6F5A51", 23)}
+    {speckle_pattern("liverS", None, "#B3A585", "#4E4434", 27)}
+  </defs>
   <rect x="{vb[0]:.1f}" y="{vb[1]:.1f}" width="{vb[2]:.1f}" height="{vb[3]:.1f}" fill="{BG}"/>
   <g clip-path="url(#sector)">
+    <path d="{sector}" fill="url(#bg)"/>
     {chr(10).join("    " + b for b in body).strip()}
+    <path d="{sector}" fill="url(#depth)"/>
   </g>
-  <path d="{sector}" fill="{SECTOR}" fill-opacity="{SECTOR_FILL_OPACITY}" stroke="{SECTOR}" stroke-opacity="0.9" stroke-width="2"/>
   {sector_decor(c, apex, half, radius)}
-  {label_layer(c, LABELS.get(view_id, []))}
+  {label_svg}
 </svg>
 '''
 
@@ -499,6 +695,7 @@ LABELS = {
         ("LA", (0.76, 0.49), BIG, None),
         ("MV", (0.565, 0.39), SMALL, (0.535, 0.468)),
         ("PW", (0.20, 0.63), SMALL, (0.30, 0.53)),
+        ("DAo", (0.83, 0.70), SMALL, (0.705, 0.668)),
     ],
     "psax_papillary": [
         ("RV", (0.31, 0.47), BIG, None),
@@ -549,12 +746,16 @@ LABELS = {
         ("IVC", (0.36, 0.556), SMALL, None),
         ("RA", (0.70, 0.67), BIG, None),
         ("Diaphragm", (0.16, 0.73), SMALL, (0.24, 0.60)),
+        ("HV", (0.78, 0.48), SMALL, (0.645, 0.44)),
     ],
     "suprasternal_arch": [
-        ("BCV", (0.66, 0.08), SMALL, (0.52, 0.15)),
         ("Arch", (0.51, 0.275), BIG, None),
         ("Asc Ao", (0.295, 0.50), SMALL, None),
         ("Desc Ao", (0.62, 0.52), SMALL, (0.515, 0.53)),
+        ("BCA", (0.31, 0.12), SMALL, (0.444, 0.135)),
+        ("LCCA", (0.66, 0.06), SMALL, (0.486, 0.12)),
+        ("LSA", (0.68, 0.14), SMALL, (0.53, 0.135)),
+        ("RPA", (0.30, 0.43), SMALL, (0.405, 0.43)),
     ],
     "psax_av": [
         ("RVOT", (0.53, 0.25), BIG, None),
@@ -615,11 +816,13 @@ def main():
             overlays = [o["video"] for st in view["steps"]
                         for o in ([st["caliperOverlay"]] if st.get("caliperOverlay") else []) + st.get("extraOverlays", [])
                         if o.get("video")]
+            # Same crop for both variants so calipers and the AN/AUS toggle line up exactly.
             crop = crop_box(view["id"], specs[view["id"]], overlays, width, height)
-            svg = render(view["id"], specs[view["id"]], width, height, crop)
             path = os.path.join(OUT, f"{view['id']}.svg")
             with open(path, "w", encoding="utf-8") as f:
-                f.write(svg)
+                f.write(render(view["id"], specs[view["id"]], width, height, crop, labels=False))
+            with open(os.path.join(OUT, f"{view['id']}_labels.svg"), "w", encoding="utf-8") as f:
+                f.write(render(view["id"], specs[view["id"]], width, height, crop, labels=True))
             view["schemaAsset"] = f"schema/{view['id']}.svg"
             # The SVG shows only this part of the video frame; the app maps video calipers into it.
             view["schemaCrop"] = crop
