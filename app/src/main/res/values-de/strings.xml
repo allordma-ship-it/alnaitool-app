@@ -116,5 +116,16 @@
     <string name="about_echoorg_title">Schallkopf-Fotos, Zeichnungen &amp; Beispielaufnahmen</string>
     <string name="about_echoorg_credit">Echocardiographer.org – Atif Qasim, MD MSCE (www.echocardiographer.org)</string>
     <string name="about_echoorg_detail">Genutzt mit der Erlaubnis des Autors zur freien Wiederverwendung mit Quellenangabe. Bilder verkleinert, sonst unverändert.</string>
-    <string name="about_view_gallery">%1$d Referenzbilder: %2$s</string>
+    <string name="about_view_gallery">Referenzbilder: %1$d · %2$s</string>
+    <string name="nav_valves">Herzklappen</string>
+    <string name="valve_section_views">Schnitte</string>
+    <string name="valve_section_morphology">2D-Morphologie</string>
+    <string name="valve_section_color">Farbdoppler</string>
+    <string name="valve_section_spectral">Spektraldoppler (PW / CW)</string>
+    <string name="valve_section_normals">Normalwerte</string>
+    <string name="valve_section_examples">Echte Beispielaufnahmen</string>
+    <string name="valve_grade_mild">Leicht</string>
+    <string name="valve_grade_moderate">Mittel</string>
+    <string name="valve_grade_severe">Schwer</string>
+    <string name="valve_disclaimer">Lehrzusammenfassung der ASE/EACVI-Empfehlungen (Stenosen 2009/2017, Insuffizienzen 2017). Schweregrad immer aus allen Parametern integrieren und die vollständige Leitlinie beachten.</string>
 </resources>

@@ -244,6 +244,57 @@ class ProtocolDatabaseTest {
     }
 
     @Test
+    fun valveAssessmentCoversAllFourValves() {
+        assertEquals(listOf("aortic", "mitral", "tricuspid", "pulmonary"), protocol.valves.map { it.id })
+        val viewIds = protocol.allViews.map { it.id }.toSet()
+        val attribution = File(assetsDir, "echoorg/ATTRIBUTION.txt").readText()
+        protocol.valves.forEach { v ->
+            assertTrue(v.id, v.views.isNotEmpty() && v.views.all { it in viewIds })
+            listOf(v.morphology, v.color, v.spectral).forEach { section ->
+                assertTrue("${v.id} checklist", section.isNotEmpty())
+                section.forEach { item ->
+                    assertTrue("${v.id} item translated", item.text.de != null && item.text.ar != null)
+                    item.view?.let { assertTrue("${v.id} links $it", it in viewIds) }
+                }
+            }
+            assertTrue("${v.id} normals", v.normals.isNotEmpty())
+            assertTrue("${v.id} grading", v.grading.isNotEmpty())
+            v.grading.flatMap { it.rows }.forEach { r ->
+                listOf(r.parameter, r.mild, r.moderate, r.severe).forEach { cell ->
+                    assertTrue("${v.id} ${r.parameter.en} untranslated", cell.de != null && cell.ar != null)
+                }
+            }
+            v.examples.forEach { img ->
+                assertTrue("missing ${img.asset}", File(assetsDir, img.asset).isFile)
+                assertTrue("${img.asset} not in ATTRIBUTION", attribution.contains(img.asset))
+            }
+        }
+        // Severe aortic stenosis per EACVI/ASE 2017.
+        val severeAs = protocol.valves.first { it.id == "aortic" }.grading.first().rows.map { it.severe.en }
+        assertTrue(severeAs.containsAll(listOf("≥ 4.0 m/s", "≥ 40 mmHg", "< 1.0 cm²")))
+    }
+
+    @Test
+    fun germanAndEnglishTextContainsNoArabic() {
+        val arabic = Regex("[\\u0600-\\u06FF]")
+        val raw = File(assetsDir, EchoRepository.PROTOCOL_ASSET).readText()
+        val json = kotlinx.serialization.json.Json.parseToJsonElement(raw)
+        fun walk(e: kotlinx.serialization.json.JsonElement, path: String) {
+            when (e) {
+                is kotlinx.serialization.json.JsonObject -> e.forEach { (k, v) ->
+                    if ((k == "en" || k == "de") && v is kotlinx.serialization.json.JsonPrimitive && v.isString) {
+                        assertFalse("Arabic in $path.$k", arabic.containsMatchIn(v.content))
+                    }
+                    walk(v, "$path.$k")
+                }
+                is kotlinx.serialization.json.JsonArray -> e.forEachIndexed { i, v -> walk(v, "$path[$i]") }
+                else -> Unit
+            }
+        }
+        walk(json, "")
+    }
+
+    @Test
     fun eccentricityIndexHasD1AndD2InDiastoleAndSystole() {
         val pap = protocol.allViews.first { it.id == "psax_papillary" }
         val phases = pap.steps.filter { s -> s.overlays.map { it.label }.containsAll(listOf("D1", "D2")) }.map { it.requiredPhase }

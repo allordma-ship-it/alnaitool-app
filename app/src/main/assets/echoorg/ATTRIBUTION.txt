@@ -54,3 +54,7 @@ echoorg/suprasternal_02.jpg  <-  https://www.echocardiographer.org/tte-supraster
 echoorg/suprasternal_03.jpg  <-  https://www.echocardiographer.org/tte-suprasternal  (SSN Long axis label_JPG.jpg)
 echoorg/suprasternal_04.jpg  <-  https://www.echocardiographer.org/tte-suprasternal  (SSN PW Asc aorta_JPG.jpg)
 echoorg/suprasternal_05.jpg  <-  https://www.echocardiographer.org/tte-suprasternal  (SSN Desc PW_JPG.jpg)
+echoorg/apical4_06.jpg  <-  https://www.echocardiographer.org/tte-apical4  (valve assessment example)
+echoorg/apical4_11.jpg  <-  https://www.echocardiographer.org/tte-apical4  (valve assessment example)
+echoorg/apical4_05.jpg  <-  https://www.echocardiographer.org/tte-apical4  (valve assessment example)
+echoorg/subcostal-greatvessels_02.jpg  <-  https://www.echocardiographer.org/tte-subcostal-greatvessels  (valve assessment example)

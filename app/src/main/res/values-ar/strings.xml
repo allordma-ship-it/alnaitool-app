@@ -124,5 +124,16 @@
     <string name="about_echoorg_title">صور المسبار والرسوم والتسجيلات النموذجية</string>
     <string name="about_echoorg_credit">Echocardiographer.org – Atif Qasim, MD MSCE (www.echocardiographer.org)</string>
     <string name="about_echoorg_detail">مستخدمة بإذن المؤلف بالاستخدام المجاني مع ذكر المصدر. الصور مصغّرة دون أي تعديل آخر.</string>
-    <string name="about_view_gallery">%1$d صور مرجعية: %2$s</string>
+    <string name="about_view_gallery">صور مرجعية: %1$d · %2$s</string>
+    <string name="nav_valves">الصمامات</string>
+    <string name="valve_section_views">المقاطع</string>
+    <string name="valve_section_morphology">الشكل ثنائي الأبعاد</string>
+    <string name="valve_section_color">الدوبلر الملوّن</string>
+    <string name="valve_section_spectral">الدوبلر الطيفي (PW / CW)</string>
+    <string name="valve_section_normals">القيم الطبيعية</string>
+    <string name="valve_section_examples">تسجيلات نموذجية حقيقية</string>
+    <string name="valve_grade_mild">خفيف</string>
+    <string name="valve_grade_moderate">متوسط</string>
+    <string name="valve_grade_severe">شديد</string>
+    <string name="valve_disclaimer">ملخص تعليمي لتوصيات ASE/EACVI (التضيّق 2009/2017، القلس 2017). حدّد الشدة بدمج كل المؤشرات واتبع الدليل الكامل.</string>
 </resources>

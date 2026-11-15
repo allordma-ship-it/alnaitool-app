@@ -30,6 +30,15 @@ OUT = os.path.join(ROOT, "temp_real", "echoorg")
 SITE = "https://www.echocardiographer.org/"
 UA = "Mozilla/5.0 (compatible; EchoScopeAssetFetcher/1.0; offline teaching app build script)"
 
+# YouTube clips embedded on the view pages (ids from the Wix page data, static.wixstatic.com/sites/
+# <pageJsonFileName>.json.z). Same licence as the site. YouTube refuses downloads from this build
+# server ("confirm you're not a bot"), so the clips must be supplied as files (e.g. by the author)
+# into temp_real/ before scripts/convert_real_loops.py can turn them into cine loops.
+CANDIDATE_CLIPS = {
+    "psax_av": ["Xmf_tCZhBZo", "xbpzwJRL0iA", "2tmFjw4m4I0"],   # AV/TV/PV view first, then AV zoom, PA
+    "apical_5c": ["V9Gcf51mpJg", "EsV1JxlhRhA"],                 # A5C view first
+}
+
 PAGES = [
     "tte-plax", "tte-psax", "tte-apical4", "tte-apical5", "tte-apical2", "tte-apical-long-axis",
     "tte-subcostal", "tte-subcostal-greatvessels", "tte-suprasternal",

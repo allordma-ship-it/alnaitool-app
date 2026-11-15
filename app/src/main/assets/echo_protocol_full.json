@@ -5336,5 +5336,1741 @@
       "de": "Speichert Loop oder Bild in der Untersuchung.",
       "ar": "يحفظ المقطع أو الصورة في الدراسة."
     }
-  }
+  },
+  "valves": [
+    {
+      "id": "aortic",
+      "title": {
+        "en": "Aortic valve",
+        "de": "Aortenklappe",
+        "ar": "الصمام الأبهري"
+      },
+      "short": "AV",
+      "views": [
+        "plax_standard",
+        "psax_av",
+        "apical_5c",
+        "suprasternal_arch"
+      ],
+      "morphology": [
+        {
+          "text": {
+            "en": "PLAX: cusp thickening, calcification and opening; systolic doming suggests a bicuspid valve.",
+            "de": "PLAX: Taschenverdickung, Verkalkung und Öffnung; systolisches Doming spricht für eine bikuspide Klappe.",
+            "ar": "PLAX: سماكة الشرفات وتكلّسها وانفتاحها؛ القبّة الانقباضية توحي بصمام ثنائي الشرف."
+          },
+          "view": "plax_standard"
+        },
+        {
+          "text": {
+            "en": "PLAX zoom: LVOT diameter in mid-systole, inner edge to inner edge, 0.5–1 cm below the annulus.",
+            "de": "PLAX-Zoom: LVOT-Durchmesser mesosystolisch, Innenkante zu Innenkante, 0,5–1 cm unterhalb des Anulus.",
+            "ar": "PLAX مكبّر: قطر LVOT في منتصف الانقباض من الحافة الداخلية إلى الداخلية، 0.5–1 سم تحت الحلقة."
+          },
+          "view": "plax_standard"
+        },
+        {
+          "text": {
+            "en": "PSAX-AV: count the cusps (tricuspid 'Mercedes star' vs bicuspid 'fish mouth'), raphe, commissural fusion.",
+            "de": "PSAX-AV: Taschen zählen (trikuspid 'Mercedesstern' vs. bikuspid 'Fischmaul'), Raphe, Kommissurenfusion.",
+            "ar": "PSAX-AV: عدّ الشرفات (ثلاثي 'نجمة مرسيدس' مقابل ثنائي 'فم السمكة')، الخط الليفي، التحام الصوارين."
+          },
+          "view": "psax_av"
+        },
+        {
+          "text": {
+            "en": "Aortic root: sinuses, sinotubular junction and ascending aorta (dilatation?).",
+            "de": "Aortenwurzel: Sinus, sinotubulärer Übergang und Aorta ascendens (Dilatation?).",
+            "ar": "جذر الأبهر: الجيوب، الوصل الجيبي الأنبوبي والأبهر الصاعد (توسّع؟)."
+          },
+          "view": "plax_standard"
+        },
+        {
+          "text": {
+            "en": "Consequences: LV wall thickness (hypertrophy), LV size and EF.",
+            "de": "Folgen: LV-Wanddicke (Hypertrophie), LV-Größe und EF.",
+            "ar": "العواقب: ثخانة جدار البطين الأيسر (ضخامة)، حجمه والكسر القذفي."
+          },
+          "view": "apical_4c"
+        }
+      ],
+      "color": [
+        {
+          "text": {
+            "en": "PLAX / A5C: AR jet origin and direction (central vs eccentric).",
+            "de": "PLAX / A5C: Ursprung und Richtung des AI-Jets (zentral vs. exzentrisch).",
+            "ar": "PLAX / A5C: منشأ واتجاه نفث القلس الأبهري (مركزي أم لا مركزي)."
+          },
+          "view": "plax_standard"
+        },
+        {
+          "text": {
+            "en": "PLAX zoom: vena contracta (narrowest neck) and jet width / LVOT width.",
+            "de": "PLAX-Zoom: Vena contracta (engste Stelle) und Jetbreite / LVOT-Breite.",
+            "ar": "PLAX مكبّر: الوريد المنقبض (أضيق عنق) ونسبة عرض النفث إلى عرض LVOT."
+          },
+          "view": "plax_standard"
+        },
+        {
+          "text": {
+            "en": "PSAX-AV: where the AR jet leaves the valve (commissure, central).",
+            "de": "PSAX-AV: wo der AI-Jet die Klappe verlässt (Kommissur, zentral).",
+            "ar": "PSAX-AV: مكان خروج نفث القلس من الصمام (عند الصوار أو في المركز)."
+          },
+          "view": "psax_av"
+        },
+        {
+          "text": {
+            "en": "Systolic flow acceleration / aliasing above the valve: think of stenosis.",
+            "de": "Systolische Flussbeschleunigung / Aliasing oberhalb der Klappe: an Stenose denken.",
+            "ar": "تسارع الجريان الانقباضي / التعرّج فوق الصمام: فكّر بالتضيّق."
+          },
+          "view": "apical_5c"
+        }
+      ],
+      "spectral": [
+        {
+          "text": {
+            "en": "A5C CW through the valve: Vmax, mean gradient, VTI(AV). Also try right parasternal and suprasternal windows.",
+            "de": "A5C CW durch die Klappe: Vmax, mittlerer Gradient, VTI(AK). Auch rechts parasternal und suprasternal versuchen.",
+            "ar": "A5C دوبلر مستمر عبر الصمام: Vmax، المتوسط، VTI. جرّب أيضاً النافذة جانب القص اليمنى وفوق القص."
+          },
+          "view": "apical_5c"
+        },
+        {
+          "text": {
+            "en": "A5C PW in the LVOT just proximal to the valve: VTI(LVOT) for the continuity equation.",
+            "de": "A5C PW im LVOT direkt vor der Klappe: VTI(LVOT) für die Kontinuitätsgleichung.",
+            "ar": "A5C دوبلر نبضي في LVOT قبل الصمام مباشرة: VTI(LVOT) لمعادلة الاستمرارية."
+          },
+          "view": "apical_5c"
+        },
+        {
+          "text": {
+            "en": "AVA = π·(D/2)²·VTI(LVOT) / VTI(AV); velocity ratio = VTI(LVOT) / VTI(AV).",
+            "de": "AÖF = π·(D/2)²·VTI(LVOT) / VTI(AK); Geschwindigkeitsquotient = VTI(LVOT) / VTI(AK).",
+            "ar": "مساحة الصمام = π·(D/2)²·VTI(LVOT) / VTI(AV)؛ نسبة السرعة = VTI(LVOT) / VTI(AV)."
+          },
+          "view": "apical_5c"
+        },
+        {
+          "text": {
+            "en": "AR: CW pressure half-time of the regurgitant jet (A5C).",
+            "de": "AI: CW-Druckhalbwertszeit des Regurgitationsjets (A5C).",
+            "ar": "القلس الأبهري: زمن نصف الضغط بالدوبلر المستمر (A5C)."
+          },
+          "view": "apical_5c"
+        },
+        {
+          "text": {
+            "en": "AR: PW in the proximal descending aorta (suprasternal) – holodiastolic flow reversal?",
+            "de": "AI: PW in der proximalen Aorta descendens (suprasternal) – holodiastolischer Rückfluss?",
+            "ar": "القلس الأبهري: دوبلر نبضي في الأبهر النازل (فوق القص) – جريان راجع طوال الانبساط؟"
+          },
+          "view": "suprasternal_arch"
+        }
+      ],
+      "normals": [
+        {
+          "parameter": {
+            "en": "Peak velocity (Vmax)",
+            "de": "Spitzengeschwindigkeit (Vmax)",
+            "ar": "السرعة القصوى (Vmax)"
+          },
+          "value": {
+            "en": "1.0–1.7 m/s (sclerosis ≤ 2.5)",
+            "de": "1,0–1,7 m/s (Sklerose ≤ 2,5)",
+            "ar": "1.0–1.7 m/s (تصلّب ≤ 2.5)"
+          }
+        },
+        {
+          "parameter": {
+            "en": "Valve area (AVA)",
+            "de": "Klappenöffnungsfläche (AÖF)",
+            "ar": "مساحة الصمام"
+          },
+          "value": {
+            "en": "3.0–4.0 cm²",
+            "de": "3,0–4,0 cm²",
+            "ar": "3.0–4.0 cm²"
+          }
+        },
+        {
+          "parameter": {
+            "en": "LVOT VTI",
+            "de": "LVOT-VTI",
+            "ar": "VTI في LVOT"
+          },
+          "value": {
+            "en": "18–22 cm",
+            "de": "18–22 cm",
+            "ar": "18–22 cm"
+          }
+        },
+        {
+          "parameter": {
+            "en": "LVOT diameter",
+            "de": "LVOT-Durchmesser",
+            "ar": "قطر LVOT"
+          },
+          "value": {
+            "en": "1.8–2.2 cm",
+            "de": "1,8–2,2 cm",
+            "ar": "1.8–2.2 cm"
+          }
+        }
+      ],
+      "grading": [
+        {
+          "title": {
+            "en": "Aortic stenosis (EACVI/ASE 2017)",
+            "de": "Aortenstenose (EACVI/ASE 2017)",
+            "ar": "تضيّق الصمام الأبهري (EACVI/ASE 2017)"
+          },
+          "rows": [
+            {
+              "parameter": {
+                "en": "Vmax",
+                "de": "Vmax",
+                "ar": "Vmax"
+              },
+              "mild": {
+                "en": "2.6–2.9 m/s",
+                "de": "2,6–2,9 m/s",
+                "ar": "2.6–2.9 m/s"
+              },
+              "moderate": {
+                "en": "3.0–4.0 m/s",
+                "de": "3,0–4,0 m/s",
+                "ar": "3.0–4.0 m/s"
+              },
+              "severe": {
+                "en": "≥ 4.0 m/s",
+                "de": "≥ 4,0 m/s",
+                "ar": "≥ 4.0 m/s"
+              }
+            },
+            {
+              "parameter": {
+                "en": "Mean gradient",
+                "de": "Mittlerer Gradient",
+                "ar": "الممال المتوسط"
+              },
+              "mild": {
+                "en": "< 20 mmHg",
+                "de": "< 20 mmHg",
+                "ar": "< 20 mmHg"
+              },
+              "moderate": {
+                "en": "20–40 mmHg",
+                "de": "20–40 mmHg",
+                "ar": "20–40 mmHg"
+              },
+              "severe": {
+                "en": "≥ 40 mmHg",
+                "de": "≥ 40 mmHg",
+                "ar": "≥ 40 mmHg"
+              }
+            },
+            {
+              "parameter": {
+                "en": "AVA",
+                "de": "AÖF",
+                "ar": "مساحة الصمام"
+              },
+              "mild": {
+                "en": "> 1.5 cm²",
+                "de": "> 1,5 cm²",
+                "ar": "> 1.5 cm²"
+              },
+              "moderate": {
+                "en": "1.0–1.5 cm²",
+                "de": "1,0–1,5 cm²",
+                "ar": "1.0–1.5 cm²"
+              },
+              "severe": {
+                "en": "< 1.0 cm²",
+                "de": "< 1,0 cm²",
+                "ar": "< 1.0 cm²"
+              }
+            },
+            {
+              "parameter": {
+                "en": "Indexed AVA",
+                "de": "AÖF indiziert",
+                "ar": "المساحة المفهرسة"
+              },
+              "mild": {
+                "en": "> 0.85 cm²/m²",
+                "de": "> 0,85 cm²/m²",
+                "ar": "> 0.85 cm²/m²"
+              },
+              "moderate": {
+                "en": "0.60–0.85 cm²/m²",
+                "de": "0,60–0,85 cm²/m²",
+                "ar": "0.60–0.85 cm²/m²"
+              },
+              "severe": {
+                "en": "< 0.6 cm²/m²",
+                "de": "< 0,6 cm²/m²",
+                "ar": "< 0.6 cm²/m²"
+              }
+            },
+            {
+              "parameter": {
+                "en": "Velocity ratio",
+                "de": "Geschwindigkeitsquotient",
+                "ar": "نسبة السرعة"
+              },
+              "mild": {
+                "en": "> 0.50",
+                "de": "> 0,50",
+                "ar": "> 0.50"
+              },
+              "moderate": {
+                "en": "0.25–0.50",
+                "de": "0,25–0,50",
+                "ar": "0.25–0.50"
+              },
+              "severe": {
+                "en": "< 0.25",
+                "de": "< 0,25",
+                "ar": "< 0.25"
+              }
+            }
+          ],
+          "note": {
+            "en": "Discordant grading (AVA < 1.0 cm² but gradient < 40 mmHg): check LVOT measurement, flow (SVi < 35 mL/m²) and consider low-flow low-gradient AS.",
+            "de": "Diskordanz (AÖF < 1,0 cm², Gradient < 40 mmHg): LVOT-Messung und Fluss (SVi < 35 ml/m²) prüfen, an Low-Flow-Low-Gradient-AS denken.",
+            "ar": "عدم التوافق (المساحة < 1.0 سم² والممال < 40 ملم زئبق): راجع قياس LVOT والجريان (SVi < 35 مل/م²) وفكّر بتضيّق منخفض الجريان والممال."
+          }
+        },
+        {
+          "title": {
+            "en": "Aortic regurgitation (ASE 2017)",
+            "de": "Aorteninsuffizienz (ASE 2017)",
+            "ar": "القلس الأبهري (ASE 2017)"
+          },
+          "rows": [
+            {
+              "parameter": {
+                "en": "Vena contracta",
+                "de": "Vena contracta",
+                "ar": "الوريد المنقبض"
+              },
+              "mild": {
+                "en": "< 0.3 cm",
+                "de": "< 0,3 cm",
+                "ar": "< 0.3 cm"
+              },
+              "moderate": {
+                "en": "0.3–0.6 cm",
+                "de": "0,3–0,6 cm",
+                "ar": "0.3–0.6 cm"
+              },
+              "severe": {
+                "en": "> 0.6 cm",
+                "de": "> 0,6 cm",
+                "ar": "> 0.6 cm"
+              }
+            },
+            {
+              "parameter": {
+                "en": "Jet width / LVOT",
+                "de": "Jetbreite / LVOT",
+                "ar": "عرض النفث / LVOT"
+              },
+              "mild": {
+                "en": "< 25 %",
+                "de": "< 25 %",
+                "ar": "< 25 %"
+              },
+              "moderate": {
+                "en": "25–64 %",
+                "de": "25–64 %",
+                "ar": "25–64 %"
+              },
+              "severe": {
+                "en": "≥ 65 %",
+                "de": "≥ 65 %",
+                "ar": "≥ 65 %"
+              }
+            },
+            {
+              "parameter": {
+                "en": "Pressure half-time",
+                "de": "Druckhalbwertszeit",
+                "ar": "زمن نصف الضغط"
+              },
+              "mild": {
+                "en": "> 500 ms",
+                "de": "> 500 ms",
+                "ar": "> 500 ms"
+              },
+              "moderate": {
+                "en": "200–500 ms",
+                "de": "200–500 ms",
+                "ar": "200–500 ms"
+              },
+              "severe": {
+                "en": "< 200 ms",
+                "de": "< 200 ms",
+                "ar": "< 200 ms"
+              }
+            },
+            {
+              "parameter": {
+                "en": "EROA",
+                "de": "EROA",
+                "ar": "مساحة فتحة القلس الفعّالة"
+              },
+              "mild": {
+                "en": "< 0.10 cm²",
+                "de": "< 0,10 cm²",
+                "ar": "< 0.10 cm²"
+              },
+              "moderate": {
+                "en": "0.10–0.29 cm²",
+                "de": "0,10–0,29 cm²",
+                "ar": "0.10–0.29 cm²"
+              },
+              "severe": {
+                "en": "≥ 0.30 cm²",
+                "de": "≥ 0,30 cm²",
+                "ar": "≥ 0.30 cm²"
+              }
+            },
+            {
+              "parameter": {
+                "en": "Regurgitant volume",
+                "de": "Regurgitationsvolumen",
+                "ar": "حجم القلس"
+              },
+              "mild": {
+                "en": "< 30 mL",
+                "de": "< 30 mL",
+                "ar": "< 30 mL"
+              },
+              "moderate": {
+                "en": "30–59 mL",
+                "de": "30–59 mL",
+                "ar": "30–59 mL"
+              },
+              "severe": {
+                "en": "≥ 60 mL",
+                "de": "≥ 60 mL",
+                "ar": "≥ 60 mL"
+              }
+            },
+            {
+              "parameter": {
+                "en": "Regurgitant fraction",
+                "de": "Regurgitationsfraktion",
+                "ar": "كسر القلس"
+              },
+              "mild": {
+                "en": "< 30 %",
+                "de": "< 30 %",
+                "ar": "< 30 %"
+              },
+              "moderate": {
+                "en": "30–49 %",
+                "de": "30–49 %",
+                "ar": "30–49 %"
+              },
+              "severe": {
+                "en": "≥ 50 %",
+                "de": "≥ 50 %",
+                "ar": "≥ 50 %"
+              }
+            },
+            {
+              "parameter": {
+                "en": "Descending aorta",
+                "de": "Aorta descendens",
+                "ar": "الأبهر النازل"
+              },
+              "mild": {
+                "en": "brief early-diastolic reversal",
+                "de": "kurzer frühdiastolischer Rückfluss",
+                "ar": "انعكاس قصير في بداية الانبساط"
+              },
+              "moderate": {
+                "en": "intermediate",
+                "de": "dazwischen",
+                "ar": "بينهما"
+              },
+              "severe": {
+                "en": "holodiastolic reversal (EDV > 20 cm/s)",
+                "de": "holodiastolischer Rückfluss (EDV > 20 cm/s)",
+                "ar": "انعكاس طوال الانبساط (EDV > 20 سم/ث)"
+              }
+            }
+          ]
+        }
+      ],
+      "examples": [
+        {
+          "asset": "echoorg/apical5_05.jpg",
+          "aspect": 1.4654,
+          "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+          "source": "https://www.echocardiographer.org/tte-apical5",
+          "caption": {
+            "en": "CW aortic valve",
+            "de": "CW Aortenklappe",
+            "ar": "دوبلر مستمر عبر الصمام الأبهري"
+          }
+        },
+        {
+          "asset": "echoorg/apical5_04.jpg",
+          "aspect": 1.4654,
+          "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+          "source": "https://www.echocardiographer.org/tte-apical5",
+          "caption": {
+            "en": "PW LVOT (VTI)",
+            "de": "PW LVOT (VTI)",
+            "ar": "دوبلر نبضي في LVOT"
+          }
+        },
+        {
+          "asset": "echoorg/psax_03.jpg",
+          "aspect": 1.3468,
+          "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+          "source": "https://www.echocardiographer.org/tte-psax",
+          "caption": {
+            "en": "Aortic valve zoom: RCC, LCC, NCC",
+            "de": "Aortenklappe gezoomt: RCC, LCC, NCC",
+            "ar": "تكبير الصمام الأبهري: الشرفات الثلاث"
+          }
+        },
+        {
+          "asset": "echoorg/plax_04.jpg",
+          "aspect": 1.3831,
+          "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+          "source": "https://www.echocardiographer.org/tte-plax",
+          "caption": {
+            "en": "Zoom on aortic and mitral valve",
+            "de": "Zoom auf Aorten- und Mitralklappe",
+            "ar": "تكبير على الصمام الأبهري والتاجي"
+          }
+        }
+      ]
+    },
+    {
+      "id": "mitral",
+      "title": {
+        "en": "Mitral valve",
+        "de": "Mitralklappe",
+        "ar": "الصمام التاجي"
+      },
+      "short": "MV",
+      "views": [
+        "plax_standard",
+        "psax_papillary",
+        "apical_4c",
+        "apical_2c_3c"
+      ],
+      "morphology": [
+        {
+          "text": {
+            "en": "PLAX: leaflet thickening, calcification, mobility; prolapse or flail beyond the annular line.",
+            "de": "PLAX: Segelverdickung, Verkalkung, Beweglichkeit; Prolaps oder Flail über die Anulusebene.",
+            "ar": "PLAX: سماكة الوريقات وتكلّسها وحركتها؛ تدلٍّ أو سائبة خلف مستوى الحلقة."
+          },
+          "view": "plax_standard"
+        },
+        {
+          "text": {
+            "en": "Rheumatic signs: diastolic doming ('hockey stick' AML), commissural fusion, chordal shortening.",
+            "de": "Rheumatische Zeichen: diastolisches Doming ('Hockeyschläger'-AML), Kommissurenfusion, Sehnenfadenverkürzung.",
+            "ar": "علامات رثوية: قبّة انبساطية (الوريقة الأمامية كعصا الهوكي)، التحام الصوارين، قِصَر الحبال."
+          },
+          "view": "plax_standard"
+        },
+        {
+          "text": {
+            "en": "PSAX at the leaflet tips: 'fish mouth' orifice, planimetry of the MVA, segment of prolapse (A1–P3).",
+            "de": "PSAX auf Segelspitzen-Ebene: 'Fischmaul'-Öffnung, Planimetrie der MÖF, Prolaps-Segment (A1–P3).",
+            "ar": "PSAX عند رؤوس الوريقات: فتحة 'فم السمكة'، قياس مساحة الصمام بالتخطيط، تحديد قطعة التدلي (A1–P3)."
+          },
+          "view": "psax_papillary"
+        },
+        {
+          "text": {
+            "en": "A4C / A2C / A3C: annular calcification, LA size (LA volume index), LV size and function.",
+            "de": "4K / 2K / 3K: Anulusverkalkung, LA-Größe (LAVI), LV-Größe und -Funktion.",
+            "ar": "رباعي/ثنائي/ثلاثي الحجرات: تكلّس الحلقة، حجم الأذين الأيسر (LAVI)، حجم البطين الأيسر ووظيفته."
+          },
+          "view": "apical_4c"
+        }
+      ],
+      "color": [
+        {
+          "text": {
+            "en": "A4C / A2C / A3C: jet direction (central = often secondary, eccentric = often primary) and jet area / LA area.",
+            "de": "4K / 2K / 3K: Jetrichtung (zentral = oft sekundär, exzentrisch = oft primär) und Jetfläche / LA-Fläche.",
+            "ar": "رباعي/ثنائي/ثلاثي الحجرات: اتجاه النفث (مركزي غالباً ثانوي، لا مركزي غالباً أولي) ونسبة مساحة النفث إلى الأذين."
+          },
+          "view": "apical_4c"
+        },
+        {
+          "text": {
+            "en": "PLAX or A3C zoom: vena contracta perpendicular to the commissural line.",
+            "de": "PLAX- oder 3K-Zoom: Vena contracta senkrecht zur Kommissurenlinie.",
+            "ar": "PLAX أو ثلاثي الحجرات مكبّر: الوريد المنقبض عمودياً على خط الصوارين."
+          },
+          "view": "apical_2c_3c"
+        },
+        {
+          "text": {
+            "en": "PISA: zoom, shift the colour baseline toward the jet (Nyquist ≈ 30–40 cm/s), measure the radius in mid-systole.",
+            "de": "PISA: zoomen, Farb-Baseline in Jetrichtung verschieben (Nyquist ≈ 30–40 cm/s), Radius mesosystolisch messen.",
+            "ar": "PISA: كبّر، أزح خط الأساس اللوني باتجاه النفث (Nyquist ≈ 30–40 سم/ث)، قِس نصف القطر في منتصف الانقباض."
+          },
+          "view": "apical_4c"
+        },
+        {
+          "text": {
+            "en": "MS: flow convergence and turbulent jet in the LV during diastole.",
+            "de": "MS: Flusskonvergenz und turbulenter Jet im LV während der Diastole.",
+            "ar": "التضيّق التاجي: تقارب الجريان ونفث مضطرب في البطين الأيسر أثناء الانبساط."
+          },
+          "view": "apical_4c"
+        }
+      ],
+      "spectral": [
+        {
+          "text": {
+            "en": "A4C PW at the leaflet tips: E, A, E/A, deceleration time (MR: E > 1.2 m/s supports severe).",
+            "de": "4K PW an den Segelspitzen: E, A, E/A, Dezelerationszeit (MI: E > 1,2 m/s spricht für schwer).",
+            "ar": "رباعي الحجرات دوبلر نبضي عند رؤوس الوريقات: E، A، E/A، زمن التباطؤ (القلس: E > 1.2 م/ث يدعم الشديد)."
+          },
+          "view": "apical_4c"
+        },
+        {
+          "text": {
+            "en": "MS: CW mean gradient (note heart rate) and pressure half-time → MVA = 220 / PHT.",
+            "de": "MS: CW mittlerer Gradient (Herzfrequenz notieren) und Druckhalbwertszeit → MÖF = 220 / PHT.",
+            "ar": "التضيّق التاجي: الممال المتوسط بالدوبلر المستمر (سجّل النبض) وزمن نصف الضغط ← المساحة = 220 / PHT."
+          },
+          "view": "apical_4c"
+        },
+        {
+          "text": {
+            "en": "MR: CW jet density and shape (dense, triangular/early-peaking = severe).",
+            "de": "MI: CW-Signaldichte und -form (dicht, dreieckig/früher Gipfel = schwer).",
+            "ar": "القلس التاجي: كثافة وشكل إشارة الدوبلر المستمر (كثيفة ومثلثية/ذروة مبكرة = شديد)."
+          },
+          "view": "apical_4c"
+        },
+        {
+          "text": {
+            "en": "Pulmonary vein PW (A4C): systolic flow reversal = severe MR.",
+            "de": "Pulmonalvenen-PW (4K): systolische Flussumkehr = schwere MI.",
+            "ar": "دوبلر نبضي في الأوردة الرئوية (رباعي الحجرات): انعكاس الجريان الانقباضي = قلس شديد."
+          },
+          "view": "apical_4c"
+        },
+        {
+          "text": {
+            "en": "TR Vmax → systolic PA pressure (consequence of MS / MR).",
+            "de": "TI-Vmax → systolischer PA-Druck (Folge von MS / MI).",
+            "ar": "السرعة القصوى للقلس ثلاثي الشرف ← الضغط الرئوي الانقباضي (نتيجة التضيّق/القلس التاجي)."
+          },
+          "view": "apical_4c"
+        }
+      ],
+      "normals": [
+        {
+          "parameter": {
+            "en": "Mitral valve area",
+            "de": "Mitralöffnungsfläche",
+            "ar": "مساحة الصمام التاجي"
+          },
+          "value": {
+            "en": "4–6 cm²",
+            "de": "4–6 cm²",
+            "ar": "4–6 cm²"
+          }
+        },
+        {
+          "parameter": {
+            "en": "E velocity",
+            "de": "E-Welle",
+            "ar": "سرعة الموجة E"
+          },
+          "value": {
+            "en": "0.6–1.3 m/s",
+            "de": "0,6–1,3 m/s",
+            "ar": "0.6–1.3 m/s"
+          }
+        },
+        {
+          "parameter": {
+            "en": "E/A",
+            "de": "E/A",
+            "ar": "E/A"
+          },
+          "value": {
+            "en": "0.8–2.0",
+            "de": "0,8–2,0",
+            "ar": "0.8–2.0"
+          }
+        },
+        {
+          "parameter": {
+            "en": "Deceleration time",
+            "de": "Dezelerationszeit",
+            "ar": "زمن التباطؤ"
+          },
+          "value": {
+            "en": "160–240 ms",
+            "de": "160–240 ms",
+            "ar": "160–240 ms"
+          }
+        },
+        {
+          "parameter": {
+            "en": "Septal / lateral e'",
+            "de": "Septales / laterales e'",
+            "ar": "e' الحاجزي / الوحشي"
+          },
+          "value": {
+            "en": "≥ 7 / ≥ 10 cm/s",
+            "de": "≥ 7 / ≥ 10 cm/s",
+            "ar": "≥ 7 / ≥ 10 cm/s"
+          }
+        }
+      ],
+      "grading": [
+        {
+          "title": {
+            "en": "Mitral stenosis (EAE/ASE 2009)",
+            "de": "Mitralstenose (EAE/ASE 2009)",
+            "ar": "تضيّق الصمام التاجي (EAE/ASE 2009)"
+          },
+          "rows": [
+            {
+              "parameter": {
+                "en": "MVA",
+                "de": "MÖF",
+                "ar": "المساحة"
+              },
+              "mild": {
+                "en": "> 1.5 cm²",
+                "de": "> 1,5 cm²",
+                "ar": "> 1.5 cm²"
+              },
+              "moderate": {
+                "en": "1.0–1.5 cm²",
+                "de": "1,0–1,5 cm²",
+                "ar": "1.0–1.5 cm²"
+              },
+              "severe": {
+                "en": "< 1.0 cm²",
+                "de": "< 1,0 cm²",
+                "ar": "< 1.0 cm²"
+              }
+            },
+            {
+              "parameter": {
+                "en": "Mean gradient",
+                "de": "Mittlerer Gradient",
+                "ar": "الممال المتوسط"
+              },
+              "mild": {
+                "en": "< 5 mmHg",
+                "de": "< 5 mmHg",
+                "ar": "< 5 mmHg"
+              },
+              "moderate": {
+                "en": "5–10 mmHg",
+                "de": "5–10 mmHg",
+                "ar": "5–10 mmHg"
+              },
+              "severe": {
+                "en": "> 10 mmHg",
+                "de": "> 10 mmHg",
+                "ar": "> 10 mmHg"
+              }
+            },
+            {
+              "parameter": {
+                "en": "PA systolic pressure",
+                "de": "Systolischer PA-Druck",
+                "ar": "الضغط الرئوي الانقباضي"
+              },
+              "mild": {
+                "en": "< 30 mmHg",
+                "de": "< 30 mmHg",
+                "ar": "< 30 mmHg"
+              },
+              "moderate": {
+                "en": "30–50 mmHg",
+                "de": "30–50 mmHg",
+                "ar": "30–50 mmHg"
+              },
+              "severe": {
+                "en": "> 50 mmHg",
+                "de": "> 50 mmHg",
+                "ar": "> 50 mmHg"
+              }
+            }
+          ],
+          "note": {
+            "en": "MVA by PHT = 220 / PHT (ms); PHT ≥ 220 ms ≈ MVA ≤ 1.0 cm². AHA/ACC 2020 call MVA ≤ 1.5 cm² severe.",
+            "de": "MÖF nach PHT = 220 / PHT (ms); PHT ≥ 220 ms ≈ MÖF ≤ 1,0 cm². AHA/ACC 2020 werten MÖF ≤ 1,5 cm² als schwer.",
+            "ar": "المساحة بزمن نصف الضغط = 220 / PHT (مللي ثانية)؛ PHT ≥ 220 ≈ مساحة ≤ 1.0 سم². توصيات AHA/ACC 2020 تعدّ ≤ 1.5 سم² شديداً."
+          }
+        },
+        {
+          "title": {
+            "en": "Mitral regurgitation (ASE 2017)",
+            "de": "Mitralinsuffizienz (ASE 2017)",
+            "ar": "القلس التاجي (ASE 2017)"
+          },
+          "rows": [
+            {
+              "parameter": {
+                "en": "Vena contracta",
+                "de": "Vena contracta",
+                "ar": "الوريد المنقبض"
+              },
+              "mild": {
+                "en": "< 0.3 cm",
+                "de": "< 0,3 cm",
+                "ar": "< 0.3 cm"
+              },
+              "moderate": {
+                "en": "0.3–0.69 cm",
+                "de": "0,3–0,69 cm",
+                "ar": "0.3–0.69 cm"
+              },
+              "severe": {
+                "en": "≥ 0.7 cm",
+                "de": "≥ 0,7 cm",
+                "ar": "≥ 0.7 cm"
+              }
+            },
+            {
+              "parameter": {
+                "en": "EROA (PISA)",
+                "de": "EROA (PISA)",
+                "ar": "مساحة الفتحة الفعّالة (PISA)"
+              },
+              "mild": {
+                "en": "< 0.20 cm²",
+                "de": "< 0,20 cm²",
+                "ar": "< 0.20 cm²"
+              },
+              "moderate": {
+                "en": "0.20–0.39 cm²",
+                "de": "0,20–0,39 cm²",
+                "ar": "0.20–0.39 cm²"
+              },
+              "severe": {
+                "en": "≥ 0.40 cm²",
+                "de": "≥ 0,40 cm²",
+                "ar": "≥ 0.40 cm²"
+              }
+            },
+            {
+              "parameter": {
+                "en": "Regurgitant volume",
+                "de": "Regurgitationsvolumen",
+                "ar": "حجم القلس"
+              },
+              "mild": {
+                "en": "< 30 mL",
+                "de": "< 30 mL",
+                "ar": "< 30 mL"
+              },
+              "moderate": {
+                "en": "30–59 mL",
+                "de": "30–59 mL",
+                "ar": "30–59 mL"
+              },
+              "severe": {
+                "en": "≥ 60 mL",
+                "de": "≥ 60 mL",
+                "ar": "≥ 60 mL"
+              }
+            },
+            {
+              "parameter": {
+                "en": "Regurgitant fraction",
+                "de": "Regurgitationsfraktion",
+                "ar": "كسر القلس"
+              },
+              "mild": {
+                "en": "< 30 %",
+                "de": "< 30 %",
+                "ar": "< 30 %"
+              },
+              "moderate": {
+                "en": "30–49 %",
+                "de": "30–49 %",
+                "ar": "30–49 %"
+              },
+              "severe": {
+                "en": "≥ 50 %",
+                "de": "≥ 50 %",
+                "ar": "≥ 50 %"
+              }
+            },
+            {
+              "parameter": {
+                "en": "Jet area / LA area",
+                "de": "Jetfläche / LA-Fläche",
+                "ar": "مساحة النفث / الأذين"
+              },
+              "mild": {
+                "en": "< 20 %, central",
+                "de": "< 20 %, zentral",
+                "ar": "< 20 %، مركزي"
+              },
+              "moderate": {
+                "en": "intermediate",
+                "de": "dazwischen",
+                "ar": "بينهما"
+              },
+              "severe": {
+                "en": "> 50 % or wall-hugging",
+                "de": "> 50 % oder wandständig",
+                "ar": "> 50 % أو ملاصق للجدار"
+              }
+            },
+            {
+              "parameter": {
+                "en": "Pulmonary vein flow",
+                "de": "Pulmonalvenenfluss",
+                "ar": "جريان الأوردة الرئوية"
+              },
+              "mild": {
+                "en": "systolic dominance",
+                "de": "systolisch dominant",
+                "ar": "سيطرة انقباضية"
+              },
+              "moderate": {
+                "en": "systolic blunting",
+                "de": "systolisch abgeflacht",
+                "ar": "تسطّح انقباضي"
+              },
+              "severe": {
+                "en": "systolic reversal",
+                "de": "systolische Umkehr",
+                "ar": "انعكاس انقباضي"
+              }
+            }
+          ],
+          "note": {
+            "en": "Secondary MR: an elliptical orifice is underestimated by PISA – EROA ≥ 0.20 cm² / RVol ≥ 30 mL already signal significant MR (ESC).",
+            "de": "Sekundäre MI: elliptische Öffnung wird per PISA unterschätzt – EROA ≥ 0,20 cm² / RVol ≥ 30 ml sprechen bereits für relevante MI (ESC).",
+            "ar": "القلس التاجي الثانوي: PISA يقلّل تقدير الفتحة الإهليلجية – EROA ≥ 0.20 سم² / حجم ≥ 30 مل يدلّان على قلس مهم (ESC)."
+          }
+        }
+      ],
+      "examples": [
+        {
+          "asset": "echoorg/apical4_07.jpg",
+          "aspect": 1.7921,
+          "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+          "source": "https://www.echocardiographer.org/tte-apical4",
+          "caption": {
+            "en": "PW mitral inflow (E/A)",
+            "de": "PW-Mitraleinstrom (E/A)",
+            "ar": "دوبلر نبضي للتدفق التاجي (E/A)"
+          }
+        },
+        {
+          "asset": "echoorg/apical4_06.jpg",
+          "aspect": 1.5129,
+          "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+          "source": "https://www.echocardiographer.org/tte-apical4",
+          "caption": {
+            "en": "Colour Doppler: mitral valve (A4C)",
+            "de": "Farbdoppler: Mitralklappe (4K)",
+            "ar": "الدوبلر الملوّن: الصمام التاجي"
+          }
+        },
+        {
+          "asset": "echoorg/psax_05.jpg",
+          "aspect": 1.3405,
+          "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+          "source": "https://www.echocardiographer.org/tte-psax",
+          "caption": {
+            "en": "Mitral valve level",
+            "de": "Mitralklappen-Ebene",
+            "ar": "مستوى الصمام التاجي"
+          }
+        },
+        {
+          "asset": "echoorg/apical4_11.jpg",
+          "aspect": 1.385,
+          "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+          "source": "https://www.echocardiographer.org/tte-apical4",
+          "caption": {
+            "en": "PW pulmonary vein (S, D, A)",
+            "de": "PW Pulmonalvene (S, D, A)",
+            "ar": "دوبلر نبضي في الوريد الرئوي (S، D، A)"
+          }
+        },
+        {
+          "asset": "echoorg/apical4_09.jpg",
+          "aspect": 1.4641,
+          "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+          "source": "https://www.echocardiographer.org/tte-apical4",
+          "caption": {
+            "en": "TDI septal annulus (e', a')",
+            "de": "TDI septaler Anulus (e', a')",
+            "ar": "دوبلر نسيجي الحلقة الحاجزية"
+          }
+        },
+        {
+          "asset": "echoorg/apical4_08.jpg",
+          "aspect": 1.4837,
+          "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+          "source": "https://www.echocardiographer.org/tte-apical4",
+          "caption": {
+            "en": "TDI lateral annulus (e', a')",
+            "de": "TDI lateraler Anulus (e', a')",
+            "ar": "دوبلر نسيجي الحلقة الوحشية"
+          }
+        }
+      ]
+    },
+    {
+      "id": "tricuspid",
+      "title": {
+        "en": "Tricuspid valve",
+        "de": "Trikuspidalklappe",
+        "ar": "الصمام ثلاثي الشرف"
+      },
+      "short": "TV",
+      "views": [
+        "apical_4c",
+        "psax_av",
+        "subcostal_4c",
+        "subcostal_ivc"
+      ],
+      "morphology": [
+        {
+          "text": {
+            "en": "A4C / RV-focused: leaflet morphology, coaptation gap, tethering, prolapse; device leads.",
+            "de": "4K / RV-fokussiert: Segelmorphologie, Koaptationsdefekt, Tethering, Prolaps; Schrittmachersonden.",
+            "ar": "رباعي الحجرات / مركّز على البطين الأيمن: شكل الوريقات، فجوة الالتقاء، الشدّ، التدلي؛ أسلاك الناظمة."
+          },
+          "view": "apical_4c"
+        },
+        {
+          "text": {
+            "en": "Annulus diameter in diastole (A4C): > 40 mm or > 21 mm/m² = dilated.",
+            "de": "Anulusdurchmesser diastolisch (4K): > 40 mm oder > 21 mm/m² = dilatiert.",
+            "ar": "قطر الحلقة في الانبساط (رباعي الحجرات): > 40 ملم أو > 21 ملم/م² = متوسّعة."
+          },
+          "view": "apical_4c"
+        },
+        {
+          "text": {
+            "en": "PSAX-AV and subcostal: additional leaflets and jet views.",
+            "de": "PSAX-AV und subkostal: weitere Segel- und Jetansichten.",
+            "ar": "PSAX-AV وتحت الضلع: مشاهد إضافية للوريقات والنفث."
+          },
+          "view": "psax_av"
+        },
+        {
+          "text": {
+            "en": "RA and RV size, RV function (TAPSE ≥ 17 mm, S' ≥ 9.5 cm/s).",
+            "de": "RA- und RV-Größe, RV-Funktion (TAPSE ≥ 17 mm, S' ≥ 9,5 cm/s).",
+            "ar": "حجم الأذين والبطين الأيمنين، وظيفة البطين الأيمن (TAPSE ≥ 17 ملم، S' ≥ 9.5 سم/ث)."
+          },
+          "view": "apical_4c"
+        },
+        {
+          "text": {
+            "en": "IVC diameter and collapse → RA pressure.",
+            "de": "VCI-Durchmesser und Kollaps → RA-Druck.",
+            "ar": "قطر الوريد الأجوف السفلي وانخماصه ← ضغط الأذين الأيمن."
+          },
+          "view": "subcostal_ivc"
+        }
+      ],
+      "color": [
+        {
+          "text": {
+            "en": "A4C: vena contracta, jet area, PISA (baseline shift, Nyquist ≈ 28 cm/s).",
+            "de": "4K: Vena contracta, Jetfläche, PISA (Baseline-Shift, Nyquist ≈ 28 cm/s).",
+            "ar": "رباعي الحجرات: الوريد المنقبض، مساحة النفث، PISA (إزاحة خط الأساس، Nyquist ≈ 28 سم/ث)."
+          },
+          "view": "apical_4c"
+        },
+        {
+          "text": {
+            "en": "Subcostal: colour in the hepatic veins (systolic backflow).",
+            "de": "Subkostal: Farbe in den Lebervenen (systolischer Rückfluss).",
+            "ar": "تحت الضلع: اللون في الأوردة الكبدية (جريان راجع انقباضي)."
+          },
+          "view": "subcostal_ivc"
+        }
+      ],
+      "spectral": [
+        {
+          "text": {
+            "en": "CW TR: align carefully, Vmax → RVSP = 4·Vmax² + RA pressure.",
+            "de": "CW TI: sorgfältig ausrichten, Vmax → RVSP = 4·Vmax² + RA-Druck.",
+            "ar": "دوبلر مستمر للقلس: محاذاة دقيقة، Vmax ← ضغط البطين الأيمن الانقباضي = 4·Vmax² + ضغط الأذين الأيمن."
+          },
+          "view": "apical_4c"
+        },
+        {
+          "text": {
+            "en": "TR signal: dense, triangular, early peak = severe (low Vmax with severe TR = 'laminar' free TR).",
+            "de": "TI-Signal: dicht, dreieckig, früher Gipfel = schwer (niedrige Vmax bei schwerer TI = 'laminare' freie TI).",
+            "ar": "إشارة القلس: كثيفة، مثلثية، ذروة مبكرة = شديد (سرعة منخفضة مع قلس شديد = قلس حرّ 'صفيحي')."
+          },
+          "view": "apical_4c"
+        },
+        {
+          "text": {
+            "en": "Hepatic vein PW: systolic flow reversal = severe TR.",
+            "de": "Lebervenen-PW: systolische Flussumkehr = schwere TI.",
+            "ar": "دوبلر نبضي في الأوردة الكبدية: انعكاس الجريان الانقباضي = قلس شديد."
+          },
+          "view": "subcostal_ivc"
+        },
+        {
+          "text": {
+            "en": "TS: PW/CW inflow – mean gradient, VTI, PHT.",
+            "de": "TS: PW/CW-Einstrom – mittlerer Gradient, VTI, PHT.",
+            "ar": "تضيّق ثلاثي الشرف: دوبلر الجريان الداخل – الممال المتوسط، VTI، PHT."
+          },
+          "view": "apical_4c"
+        },
+        {
+          "text": {
+            "en": "RA pressure from the IVC: ≤ 2.1 cm and > 50 % collapse → 3 mmHg; > 2.1 cm and < 50 % → 15 mmHg; otherwise 8 mmHg.",
+            "de": "RA-Druck aus der VCI: ≤ 2,1 cm und > 50 % Kollaps → 3 mmHg; > 2,1 cm und < 50 % → 15 mmHg; sonst 8 mmHg.",
+            "ar": "ضغط الأذين الأيمن من الوريد الأجوف: ≤ 2.1 سم وانخماص > 50 % ← 3؛ > 2.1 سم و< 50 % ← 15؛ غير ذلك 8 ملم زئبق."
+          },
+          "view": "subcostal_ivc"
+        }
+      ],
+      "normals": [
+        {
+          "parameter": {
+            "en": "TR Vmax",
+            "de": "TI-Vmax",
+            "ar": "سرعة القلس القصوى"
+          },
+          "value": {
+            "en": "≤ 2.8 m/s",
+            "de": "≤ 2,8 m/s",
+            "ar": "≤ 2.8 m/s"
+          }
+        },
+        {
+          "parameter": {
+            "en": "RVSP",
+            "de": "RVSP",
+            "ar": "ضغط البطين الأيمن الانقباضي"
+          },
+          "value": {
+            "en": "< 35 mmHg",
+            "de": "< 35 mmHg",
+            "ar": "< 35 mmHg"
+          }
+        },
+        {
+          "parameter": {
+            "en": "TAPSE",
+            "de": "TAPSE",
+            "ar": "TAPSE"
+          },
+          "value": {
+            "en": "≥ 17 mm",
+            "de": "≥ 17 mm",
+            "ar": "≥ 17 mm"
+          }
+        },
+        {
+          "parameter": {
+            "en": "Tricuspid annulus (diastole)",
+            "de": "Trikuspidalanulus (diastolisch)",
+            "ar": "الحلقة ثلاثية الشرف (انبساط)"
+          },
+          "value": {
+            "en": "≤ 40 mm (≤ 21 mm/m²)",
+            "de": "≤ 40 mm (≤ 21 mm/m²)",
+            "ar": "≤ 40 mm (≤ 21 mm/m²)"
+          }
+        },
+        {
+          "parameter": {
+            "en": "IVC",
+            "de": "VCI",
+            "ar": "الوريد الأجوف السفلي"
+          },
+          "value": {
+            "en": "≤ 2.1 cm, > 50 % collapse",
+            "de": "≤ 2,1 cm, > 50 % Kollaps",
+            "ar": "≤ 2.1 cm، انخماص > 50 %"
+          }
+        }
+      ],
+      "grading": [
+        {
+          "title": {
+            "en": "Tricuspid regurgitation (ASE 2017)",
+            "de": "Trikuspidalinsuffizienz (ASE 2017)",
+            "ar": "القلس ثلاثي الشرف (ASE 2017)"
+          },
+          "rows": [
+            {
+              "parameter": {
+                "en": "Vena contracta",
+                "de": "Vena contracta",
+                "ar": "الوريد المنقبض"
+              },
+              "mild": {
+                "en": "< 0.3 cm",
+                "de": "< 0,3 cm",
+                "ar": "< 0.3 cm"
+              },
+              "moderate": {
+                "en": "0.3–0.69 cm",
+                "de": "0,3–0,69 cm",
+                "ar": "0.3–0.69 cm"
+              },
+              "severe": {
+                "en": "≥ 0.7 cm",
+                "de": "≥ 0,7 cm",
+                "ar": "≥ 0.7 cm"
+              }
+            },
+            {
+              "parameter": {
+                "en": "PISA radius (Nyquist 28 cm/s)",
+                "de": "PISA-Radius (Nyquist 28 cm/s)",
+                "ar": "نصف قطر PISA (Nyquist 28)"
+              },
+              "mild": {
+                "en": "≤ 0.5 cm",
+                "de": "≤ 0,5 cm",
+                "ar": "≤ 0.5 cm"
+              },
+              "moderate": {
+                "en": "0.6–0.9 cm",
+                "de": "0,6–0,9 cm",
+                "ar": "0.6–0.9 cm"
+              },
+              "severe": {
+                "en": "> 0.9 cm",
+                "de": "> 0,9 cm",
+                "ar": "> 0.9 cm"
+              }
+            },
+            {
+              "parameter": {
+                "en": "EROA",
+                "de": "EROA",
+                "ar": "مساحة الفتحة الفعّالة"
+              },
+              "mild": {
+                "en": "< 0.20 cm²",
+                "de": "< 0,20 cm²",
+                "ar": "< 0.20 cm²"
+              },
+              "moderate": {
+                "en": "0.20–0.39 cm²",
+                "de": "0,20–0,39 cm²",
+                "ar": "0.20–0.39 cm²"
+              },
+              "severe": {
+                "en": "≥ 0.40 cm²",
+                "de": "≥ 0,40 cm²",
+                "ar": "≥ 0.40 cm²"
+              }
+            },
+            {
+              "parameter": {
+                "en": "Regurgitant volume",
+                "de": "Regurgitationsvolumen",
+                "ar": "حجم القلس"
+              },
+              "mild": {
+                "en": "< 30 mL",
+                "de": "< 30 mL",
+                "ar": "< 30 mL"
+              },
+              "moderate": {
+                "en": "30–44 mL",
+                "de": "30–44 mL",
+                "ar": "30–44 mL"
+              },
+              "severe": {
+                "en": "≥ 45 mL",
+                "de": "≥ 45 mL",
+                "ar": "≥ 45 mL"
+              }
+            },
+            {
+              "parameter": {
+                "en": "Hepatic vein flow",
+                "de": "Lebervenenfluss",
+                "ar": "جريان الأوردة الكبدية"
+              },
+              "mild": {
+                "en": "systolic dominance",
+                "de": "systolisch dominant",
+                "ar": "سيطرة انقباضية"
+              },
+              "moderate": {
+                "en": "systolic blunting",
+                "de": "systolisch abgeflacht",
+                "ar": "تسطّح انقباضي"
+              },
+              "severe": {
+                "en": "systolic reversal",
+                "de": "systolische Umkehr",
+                "ar": "انعكاس انقباضي"
+              }
+            }
+          ]
+        },
+        {
+          "title": {
+            "en": "Tricuspid stenosis (EAE/ASE 2009)",
+            "de": "Trikuspidalstenose (EAE/ASE 2009)",
+            "ar": "تضيّق ثلاثي الشرف (EAE/ASE 2009)"
+          },
+          "rows": [
+            {
+              "parameter": {
+                "en": "Mean gradient",
+                "de": "Mittlerer Gradient",
+                "ar": "الممال المتوسط"
+              },
+              "mild": {
+                "en": "–",
+                "de": "–",
+                "ar": "–"
+              },
+              "moderate": {
+                "en": "–",
+                "de": "–",
+                "ar": "–"
+              },
+              "severe": {
+                "en": "≥ 5 mmHg",
+                "de": "≥ 5 mmHg",
+                "ar": "≥ 5 mmHg"
+              }
+            },
+            {
+              "parameter": {
+                "en": "Inflow VTI",
+                "de": "Einstrom-VTI",
+                "ar": "VTI الجريان الداخل"
+              },
+              "mild": {
+                "en": "–",
+                "de": "–",
+                "ar": "–"
+              },
+              "moderate": {
+                "en": "–",
+                "de": "–",
+                "ar": "–"
+              },
+              "severe": {
+                "en": "> 60 cm",
+                "de": "> 60 cm",
+                "ar": "> 60 cm"
+              }
+            },
+            {
+              "parameter": {
+                "en": "Pressure half-time",
+                "de": "Druckhalbwertszeit",
+                "ar": "زمن نصف الضغط"
+              },
+              "mild": {
+                "en": "–",
+                "de": "–",
+                "ar": "–"
+              },
+              "moderate": {
+                "en": "–",
+                "de": "–",
+                "ar": "–"
+              },
+              "severe": {
+                "en": "≥ 190 ms",
+                "de": "≥ 190 ms",
+                "ar": "≥ 190 ms"
+              }
+            },
+            {
+              "parameter": {
+                "en": "Valve area (continuity)",
+                "de": "Öffnungsfläche (Kontinuität)",
+                "ar": "المساحة (الاستمرارية)"
+              },
+              "mild": {
+                "en": "–",
+                "de": "–",
+                "ar": "–"
+              },
+              "moderate": {
+                "en": "–",
+                "de": "–",
+                "ar": "–"
+              },
+              "severe": {
+                "en": "≤ 1.0 cm²",
+                "de": "≤ 1,0 cm²",
+                "ar": "≤ 1.0 cm²"
+              }
+            }
+          ],
+          "note": {
+            "en": "Values indicate significant TS; the guideline gives no mild/moderate cut-offs.",
+            "de": "Die Werte zeigen eine relevante TS an; die Leitlinie nennt keine Grenzen für leicht/mittel.",
+            "ar": "القيم تدل على تضيّق مهم؛ لا يحدد الدليل حدوداً للخفيف/المتوسط."
+          }
+        }
+      ],
+      "examples": [
+        {
+          "asset": "echoorg/apical4_05.jpg",
+          "aspect": 1.4818,
+          "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+          "source": "https://www.echocardiographer.org/tte-apical4",
+          "caption": {
+            "en": "Colour Doppler: TR jet (A4C)",
+            "de": "Farbdoppler: TI-Jet (4K)",
+            "ar": "الدوبلر الملوّن: نفث القلس ثلاثي الشرف"
+          }
+        },
+        {
+          "asset": "echoorg/apical4_12.jpg",
+          "aspect": 1.4793,
+          "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+          "source": "https://www.echocardiographer.org/tte-apical4",
+          "caption": {
+            "en": "TAPSE M-mode",
+            "de": "TAPSE im M-Mode",
+            "ar": "TAPSE بنمط M"
+          }
+        },
+        {
+          "asset": "echoorg/subcostal-greatvessels_02.jpg",
+          "aspect": 1.481,
+          "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+          "source": "https://www.echocardiographer.org/tte-subcostal-greatvessels",
+          "caption": {
+            "en": "PW hepatic vein (S, D, A)",
+            "de": "PW Lebervene (S, D, A)",
+            "ar": "دوبلر نبضي في الوريد الكبدي (S، D، A)"
+          }
+        },
+        {
+          "asset": "echoorg/subcostal-greatvessels_01.jpg",
+          "aspect": 1.463,
+          "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+          "source": "https://www.echocardiographer.org/tte-subcostal-greatvessels",
+          "caption": {
+            "en": "IVC M-mode: expiration vs inspiration",
+            "de": "VCI im M-Mode: Exspiration vs. Inspiration",
+            "ar": "الوريد الأجوف بنمط M: زفير مقابل شهيق"
+          }
+        }
+      ]
+    },
+    {
+      "id": "pulmonary",
+      "title": {
+        "en": "Pulmonary valve",
+        "de": "Pulmonalklappe",
+        "ar": "الصمام الرئوي"
+      },
+      "short": "PV",
+      "views": [
+        "psax_av",
+        "subcostal_4c"
+      ],
+      "morphology": [
+        {
+          "text": {
+            "en": "PSAX-AV (tilted to RVOT/PA): leaflet thickening, systolic doming, annulus diameter.",
+            "de": "PSAX-AV (Richtung RVOT/PA gekippt): Segelverdickung, systolisches Doming, Anulusdurchmesser.",
+            "ar": "PSAX-AV (مائل نحو RVOT/الشريان الرئوي): سماكة الوريقات، القبّة الانقباضية، قطر الحلقة."
+          },
+          "view": "psax_av"
+        },
+        {
+          "text": {
+            "en": "Main PA and branches: post-stenotic dilatation, PA dilatation in pulmonary hypertension.",
+            "de": "PA-Hauptstamm und Äste: poststenotische Dilatation, PA-Dilatation bei pulmonaler Hypertonie.",
+            "ar": "الجذع الرئوي وفروعه: توسّع بعد التضيّق، توسّع الشريان الرئوي في ارتفاع الضغط الرئوي."
+          },
+          "view": "psax_av"
+        },
+        {
+          "text": {
+            "en": "Consequences: RV hypertrophy and dilatation, septal shape (PSAX).",
+            "de": "Folgen: RV-Hypertrophie und -Dilatation, Septumform (PSAX).",
+            "ar": "العواقب: ضخامة وتوسّع البطين الأيمن، شكل الحاجز (PSAX)."
+          },
+          "view": "psax_papillary"
+        }
+      ],
+      "color": [
+        {
+          "text": {
+            "en": "PSAX-AV: PR jet width at its origin relative to the annulus; flow acceleration in PS.",
+            "de": "PSAX-AV: PI-Jetbreite am Ursprung im Verhältnis zum Anulus; Flussbeschleunigung bei PS.",
+            "ar": "PSAX-AV: عرض نفث القلس الرئوي عند منشئه بالنسبة للحلقة؛ تسارع الجريان في التضيّق."
+          },
+          "view": "psax_av"
+        },
+        {
+          "text": {
+            "en": "Look for a PDA (continuous flow into the PA) in the same view.",
+            "de": "Im selben Schnitt nach einem PDA suchen (kontinuierlicher Fluss in die PA).",
+            "ar": "ابحث عن قناة شريانية سالكة (جريان مستمر إلى الشريان الرئوي) في نفس المقطع."
+          },
+          "view": "psax_av"
+        }
+      ],
+      "spectral": [
+        {
+          "text": {
+            "en": "PW in the RVOT just below the valve: acceleration time (< 100 ms suggests pulmonary hypertension).",
+            "de": "PW im RVOT direkt unter der Klappe: Akzelerationszeit (< 100 ms spricht für pulmonale Hypertonie).",
+            "ar": "دوبلر نبضي في RVOT تحت الصمام: زمن التسارع (< 100 مللي ثانية يوحي بارتفاع الضغط الرئوي)."
+          },
+          "view": "psax_av"
+        },
+        {
+          "text": {
+            "en": "CW across the valve: Vmax and peak gradient (PS).",
+            "de": "CW über die Klappe: Vmax und Spitzengradient (PS).",
+            "ar": "دوبلر مستمر عبر الصمام: السرعة القصوى والممال الأقصى (التضيّق)."
+          },
+          "view": "psax_av"
+        },
+        {
+          "text": {
+            "en": "CW PR: end-diastolic velocity → PA diastolic pressure = 4·v² + RA pressure; steep deceleration = severe PR.",
+            "de": "CW PI: enddiastolische Geschwindigkeit → PA-Diastolendruck = 4·v² + RA-Druck; steile Dezeleration = schwere PI.",
+            "ar": "دوبلر مستمر للقلس الرئوي: السرعة في نهاية الانبساط ← الضغط الرئوي الانبساطي = 4·v² + ضغط الأذين الأيمن؛ تباطؤ حاد = قلس شديد."
+          },
+          "view": "psax_av"
+        }
+      ],
+      "normals": [
+        {
+          "parameter": {
+            "en": "Peak velocity",
+            "de": "Spitzengeschwindigkeit",
+            "ar": "السرعة القصوى"
+          },
+          "value": {
+            "en": "0.6–0.9 m/s",
+            "de": "0,6–0,9 m/s",
+            "ar": "0.6–0.9 m/s"
+          }
+        },
+        {
+          "parameter": {
+            "en": "RVOT acceleration time",
+            "de": "RVOT-Akzelerationszeit",
+            "ar": "زمن التسارع في RVOT"
+          },
+          "value": {
+            "en": "> 130 ms",
+            "de": "> 130 ms",
+            "ar": "> 130 ms"
+          }
+        }
+      ],
+      "grading": [
+        {
+          "title": {
+            "en": "Pulmonary stenosis (EAE/ASE 2009)",
+            "de": "Pulmonalstenose (EAE/ASE 2009)",
+            "ar": "تضيّق الصمام الرئوي (EAE/ASE 2009)"
+          },
+          "rows": [
+            {
+              "parameter": {
+                "en": "Vmax",
+                "de": "Vmax",
+                "ar": "Vmax"
+              },
+              "mild": {
+                "en": "< 3 m/s",
+                "de": "< 3 m/s",
+                "ar": "< 3 m/s"
+              },
+              "moderate": {
+                "en": "3–4 m/s",
+                "de": "3–4 m/s",
+                "ar": "3–4 m/s"
+              },
+              "severe": {
+                "en": "> 4 m/s",
+                "de": "> 4 m/s",
+                "ar": "> 4 m/s"
+              }
+            },
+            {
+              "parameter": {
+                "en": "Peak gradient",
+                "de": "Spitzengradient",
+                "ar": "الممال الأقصى"
+              },
+              "mild": {
+                "en": "< 36 mmHg",
+                "de": "< 36 mmHg",
+                "ar": "< 36 mmHg"
+              },
+              "moderate": {
+                "en": "36–64 mmHg",
+                "de": "36–64 mmHg",
+                "ar": "36–64 mmHg"
+              },
+              "severe": {
+                "en": "> 64 mmHg",
+                "de": "> 64 mmHg",
+                "ar": "> 64 mmHg"
+              }
+            }
+          ]
+        },
+        {
+          "title": {
+            "en": "Pulmonary regurgitation (ASE 2017)",
+            "de": "Pulmonalinsuffizienz (ASE 2017)",
+            "ar": "القلس الرئوي (ASE 2017)"
+          },
+          "rows": [
+            {
+              "parameter": {
+                "en": "Jet width / annulus",
+                "de": "Jetbreite / Anulus",
+                "ar": "عرض النفث / الحلقة"
+              },
+              "mild": {
+                "en": "small, narrow origin",
+                "de": "schmal, enger Ursprung",
+                "ar": "رفيع، منشأ ضيق"
+              },
+              "moderate": {
+                "en": "intermediate",
+                "de": "dazwischen",
+                "ar": "بينهما"
+              },
+              "severe": {
+                "en": "≥ 0.7",
+                "de": "≥ 0,7",
+                "ar": "≥ 0.7"
+              }
+            },
+            {
+              "parameter": {
+                "en": "CW signal",
+                "de": "CW-Signal",
+                "ar": "إشارة الدوبلر المستمر"
+              },
+              "mild": {
+                "en": "faint, slow deceleration",
+                "de": "schwach, langsame Dezeleration",
+                "ar": "ضعيفة، تباطؤ بطيء"
+              },
+              "moderate": {
+                "en": "dense, variable",
+                "de": "dicht, variabel",
+                "ar": "كثيفة، متغيرة"
+              },
+              "severe": {
+                "en": "dense, early termination",
+                "de": "dicht, früh endend",
+                "ar": "كثيفة، تنتهي مبكراً"
+              }
+            },
+            {
+              "parameter": {
+                "en": "Pressure half-time",
+                "de": "Druckhalbwertszeit",
+                "ar": "زمن نصف الضغط"
+              },
+              "mild": {
+                "en": "–",
+                "de": "–",
+                "ar": "–"
+              },
+              "moderate": {
+                "en": "–",
+                "de": "–",
+                "ar": "–"
+              },
+              "severe": {
+                "en": "< 100 ms",
+                "de": "< 100 ms",
+                "ar": "< 100 ms"
+              }
+            },
+            {
+              "parameter": {
+                "en": "PR index",
+                "de": "PI-Index",
+                "ar": "مؤشر القلس الرئوي"
+              },
+              "mild": {
+                "en": "–",
+                "de": "–",
+                "ar": "–"
+              },
+              "moderate": {
+                "en": "–",
+                "de": "–",
+                "ar": "–"
+              },
+              "severe": {
+                "en": "< 0.77",
+                "de": "< 0,77",
+                "ar": "< 0.77"
+              }
+            }
+          ]
+        }
+      ],
+      "examples": [
+        {
+          "asset": "echoorg/psax_04.jpg",
+          "aspect": 1.3333,
+          "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+          "source": "https://www.echocardiographer.org/tte-psax",
+          "caption": {
+            "en": "Pulmonary artery and bifurcation",
+            "de": "Pulmonalarterie und Bifurkation",
+            "ar": "الشريان الرئوي وتفرعه"
+          }
+        },
+        {
+          "asset": "echoorg/psax_02.jpg",
+          "aspect": 1.4706,
+          "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+          "source": "https://www.echocardiographer.org/tte-psax",
+          "caption": {
+            "en": "Labelled echo frame",
+            "de": "Beschriftetes Echobild",
+            "ar": "صورة إيكو موسومة"
+          }
+        }
+      ]
+    }
+  ]
 }

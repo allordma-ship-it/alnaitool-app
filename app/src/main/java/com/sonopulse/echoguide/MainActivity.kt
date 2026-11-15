@@ -13,7 +13,9 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.FactCheck
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.outlined.FactCheck
 import androidx.compose.material.icons.filled.Calculate
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.MonitorHeart
@@ -115,6 +117,7 @@ class MainActivity : ComponentActivity() {
 private enum class EchoDestination(val labelRes: Int, val selectedIcon: ImageVector, val icon: ImageVector) {
     PROTOCOL(R.string.nav_protocol, Icons.Filled.MonitorHeart, Icons.Outlined.MonitorHeart),
     GUIDED(R.string.nav_guided, Icons.Filled.School, Icons.Outlined.School),
+    VALVES(R.string.nav_valves, Icons.AutoMirrored.Filled.FactCheck, Icons.AutoMirrored.Outlined.FactCheck),
     ZSCORE(R.string.nav_zscore, Icons.Filled.Calculate, Icons.Outlined.Calculate)
 }
 
@@ -161,8 +164,6 @@ internal fun LocalizedRoot(language: AppLanguage, content: @Composable () -> Uni
     }
 }
 
-/** Secondary language shown under titles: Arabic for German/English users, German for Arabic users. */
-internal fun AppLanguage.companion(): AppLanguage = if (this == AppLanguage.AR) AppLanguage.DE else AppLanguage.AR
 
 
 // ---------------------------------------------------------------------------------------------
@@ -188,16 +189,26 @@ fun rememberProtocolState(): ProtocolState {
 private fun EchoScopeScaffold(language: AppLanguage, onLanguageChange: (AppLanguage) -> Unit) {
     var destination by rememberSaveable { mutableStateOf(EchoDestination.PROTOCOL) }
     var openViewId by rememberSaveable { mutableStateOf<String?>(null) }
+    // Schnitte selection lives here, above the detail screen, so Back returns to the same window,
+    // scroll position and highlighted view instead of the defaults.
+    var selectedWindowId by rememberSaveable { mutableStateOf<String?>(null) }
+    var lastViewId by rememberSaveable { mutableStateOf<String?>(null) }
+    val selectionScroll = rememberScrollState()
+    val openView: (String) -> Unit = { id ->
+        lastViewId = id
+        openViewId = id
+    }
 
     val detailId = openViewId
-    if (destination == EchoDestination.PROTOCOL && detailId != null) {
+    // A view opened from Schnitte or from the valve assessment; Back returns to that tab.
+    if (detailId != null && destination != EchoDestination.GUIDED) {
         BackHandler { openViewId = null }
         ViewDetailScreen(
             viewId = detailId,
             language = language,
             onLanguageChange = onLanguageChange,
             onBack = { openViewId = null },
-            onSelectView = { openViewId = it.id },
+            onSelectView = { openView(it.id) },
             modifier = Modifier.systemBarsPadding()
         )
         return
@@ -239,8 +250,14 @@ private fun EchoScopeScaffold(language: AppLanguage, onLanguageChange: (AppLangu
                 .padding(innerPadding)
         ) {
             when (destination) {
-                EchoDestination.PROTOCOL -> ViewSelectionScreen(language, onOpenView = { openViewId = it })
+                EchoDestination.PROTOCOL -> ViewSelectionScreen(
+                    language = language,
+                    selection = SelectionState(selectedWindowId, lastViewId, selectionScroll),
+                    onSelectWindow = { selectedWindowId = it },
+                    onOpenView = openView
+                )
                 EchoDestination.GUIDED -> GuidedExamScreen(language, onLanguageChange)
+                EchoDestination.VALVES -> ValveAssessmentScreen(language, onOpenView = openView)
                 EchoDestination.ZSCORE -> ZScoreCalculatorScreen()
             }
         }
@@ -303,7 +320,12 @@ private fun CenteredMessage(content: @Composable () -> Unit) {
 // ---------------------------------------------------------------------------------------------
 
 @Composable
-private fun ViewSelectionScreen(language: AppLanguage, onOpenView: (String) -> Unit) {
+private fun ViewSelectionScreen(
+    language: AppLanguage,
+    selection: SelectionState,
+    onSelectWindow: (String) -> Unit,
+    onOpenView: (String) -> Unit
+) {
     when (val state = rememberProtocolState()) {
         ProtocolState.Loading -> CenteredMessage {
             CircularProgressIndicator(color = EchoTeal)
@@ -313,18 +335,26 @@ private fun ViewSelectionScreen(language: AppLanguage, onOpenView: (String) -> U
         is ProtocolState.Error -> CenteredMessage {
             Text(stringResource(R.string.protocol_error, state.message), color = MaterialTheme.colorScheme.error)
         }
-        is ProtocolState.Ready -> SelectionContent(state.protocol, language, onOpenView)
+        is ProtocolState.Ready -> SelectionContent(state.protocol, language, selection, onSelectWindow, onOpenView)
     }
 }
 
 @Composable
-private fun SelectionContent(protocol: EchoProtocol, language: AppLanguage, onOpenView: (String) -> Unit) {
-    var windowId by rememberSaveable { mutableStateOf(protocol.windows.first().id) }
-    val window = protocol.windows.firstOrNull { it.id == windowId } ?: protocol.windows.first()
+private fun SelectionContent(
+    protocol: EchoProtocol,
+    language: AppLanguage,
+    selection: SelectionState,
+    onSelectWindow: (String) -> Unit,
+    onOpenView: (String) -> Unit
+) {
+    // Selected window, else the window of the last opened view, else the first window.
+    val window = protocol.windows.firstOrNull { it.id == selection.windowId }
+        ?: protocol.windows.firstOrNull { w -> w.views.any { it.id == selection.lastViewId } }
+        ?: protocol.windows.first()
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
+            .verticalScroll(selection.scroll)
             .padding(horizontal = 16.dp, vertical = 8.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
@@ -332,17 +362,21 @@ private fun SelectionContent(protocol: EchoProtocol, language: AppLanguage, onOp
         protocol.windows.chunked(2).forEach { row ->
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 row.forEach { w ->
-                    WindowCard(w, language, selected = w.id == window.id, onClick = { windowId = w.id }, modifier = Modifier.weight(1f))
+                    WindowCard(w, language, selected = w.id == window.id, onClick = { onSelectWindow(w.id) }, modifier = Modifier.weight(1f))
                 }
                 if (row.size == 1) Spacer(Modifier.weight(1f))
             }
         }
         SectionTitle(stringResource(R.string.section_views))
         Text(window.description.get(language), style = MaterialTheme.typography.bodySmall, color = EchoMuted)
-        window.views.forEach { v -> ViewCard(v, language, onClick = { onOpenView(v.id) }) }
+        window.views.forEach { v -> ViewCard(v, language, highlighted = v.id == selection.lastViewId, onClick = { onOpenView(v.id) }) }
         Spacer(Modifier.height(8.dp))
     }
 }
+
+/** Schnitte selection hoisted into the scaffold (survives the view-detail screen and Back). */
+@Stable
+private class SelectionState(val windowId: String?, val lastViewId: String?, val scroll: ScrollState)
 
 @Composable
 private fun SectionTitle(text: String) {
@@ -378,7 +412,6 @@ private fun WindowCard(
                 fontWeight = FontWeight.Bold,
                 color = if (selected) EchoTeal else EchoText
             )
-            Text(window.title.get(language.companion()), style = MaterialTheme.typography.bodyMedium, color = EchoOrange)
             Spacer(Modifier.height(4.dp))
             Text(
                 pluralStringResource(R.plurals.views_count, window.views.size, window.views.size),
@@ -390,15 +423,15 @@ private fun WindowCard(
 }
 
 @Composable
-private fun ViewCard(view: EchoView, language: AppLanguage, onClick: () -> Unit) {
+private fun ViewCard(view: EchoView, language: AppLanguage, highlighted: Boolean, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = EchoSurface),
-        border = BorderStroke(1.dp, EchoOutline)
+        colors = CardDefaults.cardColors(containerColor = if (highlighted) EchoTeal.copy(alpha = 0.10f) else EchoSurface),
+        border = BorderStroke(if (highlighted) 1.5.dp else 1.dp, if (highlighted) EchoTeal else EchoOutline)
     ) {
         Row(modifier = Modifier.padding(10.dp), verticalAlignment = Alignment.CenterVertically) {
             Box(
@@ -424,10 +457,10 @@ private fun ViewCard(view: EchoView, language: AppLanguage, onClick: () -> Unit)
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
-                Text(view.title.get(language.companion()), style = MaterialTheme.typography.bodySmall, color = EchoOrange, maxLines = 1,
-                    overflow = TextOverflow.Ellipsis)
                 Row(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Text(stringResource(R.string.notch_label, view.notchClock), style = MaterialTheme.typography.labelSmall, color = EchoMuted)
+                    // The badge keeps its size; a long notch text ellipsizes instead of squeezing it.
+                    Text(stringResource(R.string.notch_label, view.notchClock), style = MaterialTheme.typography.labelSmall, color = EchoMuted,
+                        maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f, fill = false))
                     val simulated = view.videoSource.isSimulated
                     Text(
                         stringResource(if (simulated) R.string.badge_simulated else R.string.badge_real),

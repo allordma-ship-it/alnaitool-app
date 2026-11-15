@@ -78,7 +78,9 @@ data class EchoProtocol(
     val disclaimer: LocalizedText,
     val windows: List<AcousticWindow>,
     /** Function of every console key / knob, keyed by control id (e.g. "GAIN", "PW"). */
-    val consoleControls: Map<String, LocalizedText> = emptyMap()
+    val consoleControls: Map<String, LocalizedText> = emptyMap(),
+    /** Structured heart-valve assessment (AV, MV, TV, PV). */
+    val valves: List<HeartValve> = emptyList()
 ) {
     val allViews: List<EchoView> get() = windows.flatMap { it.views }
 }
@@ -261,6 +263,55 @@ data class GalleryImage(
     val credit: String? = null,
     val source: String? = null
 )
+
+// ---------------------------------------------------------------------------------------------
+// Heart-valve assessment (scripts/valve_content.py; ASE/EACVI 2009 / 2017 recommendations)
+// ---------------------------------------------------------------------------------------------
+
+/** One checklist step, optionally linked to the view it is done in. */
+@Immutable
+@Serializable
+data class ValveCheckItem(val text: LocalizedText, val view: String? = null)
+
+@Immutable
+@Serializable
+data class ValveNormal(val parameter: LocalizedText, val value: LocalizedText)
+
+@Immutable
+@Serializable
+data class GradeRow(
+    val parameter: LocalizedText,
+    val mild: LocalizedText,
+    val moderate: LocalizedText,
+    val severe: LocalizedText
+)
+
+@Immutable
+@Serializable
+data class GradingTable(val title: LocalizedText, val rows: List<GradeRow>, val note: LocalizedText? = null)
+
+@Immutable
+@Serializable
+data class HeartValve(
+    val id: String,
+    val title: LocalizedText,
+    val short: String,
+    /** View ids to image this valve in. */
+    val views: List<String>,
+    val morphology: List<ValveCheckItem>,
+    val color: List<ValveCheckItem>,
+    val spectral: List<ValveCheckItem>,
+    val normals: List<ValveNormal>,
+    val grading: List<GradingTable>,
+    val examples: List<GalleryImage> = emptyList()
+)
+
+/** Valve to open first from a view's cockpit. */
+fun valveForView(viewId: String): String = when (viewId) {
+    "plax_standard", "psax_av", "apical_5c", "suprasternal_arch" -> "aortic"
+    "subcostal_4c", "subcostal_ivc" -> "tricuspid"
+    else -> "mitral"
+}
 
 /** Width / height of the step-1 orientation illustrations (600 x 420). */
 const val ORIENTATION_ASPECT = 600f / 420f

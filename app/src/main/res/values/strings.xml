@@ -117,5 +117,16 @@
     <string name="about_echoorg_title">Probe photos, drawings &amp; example recordings</string>
     <string name="about_echoorg_credit">Echocardiographer.org – Atif Qasim, MD MSCE (www.echocardiographer.org)</string>
     <string name="about_echoorg_detail">Used with the author\'s permission for free reuse with credit (\"Feel free to use any of the content here … please provide credit to this site and me or other authors\"). Images resized, otherwise unchanged.</string>
-    <string name="about_view_gallery">%1$d reference images: %2$s</string>
+    <string name="about_view_gallery">Reference images: %1$d · %2$s</string>
+    <string name="nav_valves">Valves</string>
+    <string name="valve_section_views">Where to image it</string>
+    <string name="valve_section_morphology">2D morphology</string>
+    <string name="valve_section_color">Colour Doppler</string>
+    <string name="valve_section_spectral">Spectral Doppler (PW / CW)</string>
+    <string name="valve_section_normals">Normal values</string>
+    <string name="valve_section_examples">Real example recordings</string>
+    <string name="valve_grade_mild">Mild</string>
+    <string name="valve_grade_moderate">Moderate</string>
+    <string name="valve_grade_severe">Severe</string>
+    <string name="valve_disclaimer">Educational summary of the ASE/EACVI recommendations (stenosis 2009/2017, regurgitation 2017). Grade by integrating all parameters and follow the full guideline.</string>
 </resources>

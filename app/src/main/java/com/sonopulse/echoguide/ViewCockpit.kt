@@ -12,6 +12,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.FactCheck
 import androidx.compose.material.icons.automirrored.filled.FormatListBulleted
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
@@ -110,6 +111,7 @@ fun ViewCockpit(
     var diagramOverlay by rememberSaveable { mutableStateOf(false) }
     var infoOpen by rememberSaveable { mutableStateOf(false) }
     var referenceOpen by rememberSaveable { mutableStateOf(false) }
+    var valvesOpen by rememberSaveable { mutableStateOf(false) }
     val checked = remember { mutableStateMapOf<String, Boolean>() }
     val (caliperOn, toggleCaliper) = rememberCaliperEnabled()
     val step = navigator.step
@@ -169,6 +171,7 @@ fun ViewCockpit(
                 onLanguageChange = onLanguageChange,
                 onBack = onBack,
                 onInfo = { infoOpen = true },
+                onValves = if (protocol.valves.isNotEmpty()) ({ valvesOpen = true }) else null,
                 onDrawer = { scope.launch { drawerState.open() } }
             )
             Column(
@@ -225,6 +228,22 @@ fun ViewCockpit(
         }
     }
     if (infoOpen) AboutDialog(view = view, language = language, onDismiss = { infoOpen = false })
+    if (valvesOpen) {
+        var valveId by rememberSaveable(view.id) { mutableStateOf(valveForView(view.id)) }
+        FullScreenDialog(onDismiss = { valvesOpen = false }) {
+            ValveAssessmentContent(
+                protocol = protocol,
+                language = language,
+                valveId = valveId,
+                onSelectValve = { valveId = it },
+                onOpenView = { id ->
+                    valvesOpen = false
+                    protocol.allViews.firstOrNull { it.id == id }?.let(onSelectView)
+                },
+                modifier = Modifier.weight(1f).fillMaxWidth()
+            )
+        }
+    }
     if (referenceOpen) {
         ReferenceDialog(
             view = view,
@@ -247,6 +266,7 @@ private fun SlimTopBar(
     onLanguageChange: (AppLanguage) -> Unit,
     onBack: (() -> Unit)?,
     onInfo: () -> Unit,
+    onValves: (() -> Unit)?,
     onDrawer: () -> Unit
 ) {
     Row(
@@ -273,6 +293,11 @@ private fun SlimTopBar(
             modifier = Modifier.weight(1f)
         )
         LanguageMenuButton(language, onLanguageChange, compact = true)
+        if (onValves != null) {
+            IconButton(onClick = onValves, modifier = Modifier.size(40.dp)) {
+                Icon(Icons.AutoMirrored.Filled.FactCheck, contentDescription = stringResource(R.string.nav_valves), tint = EchoAmber)
+            }
+        }
         IconButton(onClick = onInfo, modifier = Modifier.size(40.dp)) {
             Icon(Icons.Outlined.Info, contentDescription = stringResource(R.string.about_title), tint = EchoMuted)
         }
@@ -676,7 +701,7 @@ private val CaliperRed = Color(0xFFFF4D6D)
 // ---------------------------------------------------------------------------------------------
 
 @Composable
-private fun FullScreenDialog(onDismiss: () -> Unit, content: @Composable ColumnScope.() -> Unit) {
+internal fun FullScreenDialog(onDismiss: () -> Unit, content: @Composable ColumnScope.() -> Unit) {
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false)
@@ -895,8 +920,8 @@ private fun GalleryFooter(caption: String?, credit: String?, page: Int, total: I
 
 /** Full-screen viewer for a step's real example recordings (PW / CW / TDI / M-mode). */
 @Composable
-private fun ExampleDialog(examples: List<GalleryImage>, title: String, language: AppLanguage, onDismiss: () -> Unit) {
-    var page by rememberSaveable { mutableStateOf(0) }
+internal fun ExampleDialog(examples: List<GalleryImage>, title: String, language: AppLanguage, onDismiss: () -> Unit) {
+    var page by rememberSaveable { mutableIntStateOf(0) }
     val image = examples[page.coerceIn(0, examples.size - 1)]
     FullScreenDialog(onDismiss) {
         Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = EchoText)
