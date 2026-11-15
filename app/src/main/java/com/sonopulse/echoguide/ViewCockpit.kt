@@ -295,14 +295,14 @@ private fun SlimTopBar(
         LanguageMenuButton(language, onLanguageChange, compact = true)
         if (onValves != null) {
             IconButton(onClick = onValves, modifier = Modifier.size(40.dp)) {
-                Icon(Icons.AutoMirrored.Filled.FactCheck, contentDescription = stringResource(R.string.nav_valves), tint = EchoAmber)
+                Icon(Icons.AutoMirrored.Filled.FactCheck, contentDescription = stringResource(R.string.nav_valves), tint = EchoCaution)
             }
         }
         IconButton(onClick = onInfo, modifier = Modifier.size(40.dp)) {
             Icon(Icons.Outlined.Info, contentDescription = stringResource(R.string.about_title), tint = EchoMuted)
         }
         IconButton(onClick = onDrawer, modifier = Modifier.size(40.dp)) {
-            Icon(Icons.AutoMirrored.Filled.FormatListBulleted, contentDescription = stringResource(R.string.guided_protocol_list), tint = EchoTeal)
+            Icon(Icons.AutoMirrored.Filled.FormatListBulleted, contentDescription = stringResource(R.string.guided_protocol_list), tint = EchoPrimary)
         }
     }
 }
@@ -334,12 +334,12 @@ private fun ProtocolDrawer(protocol: EchoProtocol, current: EchoView, language: 
                             .fillMaxWidth()
                             .padding(horizontal = 8.dp)
                             .clip(RoundedCornerShape(10.dp))
-                            .background(if (active) EchoTeal.copy(alpha = 0.14f) else Color.Transparent)
+                            .background(if (active) EchoPrimary.copy(alpha = 0.14f) else Color.Transparent)
                             .clickable { onSelect(v) }
                             .padding(horizontal = 8.dp, vertical = 9.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        NumberBadge(number, if (active) EchoTeal else EchoOrange)
+                        NumberBadge(number, if (active) EchoPrimary else EchoCaution)
                         Spacer(Modifier.width(10.dp))
                         Column(modifier = Modifier.weight(1f)) {
                             Text(v.title.get(language), color = EchoText, style = MaterialTheme.typography.bodyMedium, maxLines = 2)
@@ -366,7 +366,7 @@ private fun NumberBadge(number: Int, color: Color) {
             .background(color),
         contentAlignment = Alignment.Center
     ) {
-        Text(number.toString(), color = EchoBackground, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+        Text(number.toString(), color = EchoOnAccent, fontSize = 11.sp, fontWeight = FontWeight.Bold)
     }
 }
 
@@ -445,18 +445,18 @@ private fun diagramSource(
             // A view without an illustration still gets the clock badge (see ProbeOrientationFallback).
             DiagramSource("orientation/${view.id}.svg", ORIENTATION_ASPECT, SchemaBackground, emptyList(), { null }, isProbe = true)
         mode == DiagramMode.ATLAS && atlas != null ->
-            DiagramSource(atlas, view.diagramAspect, if (atlas.endsWith(".png")) AtlasCard else Color.Black, overlays, { it.diagram },
+            DiagramSource(atlas, view.diagramAspect, if (atlas.endsWith(".png")) EchoPalette.AtlasCard else Color.Black, overlays, { it.diagram },
                 credit = view.diagramCredit?.get(language))
         view.schemaAsset != null ->
             // The schema is traced in the video frame's coordinates: the video calipers fit as they are.
             DiagramSource(view.schemaAsset, view.schemaAspect, SchemaBackground, overlays, { mapToCrop(it.video, view.schemaCrop) })
         else ->
-            DiagramSource(view.svgAsset, SVG_WIDTH / SVG_HEIGHT, EchoBackground, emptyList(), { null },
+            DiagramSource(view.svgAsset, SVG_WIDTH / SVG_HEIGHT, EchoPalette.BgPrimary, emptyList(), { null },
                 svgCaliper = if (caliperOn) step?.caliper else null)
     }
 }
 
-private val SchemaBackground = Color(0xFF0F1419)
+private val SchemaBackground = EchoPalette.BgPrimary
 
 private fun probeFallback(source: DiagramSource, view: EchoView, language: AppLanguage): (@Composable () -> Unit)? =
     if (source.isProbe) ({ ProbeOrientationFallback(view, language) }) else null
@@ -615,7 +615,7 @@ private fun StageCard(
 
 @Composable
 private fun SourceBadge(simulated: Boolean, modifier: Modifier = Modifier) {
-    val color = if (simulated) EchoOrange else EchoTeal
+    val color = if (simulated) EchoCaution else EchoNormal
     Text(
         text = stringResource(if (simulated) R.string.badge_simulated else R.string.badge_real),
         color = color,
@@ -694,7 +694,7 @@ private fun DiagramThumb(
     }
 }
 
-private val CaliperRed = Color(0xFFFF4D6D)
+private val CaliperRed = EchoPalette.Gate
 
 // ---------------------------------------------------------------------------------------------
 // Full-screen overlays
@@ -977,7 +977,7 @@ private fun ReferenceDialog(
                     selected = showChecklist == checklist,
                     onClick = { showChecklist = checklist },
                     label = { Text(stringResource(label)) },
-                    colors = FilterChipDefaults.filterChipColors(selectedContainerColor = EchoTeal, selectedLabelColor = EchoBackground)
+                    colors = FilterChipDefaults.filterChipColors(selectedContainerColor = EchoPrimary, selectedLabelColor = EchoOnAccent)
                 )
             }
         }
@@ -1009,13 +1009,13 @@ private fun DeckTabBar(selected: DeckTab, onSelect: (DeckTab) -> Unit) {
                     .weight(1f)
                     .fillMaxHeight()
                     .clip(RoundedCornerShape(8.dp))
-                    .background(if (active) EchoTeal.copy(alpha = 0.18f) else Color.Transparent)
+                    .background(if (active) EchoPrimary.copy(alpha = 0.18f) else Color.Transparent)
                     .clickable { onSelect(tab) },
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = stringResource(tab.labelRes),
-                    color = if (active) EchoTeal else EchoMuted,
+                    color = if (active) EchoPrimary else EchoMuted,
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = if (active) FontWeight.Bold else FontWeight.Medium,
                     maxLines = 1,
@@ -1052,17 +1052,17 @@ private fun StepCard(view: EchoView, nav: StepNavigator, language: AppLanguage, 
                 text = step?.title?.get(language) ?: view.title.get(language),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                color = EchoTeal,
+                color = EchoPrimary,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f)
             )
             if (step != null && step.examples.isNotEmpty()) {
-                SmallPill(stringResource(R.string.step_example), EchoAmber) { exampleOpen = true }
+                SmallPill(stringResource(R.string.step_example), EchoCaution) { exampleOpen = true }
                 Spacer(Modifier.width(6.dp))
             }
             if (step?.note != null) {
-                SmallPill(stringResource(R.string.guided_note), EchoOrange) { noteOpen = true }
+                SmallPill(stringResource(R.string.guided_note), EchoCaution) { noteOpen = true }
                 Spacer(Modifier.width(6.dp))
             }
             SmallPill(stringResource(R.string.cockpit_reference), EchoSky, onClick = onOpenReference)
@@ -1080,12 +1080,12 @@ private fun StepCard(view: EchoView, nav: StepNavigator, language: AppLanguage, 
                 text = stringResource(R.string.guided_normal, normal.get(language)),
                 style = MaterialTheme.typography.labelLarge,
                 fontWeight = FontWeight.SemiBold,
-                color = EchoTeal,
+                color = EchoNormal,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
                     .clip(RoundedCornerShape(8.dp))
-                    .background(EchoTeal.copy(alpha = 0.12f))
+                    .background(EchoNormal.copy(alpha = 0.14f))
                     .padding(horizontal = 10.dp, vertical = 5.dp)
             )
         }
@@ -1098,7 +1098,7 @@ private fun StepCard(view: EchoView, nav: StepNavigator, language: AppLanguage, 
         AlertDialog(
             onDismissRequest = { noteOpen = false },
             confirmButton = { TextButton(onClick = { noteOpen = false }) { Text(stringResource(R.string.guided_done)) } },
-            title = { Text(stringResource(R.string.guided_note_title), color = EchoOrange, fontWeight = FontWeight.Bold) },
+            title = { Text(stringResource(R.string.guided_note_title), color = EchoCaution, fontWeight = FontWeight.Bold) },
             text = { Text(step.note.get(language), color = EchoText) },
             containerColor = EchoSurface
         )
@@ -1188,7 +1188,7 @@ private fun TimingProbePanel(view: EchoView, language: AppLanguage, onOpenOrient
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     stringResource(R.string.notch_label, view.notchClock),
-                    color = EchoOrange,
+                    color = EchoCaution,
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Bold
                 )
@@ -1206,7 +1206,7 @@ private fun TimingProbePanel(view: EchoView, language: AppLanguage, onOpenOrient
                 Text(it.get(language), color = EchoText, style = MaterialTheme.typography.bodySmall)
             }
             if (view.ecg.nominal) {
-                Text(stringResource(R.string.ecg_nominal), color = EchoOrange, style = MaterialTheme.typography.labelSmall)
+                Text(stringResource(R.string.ecg_nominal), color = EchoCaution, style = MaterialTheme.typography.labelSmall)
             }
             if (ed.isNotEmpty()) PhaseRule("ED", stringResource(R.string.phase_ed_hint), ed.joinToString(" · "))
             if (es.isNotEmpty()) PhaseRule("ES", stringResource(R.string.phase_es_hint), es.joinToString(" · "))
@@ -1214,7 +1214,7 @@ private fun TimingProbePanel(view: EchoView, language: AppLanguage, onOpenOrient
                 Text(stringResource(R.string.cockpit_tips), color = EchoSky, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
                 tips.forEach { tip ->
                     Row {
-                        Text("•", color = EchoOrange, modifier = Modifier.width(12.dp))
+                        Text("•", color = EchoCaution, modifier = Modifier.width(12.dp))
                         Text(tip, color = EchoText, style = MaterialTheme.typography.bodySmall)
                     }
                 }
@@ -1241,17 +1241,22 @@ private fun PhaseRule(phase: String, hint: String, items: String) {
 /** Clock face showing where the transducer index mark (notch) points. */
 @Composable
 internal fun NotchClock(hours: List<Double>, modifier: Modifier = Modifier) {
+    // Theme colours are read here, in composition; the canvas lambda only draws.
+    val face = EchoSurfaceHigh
+    val rim = EchoOutline
+    val majorTick = EchoMuted
+    val index = EchoPrimary
     Canvas(modifier = modifier) {
         val radius = size.minDimension / 2f
         val c = center
-        drawCircle(color = EchoSurfaceHigh, radius = radius)
-        drawCircle(color = EchoOutline, radius = radius, style = Stroke(width = 2.dp.toPx()))
+        drawCircle(color = face, radius = radius)
+        drawCircle(color = rim, radius = radius, style = Stroke(width = 2.dp.toPx()))
         for (h in 0 until 12) {
             val angle = h * PI / 6.0
             val outer = Offset(c.x + radius * 0.92f * sin(angle).toFloat(), c.y - radius * 0.92f * cos(angle).toFloat())
             val inner = Offset(c.x + radius * 0.78f * sin(angle).toFloat(), c.y - radius * 0.78f * cos(angle).toFloat())
             drawLine(
-                color = if (h % 3 == 0) EchoMuted else EchoOutline,
+                color = if (h % 3 == 0) majorTick else rim,
                 start = inner,
                 end = outer,
                 strokeWidth = (if (h % 3 == 0) 2.5f else 1.5f).dp.toPx(),
@@ -1261,10 +1266,10 @@ internal fun NotchClock(hours: List<Double>, modifier: Modifier = Modifier) {
         hours.forEach { hour ->
             val angle = (hour % 12.0) * PI / 6.0
             val tip = Offset(c.x + radius * 0.66f * sin(angle).toFloat(), c.y - radius * 0.66f * cos(angle).toFloat())
-            drawLine(color = EchoOrange, start = c, end = tip, strokeWidth = 3.dp.toPx(), cap = StrokeCap.Round)
-            drawCircle(color = EchoOrange, radius = 5.dp.toPx(), center = tip)
+            drawLine(color = index, start = c, end = tip, strokeWidth = 3.dp.toPx(), cap = StrokeCap.Round)
+            drawCircle(color = index, radius = 5.dp.toPx(), center = tip)
         }
-        drawCircle(color = EchoOrange, radius = 3.dp.toPx(), center = c)
+        drawCircle(color = index, radius = 3.dp.toPx(), center = c)
     }
 }
 
@@ -1277,12 +1282,12 @@ internal fun LegendRow() {
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         listOf(
-            Color(0xFFC2475B) to stringResource(R.string.legend_myocardium),
-            Color(0xFFB03A4E) to stringResource(R.string.legend_oxygenated),
-            Color(0xFF3A5BA8) to stringResource(R.string.legend_deoxygenated),
-            EchoAmber to stringResource(R.string.legend_valves),
-            Color(0xFFFF4D6D) to stringResource(R.string.legend_doppler),
-            EchoOrange to stringResource(R.string.legend_notch)
+            EchoPalette.Myocardium to stringResource(R.string.legend_myocardium),
+            EchoPalette.Oxygenated to stringResource(R.string.legend_oxygenated),
+            EchoPalette.Deoxygenated to stringResource(R.string.legend_deoxygenated),
+            EchoCaution to stringResource(R.string.legend_valves),
+            EchoPalette.Gate to stringResource(R.string.legend_doppler),
+            EchoCaution to stringResource(R.string.legend_notch)
         ).forEach { (color, label) ->
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(
@@ -1301,7 +1306,7 @@ internal fun LegendRow() {
 /** Small ED (teal) / ES (orange) chip showing which ECG phase to freeze for a measurement. */
 @Composable
 internal fun PhaseChip(phase: String) {
-    val color = if (phase == "ES") EchoOrange else EchoTeal
+    val color = if (phase == "ES") EchoCritical else EchoNormal
     Box(
         modifier = Modifier
             .padding(end = 4.dp)
@@ -1322,7 +1327,7 @@ internal fun MeasurementsPanel(view: EchoView, language: AppLanguage) {
                 text = stringResource(R.string.adult_reference),
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.Bold,
-                color = EchoTeal
+                color = EchoPrimary
             )
             Row(modifier = Modifier.padding(top = 4.dp), verticalAlignment = Alignment.CenterVertically) {
                 PhaseChip("ED")
@@ -1349,7 +1354,7 @@ internal fun MeasurementsPanel(view: EchoView, language: AppLanguage) {
                         Text(
                             text = m.normal.get(language),
                             style = MaterialTheme.typography.bodyMedium,
-                            color = EchoTeal,
+                            color = EchoNormal,
                             textAlign = TextAlign.End,
                             modifier = Modifier.weight(1f)
                         )
@@ -1373,7 +1378,7 @@ internal fun MeasurementsPanel(view: EchoView, language: AppLanguage) {
                 text = stringResource(R.string.pediatric_reference),
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.Bold,
-                color = EchoOrange
+                color = EchoCaution
             )
             view.referenceMeasurements.pediatric.forEachIndexed { index, p ->
                 if (index > 0) HorizontalDivider(color = EchoOutline)
@@ -1409,7 +1414,7 @@ internal fun ChecklistPanel(
             Text(
                 text = stringResource(R.string.checklist_progress, done, total),
                 style = MaterialTheme.typography.labelLarge,
-                color = if (done == total) EchoTeal else EchoOrange
+                color = if (done == total) EchoNormal else EchoCaution
             )
             Spacer(Modifier.height(6.dp))
             LinearProgressIndicator(
@@ -1417,7 +1422,7 @@ internal fun ChecklistPanel(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(4.dp)),
-                color = EchoTeal,
+                color = EchoPrimary,
                 trackColor = EchoSurfaceHigh,
                 drawStopIndicator = {}
             )
@@ -1436,7 +1441,7 @@ internal fun ChecklistPanel(
                         checked = itemChecked,
                         onCheckedChange = { onToggle(index, it) },
                         colors = CheckboxDefaults.colors(
-                            checkedColor = EchoTeal,
+                            checkedColor = EchoPrimary,
                             checkmarkColor = EchoBackground,
                             uncheckedColor = EchoMuted
                         )

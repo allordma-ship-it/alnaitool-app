@@ -74,7 +74,7 @@
     <string name="legend_doppler">Doppler</string>
     <string name="phase_ed_hint">Enddiastole · R-Zacke</string>
     <string name="phase_es_hint">Endsystole · T-Ende</string>
-    <string name="player_real_credit">Echter Echo-Clip · %1$s · %2$s · Wikimedia Commons</string>
+    <string name="player_real_credit">Echter Echo-Clip · %1$s · %2$s · %3$s</string>
     <string name="about_title">Über EchoScope</string>
     <string name="about_version">Version %1$s</string>
     <string name="about_illustrations_title">Anatomische Illustrationen</string>

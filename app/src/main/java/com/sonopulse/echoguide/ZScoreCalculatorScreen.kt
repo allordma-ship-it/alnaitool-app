@@ -96,9 +96,9 @@ object ZScoreMath {
     }
 }
 
-private val ZTeal = Color(0xFF00D2B8)
-private val ZAmber = Color(0xFFFBBF24)
-private val ZRed = Color(0xFFF87171)
+private val ZTeal = EchoPalette.Emerald     // normal
+private val ZAmber = EchoPalette.Amber      // borderline
+private val ZRed = EchoPalette.Crimson       // abnormal
 
 /** Accepts Western, Arabic-Indic (٠–٩) and Eastern Arabic-Indic (۰–۹) digits, with '.', ',' or '٫'. */
 internal fun normalizeNumberInput(input: String): String = buildString(input.length) {
@@ -397,7 +397,7 @@ private fun ResultRow(label: String, value: String) {
     }
 }
 
-/** Standard dark card used across the app (`#111824`). */
+/** Standard dark card used across the app (EchoPalette.Card). */
 @Composable
 fun EchoCard(
     modifier: Modifier = Modifier,

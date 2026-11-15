@@ -6,13 +6,13 @@
     android:viewportHeight="108">
     <!-- Ultrasound sector cone -->
     <path
-        android:fillColor="#3300D2B8"
-        android:strokeColor="#FF00D2B8"
+        android:fillColor="#331E88E5"
+        android:strokeColor="#FF1E88E5"
         android:strokeWidth="2"
         android:pathData="M54,30 L32,72 A26,26 0 0,0 76,72 Z" />
     <!-- Probe footprint -->
     <path
-        android:fillColor="#FFFF8A3D"
+        android:fillColor="#FFFB8C00"
         android:pathData="M46,24 L62,24 L62,31 L46,31 Z" />
     <!-- Heartbeat trace -->
     <path

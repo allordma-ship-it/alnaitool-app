@@ -3,8 +3,8 @@
     <style name="Theme.EchoScope" parent="android:Theme.Material.NoActionBar">
         <item name="android:windowBackground">@color/echo_background</item>
         <item name="android:colorBackground">@color/echo_background</item>
-        <item name="android:colorPrimary">@color/echo_teal</item>
-        <item name="android:colorAccent">@color/echo_orange</item>
+        <item name="android:colorPrimary">@color/echo_primary</item>
+        <item name="android:colorAccent">@color/echo_caution</item>
         <item name="android:statusBarColor">@color/echo_background</item>
         <item name="android:navigationBarColor">@color/echo_background</item>
         <item name="android:windowLightStatusBar">false</item>

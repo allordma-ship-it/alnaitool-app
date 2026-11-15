@@ -88,7 +88,7 @@ def write_attribution(views: dict) -> None:
         "EchoScope – cine-loop sources",
         "=============================",
         "",
-        "Real echocardiography clips (Wikimedia Commons). They were scaled to 720 px width and",
+        "Real echocardiography clips (Wikimedia Commons, The POCUS Atlas). They were scaled to 720 px width and",
         "re-encoded (H.264, no audio) without other changes; the converted files are shared",
         "under the same licence as the originals.",
         "",

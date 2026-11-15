@@ -47,55 +47,6 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 
 // ---------------------------------------------------------------------------------------------
-// Echo-Room OLED dark theme
-// ---------------------------------------------------------------------------------------------
-
-internal val EchoBackground = Color(0xFF0F1419)  // EchoBgPrimary: charcoal slate, never pure black (OLED smearing)
-internal val EchoSurface = Color(0xFF111824)
-internal val EchoSurfaceHigh = Color(0xFF1A2333)
-internal val EchoTeal = Color(0xFF00D2B8)
-internal val EchoOrange = Color(0xFFFF8A3D)
-internal val EchoSky = Color(0xFF38BDF8)
-internal val EchoAmber = Color(0xFFFBBF24)
-internal val EchoText = Color(0xFFE2E8F0)
-internal val EchoMuted = Color(0xFF94A3B8)
-internal val EchoOutline = Color(0xFF263244)
-/** Light-slate card behind the anatomical atlas illustrations so their dark labels stay readable. */
-internal val AtlasCard = Color(0xFFE2E8F0)
-
-internal val EchoColorScheme = darkColorScheme(
-    primary = EchoTeal,
-    onPrimary = Color(0xFF00201C),
-    primaryContainer = Color(0xFF003D36),
-    onPrimaryContainer = EchoTeal,
-    secondary = EchoOrange,
-    onSecondary = Color(0xFF2B1200),
-    secondaryContainer = Color(0xFF4A2000),
-    onSecondaryContainer = EchoOrange,
-    tertiary = EchoSky,
-    onTertiary = Color(0xFF00283A),
-    background = EchoBackground,
-    onBackground = EchoText,
-    surface = EchoSurface,
-    onSurface = EchoText,
-    surfaceVariant = EchoSurfaceHigh,
-    onSurfaceVariant = EchoMuted,
-    surfaceContainer = EchoSurface,
-    surfaceContainerLow = EchoSurface,
-    surfaceContainerHigh = EchoSurfaceHigh,
-    surfaceContainerHighest = EchoSurfaceHigh,
-    outline = EchoOutline,
-    outlineVariant = EchoOutline,
-    error = Color(0xFFF87171),
-    onError = Color(0xFF370B0B)
-)
-
-@Composable
-fun EchoScopeTheme(content: @Composable () -> Unit) {
-    MaterialTheme(colorScheme = EchoColorScheme, typography = Typography(), content = content)
-}
-
-// ---------------------------------------------------------------------------------------------
 // Activity
 // ---------------------------------------------------------------------------------------------
 
@@ -233,9 +184,9 @@ private fun EchoScopeScaffold(language: AppLanguage, onLanguageChange: (AppLangu
                         icon = { Icon(if (selected) item.selectedIcon else item.icon, contentDescription = null) },
                         label = { Text(stringResource(item.labelRes), maxLines = 1) },
                         colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = EchoBackground,
-                            selectedTextColor = EchoTeal,
-                            indicatorColor = EchoTeal,
+                            selectedIconColor = EchoOnAccent,
+                            selectedTextColor = EchoPrimary,
+                            indicatorColor = EchoPrimary,
                             unselectedIconColor = EchoMuted,
                             unselectedTextColor = EchoMuted
                         )
@@ -274,7 +225,7 @@ private fun ViewDetailScreen(
     modifier: Modifier = Modifier
 ) {
     when (val state = rememberProtocolState()) {
-        ProtocolState.Loading -> CenteredMessage { CircularProgressIndicator(color = EchoTeal) }
+        ProtocolState.Loading -> CenteredMessage { CircularProgressIndicator(color = EchoPrimary) }
         is ProtocolState.Error -> CenteredMessage {
             Text(stringResource(R.string.protocol_error, state.message), color = MaterialTheme.colorScheme.error)
         }
@@ -328,7 +279,7 @@ private fun ViewSelectionScreen(
 ) {
     when (val state = rememberProtocolState()) {
         ProtocolState.Loading -> CenteredMessage {
-            CircularProgressIndicator(color = EchoTeal)
+            CircularProgressIndicator(color = EchoPrimary)
             Spacer(Modifier.height(12.dp))
             Text(stringResource(R.string.loading_protocol), color = EchoMuted)
         }
@@ -402,15 +353,15 @@ private fun WindowCard(
             .clip(RoundedCornerShape(16.dp))
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = if (selected) EchoTeal.copy(alpha = 0.12f) else EchoSurface),
-        border = BorderStroke(if (selected) 1.5.dp else 1.dp, if (selected) EchoTeal else EchoOutline)
+        colors = CardDefaults.cardColors(containerColor = if (selected) EchoPrimary.copy(alpha = 0.12f) else EchoSurface),
+        border = BorderStroke(if (selected) 1.5.dp else 1.dp, if (selected) EchoPrimary else EchoOutline)
     ) {
         Column(modifier = Modifier.padding(14.dp)) {
             Text(
                 window.title.get(language),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                color = if (selected) EchoTeal else EchoText
+                color = if (selected) EchoPrimary else EchoText
             )
             Spacer(Modifier.height(4.dp))
             Text(
@@ -430,8 +381,8 @@ private fun ViewCard(view: EchoView, language: AppLanguage, highlighted: Boolean
             .clip(RoundedCornerShape(16.dp))
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = if (highlighted) EchoTeal.copy(alpha = 0.10f) else EchoSurface),
-        border = BorderStroke(if (highlighted) 1.5.dp else 1.dp, if (highlighted) EchoTeal else EchoOutline)
+        colors = CardDefaults.cardColors(containerColor = if (highlighted) EchoPrimary.copy(alpha = 0.10f) else EchoSurface),
+        border = BorderStroke(if (highlighted) 1.5.dp else 1.dp, if (highlighted) EchoPrimary else EchoOutline)
     ) {
         Row(modifier = Modifier.padding(10.dp), verticalAlignment = Alignment.CenterVertically) {
             Box(
@@ -464,7 +415,7 @@ private fun ViewCard(view: EchoView, language: AppLanguage, highlighted: Boolean
                     val simulated = view.videoSource.isSimulated
                     Text(
                         stringResource(if (simulated) R.string.badge_simulated else R.string.badge_real),
-                        color = if (simulated) EchoOrange else EchoTeal,
+                        color = if (simulated) EchoCaution else EchoNormal,
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -494,10 +445,10 @@ private fun EchoTopBar(language: AppLanguage, onLanguageChange: (AppLanguage) ->
             modifier = Modifier
                 .size(36.dp)
                 .clip(RoundedCornerShape(10.dp))
-                .background(EchoTeal.copy(alpha = 0.15f)),
+                .background(EchoPrimary.copy(alpha = 0.15f)),
             contentAlignment = Alignment.Center
         ) {
-            Icon(Icons.Filled.MonitorHeart, contentDescription = null, tint = EchoTeal)
+            Icon(Icons.Filled.MonitorHeart, contentDescription = null, tint = EchoPrimary)
         }
         Spacer(Modifier.width(10.dp))
         Column(modifier = Modifier.weight(1f)) {
@@ -527,10 +478,10 @@ internal fun LanguageMenuButton(language: AppLanguage, onLanguageChange: (AppLan
             onClick = { menuOpen = true },
             contentPadding = PaddingValues(horizontal = if (compact) 6.dp else 10.dp)
         ) {
-            Icon(Icons.Filled.Translate, contentDescription = stringResource(R.string.language_label), tint = EchoOrange,
+            Icon(Icons.Filled.Translate, contentDescription = stringResource(R.string.language_label), tint = EchoCaution,
                 modifier = Modifier.size(16.dp))
             Spacer(Modifier.width(4.dp))
-            Text(if (compact) language.tag.uppercase() else language.nativeName, color = EchoOrange,
+            Text(if (compact) language.tag.uppercase() else language.nativeName, color = EchoCaution,
                 style = MaterialTheme.typography.labelLarge)
         }
         DropdownMenu(expanded = menuOpen, onDismissRequest = { menuOpen = false }, containerColor = EchoSurfaceHigh) {
@@ -539,11 +490,11 @@ internal fun LanguageMenuButton(language: AppLanguage, onLanguageChange: (AppLan
                     text = {
                         Text(
                             option.nativeName,
-                            color = if (option == language) EchoTeal else EchoText,
+                            color = if (option == language) EchoPrimary else EchoText,
                             fontWeight = if (option == language) FontWeight.Bold else FontWeight.Normal
                         )
                     },
-                    trailingIcon = { if (option == language) Icon(Icons.Filled.Check, contentDescription = null, tint = EchoTeal) },
+                    trailingIcon = { if (option == language) Icon(Icons.Filled.Check, contentDescription = null, tint = EchoPrimary) },
                     onClick = {
                         menuOpen = false
                         onLanguageChange(option)
@@ -585,13 +536,13 @@ internal fun AboutDialog(view: EchoView?, language: AppLanguage, onDismiss: () -
                 if (view != null) {
                     val src = view.videoSource
                     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                        Text(stringResource(R.string.about_this_view, view.title.get(language)), color = EchoOrange,
+                        Text(stringResource(R.string.about_this_view, view.title.get(language)), color = EchoCaution,
                             style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
                         Text(
                             text = if (src.isSimulated) {
                                 stringResource(R.string.player_simulated_note)
                             } else {
-                                stringResource(R.string.player_real_credit, src.author.orEmpty().ifBlank { "Wikimedia Commons" }, src.license.orEmpty())
+                                stringResource(R.string.player_real_credit, src.author.orEmpty(), src.license.orEmpty(), src.platform)
                             },
                             color = EchoText,
                             style = MaterialTheme.typography.bodySmall
@@ -618,7 +569,7 @@ internal fun AboutDialog(view: EchoView?, language: AppLanguage, onDismiss: () -
 @Composable
 private fun AboutSection(titleRes: Int, bodyRes: Int, detailRes: Int?) {
     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-        Text(stringResource(titleRes), color = EchoTeal, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
+        Text(stringResource(titleRes), color = EchoPrimary, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
         Text(stringResource(bodyRes), color = EchoText, style = MaterialTheme.typography.bodyMedium)
         if (detailRes != null) {
             Text(stringResource(detailRes), color = EchoMuted, style = MaterialTheme.typography.bodySmall)

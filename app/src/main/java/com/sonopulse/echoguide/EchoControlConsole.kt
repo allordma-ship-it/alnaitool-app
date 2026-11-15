@@ -58,13 +58,13 @@ import androidx.compose.ui.unit.sp
 import kotlin.math.cos
 import kotlin.math.sin
 
-private val ConsoleTeal = Color(0xFF00D2B8)
-private val ConsoleOrange = Color(0xFFFF8A3D)
-private val PanelTop = Color(0xFF1A2230)
-private val PanelBottom = Color(0xFF0C1119)
-private val KeyFace = Color(0xFF222C3B)
-private val KeyEdge = Color(0xFF334155)
-private val KeyLabel = Color(0xFFCBD5E1)
+private val ConsoleTeal = EchoPalette.MedicalBlue
+private val ConsoleOrange = EchoPalette.Amber
+private val PanelTop = EchoPalette.ConsolePanelTop
+private val PanelBottom = EchoPalette.ConsolePanelBottom
+private val KeyFace = EchoPalette.ConsoleKeyFace
+private val KeyEdge = EchoPalette.ConsoleKeyEdge
+private val KeyLabel = EchoPalette.ConsoleKeyLabel
 
 private val KNOBS = listOf("GAIN", "DEPTH", "FOCUS", "SCALE")
 private val KEY_ROWS = listOf(
@@ -231,7 +231,7 @@ private fun ConsoleKey(
                     if (state == ControlState.CURRENT) {
                         Brush.verticalGradient(listOf(ConsoleOrange.copy(alpha = 0.6f), ConsoleOrange.copy(alpha = 0.25f)))
                     } else {
-                        Brush.verticalGradient(listOf(KeyFace, Color(0xFF161E2A)))
+                        Brush.verticalGradient(listOf(KeyFace, EchoPalette.ConsoleKeyFaceLow))
                     }
                 )
                 .border(if (state == ControlState.IDLE) 1.dp else 1.5.dp, glow, RoundedCornerShape(8.dp))
@@ -295,7 +295,7 @@ private fun RotaryKnob(
                     useCenter = false, topLeft = arcTopLeft, size = arcSize, style = Stroke(3.dp.toPx(), cap = StrokeCap.Round))
                 val body = r - 7.dp.toPx()
                 drawCircle(
-                    Brush.radialGradient(listOf(Color(0xFF3A4658), Color(0xFF151C27)), center = c - Offset(body / 3, body / 3), radius = body * 1.6f),
+                    Brush.radialGradient(listOf(EchoPalette.ConsoleKnobLight, EchoPalette.ConsoleKnobDark), center = c - Offset(body / 3, body / 3), radius = body * 1.6f),
                     body, c
                 )
                 drawCircle(if (state == ControlState.IDLE) KeyEdge else ring, body, c,
@@ -303,7 +303,7 @@ private fun RotaryKnob(
                 for (i in 0 until 12) {
                     val a = Math.toRadians(i * 30.0)
                     drawLine(
-                        Color(0xFF0E141D),
+                        EchoPalette.ConsoleKnobRim,
                         Offset(c.x + (body - 3.dp.toPx()) * cos(a).toFloat(), c.y + (body - 3.dp.toPx()) * sin(a).toFloat()),
                         Offset(c.x + body * cos(a).toFloat(), c.y + body * sin(a).toFloat()),
                         1.2.dp.toPx()
@@ -339,7 +339,7 @@ private fun GuidanceBanner(
     Column(
         modifier = modifier
             .clip(RoundedCornerShape(10.dp))
-            .background(Color(0xFF0A0F16))
+            .background(EchoPalette.ConsoleWell)
             .border(1.dp, accent.copy(alpha = 0.6f), RoundedCornerShape(10.dp))
             .padding(horizontal = 10.dp, vertical = 6.dp),
         verticalArrangement = Arrangement.spacedBy(2.dp)

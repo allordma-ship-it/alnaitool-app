@@ -169,6 +169,13 @@ data class VideoSource(
     val sourceUrl: String? = null
 ) {
     val isSimulated: Boolean get() = type != "real"
+
+    /** Where the clip is published (shown in the credit line). */
+    val platform: String get() = when {
+        sourceUrl.orEmpty().contains("pocusatlas") -> "The POCUS Atlas"
+        sourceUrl.orEmpty().contains("wikimedia") -> "Wikimedia Commons"
+        else -> sourceUrl.orEmpty()
+    }
 }
 
 /** One ordered step on the ultrasound console for a view. */

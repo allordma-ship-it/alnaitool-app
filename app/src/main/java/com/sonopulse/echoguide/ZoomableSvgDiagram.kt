@@ -57,7 +57,7 @@ const val SVG_HEIGHT = 420f
 
 private const val MAX_ZOOM = 5f
 private const val DOUBLE_TAP_ZOOM = 2.5f
-private val CaliperColor = Color(0xFFFF4D6D)
+private val CaliperColor = EchoPalette.Gate
 
 /**
  * Anatomy diagram with pinch-to-zoom and pan.

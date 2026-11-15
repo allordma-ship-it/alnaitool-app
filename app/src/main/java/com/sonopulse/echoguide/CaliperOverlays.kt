@@ -67,11 +67,11 @@ import androidx.compose.ui.unit.sp
 import kotlin.math.sqrt
 
 /** Measurement caliper (yellow, like the scanner's caliper cursor). */
-internal val CaliperYellow = Color(0xFFFFD60A)
+internal val CaliperYellow = EchoPalette.Caliper
 /** Doppler cursor / M-mode line. */
-internal val CursorTeal = Color(0xFF2EE6D6)
+internal val CursorTeal = EchoPalette.Cursor
 /** PW sample gate and colour-Doppler box. */
-internal val GateRed = Color(0xFFFF4D6D)
+internal val GateRed = EchoPalette.Gate
 
 // ---------------------------------------------------------------------------------------------
 // Geometry
@@ -422,13 +422,13 @@ internal fun DiagramModePills(
             val active = mode == selected
             Text(
                 text = stringResource(mode.labelRes),
-                color = if (active) EchoBackground else Color.White.copy(alpha = 0.85f),
+                color = if (active) EchoOnAccent else Color.White.copy(alpha = 0.85f),
                 fontSize = if (large) 13.sp else 9.sp,
                 fontWeight = FontWeight.Bold,
                 maxLines = 1,
                 modifier = Modifier
                     .clip(RoundedCornerShape(9.dp))
-                    .background(if (active) EchoTeal else Color.Transparent)
+                    .background(if (active) EchoPrimary else Color.Transparent)
                     .clickable { onSelect(mode) }
                     .semantics { this.selected = active; role = Role.Tab }
                     .padding(horizontal = if (large) 12.dp else 6.dp, vertical = if (large) 5.dp else 2.dp)
@@ -445,8 +445,8 @@ internal fun DiagramModePills(
 @Composable
 internal fun FrozenBadge(phase: String, modifier: Modifier = Modifier) {
     val (text, color) = when (phase) {
-        StepPhase.ED -> stringResource(R.string.frozen_ed) to EchoTeal
-        StepPhase.ES -> stringResource(R.string.frozen_es) to EchoOrange
+        StepPhase.ED -> stringResource(R.string.frozen_ed) to EchoNormal
+        StepPhase.ES -> stringResource(R.string.frozen_es) to EchoCritical
         else -> stringResource(R.string.frozen_exp) to EchoSky
     }
     Text(
@@ -466,7 +466,7 @@ internal fun FrozenBadge(phase: String, modifier: Modifier = Modifier) {
 /** Small corner chip that shows / hides the caliper overlay so trainees can test themselves. */
 @Composable
 internal fun CaliperToggle(enabled: Boolean, onToggle: () -> Unit, modifier: Modifier = Modifier) {
-    val color = if (enabled) CaliperYellow else Color(0xFF94A3B8)
+    val color = if (enabled) CaliperYellow else EchoPalette.TextMuted
     val label = stringResource(if (enabled) R.string.caliper_on else R.string.caliper_off)
     val description = stringResource(R.string.caliper_toggle)
     Row(

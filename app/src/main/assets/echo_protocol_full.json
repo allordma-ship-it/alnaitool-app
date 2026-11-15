@@ -3986,10 +3986,10 @@
                 "type": "DOPPLER_GATE",
                 "label": "PW · LVOT",
                 "video": [
-                  0.5,
-                  0.073,
-                  0.5075,
-                  0.573
+                  0.52,
+                  0.06,
+                  0.565,
+                  0.565
                 ],
                 "diagram": [
                   0.68,
@@ -4044,10 +4044,10 @@
                 "type": "CURSOR",
                 "label": "CW · AV",
                 "video": [
-                  0.5,
-                  0.073,
-                  0.5075,
-                  0.873
+                  0.52,
+                  0.06,
+                  0.6,
+                  0.82
                 ],
                 "diagram": [
                   0.68,
@@ -4072,9 +4072,14 @@
             }
           ],
           "ecg": {
-            "beatMs": 833,
+            "beatMs": 1100,
             "edMs": 0,
-            "esMs": 325
+            "esMs": 400,
+            "rWavesMs": [
+              0,
+              1100
+            ],
+            "nominal": true
           },
           "timingNote": {
             "en": "Doppler over the ejection period: LVOT VTI and aortic CW from just after the QRS to the T-wave end.",
@@ -4140,7 +4145,12 @@
             }
           ],
           "videoSource": {
-            "type": "simulated"
+            "type": "real",
+            "title": "Normal Cardiac Anatomy – Apical 5 Chamber – Normal",
+            "author": "Hannah Kopinski, Lindsay Davis (NYU/Bellevue), Matthew Riscinti (Kings County)",
+            "license": "CC BY-NC 4.0",
+            "licenseUrl": "https://creativecommons.org/licenses/by-nc/4.0/",
+            "sourceUrl": "https://www.thepocusatlas.com/normal-cardiac-anatomy"
           },
           "diagramAsset": "diagrams/apical_5c.png",
           "diagramAspect": 1.1527,
@@ -4150,13 +4160,13 @@
             "ar": "الرسم: Patrick J. Lynch و C. Carl Jaffe, MD (Yale) · CC BY 2.5 · معدَّل (خلفية فاتحة)"
           },
           "schemaAsset": "schema/apical_5c.svg",
-          "schemaAspect": 0.9162,
+          "schemaAspect": 0.8771,
           "orientationAsset": "orientation/apical_5c.svg",
           "schemaCrop": [
-            0.2,
-            0.008,
-            0.815,
-            0.903
+            0.17,
+            0.0,
+            0.918,
+            0.911
           ],
           "probeGallery": [
             {

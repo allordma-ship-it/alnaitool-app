@@ -56,9 +56,9 @@ import coil.compose.AsyncImage
 /** Narrow table cells: hyphenate long German words ("Regurgitations-volumen") instead of cutting them. */
 private val CellText = TextStyle(fontSize = 10.5.sp, hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph)
 
-private val GradeMild = Color(0xFF22C55E)
-private val GradeModerate = Color(0xFFF59E0B)
-private val GradeSevere = Color(0xFFEF4444)
+private val GradeMild = EchoPalette.Emerald
+private val GradeModerate = EchoPalette.Amber
+private val GradeSevere = EchoPalette.Crimson
 
 /**
  * "Herzklappen" tab: structured assessment of the aortic, mitral, tricuspid and pulmonary valve –
@@ -69,7 +69,7 @@ private val GradeSevere = Color(0xFFEF4444)
 fun ValveAssessmentScreen(language: AppLanguage, onOpenView: (String) -> Unit) {
     when (val state = rememberProtocolState()) {
         ProtocolState.Loading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator(color = EchoTeal)
+            CircularProgressIndicator(color = EchoPrimary)
         }
         is ProtocolState.Error -> Text(stringResource(R.string.protocol_error, state.message), color = MaterialTheme.colorScheme.error)
         is ProtocolState.Ready -> {
@@ -108,13 +108,13 @@ internal fun ValveAssessmentContent(
                     modifier = Modifier
                         .weight(1f)
                         .clip(RoundedCornerShape(12.dp))
-                        .background(if (active) EchoTeal.copy(alpha = 0.16f) else EchoSurface)
-                        .border(if (active) 1.5.dp else 1.dp, if (active) EchoTeal else EchoOutline, RoundedCornerShape(12.dp))
+                        .background(if (active) EchoPrimary.copy(alpha = 0.16f) else EchoSurface)
+                        .border(if (active) 1.5.dp else 1.dp, if (active) EchoPrimary else EchoOutline, RoundedCornerShape(12.dp))
                         .clickable { onSelectValve(v.id) }
                         .padding(vertical = 8.dp, horizontal = 4.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(v.short, color = if (active) EchoTeal else EchoText, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    Text(v.short, color = if (active) EchoPrimary else EchoText, fontWeight = FontWeight.Bold, fontSize = 16.sp)
                     Text(v.title.get(language), color = EchoMuted, style = CellText.copy(fontSize = 9.5.sp), maxLines = 2,
                         textAlign = TextAlign.Center, overflow = TextOverflow.Ellipsis)
                 }
@@ -142,7 +142,7 @@ internal fun ValveAssessmentContent(
                         Checkbox(
                             checked = checked[key] == true,
                             onCheckedChange = { checked[key] = it },
-                            colors = CheckboxDefaults.colors(checkedColor = EchoTeal, uncheckedColor = EchoMuted),
+                            colors = CheckboxDefaults.colors(checkedColor = EchoPrimary, uncheckedColor = EchoMuted),
                             modifier = Modifier.size(36.dp)
                         )
                         Column(modifier = Modifier.weight(1f).padding(top = 8.dp)) {
@@ -168,7 +168,7 @@ internal fun ValveAssessmentContent(
                 Row(modifier = Modifier.fillMaxWidth().padding(vertical = 3.dp)) {
                     Text(normal.parameter.get(language), color = EchoMuted, style = MaterialTheme.typography.bodySmall,
                         modifier = Modifier.weight(1f))
-                    Text(normal.value.get(language), color = EchoTeal, style = MaterialTheme.typography.bodySmall,
+                    Text(normal.value.get(language), color = EchoNormal, style = MaterialTheme.typography.bodySmall,
                         fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f), textAlign = TextAlign.End)
                 }
             }
@@ -220,7 +220,7 @@ private fun ValveCard(title: String, content: @Composable () -> Unit) {
             .padding(12.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        Text(title, color = EchoTeal, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
+        Text(title, color = EchoPrimary, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
         content()
     }
 }

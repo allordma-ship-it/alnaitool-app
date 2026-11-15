@@ -108,8 +108,11 @@ STEPS = {
     ],
     "apical_5c": [
         ("LIVE", None),
-        ("LIVE", ov(G, "PW · LVOT", [0.50, 0.073, 0.5075, 0.573], [0.68, 0.06, 0.66, 0.57])),
-        ("LIVE", ov(C, "CW · AV", [0.50, 0.073, 0.5075, 0.873], [0.68, 0.06, 0.66, 0.72])),
+        # Real POCUS Atlas loop: PW sample volume in the LVOT just below the aortic valve
+        # (aortic root ring centred at ≈ 0.585 / 0.635 in systole).
+        ("LIVE", ov(G, "PW · LVOT", [0.52, 0.06, 0.565, 0.565], [0.68, 0.06, 0.66, 0.57])),
+        # CW from the apex through the aortic valve into the ascending aorta.
+        ("LIVE", ov(C, "CW · AV", [0.52, 0.06, 0.60, 0.82], [0.68, 0.06, 0.66, 0.72])),
     ],
     "apical_2c": [
         ("LIVE", None),

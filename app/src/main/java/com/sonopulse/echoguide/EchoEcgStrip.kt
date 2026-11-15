@@ -54,13 +54,13 @@ import androidx.media3.exoplayer.ExoPlayer
 import kotlin.math.exp
 
 /** Medical-monitor green for the ECG trace. */
-internal val EcgGreen = Color(0xFF00E676)
-internal val EcgTeal = Color(0xFF00D2B8)
-internal val EcgOrange = Color(0xFFFF8A3D)
-private val EcgPaper = Color(0xFF050B0E)
-private val EcgGridMinor = Color(0xFF0E2A1E)
-private val EcgGridMajor = Color(0xFF16402D)
-private val EcgCursor = Color(0xFFF8FAFC)
+internal val EcgGreen = EchoPalette.EcgTrace
+internal val EcgTeal = EchoPalette.Emerald   // ED marker
+internal val EcgOrange = EchoPalette.Crimson  // ES marker
+private val EcgPaper = EchoPalette.EcgPaper
+private val EcgGridMinor = EchoPalette.EcgGridMinor
+private val EcgGridMajor = EchoPalette.EcgGridMajor
+private val EcgCursor = EchoPalette.EcgCursor
 
 /** Beats shown when the clip duration is not known yet. */
 private const val DEFAULT_BEATS = 2
@@ -208,7 +208,7 @@ fun EcgTransportBar(
             }
             TransportPill(
                 text = "0.5x",
-                color = Color(0xFFCBD5E1),
+                color = EchoPalette.ConsoleKeyLabel,
                 selected = loop.speed == 0.5f,
                 enabled = loop.ready
             ) { loop.setPlaybackSpeed(if (loop.speed == 0.5f) 1f else 0.5f) }
@@ -228,7 +228,7 @@ private fun TransportButton(enabled: Boolean, onClick: () -> Unit, content: @Com
         modifier = Modifier
             .size(34.dp)
             .clip(CircleShape)
-            .background(if (enabled) EcgTeal.copy(alpha = 0.25f) else Color(0x22FFFFFF))
+            .background(if (enabled) EcgTeal.copy(alpha = 0.25f) else EchoPalette.Text.copy(alpha = 0.13f))
             .clickable(enabled = enabled, onClick = onClick),
         contentAlignment = Alignment.Center
     ) { content() }

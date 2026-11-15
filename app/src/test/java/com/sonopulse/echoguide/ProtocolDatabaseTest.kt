@@ -141,10 +141,24 @@ class ProtocolDatabaseTest {
             val src = v.videoSource
             assertFalse("author missing for ${v.id}", src.author.isNullOrBlank())
             assertFalse("licence missing for ${v.id}", src.license.isNullOrBlank())
-            assertTrue("source URL missing for ${v.id}", src.sourceUrl.orEmpty().startsWith("https://commons.wikimedia.org/"))
+            // Approved sources only: Wikimedia Commons (CC BY / BY-SA) and The POCUS Atlas (CC BY-NC).
+            assertTrue("source URL missing for ${v.id}", src.sourceUrl.orEmpty().startsWith("https://commons.wikimedia.org/") ||
+                src.sourceUrl.orEmpty().startsWith("https://www.thepocusatlas.com/"))
             assertTrue("${v.id} not credited in ATTRIBUTION.txt", attribution.contains("loops/${v.id}.mp4"))
             assertTrue(v.ecg.rWavesMs.zipWithNext().all { (a, b) -> b > a })
         }
+    }
+
+    @Test
+    fun apicalFiveChamberIsARealLoop() {
+        val a5c = protocol.allViews.first { it.id == "apical_5c" }
+        assertFalse("apical_5c must not be simulated", a5c.videoSource.isSimulated)
+        assertEquals("The POCUS Atlas", a5c.videoSource.platform)
+        assertEquals(listOf(0L, 1100L), a5c.ecg.rWavesMs)
+        val labels = a5c.steps.flatMap { it.overlays }.map { it.label }
+        assertTrue(labels.containsAll(listOf("PW · LVOT", "CW · AV")))
+        // Only PSAX-AV is still simulated (no openly licensed normal adult clip found).
+        assertEquals(listOf("psax_av"), protocol.allViews.filter { it.videoSource.isSimulated }.map { it.id })
     }
 
     @Test
