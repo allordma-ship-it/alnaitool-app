@@ -324,6 +324,12 @@
                   0.7,
                   0.62,
                   0.86
+                ],
+                "schema": [
+                  0.22,
+                  0.64,
+                  0.47,
+                  0.84
                 ]
               }
             },
@@ -364,6 +370,12 @@
                   0.375,
                   0.565,
                   0.415
+                ],
+                "schema": [
+                  0.5,
+                  0.45,
+                  0.5,
+                  0.485
                 ]
               }
             }
@@ -508,13 +520,14 @@
           ],
           "schemaGallery": [
             {
-              "asset": "echoorg/subcostal_02.jpg",
+              "asset": "schema_dark/subcostal_4c.png",
               "aspect": 0.8083,
               "caption": {
                 "en": "View drawing",
                 "de": "Schnittzeichnung",
                 "ar": "رسم المقطع"
               },
+              "calipers": true,
               "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
               "source": "https://www.echocardiographer.org/tte-subcostal"
             },
@@ -811,6 +824,12 @@
                   0.42,
                   0.36,
                   0.535
+                ],
+                "schema": [
+                  0.555,
+                  0.631,
+                  0.536,
+                  0.692
                 ]
               }
             },
@@ -850,6 +869,12 @@
                   0.3,
                   0.36,
                   0.7
+                ],
+                "schema": [
+                  0.5,
+                  0.133,
+                  0.567,
+                  0.929
                 ]
               },
               "examples": [
@@ -967,6 +992,17 @@
           ],
           "atlasGallery": [],
           "schemaGallery": [
+            {
+              "asset": "schema_dark/subcostal_ivc.png",
+              "aspect": 1.2937,
+              "caption": {
+                "en": "View drawing",
+                "de": "Schnittzeichnung",
+                "ar": "رسم المقطع"
+              },
+              "calipers": true,
+              "credit": "EchoScope"
+            },
             {
               "asset": "echoorg/subcostal-greatvessels_01.jpg",
               "aspect": 1.463,
@@ -1392,6 +1428,12 @@
                   0.555,
                   0.47,
                   0.605
+                ],
+                "schema": [
+                  0.45,
+                  0.42,
+                  0.45,
+                  0.465
                 ]
               }
             },
@@ -1432,6 +1474,12 @@
                   0.612,
                   0.47,
                   0.8
+                ],
+                "schema": [
+                  0.45,
+                  0.465,
+                  0.45,
+                  0.69
                 ]
               }
             },
@@ -1472,6 +1520,12 @@
                   0.807,
                   0.47,
                   0.89
+                ],
+                "schema": [
+                  0.45,
+                  0.69,
+                  0.45,
+                  0.73
                 ]
               }
             },
@@ -1512,6 +1566,12 @@
                   0.455,
                   0.705,
                   0.528
+                ],
+                "schema": [
+                  0.635,
+                  0.37,
+                  0.68,
+                  0.445
                 ]
               },
               "examples": [
@@ -1570,6 +1630,12 @@
                   0.52,
                   0.74,
                   0.78
+                ],
+                "schema": [
+                  0.69,
+                  0.46,
+                  0.84,
+                  0.63
                 ]
               }
             }
@@ -1732,13 +1798,14 @@
           ],
           "schemaGallery": [
             {
-              "asset": "echoorg/plax_03.jpg",
+              "asset": "schema_dark/plax_standard.png",
               "aspect": 1.0316,
               "caption": {
                 "en": "View drawing",
                 "de": "Schnittzeichnung",
                 "ar": "رسم المقطع"
               },
+              "calipers": true,
               "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
               "source": "https://www.echocardiographer.org/tte-plax"
             },
@@ -2103,6 +2170,12 @@
                   0.56,
                   0.91,
                   0.56
+                ],
+                "schema": [
+                  0.6,
+                  0.56,
+                  0.725,
+                  0.56
                 ]
               },
               "examples": [
@@ -2156,6 +2229,12 @@
                   0.28,
                   0.83,
                   0.43
+                ],
+                "schema": [
+                  0.495,
+                  0.11,
+                  0.66,
+                  0.52
                 ]
               }
             },
@@ -2185,6 +2264,12 @@
                   0.45,
                   0.93,
                   0.65
+                ],
+                "schema": [
+                  0.6,
+                  0.66,
+                  0.8,
+                  0.84
                 ]
               }
             },
@@ -2219,6 +2304,12 @@
                   0.22,
                   0.605,
                   0.64
+                ],
+                "schema": [
+                  0.495,
+                  0.11,
+                  0.282,
+                  0.683
                 ]
               }
             }
@@ -2372,6 +2463,18 @@
             }
           ],
           "schemaGallery": [
+            {
+              "asset": "schema_dark/psax_av.png",
+              "aspect": 1.0691,
+              "caption": {
+                "en": "View drawing",
+                "de": "Schnittzeichnung",
+                "ar": "رسم المقطع"
+              },
+              "calipers": true,
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE (adapted)",
+              "source": "https://www.echocardiographer.org/tte-psax"
+            },
             {
               "asset": "echoorg/psax_02.jpg",
               "aspect": 1.4706,
@@ -2700,6 +2803,12 @@
                   0.2,
                   0.725,
                   0.51
+                ],
+                "schema": [
+                  0.47,
+                  0.42,
+                  0.47,
+                  0.73
                 ]
               }
             },
@@ -2745,6 +2854,12 @@
                   0.2,
                   0.735,
                   0.51
+                ],
+                "schema": [
+                  0.47,
+                  0.42,
+                  0.47,
+                  0.73
                 ]
               },
               "extraOverlays": [
@@ -2762,6 +2877,12 @@
                     0.255,
                     0.808,
                     0.255
+                  ],
+                  "schema": [
+                    0.35,
+                    0.645,
+                    0.6,
+                    0.645
                   ]
                 }
               ]
@@ -2802,6 +2923,12 @@
                   0.2,
                   0.735,
                   0.51
+                ],
+                "schema": [
+                  0.47,
+                  0.44,
+                  0.47,
+                  0.71
                 ]
               },
               "extraOverlays": [
@@ -2819,6 +2946,12 @@
                     0.255,
                     0.808,
                     0.255
+                  ],
+                  "schema": [
+                    0.365,
+                    0.645,
+                    0.585,
+                    0.645
                   ]
                 }
               ]
@@ -2982,6 +3115,18 @@
             }
           ],
           "schemaGallery": [
+            {
+              "asset": "schema_dark/psax_papillary.png",
+              "aspect": 1.059,
+              "caption": {
+                "en": "View drawing",
+                "de": "Schnittzeichnung",
+                "ar": "رسم المقطع"
+              },
+              "calipers": true,
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE (adapted)",
+              "source": "https://www.echocardiographer.org/tte-psax"
+            },
             {
               "asset": "echoorg/psax_06.jpg",
               "aspect": 1.3369,
@@ -3404,6 +3549,12 @@
                   0.19,
                   0.725,
                   0.595
+                ],
+                "schema": [
+                  0.45,
+                  0.255,
+                  0.57,
+                  0.66
                 ]
               }
             },
@@ -3444,6 +3595,12 @@
                   0.06,
                   0.475,
                   0.665
+                ],
+                "schema": [
+                  0.4,
+                  0.17,
+                  0.18,
+                  0.645
                 ]
               },
               "examples": [
@@ -3497,6 +3654,12 @@
                   0.55,
                   0.588,
                   0.55
+                ],
+                "schema": [
+                  0.225,
+                  0.565,
+                  0.31,
+                  0.565
                 ]
               }
             },
@@ -3537,6 +3700,12 @@
                   0.06,
                   0.72,
                   0.52
+                ],
+                "schema": [
+                  0.4,
+                  0.17,
+                  0.57,
+                  0.62
                 ]
               },
               "examples": [
@@ -3590,6 +3759,12 @@
                   0.06,
                   0.675,
                   0.6
+                ],
+                "schema": [
+                  0.4,
+                  0.17,
+                  0.44,
+                  0.665
                 ]
               },
               "extraOverlays": [
@@ -3607,6 +3782,12 @@
                     0.06,
                     0.785,
                     0.575
+                  ],
+                  "schema": [
+                    0.4,
+                    0.17,
+                    0.71,
+                    0.665
                   ]
                 }
               ],
@@ -3671,6 +3852,12 @@
                   0.06,
                   0.5,
                   0.7
+                ],
+                "schema": [
+                  0.4,
+                  0.17,
+                  0.278,
+                  0.725
                 ]
               }
             },
@@ -3711,6 +3898,12 @@
                   0.66,
                   0.78,
                   0.95
+                ],
+                "schema": [
+                  0.57,
+                  0.665,
+                  0.56,
+                  0.885
                 ]
               }
             }
@@ -3882,13 +4075,14 @@
           ],
           "schemaGallery": [
             {
-              "asset": "echoorg/apical4_02.jpg",
+              "asset": "schema_dark/apical_4c.png",
               "aspect": 0.7839,
               "caption": {
                 "en": "View drawing",
                 "de": "Schnittzeichnung",
                 "ar": "رسم المقطع"
               },
+              "calipers": true,
               "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
               "source": "https://www.echocardiographer.org/tte-apical4"
             },
@@ -4197,6 +4391,12 @@
                   0.06,
                   0.66,
                   0.57
+                ],
+                "schema": [
+                  0.41,
+                  0.15,
+                  0.455,
+                  0.615
                 ]
               },
               "examples": [
@@ -4255,6 +4455,12 @@
                   0.06,
                   0.66,
                   0.72
+                ],
+                "schema": [
+                  0.41,
+                  0.15,
+                  0.44,
+                  0.79
                 ]
               },
               "examples": [
@@ -4411,13 +4617,14 @@
           ],
           "schemaGallery": [
             {
-              "asset": "echoorg/apical5_02.jpg",
+              "asset": "schema_dark/apical_5c.png",
               "aspect": 0.8,
               "caption": {
                 "en": "View drawing",
                 "de": "Schnittzeichnung",
                 "ar": "رسم المقطع"
               },
+              "calipers": true,
               "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
               "source": "https://www.echocardiographer.org/tte-apical5"
             },
@@ -4732,6 +4939,12 @@
                   0.15,
                   0.56,
                   0.64
+                ],
+                "schema": [
+                  0.4,
+                  0.275,
+                  0.42,
+                  0.7
                 ]
               }
             },
@@ -4766,6 +4979,12 @@
                   0.66,
                   0.56,
                   0.86
+                ],
+                "schema": [
+                  0.42,
+                  0.705,
+                  0.43,
+                  0.945
                 ]
               }
             },
@@ -4839,13 +5058,14 @@
           "orientationAsset": "orientation/apical_2c.svg",
           "schemaGallery": [
             {
-              "asset": "echoorg/apical2_02.jpg",
+              "asset": "schema_dark/apical_2c.png",
               "aspect": 0.5857,
               "caption": {
                 "en": "View drawing",
                 "de": "Schnittzeichnung",
                 "ar": "رسم المقطع"
               },
+              "calipers": true,
               "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
               "source": "https://www.echocardiographer.org/tte-apical2"
             },
@@ -5113,6 +5333,12 @@
                   0.5,
                   0.75,
                   0.8
+                ],
+                "schema": [
+                  0.33,
+                  0.62,
+                  0.7,
+                  0.82
                 ]
               }
             },
@@ -5147,6 +5373,12 @@
                   0.06,
                   0.58,
                   0.62
+                ],
+                "schema": [
+                  0.38,
+                  0.17,
+                  0.53,
+                  0.69
                 ]
               },
               "extraOverlays": [
@@ -5164,6 +5396,12 @@
                     0.06,
                     0.62,
                     0.8
+                  ],
+                  "schema": [
+                    0.38,
+                    0.17,
+                    0.624,
+                    0.871
                   ]
                 }
               ]
@@ -5227,13 +5465,14 @@
           "orientationAsset": "orientation/apical_3c.svg",
           "schemaGallery": [
             {
-              "asset": "echoorg/apical-long-axis_02.jpg",
+              "asset": "schema_dark/apical_3c.png",
               "aspect": 0.6718,
               "caption": {
                 "en": "View drawing",
                 "de": "Schnittzeichnung",
                 "ar": "رسم المقطع"
               },
+              "calipers": true,
               "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
               "source": "https://www.echocardiographer.org/tte-apical-long-axis"
             },
@@ -5580,6 +5819,12 @@
                   0.295,
                   0.4985,
                   0.439
+                ],
+                "schema": [
+                  0.35,
+                  0.38,
+                  0.35,
+                  0.49
                 ]
               }
             },
@@ -5620,6 +5865,12 @@
                   0.499,
                   0.651,
                   0.479
+                ],
+                "schema": [
+                  0.55,
+                  0.53,
+                  0.67,
+                  0.53
                 ]
               }
             },
@@ -5665,6 +5916,12 @@
                   0.2,
                   0.613,
                   0.719
+                ],
+                "schema": [
+                  0.3,
+                  0.15,
+                  0.678,
+                  0.772
                 ]
               },
               "examples": [
@@ -5813,13 +6070,14 @@
           ],
           "schemaGallery": [
             {
-              "asset": "echoorg/suprasternal_02.jpg",
+              "asset": "schema_dark/suprasternal_arch.png",
               "aspect": 0.6638,
               "caption": {
                 "en": "View drawing",
                 "de": "Schnittzeichnung",
                 "ar": "رسم المقطع"
               },
+              "calipers": true,
               "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
               "source": "https://www.echocardiographer.org/tte-suprasternal"
             },

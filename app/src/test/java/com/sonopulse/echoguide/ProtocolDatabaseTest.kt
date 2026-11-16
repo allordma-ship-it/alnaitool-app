@@ -201,6 +201,35 @@ class ProtocolDatabaseTest {
     }
 
     @Test
+    fun everyCaliperAndDopplerCursorIsPlacedOnTheSchemaDrawing() {
+        protocol.allViews.forEach { view ->
+            view.steps.flatMap { it.overlays }.forEach { o ->
+                val c = o.schema
+                assertTrue("${view.id} ${o.label} has no schema coordinates", c != null && c.size == 4)
+                assertTrue("${view.id} ${o.label} outside the drawing", c!!.all { it in 0f..1f })
+            }
+        }
+        // A5C on the drawing too: PW gate in the LVOT, CW focus on the aortic valve (left of the MV).
+        val a5c = protocol.allViews.first { it.id == "apical_5c" }.steps.flatMap { it.overlays }.associateBy { it.label }
+        val cw = a5c.getValue("CW · AV").schema!!
+        assertEquals(0.435f, cw[0] + (cw[2] - cw[0]) * CW_FOCUS, 0.02f)
+        assertEquals(0.675f, cw[1] + (cw[3] - cw[1]) * CW_FOCUS, 0.02f)
+    }
+
+    @Test
+    fun colourDopplerFollowsTheStep() {
+        val a4c = protocol.allViews.first { it.id == "apical_4c" }
+        val loops = protocol.colorLoopsFor(a4c.id)
+        assertTrue(loops.isNotEmpty())
+        // A 2D / Doppler step never keeps a colour loop on.
+        a4c.steps.forEach { assertEquals(-1, colorIndexForStep(it, loops)) }
+        assertEquals(-1, colorIndexForStep(null, loops))
+        // A colour step whose valve has a loop switches it on.
+        val colourStep = a4c.steps.first().copy(caliperOverlay = CaliperOverlay(CaliperOverlay.AREA, "Color · MV"))
+        assertEquals(loops.indexOfFirst { it.valve == "MV" }, colorIndexForStep(colourStep, loops))
+    }
+
+    @Test
     fun realTracesAndCaseLibrary() {
         val traces = protocol.valves.flatMap { it.measurements }.mapNotNull { m -> m.trace?.let { m.id to it } }.toMap()
         assertTrue(traces.keys.containsAll(listOf("av_cw", "lvot_pw", "mv_pw", "tapse")))
@@ -256,9 +285,16 @@ class ProtocolDatabaseTest {
     fun everyViewHasASchemaAndOrientationIllustrations() {
         val attribution = File(assetsDir, "echoorg/ATTRIBUTION.txt").readText()
         protocol.allViews.forEach { view ->
-            // Schema = real medical drawings / labelled echo frames (Echocardiographer.org), no generated art.
-            assertTrue("${view.id} schema pages", view.schemaGallery.isNotEmpty())
-            view.schemaGallery.forEach { img ->
+            // Schema page 1 = the dark-theme view drawing that carries the calipers; then the
+            // labelled echo frames from Echocardiographer.org.
+            assertTrue("${view.id} schema pages", view.schemaGallery.size >= 2)
+            val drawing = view.schemaGallery.first()
+            assertEquals("schema_dark/${view.id}.png", drawing.asset)
+            assertTrue("${view.id} drawing carries calipers", drawing.calipers)
+            assertTrue("missing ${drawing.asset}", File(assetsDir, drawing.asset).isFile)
+            assertEquals("Schnittzeichnung", drawing.caption.de)
+            assertTrue("${view.id} drawing credit", drawing.credit != null)
+            view.schemaGallery.drop(1).forEach { img ->
                 assertTrue("missing ${img.asset}", img.asset.startsWith("echoorg/") && File(assetsDir, img.asset).isFile)
                 assertTrue("${img.asset} credit", img.credit?.contains("Echocardiographer.org") == true)
                 assertTrue("${img.asset} attribution", attribution.contains(img.asset))

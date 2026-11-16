@@ -11,8 +11,8 @@ For each caliper overlay (caliperOverlay + extraOverlays) of every guided step t
   2. draws the overlay on that frame: LINE '+---+' (yellow), PW / TDI gate '=||=' (red bars on
      a dashed teal cursor), CW cursor '--◇--' (dashed teal line with a diamond at the focus
      point), colour box (red); a 3x zoom of the target region with a 0.05 grid is added,
-  3. renders the same overlay on the vector schema (video coordinates mapped into its crop) and
-     on the atlas illustration (diagram coordinates),
+  3. renders the same overlay on the dark Schema drawing (schema coordinates,
+     scripts/schema_overlays.py) and on the atlas illustration (diagram coordinates),
 and writes debug_overlays/<view>_s<step>_<n>_<label>.png plus debug_overlays/index.png.
 
 Every image is inspected by eye before echo_protocol_full.json is changed
@@ -79,11 +79,6 @@ def draw(im: Image.Image, ov: dict, coords: list[float], scale: float = 1.0, lab
         d.polygon([(cx, cy - r), (cx + r, cy), (cx, cy + r), (cx - r, cy)], outline=vc.TEAL, fill=(0, 0, 0))
 
 
-def mapped(v, crop):
-    x0, y0, x1, y1 = crop
-    return [(v[0] - x0) / (x1 - x0), (v[1] - y0) / (y1 - y0), (v[2] - x0) / (x1 - x0), (v[3] - y0) / (y1 - y0)]
-
-
 def main(only: str | None = None):
     os.makedirs(OUT, exist_ok=True)
     with open(vc.DB, encoding="utf-8") as f:
@@ -94,7 +89,8 @@ def main(only: str | None = None):
             if only and view["id"] != only:
                 continue
             loop = os.path.join(vc.ASSETS, view["videoAsset"])
-            schema = vc.render_svg(os.path.join(vc.ASSETS, view["schemaAsset"]), 720) if view.get("schemaAsset") else None
+            drawing = os.path.join(vc.ASSETS, "schema_dark", f"{view['id']}.png")
+            schema = Image.open(drawing).convert("RGB") if os.path.exists(drawing) else None
             atlas = Image.open(os.path.join(vc.ASSETS, view["diagramAsset"])).convert("RGB") if view.get("diagramAsset") else None
             for i, step in enumerate(view["steps"]):
                 for n, ov in enumerate(vc.overlays_of(step)):
@@ -107,9 +103,9 @@ def main(only: str | None = None):
                     zoom = vc.grid_crop(zoom_src, vc.bbox([ov["video"]], pad=0.10), width=520)
                     panels = [vc.panel_title(full, f"{view['id']} s{i + 1} · {ov['label']} · {phase} @ {ms} ms"),
                               vc.panel_title(zoom, "zoom")]
-                    if schema is not None:
+                    if schema is not None and ov.get("schema"):
                         s = schema.copy()
-                        draw(s, ov, mapped(ov["video"], view.get("schemaCrop", [0, 0, 1, 1])))
+                        draw(s, ov, ov["schema"], scale=s.width / 720)
                         panels.append(vc.panel_title(s, "schema"))
                     if atlas is not None and ov.get("diagram"):
                         a = atlas.copy()

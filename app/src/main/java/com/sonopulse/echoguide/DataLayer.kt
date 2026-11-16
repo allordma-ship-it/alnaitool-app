@@ -212,7 +212,7 @@ data class CaliperOverlay(
     val label: String,
     val video: List<Float>? = null,
     val diagram: List<Float>? = null,
-    /** The same measurement on the pre-rendered Schema image (diagrams/schema/<view>_schema.png). */
+    /** The same measurement on the dark Schema view drawing (schema_dark/<view>.png, scripts/schema_overlays.py). */
     val schema: List<Float>? = null
 ) {
     companion object {
@@ -260,7 +260,9 @@ data class GalleryImage(
     val aspect: Float,
     val caption: LocalizedText,
     val credit: String? = null,
-    val source: String? = null
+    val source: String? = null,
+    /** Schema view drawing: the step's calipers / Doppler cursors are drawn on it ([CaliperOverlay.schema]). */
+    val calipers: Boolean = false
 )
 
 // ---------------------------------------------------------------------------------------------

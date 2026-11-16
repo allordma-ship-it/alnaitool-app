@@ -171,12 +171,22 @@ class CockpitLayoutTest {
 
     @Test fun probePanelApical3c() = probeScreen("apical_3c")
 
-    private fun schemaScreen(id: String) {
-        showCockpit(id, AppLanguage.DE, stepIndex = 1)
-        compose.mainClock.advanceTimeBy(1_500)
+    private fun schemaScreen(id: String, stepIndex: Int = 1, name: String = "${id}_schema_de") {
+        showCockpit(id, AppLanguage.DE, stepIndex = stepIndex)
+        repeat(6) {
+            Thread.sleep(150)
+            compose.mainClock.advanceTimeBy(300)
+        }
         compose.onNodeWithText("Schema").assertIsSelected()
-        screenshot("${id}_schema_de")
+        screenshot(name)
     }
+
+    // Calipers / Doppler cursors are drawn on the dark Schema drawing as well (checked visually).
+    @Test fun a5cCwCursorOnSchema() = schemaScreen("apical_5c", stepIndex = 2, name = "apical_5c_cw_schema")
+
+    @Test fun plaxCaliperOnSchema() = schemaScreen("plax_standard", stepIndex = 4, name = "plax_lvidd_schema")
+
+    @Test fun psaxAvSchemaDrawing() = schemaScreen("psax_av", stepIndex = 3, name = "psax_av_pw_schema")
 
     @Test fun subcostalSchemaWithReadableLabels() = schemaScreen("subcostal_4c")
 

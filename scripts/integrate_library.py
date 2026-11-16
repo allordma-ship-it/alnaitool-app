@@ -46,19 +46,25 @@ TRACES = {
 D = ("View drawing", "Schnittzeichnung", "رسم المقطع")
 LBL = ("Labelled echo frame", "Beschriftetes Echobild", "صورة إيكو موسومة")
 SCHEMA = {
-    "subcostal_4c": [("subcostal_02", D), ("subcostal_03", LBL)],
+    "subcostal_4c": [("subcostal_03", LBL)],
     "subcostal_ivc": [("subcostal-greatvessels_01", ("IVC with M-mode", "VCI mit M-Mode", "الوريد الأجوف مع نمط M")),
                       ("subcostal-greatvessels_00", ("Probe position", "Schallkopfposition", "وضع المسبار"))],
-    "plax_standard": [("plax_03", D), ("plax_02", LBL), ("plax_04", ("AV and MV zoom", "Zoom AK und MK", "تكبير الأبهري والتاجي"))],
+    "plax_standard": [("plax_02", LBL), ("plax_04", ("AV and MV zoom", "Zoom AK und MK", "تكبير الأبهري والتاجي"))],
     "psax_av": [("psax_02", LBL), ("psax_03", ("Aortic valve zoom", "Aortenklappe gezoomt", "تكبير الصمام الأبهري")),
                 ("psax_01", ("Short-axis levels", "Kurzachsen-Ebenen", "مستويات المحور القصير"))],
     "psax_papillary": [("psax_06", LBL), ("psax_01", ("Short-axis levels", "Kurzachsen-Ebenen", "مستويات المحور القصير"))],
-    "apical_4c": [("apical4_02", D), ("apical4_03", LBL)],
-    "apical_5c": [("apical5_02", D), ("apical5_03", LBL)],
-    "apical_2c": [("apical2_02", D), ("apical2_03", LBL)],
-    "apical_3c": [("apical-long-axis_02", D), ("apical-long-axis_03", LBL)],
-    "suprasternal_arch": [("suprasternal_02", D), ("suprasternal_03", LBL)],
+    "apical_4c": [("apical4_03", LBL)],
+    "apical_5c": [("apical5_03", LBL)],
+    "apical_2c": [("apical2_03", LBL)],
+    "apical_3c": [("apical-long-axis_03", LBL)],
+    "suprasternal_arch": [("suprasternal_03", LBL)],
 }
+# Page 1 of every view: the dark-theme view drawing (scripts/harmonize_schema_dark_theme.py) that
+# carries the step's calipers / Doppler cursors (scripts/schema_overlays.py).
+DRAWING_SOURCE = {"subcostal_4c": "subcostal", "plax_standard": "plax", "psax_av": "psax", "psax_papillary": "psax",
+                  "apical_4c": "apical4", "apical_5c": "apical5", "apical_2c": "apical2",
+                  "apical_3c": "apical-long-axis", "suprasternal_arch": "suprasternal"}
+ADAPTED = {"psax_av", "psax_papillary"}   # level drawing cut from psax_01 and set into a sector
 SOURCES = {"subcostal": "tte-subcostal", "subcostal-greatvessels": "tte-subcostal-greatvessels", "plax": "tte-plax",
            "psax": "tte-psax", "apical4": "tte-apical4", "apical5": "tte-apical5", "apical2": "tte-apical2",
            "apical-long-axis": "tte-apical-long-axis", "suprasternal": "tte-suprasternal"}
@@ -78,6 +84,18 @@ CATEGORIES = [
 ]
 
 
+def drawing_page(view_id):
+    asset = f"schema_dark/{view_id}.png"
+    iw, ih = Image.open(os.path.join(ASSETS, asset)).size
+    page = {"asset": asset, "aspect": round(iw / ih, 4), "caption": dict(zip(("en", "de", "ar"), D)), "calipers": True}
+    if view_id in DRAWING_SOURCE:
+        page["credit"] = CREDIT + (" (adapted)" if view_id in ADAPTED else "")
+        page["source"] = "https://www.echocardiographer.org/" + SOURCES[DRAWING_SOURCE[view_id]]
+    else:   # subcostal IVC: no drawing on the site, drawn for EchoScope in the same style
+        page["credit"] = "EchoScope"
+    return page
+
+
 def main():
     with open(DB, encoding="utf-8") as f:
         db = json.load(f)
@@ -93,7 +111,7 @@ def main():
                 m.pop("trace", None)
     for w in db["windows"]:
         for view in w["views"]:
-            pages = []
+            pages = [drawing_page(view["id"])]
             for name, cap in SCHEMA[view["id"]]:
                 asset = f"echoorg/{name}.jpg"
                 iw, ih = Image.open(os.path.join(ASSETS, asset)).size
@@ -102,9 +120,6 @@ def main():
             view["schemaGallery"] = pages
             for key in ("schemaAsset", "schemaAspect", "schemaCrop"):
                 view.pop(key, None)
-            for st in view["steps"]:
-                for o in ([st["caliperOverlay"]] if st.get("caliperOverlay") else []) + st.get("extraOverlays", []):
-                    o.pop("schema", None)
     with open(os.path.join(ROOT, "temp_real", "echoorg", "library.json"), encoding="utf-8") as f:
         lib = json.load(f)
     groups = {cid: {"id": cid, "title": dict(zip(("en", "de", "ar"), t)), "cases": []} for cid, t, _ in CATEGORIES}

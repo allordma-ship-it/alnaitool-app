@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -64 720 556">
+  <!-- Subcostal IVC long-axis view drawn in the style of the Echocardiographer.org view drawings.
+       Same geometry as the app's subcostal_ivc loop (720 x 492 px, sector apex at 360,4), so the
+       loop's caliper coordinates map onto it 1:1 (y offset 64 px). -->
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f0f0f1"/>
+      <stop offset="1" stop-color="#a9a9ab"/>
+    </linearGradient>
+  </defs>
+  <rect x="0" y="-64" width="720" height="556" fill="#fff"/>
+  <!-- sector -->
+  <path d="M360 4 L72 392 A480 480 0 0 0 648 392 Z" fill="url(#g)" stroke="#8fd0c8" stroke-width="3"/>
+  <!-- probe -->
+  <rect x="312" y="-58" width="96" height="60" rx="14" fill="#d8bfa9" stroke="#9a8270" stroke-width="2"/>
+  <text x="360" y="-22" font-family="Arial, Helvetica, sans-serif" font-size="18" text-anchor="middle" fill="#3b322c">Probe</text>
+  <!-- liver capsule -->
+  <path d="M248 120 Q360 40 470 120" fill="none" stroke="#a8556a" stroke-width="4"/>
+  <!-- hepatic vein -->
+  <path d="M410 150 Q440 210 452 276" fill="none" stroke="#7b3f98" stroke-width="5"/>
+  <path d="M442 146 Q470 205 478 272" fill="none" stroke="#7b3f98" stroke-width="5"/>
+  <!-- IVC: upper and lower wall -->
+  <path d="M170 212 Q290 268 392 284 Q440 288 452 276 M478 272 Q492 270 505 276"
+        fill="none" stroke="#7b3f98" stroke-width="7" stroke-linecap="round"/>
+  <path d="M150 248 Q280 312 392 322 Q450 328 488 340" fill="none" stroke="#7b3f98" stroke-width="7" stroke-linecap="round"/>
+  <!-- right atrium -->
+  <path d="M505 276 Q560 262 610 290 Q650 330 628 384 Q590 420 540 404 Q510 392 488 340"
+        fill="none" stroke="#e0457b" stroke-width="12" stroke-linejoin="round"/>
+  <!-- Eustachian valve -->
+  <path d="M492 338 Q520 330 538 312" fill="none" stroke="#3567b0" stroke-width="4"/>
+  <!-- labels -->
+  <g font-family="Arial, Helvetica, sans-serif" font-size="22" fill="#222" text-anchor="middle">
+    <text x="330" y="160">Liver</text>
+    <text x="300" y="300">IVC</text>
+    <text x="568" y="350">RA</text>
+    <text x="400" y="232">HV</text>
+  </g>
+</svg>

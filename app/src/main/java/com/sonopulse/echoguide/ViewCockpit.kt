@@ -149,6 +149,12 @@ fun ViewCockpit(
     val practised = practice.keys.any { it.startsWith("$practicePrefix#") }
     val resetPractice: () -> Unit = { practice.keys.filter { it.startsWith("$practicePrefix#") }.forEach(practice::remove) }
 
+    // Colour Doppler follows the step: every step change (Weiter / Zurück) returns to the 2D loop,
+    // unless the new step is itself a colour Doppler step of a valve this view has a colour loop for.
+    LaunchedEffect(view.id, stepIndex) {
+        colorIndex = colorIndexForStep(step, colorLoops)
+    }
+
     // Measurement steps open on the frame they are measured on (ED / ES / end-expiration);
     // orientation, Doppler and colour steps keep the loop running.
     LaunchedEffect(view.id, step, videoAsset) {
@@ -423,6 +429,12 @@ private fun practiceActive(step: GuideStep?, loop: LoopState, caliperOn: Boolean
     caliperOn && loop.ready && loop.frozenPhase != null && loop.videoAspect > 0f &&
         step != null && step.overlays.any { it.type == CaliperOverlay.LINE && it.video != null }
 
+/** Colour loop a step asks for: its colour box ("Color · MV") names the valve; -1 = the 2D loop. */
+internal fun colorIndexForStep(step: GuideStep?, colorLoops: List<ColorLoop>): Int {
+    val area = step?.overlays?.firstOrNull { it.type == CaliperOverlay.AREA } ?: return -1
+    return colorLoops.indexOfFirst { it.valve.isNotEmpty() && area.label.contains(it.valve) }
+}
+
 /** Panels a view can show on the right: orientation, schema (always) and atlas. */
 internal fun diagramModesFor(view: EchoView): List<DiagramMode> = buildList {
     if (view.orientationAsset != null) add(DiagramMode.PROBE)
@@ -491,8 +503,16 @@ private fun diagramSource(
             DiagramSource(atlas, view.diagramAspect, if (atlas.endsWith(".png")) EchoPalette.AtlasCard else Color.Black, overlays, { it.diagram },
                 credit = view.diagramCredit?.get(language))
         // Schema = real medical drawings / labelled frames from Echocardiographer.org (paged).
-        mode == DiagramMode.SCHEMA && view.schemaGallery.isNotEmpty() ->
-            galleryPage(view.schemaGallery[page.coerceIn(0, view.schemaGallery.lastIndex)], language, Color.Black)
+        mode == DiagramMode.SCHEMA && view.schemaGallery.isNotEmpty() -> {
+            val image = view.schemaGallery[page.coerceIn(0, view.schemaGallery.lastIndex)]
+            // The view drawing carries the step's calipers, PW gates and CW / M-mode cursors.
+            if (image.calipers) {
+                DiagramSource(image.asset, image.aspect, EchoPalette.Card, overlays, { it.schema },
+                    caption = image.caption.get(language), credit = image.credit)
+            } else {
+                galleryPage(image, language, Color.Black)
+            }
+        }
         else ->
             DiagramSource(view.svgAsset, SVG_WIDTH / SVG_HEIGHT, EchoPalette.BgPrimary, emptyList(), { null },
                 svgCaliper = if (caliperOn) step?.caliper else null)
@@ -764,16 +784,27 @@ private val CaliperRed = EchoPalette.Gate
 
 @Composable
 internal fun FullScreenDialog(onDismiss: () -> Unit, content: @Composable ColumnScope.() -> Unit) {
+    // The dialog window is drawn edge to edge, but its own insets can arrive as zero (e.g. 3-button
+    // navigation): take the activity's system-bar insets as a floor so the play / speed / page
+    // controls always sit above the navigation bar, plus 16 dp to keep them easy to reach.
+    val hostBars = WindowInsets.systemBars.asPaddingValues()
+    val layoutDirection = LocalLayoutDirection.current
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false)
     ) {
+        val bars = WindowInsets.systemBars.asPaddingValues()
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .background(EchoBackground)
-                .systemBarsPadding()
-                .padding(10.dp),
+                .padding(
+                    start = maxOf(bars.calculateStartPadding(layoutDirection), hostBars.calculateStartPadding(layoutDirection)),
+                    top = maxOf(bars.calculateTopPadding(), hostBars.calculateTopPadding()),
+                    end = maxOf(bars.calculateEndPadding(layoutDirection), hostBars.calculateEndPadding(layoutDirection)),
+                    bottom = maxOf(bars.calculateBottomPadding(), hostBars.calculateBottomPadding())
+                )
+                .padding(start = 10.dp, top = 10.dp, end = 10.dp, bottom = 10.dp + DialogBottomLift),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
@@ -785,6 +816,9 @@ internal fun FullScreenDialog(onDismiss: () -> Unit, content: @Composable Column
         }
     }
 }
+
+/** Extra space under the bottom control row of full-screen dialogs (above the navigation bar). */
+internal val DialogBottomLift = 16.dp
 
 /** Pinch-to-zoom container: two fingers zoom, one finger pans while zoomed, double-tap toggles 2.5×. */
 @Composable
