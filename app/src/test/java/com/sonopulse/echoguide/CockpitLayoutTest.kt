@@ -58,7 +58,6 @@ class CockpitLayoutTest {
                         protocol = protocol,
                         view = view,
                         language = language,
-                        onLanguageChange = {},
                         navigator = StepNavigator(view.steps[stepIndex], "${stepIndex + 1} / ${view.steps.size}", stepIndex > 0, false, {}, {}),
                         onSelectView = {},
                         modifier = Modifier.weight(1f)

@@ -99,7 +99,13 @@ data class EchoColors(
     val primaryFill: Color,
     val normalFill: Color,
     val cautionFill: Color,
-    val criticalFill: Color
+    val criticalFill: Color,
+    /** Live ECG strip: phosphor green on dark paper (dark) / emerald on light paper (light). */
+    val ecgTrace: Color,
+    val ecgPaper: Color,
+    val ecgGridMinor: Color,
+    val ecgGridMajor: Color,
+    val ecgCursor: Color
 )
 
 /** Badge / chip fills shared by both themes (white text ≥ 5 : 1). */
@@ -127,7 +133,12 @@ val DarkEchoColors = EchoColors(
     primaryFill = PrimaryFill,
     normalFill = NormalFill,
     cautionFill = CautionFill,
-    criticalFill = CriticalFill
+    criticalFill = CriticalFill,
+    ecgTrace = EchoPalette.EcgTrace,
+    ecgPaper = EchoPalette.EcgPaper,
+    ecgGridMinor = EchoPalette.EcgGridMinor,
+    ecgGridMajor = EchoPalette.EcgGridMajor,
+    ecgCursor = EchoPalette.EcgCursor
 )
 
 /** Light mode (daylight / ward): #F8FAFC canvas, slate #171E26 text, high-contrast borders. */
@@ -135,21 +146,26 @@ val LightEchoColors = EchoColors(
     isDark = false,
     background = Color(0xFFF8FAFC),
     card = Color(0xFFFFFFFF),
-    cardHigh = Color(0xFFEEF2F6),
-    border = Color(0xFF94A3B8),
+    cardHigh = Color(0xFFF1F5F9),
+    border = Color(0xFFCBD5E1),
     primary = Color(0xFF1565C0),     // 5.1 : 1 on #F8FAFC
     normal = Color(0xFF00695C),      // 5.9 : 1
     caution = Color(0xFF9A4D00),     // 5.4 : 1
     critical = Color(0xFFC62828),    // 5.0 : 1
     info = Color(0xFF0369A1),        // 5.3 : 1
-    text = Color(0xFF171E26),        // 14.9 : 1
-    textMuted = Color(0xFF516072),   // 5.7 : 1
+    text = Color(0xFF0F172A),        // 16.1 : 1
+    textMuted = Color(0xFF475569),   // 6.9 : 1
     onAccent = Color(0xFFFFFFFF),
     atlasCard = Color(0xFFF1F5F9),
     primaryFill = PrimaryFill,
     normalFill = NormalFill,
     cautionFill = CautionFill,
-    criticalFill = CriticalFill
+    criticalFill = CriticalFill,
+    ecgTrace = Color(0xFF00897B),
+    ecgPaper = Color(0xFFF8FAFC),
+    ecgGridMinor = Color(0xFFE2F1EE),
+    ecgGridMajor = Color(0xFFB9DDD5),
+    ecgCursor = Color(0xFF0F172A)
 )
 
 val LocalEchoColors = staticCompositionLocalOf { DarkEchoColors }

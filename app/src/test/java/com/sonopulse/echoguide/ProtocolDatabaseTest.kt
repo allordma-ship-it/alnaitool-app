@@ -318,10 +318,14 @@ class ProtocolDatabaseTest {
             // labelled echo frames from Echocardiographer.org.
             assertTrue("${view.id} schema pages", view.schemaGallery.size >= 2)
             val drawing = view.schemaGallery.first()
-            assertEquals("schema_dark/${view.id}.png", drawing.asset)
+            assertEquals("schema_vector/${view.id}_dark.svg", drawing.asset)
             assertTrue("${view.id} drawing carries calipers", drawing.calipers)
             assertTrue("missing ${drawing.asset}", File(assetsDir, drawing.asset).isFile)
-            assertEquals("Schnittzeichnung", drawing.caption.de)
+            assertTrue("missing light variant", File(assetsDir, drawing.asset.replace("_dark.svg", "_light.svg")).isFile)
+            assertEquals("Schema", drawing.caption.de)
+            // Labels are drawn by the app (pills); every chamber label sits inside the image.
+            assertTrue("${view.id} labels", drawing.labels.size >= 3 && drawing.labels.all { it.x in 0f..1f && it.y in 0f..1f })
+            assertTrue("${view.id} label kinds", drawing.labels.all { it.kind in setOf("left", "right", "valve", "other") })
             assertTrue("${view.id} drawing credit", drawing.credit != null)
             view.schemaGallery.drop(1).forEach { img ->
                 assertTrue("missing ${img.asset}", img.asset.startsWith("echoorg/") && File(assetsDir, img.asset).isFile)
@@ -343,7 +347,7 @@ class ProtocolDatabaseTest {
         // Android's SVG parser rejects malformed XML (e.g. an unescaped "&" in a title) and shows
         // nothing; it also ignores paint-order, which would hide labels under their outline.
         val factory = javax.xml.parsers.DocumentBuilderFactory.newInstance()
-        val svgs = listOf("orientation", "svg").flatMap { dir ->
+        val svgs = listOf("orientation", "svg", "schema_vector").flatMap { dir ->
             File(assetsDir, dir).listFiles { f -> f.name.endsWith(".svg") }.orEmpty().toList()
         }
         assertTrue("SVG assets found", svgs.size >= 10 * 3 + 9)

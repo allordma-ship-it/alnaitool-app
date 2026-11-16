@@ -43,7 +43,7 @@ TRACES = {
 
 # Schema tab = real medical drawings + labelled echo frames from Echocardiographer.org
 # (replaces the generated cartoon schemas). (asset, caption en/de/ar)
-D = ("View drawing", "Schnittzeichnung", "رسم المقطع")
+D = ("Schema", "Schema", "مخطط المقطع")
 LBL = ("Labelled echo frame", "Beschriftetes Echobild", "صورة إيكو موسومة")
 SCHEMA = {
     "subcostal_4c": [("subcostal_03", LBL)],
@@ -85,11 +85,15 @@ CATEGORIES = [
 
 
 def drawing_page(view_id):
-    asset = f"schema_dark/{view_id}.png"
-    iw, ih = Image.open(os.path.join(ASSETS, asset)).size
-    page = {"asset": asset, "aspect": round(iw / ih, 4), "caption": dict(zip(("en", "de", "ar"), D)), "calipers": True}
+    """Schema page 1: vector schema (scripts/build_schema_vector.py) with its labels and calipers."""
+    asset = f"schema_vector/{view_id}_dark.svg"
+    svg = open(os.path.join(ASSETS, asset), encoding="utf-8").read()
+    w, h = (float(v) for v in re.search(r'viewBox="0 0 ([\d.]+) ([\d.]+)"', svg).groups())
+    labels = json.load(open(os.path.join(ROOT, "scripts", "schema_labels.json")))[view_id]
+    page = {"asset": asset, "aspect": round(w / h, 4), "caption": dict(zip(("en", "de", "ar"), D)), "calipers": True,
+            "labels": labels}
     if view_id in DRAWING_SOURCE:
-        page["credit"] = CREDIT + (" (adapted)" if view_id in ADAPTED else "")
+        page["credit"] = CREDIT + " (traced as vector schema)"
         page["source"] = "https://www.echocardiographer.org/" + SOURCES[DRAWING_SOURCE[view_id]]
     else:   # subcostal IVC: no drawing on the site, drawn for EchoScope in the same style
         page["credit"] = "EchoScope"

@@ -63,6 +63,8 @@ import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.unit.sp
 import kotlin.math.sqrt
 
@@ -125,7 +127,8 @@ internal fun DrawScope.drawCaliperOverlay(
     coords: List<Float>,
     target: Rect,
     textMeasurer: TextMeasurer,
-    zoom: Float = 1f
+    zoom: Float = 1f,
+    blocked: MutableList<Rect> = mutableListOf()
 ) {
     if (!isNormalizedBox(coords)) return
     fun at(x: Float, y: Float) = Offset(target.left + x * target.width, target.top + y * target.height)
@@ -194,10 +197,13 @@ internal fun DrawScope.drawCaliperOverlay(
             }
         }
     }
-    drawOverlayLabel(overlay, a, b, target, textMeasurer, zoom)
+    drawOverlayLabel(overlay, a, b, target, textMeasurer, zoom, blocked)
 }
 
-private fun DrawScope.drawOverlayLabel(overlay: CaliperOverlay, a: Offset, b: Offset, target: Rect, textMeasurer: TextMeasurer, zoom: Float) {
+private fun DrawScope.drawOverlayLabel(
+    overlay: CaliperOverlay, a: Offset, b: Offset, target: Rect, textMeasurer: TextMeasurer, zoom: Float,
+    blocked: MutableList<Rect>
+) {
     if (overlay.label.isBlank()) return
     val color = when (overlay.type) {
         CaliperOverlay.LINE -> CaliperYellow
@@ -209,16 +215,32 @@ private fun DrawScope.drawOverlayLabel(overlay: CaliperOverlay, a: Offset, b: Of
         TextStyle(color = color, fontSize = (9f / zoom).sp, fontWeight = FontWeight.Bold)
     )
     val pad = 2.dp.toPx() / zoom
-    val w = layout.size.width + 2 * pad
+    val padX = 6.dp.toPx() / zoom
+    val w = layout.size.width + 2 * padX
     val h = layout.size.height + 2 * pad
-    // Anchor next to the end point (gate / second caliper mark), inside the image.
+    // Anchor next to the end point (gate / second caliper mark), inside the image; of the four
+    // candidate spots (right, left, below, above) take the first that covers no structure label
+    // or other caliper label, else the one with the least overlap.
     val anchor = if (overlay.type == CaliperOverlay.AREA) Offset(maxOf(a.x, b.x), minOf(a.y, b.y)) else b
-    var x = anchor.x + 6.dp.toPx() / zoom
-    if (x + w > target.right) x = anchor.x - 6.dp.toPx() / zoom - w
-    val y = (anchor.y - h / 2f).coerceIn(target.top, (target.bottom - h).coerceAtLeast(target.top))
-    x = x.coerceIn(target.left, (target.right - w).coerceAtLeast(target.left))
-    drawRoundRect(Color.Black.copy(alpha = 0.6f), Offset(x, y), Size(w, h), CornerRadius(3.dp.toPx() / zoom))
-    drawText(layout, topLeft = Offset(x + pad, y + pad))
+    val gap = 6.dp.toPx() / zoom
+    fun clampTo(x: Float, y: Float) = Offset(
+        x.coerceIn(target.left, (target.right - w).coerceAtLeast(target.left)),
+        y.coerceIn(target.top, (target.bottom - h).coerceAtLeast(target.top))
+    )
+    val candidates = listOf(
+        clampTo(anchor.x + gap, anchor.y - h / 2f), clampTo(anchor.x - gap - w, anchor.y - h / 2f),
+        clampTo(anchor.x - w / 2f, anchor.y + gap), clampTo(anchor.x - w / 2f, anchor.y - gap - h)
+    )
+    fun overlap(o: Offset): Float = blocked.sumOf { r ->
+        val ix = (minOf(o.x + w, r.right) - maxOf(o.x, r.left)).coerceAtLeast(0f)
+        val iy = (minOf(o.y + h, r.bottom) - maxOf(o.y, r.top)).coerceAtLeast(0f)
+        (ix * iy).toDouble()
+    }.toFloat()
+    val pos = candidates.firstOrNull { overlap(it) == 0f } ?: candidates.minBy { overlap(it) }
+    blocked += Rect(pos, Size(w, h))
+    // pill-shaped label
+    drawRoundRect(Color.Black.copy(alpha = 0.66f), pos, Size(w, h), CornerRadius(h / 2f))
+    drawText(layout, topLeft = Offset(pos.x + padX, pos.y + pad))
 }
 
 /**
@@ -232,15 +254,27 @@ internal fun CaliperCanvas(
     coords: (CaliperOverlay) -> List<Float>?,
     aspect: Float,
     modifier: Modifier = Modifier,
-    zoom: Float = 1f
+    zoom: Float = 1f,
+    /** Structure labels of a vector schema: caliper labels are placed so they never cover them. */
+    avoid: List<SchemaLabel> = emptyList()
 ) {
     val drawable = overlays.filter { isNormalizedBox(coords(it)) }
     if (drawable.isEmpty()) return
     val textMeasurer = rememberTextMeasurer()
     Canvas(modifier = modifier) {
         val rect = fitRect(size, aspect)
-        drawable.forEach { drawCaliperOverlay(it, coords(it)!!, rect, textMeasurer, zoom) }
+        val blocked = avoid.map { schemaLabelRect(it, rect, zoom) }.toMutableList()
+        drawable.forEach { drawCaliperOverlay(it, coords(it)!!, rect, textMeasurer, zoom, blocked) }
     }
+}
+
+/** Approximate on-screen box of a schema label pill (same metrics as [SchemaLabelLayer]). */
+private fun DrawScope.schemaLabelRect(label: SchemaLabel, target: Rect, zoom: Float): Rect {
+    val w = (label.text.length * 6.5f + 12f).dp.toPx() / zoom
+    val h = 16.dp.toPx() / zoom
+    val cx = target.left + label.x * target.width
+    val cy = target.top + label.y * target.height
+    return Rect(cx - w / 2, cy - h / 2, cx + w / 2, cy + h / 2)
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -536,5 +570,63 @@ internal fun rememberCaliperEnabled(): Pair<Boolean, () -> Unit> {
     return state.value to {
         state.value = !state.value
         CaliperPreferences.save(context, state.value)
+    }
+}
+
+/**
+ * Structure names of a vector schema as pills (left heart red, right heart blue, valves neutral),
+ * laid over the image box. Text keeps its on-screen size while zoomed ([zoom]) and follows the
+ * user's font scale; drawn with anti-aliased text, never baked into the image.
+ */
+@Composable
+internal fun SchemaLabelLayer(labels: List<SchemaLabel>, modifier: Modifier = Modifier, zoom: Float = 1f, compact: Boolean = false) {
+    // The small stage card shows the chambers only; valves and other structures appear in full screen.
+    val shown = remember(labels, compact) {
+        (if (compact) labels.filter { it.kind == "left" || it.kind == "right" } else labels)
+            .sortedBy { when (it.kind) { "left", "right" -> 0; "valve" -> 1; else -> 2 } }
+    }
+    if (shown.isEmpty()) return
+    val c = MaterialTheme.echoColors
+    val fontSize = (if (compact) 8f else 11.5f) / zoom
+    Layout(
+        modifier = modifier,
+        content = {
+            shown.forEach { label ->
+                val color = when (label.kind) {
+                    "left" -> c.critical
+                    "right" -> c.primary
+                    "valve" -> c.text
+                    else -> c.textMuted
+                }
+                Text(
+                    text = label.text,
+                    color = color,
+                    fontSize = fontSize.sp,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1,
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(50))
+                        .background(c.card.copy(alpha = 0.82f))
+                        .border((1f / zoom).dp, color.copy(alpha = 0.45f), RoundedCornerShape(50))
+                        .padding(horizontal = (5f / zoom).dp, vertical = (0.5f / zoom).dp)
+                )
+            }
+        }
+    ) { measurables, constraints ->
+        val placeables = measurables.map { it.measure(androidx.compose.ui.unit.Constraints()) }
+        layout(constraints.maxWidth, constraints.maxHeight) {
+            // Higher-priority labels first; a label that would overlap one already placed is skipped.
+            val placed = mutableListOf<androidx.compose.ui.unit.IntRect>()
+            placeables.forEachIndexed { i, p ->
+                val l = shown[i]
+                val x = (l.x * constraints.maxWidth - p.width / 2f).toInt().coerceIn(0, (constraints.maxWidth - p.width).coerceAtLeast(0))
+                val y = (l.y * constraints.maxHeight - p.height / 2f).toInt().coerceIn(0, (constraints.maxHeight - p.height).coerceAtLeast(0))
+                val r = androidx.compose.ui.unit.IntRect(x, y, x + p.width, y + p.height)
+                if (placed.none { it.overlaps(r) }) {
+                    placed += r
+                    p.place(x, y)
+                }
+            }
+        }
     }
 }

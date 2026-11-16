@@ -96,7 +96,6 @@ fun ViewCockpit(
     protocol: EchoProtocol,
     view: EchoView,
     language: AppLanguage,
-    onLanguageChange: (AppLanguage) -> Unit,
     navigator: StepNavigator,
     onSelectView: (EchoView) -> Unit,
     modifier: Modifier = Modifier,
@@ -116,7 +115,6 @@ fun ViewCockpit(
     var tab by rememberSaveable { mutableStateOf(DeckTab.STEPS) }
     var videoOverlay by rememberSaveable { mutableStateOf(false) }
     var diagramOverlay by rememberSaveable { mutableStateOf(false) }
-    var infoOpen by rememberSaveable { mutableStateOf(false) }
     var referenceOpen by rememberSaveable { mutableStateOf(false) }
     var valvesOpen by rememberSaveable { mutableStateOf(false) }
     val checked = remember { mutableStateMapOf<String, Boolean>() }
@@ -182,10 +180,7 @@ fun ViewCockpit(
         ) {
             SlimTopBar(
                 title = view.title.get(language),
-                language = language,
-                onLanguageChange = onLanguageChange,
                 onBack = onBack,
-                onInfo = { infoOpen = true },
                 onValves = if (protocol.valves.isNotEmpty()) ({ valvesOpen = true }) else null,
                 onDrawer = { scope.launch { drawerState.open() } }
             )
@@ -269,9 +264,15 @@ fun ViewCockpit(
     }
 
     if (videoOverlay) {
+        // Licence credit of the clip on screen (CC BY-SA / CC BY-NC attribution).
+        val credit = colorLoop?.let { stringResource(R.string.player_real_credit, it.author, it.license, "The POCUS Atlas") }
+            ?: view.videoSource.let { src ->
+                if (src.isSimulated) stringResource(R.string.player_simulated_note)
+                else stringResource(R.string.player_real_credit, src.author.orEmpty(), src.license.orEmpty(), src.platform)
+            }
         VideoOverlay(
             player, loop, videoAsset, if (colorLoop == null) step else null, caliperOn, toggleCaliper,
-            practice, practicePrefix, if (practised) resetPractice else null
+            practice, practicePrefix, if (practised) resetPractice else null, credit
         ) { videoOverlay = false }
     }
     if (diagramOverlay) {
@@ -279,7 +280,6 @@ fun ViewCockpit(
             diagramOverlay = false
         }
     }
-    if (infoOpen) AboutDialog(view = view, language = language, onDismiss = { infoOpen = false }, cases = protocol.pathologyFor(view.id))
     if (valvesOpen) {
         var valveId by rememberSaveable(view.id) { mutableStateOf(valveForView(view.id)) }
         FullScreenDialog(onDismiss = { valvesOpen = false }) {
@@ -314,10 +314,7 @@ fun ViewCockpit(
 @Composable
 private fun SlimTopBar(
     title: String,
-    language: AppLanguage,
-    onLanguageChange: (AppLanguage) -> Unit,
     onBack: (() -> Unit)?,
-    onInfo: () -> Unit,
     onValves: (() -> Unit)?,
     onDrawer: () -> Unit
 ) {
@@ -344,15 +341,12 @@ private fun SlimTopBar(
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f)
         )
-        LanguageMenuButton(language, onLanguageChange, compact = true)
         if (onValves != null) {
             IconButton(onClick = onValves, modifier = Modifier.size(40.dp)) {
                 Icon(Icons.AutoMirrored.Filled.FactCheck, contentDescription = stringResource(R.string.nav_valves), tint = EchoCaution)
             }
         }
-        IconButton(onClick = onInfo, modifier = Modifier.size(40.dp)) {
-            Icon(Icons.Outlined.Info, contentDescription = stringResource(R.string.about_title), tint = EchoMuted)
-        }
+        LocalOpenSettings.current?.let { SettingsGearButton(it, Modifier.size(40.dp)) }
         IconButton(onClick = onDrawer, modifier = Modifier.size(40.dp)) {
             Icon(Icons.AutoMirrored.Filled.FormatListBulleted, contentDescription = stringResource(R.string.guided_protocol_list), tint = EchoPrimary)
         }
@@ -463,10 +457,8 @@ private class DiagramSource(
     /** Caption and licence credit of a gallery page (shown in full screen). */
     val caption: String? = null,
     val credit: String? = null,
-    /** Vector schema: offers the labels AN/AUS toggle. */
-    val isSchema: Boolean = false,
-    /** Transparent label image drawn over the schema when labels are on. */
-    val labelLayer: String? = null
+    /** Structure names of a vector schema (drawn as pills; caliper labels avoid them). */
+    val labels: List<SchemaLabel> = emptyList()
 )
 
 /** Number of pages a panel mode has: the illustration plus its Echocardiographer.org gallery. */
@@ -515,10 +507,10 @@ private fun diagramSource(
             val image = view.schemaGallery[page.coerceIn(0, view.schemaGallery.lastIndex)]
             // The view drawing carries the step's calipers, PW gates and CW / M-mode cursors.
             if (image.calipers) {
-                // Same drawing re-coloured for the active theme (scripts/harmonize_schema_dark_theme.py).
-                val asset = if (darkTheme) image.asset else image.asset.replace("schema_dark/", "schema_light/")
+                // Vector schema of the active theme (scripts/build_schema_vector.py: *_dark.svg / *_light.svg).
+                val asset = if (darkTheme) image.asset else image.asset.replace("_dark.svg", "_light.svg")
                 DiagramSource(asset, image.aspect, Color.Transparent, overlays, { it.schema },
-                    caption = image.caption.get(language), credit = image.credit)
+                    caption = image.caption.get(language), credit = image.credit, labels = image.labels)
             } else {
                 galleryPage(image, language, Color.Black)
             }
@@ -656,7 +648,7 @@ private fun SplitStage(
                 contentDescription = view.title.get(language),
                 overlays = source.overlays,
                 overlayCoords = source.coords,
-                labelLayer = source.labelLayer,
+                labels = source.labels,
                 topInset = if (modes.size > 1) PillsHeight else 0.dp,
                 fallback = probeFallback(source, view, language)
             )
@@ -798,7 +790,7 @@ private fun DiagramThumb(
     topInset: Dp = 0.dp,
     /** Shown instead of a blank box when the asset is missing or cannot be decoded. */
     fallback: (@Composable () -> Unit)? = null,
-    labelLayer: String? = null
+    labels: List<SchemaLabel> = emptyList()
 ) {
     val context = LocalContext.current
     val imageLoader = remember(context) {
@@ -821,17 +813,10 @@ private fun DiagramThumb(
                 error = { fallback?.invoke() },
                 modifier = Modifier.fillMaxSize()
             )
-            if (labelLayer != null) {
-                AsyncImage(
-                    model = ImageRequest.Builder(context).data("file:///android_asset/$labelLayer").build(),
-                    imageLoader = imageLoader,
-                    contentDescription = null,
-                    contentScale = ContentScale.FillBounds,
-                    modifier = Modifier.fillMaxSize()
-                )
-            }
+            SchemaLabelLayer(labels, Modifier.fillMaxSize(), compact = true)
             if (overlays.isNotEmpty()) {
-                CaliperCanvas(overlays, overlayCoords, aspect = 0f, modifier = Modifier.fillMaxSize())
+                CaliperCanvas(overlays, overlayCoords, aspect = 0f, modifier = Modifier.fillMaxSize(),
+                    avoid = labels.filter { it.kind == "left" || it.kind == "right" })
             }
             if (isSvg && caliper != null && caliper.size == 4) {
                 Canvas(modifier = Modifier.fillMaxSize()) {
@@ -966,6 +951,7 @@ private fun VideoOverlay(
     practice: SnapshotStateMap<String, List<Float>>,
     practicePrefix: String,
     onResetPractice: (() -> Unit)?,
+    credit: String,
     onDismiss: () -> Unit
 ) {
     val overlays = step?.overlays.orEmpty()
@@ -1019,6 +1005,7 @@ private fun VideoOverlay(
                 }
             }
         }
+        Text("© $credit", style = MaterialTheme.typography.labelSmall, color = EchoMuted, maxLines = 2, overflow = TextOverflow.Ellipsis)
         Text(stringResource(R.string.zoom_hint), style = MaterialTheme.typography.labelSmall, color = EchoMuted)
     }
 }
@@ -1055,7 +1042,7 @@ private fun DiagramOverlay(
                 background = source.background,
                 overlays = source.overlays,
                 overlayCoords = source.coords,
-                labelLayer = source.labelLayer,
+                labels = source.labels,
                 fallback = probeFallback(source, view, language)
             )
         }

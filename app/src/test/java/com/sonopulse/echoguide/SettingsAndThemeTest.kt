@@ -13,6 +13,7 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.test.core.app.ApplicationProvider
 import com.github.takahirom.roborazzi.captureRoboImage
@@ -65,14 +66,44 @@ class SettingsAndThemeTest {
     @Test
     fun settingsLightGerman() {
         settings(LightEchoColors, AppLanguage.DE, "light_de")
-        compose.onNodeWithText("Synchronisiert & aktiv").assertIsDisplayed()
-        compose.onNodeWithText("Medizinischer Haftungsausschluss").assertExists()
+        // quick controls on top, every card collapsed
+        compose.onNodeWithText("Deutsch").assertIsDisplayed()
+        compose.onNodeWithText("Hell").assertIsDisplayed()
+        compose.onNodeWithText("Über EchoScope & Bildnachweise").assertIsDisplayed()
+        compose.onNodeWithText("Offline-Datenbank aktiv", substring = true).assertIsDisplayed()
+        compose.onNodeWithText("12\u2069 Leitlinien", substring = true).assertIsDisplayed()
+        compose.onNodeWithText("EchoScope ist ausschließlich", substring = true).assertDoesNotExist()
+        compose.onNodeWithText("Systeminformationen anzeigen").assertDoesNotExist()
+        // a card opens on tap
+        compose.onNodeWithText("Medizinischer Haftungsausschluss").performClick()
+        compose.waitForIdle()
+        compose.onNodeWithText("EchoScope ist ausschließlich", substring = true).assertExists()
+        compose.onNodeWithText("Kontakt, Feedback & Systeminformationen").performClick()
+        compose.waitForIdle()
+        compose.onNodeWithText("Systeminformationen anzeigen").assertExists()
+        compose.onNodeWithText("Android ", substring = true).assertDoesNotExist()   // device data only on request
+        compose.onRoot().captureRoboImage("build/cockpit-screens/settings_light_de_open.png")
     }
+
+    @Test
+    fun brandLogoVector() {
+        compose.setContent {
+            androidx.compose.foundation.layout.Row {
+                EchoScopeLogo(size = 320.dp)
+                EchoScopeLogo(size = 38.dp)
+            }
+        }
+        compose.waitForIdle()
+        System.setProperty("roborazzi.test.record", "true")
+        compose.onRoot().captureRoboImage("build/cockpit-screens/logo_vector.png")
+    }
+
 
     @Test
     fun settingsDarkArabicIsRtl() {
         settings(DarkEchoColors, AppLanguage.AR, "dark_ar")
         compose.onNodeWithText("إخلاء مسؤولية طبي").assertExists()
+        compose.onNodeWithText("العربية").assertExists()
     }
 
     @Test
@@ -91,7 +122,7 @@ class SettingsAndThemeTest {
                 EchoScopeTheme(colors = LightEchoColors, language = AppLanguage.AR) {
                     LocalizedRoot(AppLanguage.AR) {
                         ViewCockpit(
-                            protocol = protocol, view = view, language = AppLanguage.AR, onLanguageChange = {},
+                            protocol = protocol, view = view, language = AppLanguage.AR,
                             navigator = StepNavigator(view.steps[2], "3 / ${view.steps.size}", true, false, {}, {}),
                             onSelectView = {}
                         )

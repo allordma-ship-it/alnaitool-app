@@ -91,7 +91,7 @@ object ZScoreMath {
 
     fun interpret(z: Double): ZInterpretation = when {
         abs(z) <= 2.0 -> ZInterpretation.NORMAL
-        abs(z) <= 3.0 -> ZInterpretation.BORDERLINE
+        abs(z) <= 2.5 -> ZInterpretation.BORDERLINE
         else -> ZInterpretation.SIGNIFICANT
     }
 }

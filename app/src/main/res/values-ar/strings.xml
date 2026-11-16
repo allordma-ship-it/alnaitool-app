@@ -28,8 +28,8 @@
     <string name="zscore_range">المجال الطبيعي (Z ±2)</string>
     <string name="zscore_value">Z-Score</string>
     <string name="zscore_normal">طبيعي (|Z| ≤ 2.0)</string>
-    <string name="zscore_borderline">حدّي (2.0 &lt; |Z| ≤ 3.0)</string>
-    <string name="zscore_significant">هام (|Z| &gt; 3.0)</string>
+    <string name="zscore_borderline">حدّي (2.0 &lt; |Z| ≤ 2.5)</string>
+    <string name="zscore_significant">هام (|Z| &gt; 2.5)</string>
     <string name="zscore_reset">إعادة ضبط</string>
     <string name="zscore_disclaimer">نموذج تعليمي تقديري (المتوسط = a·BSA^b). تحقّق دائماً من المخططات المرجعية المعتمدة في مؤسستك قبل أي قرار سريري.</string>
     <string name="zscore_hint">أدخل الوزن والطول والقيمة المقاسة للحساب.</string>

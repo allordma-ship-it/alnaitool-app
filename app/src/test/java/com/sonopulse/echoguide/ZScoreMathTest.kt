@@ -28,8 +28,8 @@ class ZScoreMathTest {
         assertEquals(ZInterpretation.NORMAL, ZScoreMath.interpret(2.0))
         assertEquals(ZInterpretation.NORMAL, ZScoreMath.interpret(-1.5))
         assertEquals(ZInterpretation.BORDERLINE, ZScoreMath.interpret(2.01))
-        assertEquals(ZInterpretation.BORDERLINE, ZScoreMath.interpret(-3.0))
-        assertEquals(ZInterpretation.SIGNIFICANT, ZScoreMath.interpret(3.01))
+        assertEquals(ZInterpretation.BORDERLINE, ZScoreMath.interpret(-2.5))
+        assertEquals(ZInterpretation.SIGNIFICANT, ZScoreMath.interpret(2.51))
     }
 
     @Test

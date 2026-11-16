@@ -533,15 +533,59 @@
           ],
           "schemaGallery": [
             {
-              "asset": "schema_dark/subcostal_4c.png",
+              "asset": "schema_vector/subcostal_4c_dark.svg",
               "aspect": 0.8083,
               "caption": {
-                "en": "View drawing",
-                "de": "Schnittzeichnung",
-                "ar": "رسم المقطع"
+                "en": "Schema",
+                "de": "Schema",
+                "ar": "مخطط المقطع"
               },
               "calipers": true,
-              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "labels": [
+                {
+                  "text": "RV",
+                  "x": 0.5,
+                  "y": 0.53,
+                  "kind": "right"
+                },
+                {
+                  "text": "LV",
+                  "x": 0.71,
+                  "y": 0.65,
+                  "kind": "left"
+                },
+                {
+                  "text": "RA",
+                  "x": 0.27,
+                  "y": 0.7,
+                  "kind": "right"
+                },
+                {
+                  "text": "LA",
+                  "x": 0.45,
+                  "y": 0.84,
+                  "kind": "left"
+                },
+                {
+                  "text": "TV",
+                  "x": 0.42,
+                  "y": 0.605,
+                  "kind": "valve"
+                },
+                {
+                  "text": "MV",
+                  "x": 0.59,
+                  "y": 0.74,
+                  "kind": "valve"
+                },
+                {
+                  "text": "Liver",
+                  "x": 0.18,
+                  "y": 0.4,
+                  "kind": "other"
+                }
+              ],
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE (traced as vector schema)",
               "source": "https://www.echocardiographer.org/tte-subcostal"
             },
             {
@@ -1006,14 +1050,40 @@
           "atlasGallery": [],
           "schemaGallery": [
             {
-              "asset": "schema_dark/subcostal_ivc.png",
+              "asset": "schema_vector/subcostal_ivc_dark.svg",
               "aspect": 1.2937,
               "caption": {
-                "en": "View drawing",
-                "de": "Schnittzeichnung",
-                "ar": "رسم المقطع"
+                "en": "Schema",
+                "de": "Schema",
+                "ar": "مخطط المقطع"
               },
               "calipers": true,
+              "labels": [
+                {
+                  "text": "IVC",
+                  "x": 0.42,
+                  "y": 0.655,
+                  "kind": "right"
+                },
+                {
+                  "text": "RA",
+                  "x": 0.79,
+                  "y": 0.745,
+                  "kind": "right"
+                },
+                {
+                  "text": "HV",
+                  "x": 0.556,
+                  "y": 0.53,
+                  "kind": "right"
+                },
+                {
+                  "text": "Liver",
+                  "x": 0.46,
+                  "y": 0.4,
+                  "kind": "other"
+                }
+              ],
               "credit": "EchoScope"
             },
             {
@@ -1811,15 +1881,65 @@
           ],
           "schemaGallery": [
             {
-              "asset": "schema_dark/plax_standard.png",
+              "asset": "schema_vector/plax_standard_dark.svg",
               "aspect": 1.0316,
               "caption": {
-                "en": "View drawing",
-                "de": "Schnittzeichnung",
-                "ar": "رسم المقطع"
+                "en": "Schema",
+                "de": "Schema",
+                "ar": "مخطط المقطع"
               },
               "calipers": true,
-              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "labels": [
+                {
+                  "text": "RVOT",
+                  "x": 0.47,
+                  "y": 0.38,
+                  "kind": "right"
+                },
+                {
+                  "text": "LV",
+                  "x": 0.2,
+                  "y": 0.51,
+                  "kind": "left"
+                },
+                {
+                  "text": "LA",
+                  "x": 0.75,
+                  "y": 0.6,
+                  "kind": "left"
+                },
+                {
+                  "text": "Ao",
+                  "x": 0.73,
+                  "y": 0.37,
+                  "kind": "left"
+                },
+                {
+                  "text": "DA",
+                  "x": 0.655,
+                  "y": 0.8,
+                  "kind": "left"
+                },
+                {
+                  "text": "LVOT",
+                  "x": 0.55,
+                  "y": 0.51,
+                  "kind": "left"
+                },
+                {
+                  "text": "MV",
+                  "x": 0.6,
+                  "y": 0.66,
+                  "kind": "valve"
+                },
+                {
+                  "text": "AV",
+                  "x": 0.63,
+                  "y": 0.465,
+                  "kind": "valve"
+                }
+              ],
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE (traced as vector schema)",
               "source": "https://www.echocardiographer.org/tte-plax"
             },
             {
@@ -2477,15 +2597,59 @@
           ],
           "schemaGallery": [
             {
-              "asset": "schema_dark/psax_av.png",
+              "asset": "schema_vector/psax_av_dark.svg",
               "aspect": 1.0691,
               "caption": {
-                "en": "View drawing",
-                "de": "Schnittzeichnung",
-                "ar": "رسم المقطع"
+                "en": "Schema",
+                "de": "Schema",
+                "ar": "مخطط المقطع"
               },
               "calipers": true,
-              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE (adapted)",
+              "labels": [
+                {
+                  "text": "RVOT",
+                  "x": 0.43,
+                  "y": 0.4,
+                  "kind": "right"
+                },
+                {
+                  "text": "RA",
+                  "x": 0.35,
+                  "y": 0.72,
+                  "kind": "right"
+                },
+                {
+                  "text": "LA",
+                  "x": 0.51,
+                  "y": 0.76,
+                  "kind": "left"
+                },
+                {
+                  "text": "PA",
+                  "x": 0.69,
+                  "y": 0.62,
+                  "kind": "right"
+                },
+                {
+                  "text": "PV",
+                  "x": 0.62,
+                  "y": 0.43,
+                  "kind": "valve"
+                },
+                {
+                  "text": "TV",
+                  "x": 0.3,
+                  "y": 0.52,
+                  "kind": "valve"
+                },
+                {
+                  "text": "AV",
+                  "x": 0.495,
+                  "y": 0.535,
+                  "kind": "valve"
+                }
+              ],
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE (traced as vector schema)",
               "source": "https://www.echocardiographer.org/tte-psax"
             },
             {
@@ -3129,15 +3293,41 @@
           ],
           "schemaGallery": [
             {
-              "asset": "schema_dark/psax_papillary.png",
+              "asset": "schema_vector/psax_papillary_dark.svg",
               "aspect": 1.059,
               "caption": {
-                "en": "View drawing",
-                "de": "Schnittzeichnung",
-                "ar": "رسم المقطع"
+                "en": "Schema",
+                "de": "Schema",
+                "ar": "مخطط المقطع"
               },
               "calipers": true,
-              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE (adapted)",
+              "labels": [
+                {
+                  "text": "RV",
+                  "x": 0.29,
+                  "y": 0.46,
+                  "kind": "right"
+                },
+                {
+                  "text": "LV",
+                  "x": 0.47,
+                  "y": 0.6,
+                  "kind": "left"
+                },
+                {
+                  "text": "ALPM",
+                  "x": 0.66,
+                  "y": 0.55,
+                  "kind": "other"
+                },
+                {
+                  "text": "PMPM",
+                  "x": 0.5,
+                  "y": 0.76,
+                  "kind": "other"
+                }
+              ],
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE (traced as vector schema)",
               "source": "https://www.echocardiographer.org/tte-psax"
             },
             {
@@ -4099,15 +4289,59 @@
           ],
           "schemaGallery": [
             {
-              "asset": "schema_dark/apical_4c.png",
+              "asset": "schema_vector/apical_4c_dark.svg",
               "aspect": 0.7839,
               "caption": {
-                "en": "View drawing",
-                "de": "Schnittzeichnung",
-                "ar": "رسم المقطع"
+                "en": "Schema",
+                "de": "Schema",
+                "ar": "مخطط المقطع"
               },
               "calipers": true,
-              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "labels": [
+                {
+                  "text": "RV",
+                  "x": 0.26,
+                  "y": 0.44,
+                  "kind": "right"
+                },
+                {
+                  "text": "LV",
+                  "x": 0.47,
+                  "y": 0.4,
+                  "kind": "left"
+                },
+                {
+                  "text": "RA",
+                  "x": 0.28,
+                  "y": 0.75,
+                  "kind": "right"
+                },
+                {
+                  "text": "LA",
+                  "x": 0.55,
+                  "y": 0.77,
+                  "kind": "left"
+                },
+                {
+                  "text": "DA",
+                  "x": 0.83,
+                  "y": 0.865,
+                  "kind": "left"
+                },
+                {
+                  "text": "TV",
+                  "x": 0.3,
+                  "y": 0.585,
+                  "kind": "valve"
+                },
+                {
+                  "text": "MV",
+                  "x": 0.6,
+                  "y": 0.605,
+                  "kind": "valve"
+                }
+              ],
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE (traced as vector schema)",
               "source": "https://www.echocardiographer.org/tte-apical4"
             },
             {
@@ -4641,15 +4875,65 @@
           ],
           "schemaGallery": [
             {
-              "asset": "schema_dark/apical_5c.png",
+              "asset": "schema_vector/apical_5c_dark.svg",
               "aspect": 0.8,
               "caption": {
-                "en": "View drawing",
-                "de": "Schnittzeichnung",
-                "ar": "رسم المقطع"
+                "en": "Schema",
+                "de": "Schema",
+                "ar": "مخطط المقطع"
               },
               "calipers": true,
-              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "labels": [
+                {
+                  "text": "RV",
+                  "x": 0.27,
+                  "y": 0.47,
+                  "kind": "right"
+                },
+                {
+                  "text": "LV",
+                  "x": 0.5,
+                  "y": 0.42,
+                  "kind": "left"
+                },
+                {
+                  "text": "RA",
+                  "x": 0.27,
+                  "y": 0.78,
+                  "kind": "right"
+                },
+                {
+                  "text": "LA",
+                  "x": 0.56,
+                  "y": 0.8,
+                  "kind": "left"
+                },
+                {
+                  "text": "LVOT",
+                  "x": 0.465,
+                  "y": 0.61,
+                  "kind": "left"
+                },
+                {
+                  "text": "TV",
+                  "x": 0.31,
+                  "y": 0.595,
+                  "kind": "valve"
+                },
+                {
+                  "text": "MV",
+                  "x": 0.57,
+                  "y": 0.625,
+                  "kind": "valve"
+                },
+                {
+                  "text": "AV",
+                  "x": 0.4,
+                  "y": 0.725,
+                  "kind": "valve"
+                }
+              ],
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE (traced as vector schema)",
               "source": "https://www.echocardiographer.org/tte-apical5"
             },
             {
@@ -5082,15 +5366,41 @@
           "orientationAsset": "orientation/apical_2c.svg",
           "schemaGallery": [
             {
-              "asset": "schema_dark/apical_2c.png",
+              "asset": "schema_vector/apical_2c_dark.svg",
               "aspect": 0.5857,
               "caption": {
-                "en": "View drawing",
-                "de": "Schnittzeichnung",
-                "ar": "رسم المقطع"
+                "en": "Schema",
+                "de": "Schema",
+                "ar": "مخطط المقطع"
               },
               "calipers": true,
-              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "labels": [
+                {
+                  "text": "LV",
+                  "x": 0.4,
+                  "y": 0.38,
+                  "kind": "left"
+                },
+                {
+                  "text": "LA",
+                  "x": 0.42,
+                  "y": 0.84,
+                  "kind": "left"
+                },
+                {
+                  "text": "LAA",
+                  "x": 0.69,
+                  "y": 0.75,
+                  "kind": "left"
+                },
+                {
+                  "text": "MV",
+                  "x": 0.42,
+                  "y": 0.66,
+                  "kind": "valve"
+                }
+              ],
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE (traced as vector schema)",
               "source": "https://www.echocardiographer.org/tte-apical2"
             },
             {
@@ -5489,15 +5799,59 @@
           "orientationAsset": "orientation/apical_3c.svg",
           "schemaGallery": [
             {
-              "asset": "schema_dark/apical_3c.png",
+              "asset": "schema_vector/apical_3c_dark.svg",
               "aspect": 0.6718,
               "caption": {
-                "en": "View drawing",
-                "de": "Schnittzeichnung",
-                "ar": "رسم المقطع"
+                "en": "Schema",
+                "de": "Schema",
+                "ar": "مخطط المقطع"
               },
               "calipers": true,
-              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "labels": [
+                {
+                  "text": "LV",
+                  "x": 0.44,
+                  "y": 0.42,
+                  "kind": "left"
+                },
+                {
+                  "text": "LA",
+                  "x": 0.44,
+                  "y": 0.89,
+                  "kind": "left"
+                },
+                {
+                  "text": "RVOT",
+                  "x": 0.71,
+                  "y": 0.58,
+                  "kind": "right"
+                },
+                {
+                  "text": "Ao",
+                  "x": 0.72,
+                  "y": 0.78,
+                  "kind": "left"
+                },
+                {
+                  "text": "LVOT",
+                  "x": 0.53,
+                  "y": 0.66,
+                  "kind": "left"
+                },
+                {
+                  "text": "MV",
+                  "x": 0.4,
+                  "y": 0.76,
+                  "kind": "valve"
+                },
+                {
+                  "text": "AV",
+                  "x": 0.57,
+                  "y": 0.735,
+                  "kind": "valve"
+                }
+              ],
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE (traced as vector schema)",
               "source": "https://www.echocardiographer.org/tte-apical-long-axis"
             },
             {
@@ -6094,15 +6448,35 @@
           ],
           "schemaGallery": [
             {
-              "asset": "schema_dark/suprasternal_arch.png",
+              "asset": "schema_vector/suprasternal_arch_dark.svg",
               "aspect": 0.6638,
               "caption": {
-                "en": "View drawing",
-                "de": "Schnittzeichnung",
-                "ar": "رسم المقطع"
+                "en": "Schema",
+                "de": "Schema",
+                "ar": "مخطط المقطع"
               },
               "calipers": true,
-              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "labels": [
+                {
+                  "text": "Ao",
+                  "x": 0.39,
+                  "y": 0.43,
+                  "kind": "left"
+                },
+                {
+                  "text": "RPA",
+                  "x": 0.36,
+                  "y": 0.575,
+                  "kind": "right"
+                },
+                {
+                  "text": "LA",
+                  "x": 0.21,
+                  "y": 0.82,
+                  "kind": "left"
+                }
+              ],
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE (traced as vector schema)",
               "source": "https://www.echocardiographer.org/tte-suprasternal"
             },
             {
@@ -9060,6 +9434,18 @@
       ],
       "media": [
         {
+          "asset": "pathology/severe_aortic_valve_stenosis_e00261.mp4",
+          "aspect": 1.35,
+          "caption": {
+            "en": "2D loop",
+            "de": "2D-Loop",
+            "ar": "مقطع ثنائي الأبعاد"
+          },
+          "credit": "CardioNetworks ECHOpedia (AMC Echolab, Amsterdam), via Wikimedia Commons",
+          "license": "CC BY-SA 3.0",
+          "source": "https://commons.wikimedia.org/wiki/File:Severe_aortic_valve_stenosis_E00261_%28CardioNetworks_ECHOpedia%29.webm"
+        },
+        {
           "asset": "commons/severe_aortic_valve_stenosis_e00264.jpg",
           "aspect": 1.2549,
           "caption": {
@@ -9121,6 +9507,30 @@
           "source": "https://www.thepocusatlas.com/valvulopathy"
         },
         {
+          "asset": "pathology/severe_aortic_regurgitation_e00179.mp4",
+          "aspect": 1.35,
+          "caption": {
+            "en": "Severe AR",
+            "de": "Schwere AI",
+            "ar": "قلس شديد"
+          },
+          "credit": "CardioNetworks ECHOpedia (AMC Echolab, Amsterdam), via Wikimedia Commons",
+          "license": "CC BY-SA 3.0",
+          "source": "https://commons.wikimedia.org/wiki/File:Severe_aortic_regurgitation_E00179_%28CardioNetworks_ECHOpedia%29.webm"
+        },
+        {
+          "asset": "pathology/severe_aortic_regurgitation_e00180.mp4",
+          "aspect": 1.35,
+          "caption": {
+            "en": "Severe AR",
+            "de": "Schwere AI",
+            "ar": "قلس شديد"
+          },
+          "credit": "CardioNetworks ECHOpedia (AMC Echolab, Amsterdam), via Wikimedia Commons",
+          "license": "CC BY-SA 3.0",
+          "source": "https://commons.wikimedia.org/wiki/File:Severe_aortic_regurgitation_E00180_%28CardioNetworks_ECHOpedia%29.webm"
+        },
+        {
           "asset": "commons/severe_aortic_regurgitation_e00181.jpg",
           "aspect": 1.2549,
           "caption": {
@@ -9131,6 +9541,54 @@
           "credit": "CardioNetworks ECHOpedia (AMC Echolab, Amsterdam), via Wikimedia Commons",
           "license": "CC BY-SA 3.0",
           "source": "https://commons.wikimedia.org/wiki/File:Severe_aortic_regurgitation_E00181_%28CardioNetworks_ECHOpedia%29.jpg"
+        }
+      ]
+    },
+    {
+      "id": "ms_severe",
+      "group": "mitral",
+      "title": {
+        "en": "Severe mitral stenosis",
+        "de": "Hochgradige Mitralklappenstenose",
+        "ar": "تضيق تاجي شديد"
+      },
+      "findings": {
+        "en": "Rheumatic: thickened leaflets, commissural fusion, diastolic 'hockey-stick' doming of the anterior leaflet, enlarged LA. MVA < 1.0 cm² (PHT > 220 ms; MVA = 220 / PHT – see Rechner).",
+        "de": "Rheumatisch: verdickte Segel, Kommissurenfusion, diastolisches „Hockeyschläger“-Doming des vorderen Segels, großer LA. MÖF < 1,0 cm² (PHT > 220 ms; MÖF = 220 / PHT – siehe Rechner).",
+        "ar": "روماتيزمي: وريقات سميكة، التحام الصوارين، انتفاخ الوريقة الأمامية بشكل «عصا الهوكي» في الانبساط، أذين أيسر متوسّع. المساحة < 1.0 سم² (PHT > 220 ms؛ المساحة = 220 / PHT – انظر الحاسبات)."
+      },
+      "views": [
+        "plax_standard",
+        "psax_papillary",
+        "apical_4c"
+      ],
+      "valves": [
+        "mitral"
+      ],
+      "media": [
+        {
+          "asset": "pathology/severe_mitral_valve_stenosis_e00608.mp4",
+          "aspect": 1.2667,
+          "caption": {
+            "en": "2D loop",
+            "de": "2D-Loop",
+            "ar": "مقطع ثنائي الأبعاد"
+          },
+          "credit": "CardioNetworks ECHOpedia (AMC Echolab, Amsterdam), via Wikimedia Commons",
+          "license": "CC BY-SA 3.0",
+          "source": "https://commons.wikimedia.org/wiki/File:Severe_mitral_valve_stenosis_E00608_%28CardioNetworks_ECHOpedia%29.webm"
+        },
+        {
+          "asset": "pathology/severe_mitral_valve_stenosis_e00610.mp4",
+          "aspect": 1.2667,
+          "caption": {
+            "en": "2D loop",
+            "de": "2D-Loop",
+            "ar": "مقطع ثنائي الأبعاد"
+          },
+          "credit": "CardioNetworks ECHOpedia (AMC Echolab, Amsterdam), via Wikimedia Commons",
+          "license": "CC BY-SA 3.0",
+          "source": "https://commons.wikimedia.org/wiki/File:Severe_mitral_valve_stenosis_E00610_%28CardioNetworks_ECHOpedia%29.webm"
         }
       ]
     },
@@ -9168,6 +9626,30 @@
           "credit": "Sukh Singh, MD",
           "license": "CC BY-NC 4.0",
           "source": "https://www.thepocusatlas.com/valvulopathy"
+        },
+        {
+          "asset": "pathology/dilated_cardiomyopathy_with_severe_mitral_valve_regurgitation_e00134.mp4",
+          "aspect": 1.2958,
+          "caption": {
+            "en": "Secondary MR in DCM",
+            "de": "Sekundäre MI bei DCM",
+            "ar": "قلس ثانوي في DCM"
+          },
+          "credit": "CardioNetworks ECHOpedia (AMC Echolab, Amsterdam), via Wikimedia Commons",
+          "license": "CC BY-SA 3.0",
+          "source": "https://commons.wikimedia.org/wiki/File:Dilated_cardiomyopathy_with_severe_mitral_valve_regurgitation_E00134_%28CardioNetworks_ECHOpedia%29.webm"
+        },
+        {
+          "asset": "pathology/flail_of_mitral_valve_e00462.mp4",
+          "aspect": 1.35,
+          "caption": {
+            "en": "Flail leaflet",
+            "de": "Flail-Segel",
+            "ar": "وريقة سائبة"
+          },
+          "credit": "CardioNetworks ECHOpedia (AMC Echolab, Amsterdam), via Wikimedia Commons",
+          "license": "CC BY-SA 3.0",
+          "source": "https://commons.wikimedia.org/wiki/File:Flail_of_mitral_valve_E00462_%28CardioNetworks_ECHOpedia%29.webm"
         },
         {
           "asset": "commons/dilated_cardiomyopathy_with_severe_mitral_valve_regurgitation_e00139.jpg",
@@ -9221,6 +9703,42 @@
           "source": "https://www.thepocusatlas.com/valvulopathy"
         },
         {
+          "asset": "pathology/severe_tricuspid_regurgitation_e00566.mp4",
+          "aspect": 1.35,
+          "caption": {
+            "en": "Severe TR",
+            "de": "Schwere TI",
+            "ar": "قلس شديد"
+          },
+          "credit": "CardioNetworks ECHOpedia (AMC Echolab, Amsterdam), via Wikimedia Commons",
+          "license": "CC BY-SA 3.0",
+          "source": "https://commons.wikimedia.org/wiki/File:Severe_tricuspid_regurgitation_E00566_%28CardioNetworks_ECHOpedia%29.webm"
+        },
+        {
+          "asset": "pathology/severe_tricuspid_regurgitation_e00567.mp4",
+          "aspect": 1.35,
+          "caption": {
+            "en": "Severe TR",
+            "de": "Schwere TI",
+            "ar": "قلس شديد"
+          },
+          "credit": "CardioNetworks ECHOpedia (AMC Echolab, Amsterdam), via Wikimedia Commons",
+          "license": "CC BY-SA 3.0",
+          "source": "https://commons.wikimedia.org/wiki/File:Severe_tricuspid_regurgitation_E00567_%28CardioNetworks_ECHOpedia%29.webm"
+        },
+        {
+          "asset": "pathology/severe_tricuspid_regurgitation_e00568.mp4",
+          "aspect": 1.35,
+          "caption": {
+            "en": "Severe TR",
+            "de": "Schwere TI",
+            "ar": "قلس شديد"
+          },
+          "credit": "CardioNetworks ECHOpedia (AMC Echolab, Amsterdam), via Wikimedia Commons",
+          "license": "CC BY-SA 3.0",
+          "source": "https://commons.wikimedia.org/wiki/File:Severe_tricuspid_regurgitation_E00568_%28CardioNetworks_ECHOpedia%29.webm"
+        },
+        {
           "asset": "commons/echokardiographie_m_mode_4kb_tapse.jpg",
           "aspect": 1.435,
           "caption": {
@@ -9234,6 +9752,54 @@
         }
       ],
       "onlineUrl": "https://youtu.be/ZfDsbq0lPbs"
+    },
+    {
+      "id": "dcm",
+      "group": "cardiomyopathy",
+      "title": {
+        "en": "Dilated cardiomyopathy (DCM)",
+        "de": "Dilatative Kardiomyopathie (DCM)",
+        "ar": "اعتلال عضلة القلب التوسعي"
+      },
+      "findings": {
+        "en": "Globally dilated, spherical LV with thin walls and severely reduced EF (normal LVIDd ≤ 58 mm ♂ / 52 mm ♀, EF ≥ 52 %); often secondary MR with tenting, enlarged LA, restrictive filling.",
+        "de": "Global dilatierter, kugeliger LV mit dünnen Wänden und hochgradig reduzierter EF (normal LVIDd ≤ 58 mm ♂ / 52 mm ♀, EF ≥ 52 %); oft sekundäre MI mit Tenting, großer LA, restriktive Füllung.",
+        "ar": "بطين أيسر متوسّع كروي بجدران رقيقة وكسر قذف منخفض بشدة (الطبيعي LVIDd ≤ 58 ملم للرجال / 52 للنساء، EF ≥ 52%)؛ غالباً قلس تاجي ثانوي وأذين أيسر كبير وامتلاء تقييدي."
+      },
+      "views": [
+        "plax_standard",
+        "psax_papillary",
+        "apical_4c",
+        "apical_2c"
+      ],
+      "valves": [],
+      "media": [
+        {
+          "asset": "pathology/dilated_cardiomyopathy_e00473.mp4",
+          "aspect": 1.35,
+          "caption": {
+            "en": "2D loop",
+            "de": "2D-Loop",
+            "ar": "مقطع ثنائي الأبعاد"
+          },
+          "credit": "CardioNetworks ECHOpedia (AMC Echolab, Amsterdam), via Wikimedia Commons",
+          "license": "CC BY-SA 3.0",
+          "source": "https://commons.wikimedia.org/wiki/File:Dilated_cardiomyopathy_E00473_%28CardioNetworks_ECHOpedia%29.webm"
+        },
+        {
+          "asset": "pathology/dilated_cardiomyopathy_e00475.mp4",
+          "aspect": 1.35,
+          "caption": {
+            "en": "2D loop",
+            "de": "2D-Loop",
+            "ar": "مقطع ثنائي الأبعاد"
+          },
+          "credit": "CardioNetworks ECHOpedia (AMC Echolab, Amsterdam), via Wikimedia Commons",
+          "license": "CC BY-SA 3.0",
+          "source": "https://commons.wikimedia.org/wiki/File:Dilated_cardiomyopathy_E00475_%28CardioNetworks_ECHOpedia%29.webm"
+        }
+      ],
+      "onlineUrl": "https://youtu.be/nD4Xs6T00O8"
     },
     {
       "id": "apical_hcm",
@@ -9255,6 +9821,30 @@
       ],
       "valves": [],
       "media": [
+        {
+          "asset": "pathology/apical_hcm_e00291.mp4",
+          "aspect": 1.35,
+          "caption": {
+            "en": "2D loop",
+            "de": "2D-Loop",
+            "ar": "مقطع ثنائي الأبعاد"
+          },
+          "credit": "CardioNetworks ECHOpedia (AMC Echolab, Amsterdam), via Wikimedia Commons",
+          "license": "CC BY-SA 3.0",
+          "source": "https://commons.wikimedia.org/wiki/File:Apical_HCM_E00291_%28CardioNetworks_ECHOpedia%29.webm"
+        },
+        {
+          "asset": "pathology/apical_hcm_e00293.mp4",
+          "aspect": 1.35,
+          "caption": {
+            "en": "2D loop",
+            "de": "2D-Loop",
+            "ar": "مقطع ثنائي الأبعاد"
+          },
+          "credit": "CardioNetworks ECHOpedia (AMC Echolab, Amsterdam), via Wikimedia Commons",
+          "license": "CC BY-SA 3.0",
+          "source": "https://commons.wikimedia.org/wiki/File:Apical_HCM_E00293_%28CardioNetworks_ECHOpedia%29.webm"
+        },
         {
           "asset": "commons/apical_hcm_e00296.jpg",
           "aspect": 1.2549,
@@ -9293,6 +9883,18 @@
       "valves": [],
       "media": [
         {
+          "asset": "pathology/pericardial_effusion_e00672.mp4",
+          "aspect": 1.35,
+          "caption": {
+            "en": "2D loop",
+            "de": "2D-Loop",
+            "ar": "مقطع ثنائي الأبعاد"
+          },
+          "credit": "CardioNetworks ECHOpedia (AMC Echolab, Amsterdam), via Wikimedia Commons",
+          "license": "CC BY-SA 3.0",
+          "source": "https://commons.wikimedia.org/wiki/File:Pericardial_effusion_E00672_%28CardioNetworks_ECHOpedia%29.webm"
+        },
+        {
           "asset": "commons/pericardial_effusion_e00676.jpg",
           "aspect": 1.2549,
           "caption": {
@@ -9329,6 +9931,18 @@
       ],
       "media": [
         {
+          "asset": "pathology/dilated_ascending_aorta_severe_aortic_regurgitation_e00442.mp4",
+          "aspect": 1.35,
+          "caption": {
+            "en": "2D loop",
+            "de": "2D-Loop",
+            "ar": "مقطع ثنائي الأبعاد"
+          },
+          "credit": "CardioNetworks ECHOpedia (AMC Echolab, Amsterdam), via Wikimedia Commons",
+          "license": "CC BY-SA 3.0",
+          "source": "https://commons.wikimedia.org/wiki/File:Dilated_ascending_aorta%2C_severe_aortic_regurgitation_E00442_%28CardioNetworks_ECHOpedia%29.webm"
+        },
+        {
           "asset": "commons/dilated_ascending_aorta_severe_aortic_regurgitation_e00448.jpg",
           "aspect": 1.2549,
           "caption": {
@@ -9362,6 +9976,18 @@
       ],
       "valves": [],
       "media": [
+        {
+          "asset": "pathology/asd_type_ii_e00308.mp4",
+          "aspect": 1.35,
+          "caption": {
+            "en": "2D loop",
+            "de": "2D-Loop",
+            "ar": "مقطع ثنائي الأبعاد"
+          },
+          "credit": "CardioNetworks ECHOpedia (AMC Echolab, Amsterdam), via Wikimedia Commons",
+          "license": "CC BY-SA 3.0",
+          "source": "https://commons.wikimedia.org/wiki/File:ASD_type_II_E00308_%28CardioNetworks_ECHOpedia%29.webm"
+        },
         {
           "asset": "commons/echokardiogram_von_atriumseptumdefekt_ostium_secundum.jpg",
           "aspect": 1.4662,

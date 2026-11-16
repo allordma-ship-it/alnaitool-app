@@ -39,7 +39,7 @@ class TabletLayoutTest {
             EchoScopeTheme {
                 LocalizedRoot(AppLanguage.DE) {
                     ViewCockpit(
-                        protocol = protocol, view = view, language = AppLanguage.DE, onLanguageChange = {},
+                        protocol = protocol, view = view, language = AppLanguage.DE,
                         navigator = StepNavigator(view.steps[1], "2 / ${view.steps.size}", true, false, {}, {}),
                         onSelectView = {}, modifier = Modifier.fillMaxSize()
                     )

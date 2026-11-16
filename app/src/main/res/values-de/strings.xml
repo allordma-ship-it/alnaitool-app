@@ -36,8 +36,8 @@
     <string name="zscore_range">Normbereich (Z ±2)</string>
     <string name="zscore_value">Z-Score</string>
     <string name="zscore_normal">Normal (|Z| ≤ 2,0)</string>
-    <string name="zscore_borderline">Grenzwertig (2,0 &lt; |Z| ≤ 3,0)</string>
-    <string name="zscore_significant">Signifikant (|Z| &gt; 3,0)</string>
+    <string name="zscore_borderline">Grenzwertig (2,0 &lt; |Z| ≤ 2,5)</string>
+    <string name="zscore_significant">Signifikant (|Z| &gt; 2,5)</string>
     <string name="zscore_reset">Zurücksetzen</string>
     <string name="zscore_disclaimer">Allometrisches Lehrmodell (Mittelwert = a·KOF^b, log-normale SD). Vor klinischen Entscheidungen immer mit dem pädiatrischen Nomogramm Ihrer Klinik abgleichen.</string>
     <string name="zscore_hint">Gewicht, Größe und Messwert eingeben, um zu berechnen.</string>

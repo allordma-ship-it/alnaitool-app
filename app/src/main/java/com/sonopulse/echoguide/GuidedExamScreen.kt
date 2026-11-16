@@ -26,7 +26,6 @@ private data class GuidePosition(val view: EchoView, val stepIndex: Int)
 @Composable
 fun GuidedExamScreen(
     language: AppLanguage,
-    onLanguageChange: (AppLanguage) -> Unit,
     modifier: Modifier = Modifier
 ) {
     when (val state = rememberProtocolState()) {
@@ -36,7 +35,7 @@ fun GuidedExamScreen(
         is ProtocolState.Error -> Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Text(stringResource(R.string.protocol_error, state.message), color = MaterialTheme.colorScheme.error)
         }
-        is ProtocolState.Ready -> GuidedCockpit(state.protocol, language, onLanguageChange, modifier)
+        is ProtocolState.Ready -> GuidedCockpit(state.protocol, language, modifier)
     }
 }
 
@@ -44,7 +43,6 @@ fun GuidedExamScreen(
 private fun GuidedCockpit(
     protocol: EchoProtocol,
     language: AppLanguage,
-    onLanguageChange: (AppLanguage) -> Unit,
     modifier: Modifier
 ) {
     val positions = remember(protocol) {
@@ -64,7 +62,6 @@ private fun GuidedCockpit(
         protocol = protocol,
         view = pos.view,
         language = language,
-        onLanguageChange = onLanguageChange,
         navigator = StepNavigator(
             step = pos.view.steps[pos.stepIndex],
             counter = "${index + 1} / ${positions.size}",

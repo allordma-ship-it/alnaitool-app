@@ -98,8 +98,8 @@ fun ZoomableDiagram(
     overlayCoords: (CaliperOverlay) -> List<Float>? = { it.diagram },
     /** Shown instead of the asset path when the image cannot be loaded. */
     fallback: (@Composable () -> Unit)? = null,
-    /** Transparent image of the same size drawn over the asset (schema labels). */
-    labelLayer: String? = null
+    /** Structure names of a vector schema, drawn as pills that keep their size while zooming. */
+    labels: List<SchemaLabel> = emptyList()
 ) {
     val svgAsset = assetPath
     val isSvg = assetPath.endsWith(".svg", ignoreCase = true)
@@ -194,17 +194,9 @@ fun ZoomableDiagram(
             if (isSvg && caliper != null && caliper.size == 4) {
                 Canvas(modifier = Modifier.fillMaxSize()) { drawCaliper(caliper, scale) }
             }
-            if (labelLayer != null) {
-                coil.compose.AsyncImage(
-                    model = ImageRequest.Builder(context).data("file:///android_asset/$labelLayer").build(),
-                    imageLoader = imageLoader,
-                    contentDescription = null,
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier.fillMaxSize()
-                )
-            }
+            SchemaLabelLayer(labels, Modifier.fillMaxSize(), zoom = scale)
             if (overlays.isNotEmpty()) {
-                CaliperCanvas(overlays, overlayCoords, aspect = 0f, modifier = Modifier.fillMaxSize(), zoom = scale)
+                CaliperCanvas(overlays, overlayCoords, aspect = 0f, modifier = Modifier.fillMaxSize(), zoom = scale, avoid = labels)
             }
         }
 

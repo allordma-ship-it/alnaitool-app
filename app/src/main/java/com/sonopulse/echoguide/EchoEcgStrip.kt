@@ -33,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.StrokeCap
@@ -54,13 +55,8 @@ import androidx.media3.exoplayer.ExoPlayer
 import kotlin.math.exp
 
 /** Medical-monitor green for the ECG trace. */
-internal val EcgGreen = EchoPalette.EcgTrace
-internal val EcgTeal = EchoPalette.Emerald   // ED marker
-internal val EcgOrange = EchoPalette.Crimson  // ES marker
-private val EcgPaper = EchoPalette.EcgPaper
-private val EcgGridMinor = EchoPalette.EcgGridMinor
-private val EcgGridMajor = EchoPalette.EcgGridMajor
-private val EcgCursor = EchoPalette.EcgCursor
+// ECG colours follow the theme (EchoColors.ecg*): phosphor green #00E676 on dark paper,
+// emerald #00897B on light paper; ED = emerald, ES = crimson tokens (WCAG AA tones).
 
 /** Beats shown when the clip duration is not known yet. */
 private const val DEFAULT_BEATS = 2
@@ -177,6 +173,7 @@ fun EcgTransportBar(
 ) {
     val clock = rememberPlaybackClock(player)
     val enabled = loop.ready && clock.durationMs > 0
+    val c = MaterialTheme.echoColors
     // Time always runs left → right, also in Arabic.
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
         Row(
@@ -184,8 +181,8 @@ fun EcgTransportBar(
                 .fillMaxWidth()
                 .height(54.dp)
                 .clip(RoundedCornerShape(12.dp))
-                .background(EcgPaper)
-                .border(1.dp, EcgGridMajor, RoundedCornerShape(12.dp))
+                .background(c.ecgPaper)
+                .border(1.dp, c.ecgGridMajor, RoundedCornerShape(12.dp))
                 .padding(horizontal = 6.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(5.dp)
@@ -202,20 +199,20 @@ fun EcgTransportBar(
                 Icon(
                     imageVector = if (loop.isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow,
                     contentDescription = stringResource(if (loop.isPlaying) R.string.player_pause else R.string.player_play),
-                    tint = Color.White,
+                    tint = if (c.isDark) Color.White else c.text,
                     modifier = Modifier.size(20.dp)
                 )
             }
             TransportPill(
                 text = "0.5x",
-                color = EchoPalette.ConsoleKeyLabel,
+                color = if (c.isDark) EchoPalette.ConsoleKeyLabel else c.textMuted,
                 selected = loop.speed == 0.5f,
                 enabled = loop.ready
             ) { loop.setPlaybackSpeed(if (loop.speed == 0.5f) 1f else 0.5f) }
-            TransportPill(text = "ED", color = EcgTeal, selected = false, enabled = enabled) {
+            TransportPill(text = "ED", color = c.normal, selected = false, enabled = enabled) {
                 loop.freezeAt(StepPhase.ED, phaseJumpTarget(player.currentPosition, clock.durationMs, timing, endSystole = false))
             }
-            TransportPill(text = "ES", color = EcgOrange, selected = false, enabled = enabled) {
+            TransportPill(text = "ES", color = c.critical, selected = false, enabled = enabled) {
                 loop.freezeAt(StepPhase.ES, phaseJumpTarget(player.currentPosition, clock.durationMs, timing, endSystole = true))
             }
         }
@@ -228,7 +225,7 @@ private fun TransportButton(enabled: Boolean, onClick: () -> Unit, content: @Com
         modifier = Modifier
             .size(34.dp)
             .clip(CircleShape)
-            .background(if (enabled) EcgTeal.copy(alpha = 0.25f) else EchoPalette.Text.copy(alpha = 0.13f))
+            .background(if (enabled) MaterialTheme.echoColors.normal.copy(alpha = 0.25f) else MaterialTheme.echoColors.textMuted.copy(alpha = 0.13f))
             .clickable(enabled = enabled, onClick = onClick),
         contentAlignment = Alignment.Center
     ) { content() }
@@ -257,8 +254,9 @@ private fun EcgTrace(positionMs: Long, durationMs: Long, timing: EcgTiming, modi
     val windowMs = if (durationMs > 0) durationMs else timing.beatMs.coerceAtLeast(1) * DEFAULT_BEATS
     val beats = remember(timing, windowMs) { beatsFor(timing, windowMs) }
     val textMeasurer = rememberTextMeasurer()
+    val c = MaterialTheme.echoColors
     Canvas(modifier = modifier) {
-        drawEcgGrid()
+        drawEcgGrid(c.ecgGridMinor, c.ecgGridMajor)
         val w = size.width
         val h = size.height
         val baseline = h * 0.66f
@@ -271,8 +269,8 @@ private fun EcgTrace(positionMs: Long, durationMs: Long, timing: EcgTiming, modi
             return baseline - (ecgAmplitude(phase, tEnd) * amplitude).toFloat()
         }
         beats.forEach { b ->
-            if (b.startMs <= windowMs) drawPhaseMarker(xOf(b.startMs), EcgTeal, "ED", textMeasurer)
-            if (b.esMs <= windowMs) drawPhaseMarker(xOf(b.esMs), EcgOrange, "ES", textMeasurer)
+            if (b.startMs <= windowMs) drawPhaseMarker(xOf(b.startMs), c.normal, "ED", textMeasurer)
+            if (b.esMs <= windowMs) drawPhaseMarker(xOf(b.esMs), c.critical, "ES", textMeasurer)
         }
         val path = Path()
         var x = 0f
@@ -281,28 +279,28 @@ private fun EcgTrace(positionMs: Long, durationMs: Long, timing: EcgTiming, modi
             if (x == 0f) path.moveTo(x, y) else path.lineTo(x, y)
             x += 2f
         }
-        drawPath(path, EcgGreen, style = Stroke(width = 1.8.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round))
+        drawPath(path, c.ecgTrace, style = Stroke(width = 1.8.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round))
         val clamped = positionMs.coerceIn(0, windowMs)
         val cx = xOf(clamped)
         val cy = yOf(clamped.toFloat())
-        drawLine(EcgCursor.copy(alpha = 0.85f), Offset(cx, 0f), Offset(cx, h), strokeWidth = 1.2.dp.toPx())
-        drawCircle(EcgGreen.copy(alpha = 0.35f), radius = 5.dp.toPx(), center = Offset(cx, cy))
-        drawCircle(EcgCursor, radius = 2.4.dp.toPx(), center = Offset(cx, cy))
+        drawLine(c.ecgCursor.copy(alpha = 0.85f), Offset(cx, 0f), Offset(cx, h), strokeWidth = 1.2.dp.toPx())
+        drawCircle(c.ecgTrace.copy(alpha = 0.35f), radius = 5.dp.toPx(), center = Offset(cx, cy))
+        drawCircle(c.ecgCursor, radius = 2.4.dp.toPx(), center = Offset(cx, cy))
     }
 }
 
-private fun DrawScope.drawEcgGrid() {
+private fun DrawScope.drawEcgGrid(minorColor: Color, majorColor: Color) {
     val minor = 4.dp.toPx()
     var x = 0f
     var i = 0
     while (x <= size.width) {
-        drawLine(if (i % 5 == 0) EcgGridMajor else EcgGridMinor, Offset(x, 0f), Offset(x, size.height), 1f)
+        drawLine(if (i % 5 == 0) majorColor else minorColor, Offset(x, 0f), Offset(x, size.height), 1f)
         x += minor; i++
     }
     var y = 0f
     i = 0
     while (y <= size.height) {
-        drawLine(if (i % 5 == 0) EcgGridMajor else EcgGridMinor, Offset(0f, y), Offset(size.width, y), 1f)
+        drawLine(if (i % 5 == 0) majorColor else minorColor, Offset(0f, y), Offset(size.width, y), 1f)
         y += minor; i++
     }
 }

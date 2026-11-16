@@ -26,8 +26,9 @@ Light theme (daylight / ward): the same drawings re-coloured the other way round
 #FFFFFF, sector #EEF2F6 … #CBD5E1, labels slate #171E26 – into assets/schema_light/<view_id>.png;
 the app picks the variant of the active theme.
 
-Output: app/src/main/assets/schema_dark/<view_id>.png and schema_light/<view_id>.png (written into
-schemaGallery by scripts/integrate_library.py).
+Since 2.0.1 the app shows the vector schema (scripts/build_schema_vector.py), which imports this
+module for the source drawings (DRAWINGS, source_image, TARGET_WIDTH). Running this script writes
+the re-coloured PNGs to temp_real/schema_png/ as a reference only (not bundled).
 
 Usage: python3 scripts/harmonize_schema_dark_theme.py
 """
@@ -45,9 +46,10 @@ from PIL import Image, ImageDraw, ImageFilter, ImageFont
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 ASSETS = os.path.join(ROOT, "app", "src", "main", "assets")
 SRC = os.path.join(ASSETS, "echoorg")
-OUT = os.path.join(ASSETS, "schema_dark")
-OUT_LIGHT = os.path.join(ASSETS, "schema_light")
+OUT = os.path.join(ROOT, "temp_real", "schema_png", "dark")
+OUT_LIGHT = os.path.join(ROOT, "temp_real", "schema_png", "light")
 REF = os.path.join(ROOT, "scripts", "reference")
+os.makedirs(OUT, exist_ok=True)
 
 CARD = np.array([0x17, 0x1E, 0x26], np.float32)
 SLATE_LIGHT = np.array([0x1E, 0x29, 0x3B], np.float32)   # light grey of the sector

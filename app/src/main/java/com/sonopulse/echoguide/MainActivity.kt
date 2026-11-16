@@ -54,7 +54,8 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.sonopulse.echoguide.features.settings.SettingsScreen
+import com.sonopulse.echoguide.features.settings.SettingsRoute
+import androidx.compose.runtime.staticCompositionLocalOf
 import com.sonopulse.echoguide.features.settings.SettingsViewModel
 import com.sonopulse.echoguide.features.settings.ThemeMode
 
@@ -82,9 +83,11 @@ private enum class EchoDestination(val labelRes: Int, val selectedIcon: ImageVec
     PROTOCOL(R.string.nav_protocol, Icons.Filled.MonitorHeart, Icons.Outlined.MonitorHeart),
     GUIDED(R.string.nav_guided, Icons.Filled.School, Icons.Outlined.School),
     VALVES(R.string.nav_valves, Icons.AutoMirrored.Filled.FactCheck, Icons.AutoMirrored.Outlined.FactCheck),
-    ZSCORE(R.string.nav_zscore, Icons.Filled.Calculate, Icons.Outlined.Calculate),
-    SETTINGS(R.string.nav_settings, Icons.Filled.Settings, Icons.Outlined.Settings)
+    ZSCORE(R.string.nav_zscore, Icons.Filled.Calculate, Icons.Outlined.Calculate)
 }
+
+/** Opens the unified settings screen (gear in every top bar); provided by [EchoScopeApp]. */
+val LocalOpenSettings = staticCompositionLocalOf<(() -> Unit)?> { null }
 
 /**
  * App root: reads the persisted settings (DataStore via [SettingsViewModel]) and applies theme
@@ -101,21 +104,25 @@ fun EchoScopeApp(settingsViewModel: SettingsViewModel = viewModel()) {
         ThemeMode.DARK -> true
     }
     SystemBarAppearance(dark)
+    var settingsOpen by rememberSaveable { mutableStateOf(false) }
     EchoScopeTheme(colors = if (dark) DarkEchoColors else LightEchoColors, language = language) {
         LocalizedRoot(language) {
-            EchoScopeScaffold(
-                language = language,
-                onLanguageChange = settingsViewModel::setLanguage,
-                settings = {
-                    SettingsScreen(
-                        state = ui,
-                        language = language,
-                        onThemeMode = settingsViewModel::setThemeMode,
-                        onLanguage = settingsViewModel::setLanguage,
-                        onVerifyDatabase = settingsViewModel::verifyDatabase
-                    )
+            CompositionLocalProvider(LocalOpenSettings provides { settingsOpen = true }) {
+                // The clinical screens stay composed underneath, so closing settings returns to the same place.
+                Box(Modifier.fillMaxSize()) {
+                    EchoScopeScaffold(language = language)
+                    if (settingsOpen) {
+                        SettingsRoute(
+                            state = ui,
+                            language = language,
+                            onThemeMode = settingsViewModel::setThemeMode,
+                            onLanguage = settingsViewModel::setLanguage,
+                            onVerifyDatabase = settingsViewModel::verifyDatabase,
+                            onClose = { settingsOpen = false }
+                        )
+                    }
                 }
-            )
+            }
         }
     }
 }
@@ -180,11 +187,7 @@ fun rememberProtocolState(): ProtocolState {
  * system back gesture return to the selection screen.
  */
 @Composable
-private fun EchoScopeScaffold(
-    language: AppLanguage,
-    onLanguageChange: (AppLanguage) -> Unit,
-    settings: @Composable () -> Unit
-) {
+private fun EchoScopeScaffold(language: AppLanguage) {
     var destination by rememberSaveable { mutableStateOf(EchoDestination.PROTOCOL) }
     var openViewId by rememberSaveable { mutableStateOf<String?>(null) }
     // Schnitte selection lives here, above the detail screen, so Back returns to the same window,
@@ -204,7 +207,6 @@ private fun EchoScopeScaffold(
         ViewDetailScreen(
             viewId = detailId,
             language = language,
-            onLanguageChange = onLanguageChange,
             onBack = { openViewId = null },
             onSelectView = { openView(it.id) },
             modifier = Modifier.systemBarsPadding()
@@ -216,7 +218,7 @@ private fun EchoScopeScaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             if (destination != EchoDestination.GUIDED) {
-                EchoTopBar(language = language, onLanguageChange = onLanguageChange)
+                EchoTopBar()
             } else {
                 Spacer(Modifier.statusBarsPadding())
             }
@@ -254,10 +256,9 @@ private fun EchoScopeScaffold(
                     onSelectWindow = { selectedWindowId = it },
                     onOpenView = openView
                 )
-                EchoDestination.GUIDED -> GuidedExamScreen(language, onLanguageChange)
+                EchoDestination.GUIDED -> GuidedExamScreen(language)
                 EchoDestination.VALVES -> ValveAssessmentScreen(language, onOpenView = openView)
                 EchoDestination.ZSCORE -> ClinicalCalculatorsScreen(language)
-                EchoDestination.SETTINGS -> settings()
             }
         }
     }
@@ -267,7 +268,6 @@ private fun EchoScopeScaffold(
 private fun ViewDetailScreen(
     viewId: String,
     language: AppLanguage,
-    onLanguageChange: (AppLanguage) -> Unit,
     onBack: () -> Unit,
     onSelectView: (EchoView) -> Unit,
     modifier: Modifier = Modifier
@@ -286,7 +286,6 @@ private fun ViewDetailScreen(
                 protocol = state.protocol,
                 view = view,
                 language = language,
-                onLanguageChange = onLanguageChange,
                 navigator = StepNavigator(
                     step = view.steps.getOrNull(stepIndex),
                     counter = if (count > 0) "${stepIndex + 1} / $count" else "–",
@@ -479,8 +478,8 @@ private fun ViewCard(view: EchoView, language: AppLanguage, highlighted: Boolean
 // ---------------------------------------------------------------------------------------------
 
 @Composable
-private fun EchoTopBar(language: AppLanguage, onLanguageChange: (AppLanguage) -> Unit) {
-    var aboutOpen by remember { mutableStateOf(false) }
+private fun EchoTopBar() {
+    val openSettings = LocalOpenSettings.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -489,15 +488,7 @@ private fun EchoTopBar(language: AppLanguage, onLanguageChange: (AppLanguage) ->
             .padding(start = 16.dp, end = 4.dp, top = 6.dp, bottom = 2.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Box(
-            modifier = Modifier
-                .size(36.dp)
-                .clip(RoundedCornerShape(10.dp))
-                .background(EchoPrimary.copy(alpha = 0.15f)),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(Icons.Filled.MonitorHeart, contentDescription = null, tint = EchoPrimary)
-        }
+        EchoScopeLogo(size = 38.dp)
         Spacer(Modifier.width(10.dp))
         Column(modifier = Modifier.weight(1f)) {
             Text(stringResource(R.string.app_name), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = EchoText)
@@ -509,125 +500,15 @@ private fun EchoTopBar(language: AppLanguage, onLanguageChange: (AppLanguage) ->
                 overflow = TextOverflow.Ellipsis
             )
         }
-        LanguageMenuButton(language, onLanguageChange)
-        IconButton(onClick = { aboutOpen = true }) {
-            Icon(Icons.Outlined.Info, contentDescription = stringResource(R.string.about_title), tint = EchoMuted)
-        }
-    }
-    if (aboutOpen) AboutDialog(view = null, language = language, onDismiss = { aboutOpen = false })
-}
-
-/** Language picker; [compact] shows only the language code (DE / AR / EN) for the slim cockpit bar. */
-@Composable
-internal fun LanguageMenuButton(language: AppLanguage, onLanguageChange: (AppLanguage) -> Unit, compact: Boolean = false) {
-    var menuOpen by remember { mutableStateOf(false) }
-    Box {
-        TextButton(
-            onClick = { menuOpen = true },
-            contentPadding = PaddingValues(horizontal = if (compact) 6.dp else 10.dp)
-        ) {
-            Icon(Icons.Filled.Translate, contentDescription = stringResource(R.string.language_label), tint = EchoCaution,
-                modifier = Modifier.size(16.dp))
-            Spacer(Modifier.width(4.dp))
-            Text(if (compact) language.tag.uppercase() else language.nativeName, color = EchoCaution,
-                style = MaterialTheme.typography.labelLarge)
-        }
-        DropdownMenu(expanded = menuOpen, onDismissRequest = { menuOpen = false }, containerColor = EchoSurfaceHigh) {
-            AppLanguage.entries.forEach { option ->
-                DropdownMenuItem(
-                    text = {
-                        Text(
-                            option.nativeName,
-                            color = if (option == language) EchoPrimary else EchoText,
-                            fontWeight = if (option == language) FontWeight.Bold else FontWeight.Normal
-                        )
-                    },
-                    trailingIcon = { if (option == language) Icon(Icons.Filled.Check, contentDescription = null, tint = EchoPrimary) },
-                    onClick = {
-                        menuOpen = false
-                        onLanguageChange(option)
-                    }
-                )
-            }
-        }
+        if (openSettings != null) SettingsGearButton(openSettings)
     }
 }
 
-/**
- * Info dialog with all attribution: the current view's loop and diagram sources (when [view] is set),
- * the Patrick J. Lynch (CC-BY 2.5) illustration credit, the CardioNetworks ECHOpedia clip credit,
- * the open licence question for supplied reference images, and the disclaimer.
- */
+/** The single settings entry point (language, theme, about, references, contact). */
 @Composable
-internal fun AboutDialog(view: EchoView?, language: AppLanguage, onDismiss: () -> Unit, cases: List<PathologyCase> = emptyList()) {
-    val context = LocalContext.current
-    val version = remember(context) {
-        runCatching {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                context.packageManager.getPackageInfo(context.packageName, PackageManager.PackageInfoFlags.of(0)).versionName
-            } else {
-                @Suppress("DEPRECATION")
-                context.packageManager.getPackageInfo(context.packageName, 0).versionName
-            }
-        }.getOrNull().orEmpty()
+internal fun SettingsGearButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+    IconButton(onClick = onClick, modifier = modifier) {
+        Icon(Icons.Outlined.Settings, contentDescription = stringResource(R.string.nav_settings), tint = EchoText)
     }
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.about_close)) } },
-        title = { Text(stringResource(R.string.about_title), fontWeight = FontWeight.Bold) },
-        text = {
-            Column(
-                modifier = Modifier.verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                Text(stringResource(R.string.about_version, version), color = EchoMuted, style = MaterialTheme.typography.labelMedium)
-                if (view != null) {
-                    val src = view.videoSource
-                    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                        Text(stringResource(R.string.about_this_view, view.title.get(language)), color = EchoCaution,
-                            style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
-                        Text(
-                            text = if (src.isSimulated) {
-                                stringResource(R.string.player_simulated_note)
-                            } else {
-                                stringResource(R.string.player_real_credit, src.author.orEmpty(), src.license.orEmpty(), src.platform)
-                            },
-                            color = EchoText,
-                            style = MaterialTheme.typography.bodySmall
-                        )
-                        view.diagramCredit?.let { Text(it.get(language), color = EchoText, style = MaterialTheme.typography.bodySmall) }
-                        val gallery = (view.probeGallery + view.atlasGallery + view.steps.flatMap { it.examples })
-                        gallery.firstOrNull()?.credit?.let { credit ->
-                            Text(stringResource(R.string.about_view_gallery, gallery.size, credit), color = EchoText,
-                                style = MaterialTheme.typography.bodySmall)
-                        }
-                        // Pathology cases and Commons stills of this view, each with author and licence.
-                        (cases.flatMap { c -> c.media.map { "${c.title.get(language)} – ${it.caption.get(language)}: © ${it.credit} (${it.license})" } } +
-                            view.steps.flatMap { it.examples }.filter { it.source?.contains("wikimedia") == true }
-                                .map { "${it.caption.get(language)}: © ${it.credit}" }).distinct().forEach { line ->
-                            Text("• $line", color = EchoText, style = MaterialTheme.typography.bodySmall)
-                        }
-                    }
-                }
-                AboutSection(R.string.about_illustrations_title, R.string.about_illustrations_credit, R.string.about_illustrations_detail)
-                AboutSection(R.string.about_clips_title, R.string.about_clips_credit, null)
-                AboutSection(R.string.about_echoorg_title, R.string.about_echoorg_credit, R.string.about_echoorg_detail)
-                AboutSection(R.string.about_commons_title, R.string.about_commons_credit, R.string.about_commons_detail)
-                AboutSection(R.string.about_reference_title, R.string.about_reference_credit, null)
-                AboutSection(R.string.about_disclaimer_title, R.string.about_disclaimer, null)
-            }
-        },
-        containerColor = EchoSurface
-    )
 }
 
-@Composable
-private fun AboutSection(titleRes: Int, bodyRes: Int, detailRes: Int?) {
-    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-        Text(stringResource(titleRes), color = EchoPrimary, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
-        Text(stringResource(bodyRes), color = EchoText, style = MaterialTheme.typography.bodyMedium)
-        if (detailRes != null) {
-            Text(stringResource(detailRes), color = EchoMuted, style = MaterialTheme.typography.bodySmall)
-        }
-    }
-}

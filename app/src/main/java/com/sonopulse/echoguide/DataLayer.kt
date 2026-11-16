@@ -249,8 +249,15 @@ data class GalleryImage(
     val credit: String? = null,
     val source: String? = null,
     /** Schema view drawing: the step's calipers / Doppler cursors are drawn on it ([CaliperOverlay.schema]). */
-    val calipers: Boolean = false
+    val calipers: Boolean = false,
+    /** Structure names drawn by the app as pills over a vector schema (scale with the font size). */
+    val labels: List<SchemaLabel> = emptyList()
 )
+
+/** One label of a vector schema: normalised position; [kind] left / right (heart side), valve or other. */
+@Immutable
+@Serializable
+data class SchemaLabel(val text: String, val x: Float, val y: Float, val kind: String = "other")
 
 // ---------------------------------------------------------------------------------------------
 // Heart-valve assessment (scripts/valve_content.py; ASE/EACVI 2009 / 2017 recommendations)

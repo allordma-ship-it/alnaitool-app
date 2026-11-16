@@ -127,3 +127,6 @@ internal val EchoCriticalFill: Color @Composable @ReadOnlyComposable get() = Mat
  * "−1.8 cm²" or "+2.35" keep their order inside Arabic (RTL) sentences, cards and badges.
  */
 fun ltr(text: String): String = "\u2066$text\u2069"
+
+/** Tabular (fixed-width) figures, so columns of values and changing numbers do not jitter. */
+fun TextStyle.tabularNumbers(): TextStyle = copy(fontFeatureSettings = "tnum")

@@ -37,8 +37,8 @@
     <string name="zscore_range">Normal range (Z ±2)</string>
     <string name="zscore_value">Z-Score</string>
     <string name="zscore_normal">Normal (|Z| ≤ 2.0)</string>
-    <string name="zscore_borderline">Borderline (2.0 &lt; |Z| ≤ 3.0)</string>
-    <string name="zscore_significant">Significant (|Z| &gt; 3.0)</string>
+    <string name="zscore_borderline">Borderline (2.0 &lt; |Z| ≤ 2.5)</string>
+    <string name="zscore_significant">Significant (|Z| &gt; 2.5)</string>
     <string name="zscore_reset">Reset</string>
     <string name="zscore_disclaimer">Educational allometric model (mean = a·BSA^b, log-normal SD). Always confirm against your institutional pediatric nomogram before clinical decisions.</string>
     <string name="zscore_hint">Enter weight, height and a measured value to calculate.</string>
