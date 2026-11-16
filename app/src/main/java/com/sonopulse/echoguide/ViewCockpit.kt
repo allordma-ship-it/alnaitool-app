@@ -189,6 +189,13 @@ fun ViewCockpit(
                 onValves = if (protocol.valves.isNotEmpty()) ({ valvesOpen = true }) else null,
                 onDrawer = { scope.launch { drawerState.open() } }
             )
+            // Apical views as separate, isolated views: 2- / 3- / 4- / 5-chamber pills switch between
+            // them (each has its own loop, steps, schema and state).
+            if (view.id in APICAL_FAMILY) {
+                ApicalFamilyBar(current = view.id, language = language) { id ->
+                    protocol.allViews.firstOrNull { it.id == id }?.let(onSelectView)
+                }
+            }
             // Phones: one column (stage 205 dp, ECG, tabs). Tablets / landscape (≥ 600 dp wide): two
             // columns filling the whole screen – large video + diagram with the ECG on the left, the
             // steps / console / timing deck on the right.
@@ -384,7 +391,7 @@ private fun ProtocolDrawer(protocol: EchoProtocol, current: EchoView, language: 
                             .padding(horizontal = 8.dp, vertical = 9.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        NumberBadge(number, if (active) EchoPrimary else EchoCaution)
+                        NumberBadge(number, if (active) EchoPrimaryFill else EchoCautionFill)
                         Spacer(Modifier.width(10.dp))
                         Column(modifier = Modifier.weight(1f)) {
                             Text(v.title.get(language), color = EchoText, style = MaterialTheme.typography.bodyMedium, maxLines = 2)
@@ -479,7 +486,8 @@ private fun diagramSource(
     step: GuideStep?,
     caliperOn: Boolean,
     language: AppLanguage,
-    page: Int = 0
+    page: Int = 0,
+    darkTheme: Boolean = true
 ): DiagramSource {
     val overlays = if (caliperOn) step?.overlays.orEmpty() else emptyList()
     val atlas = view.diagramAsset
@@ -507,7 +515,9 @@ private fun diagramSource(
             val image = view.schemaGallery[page.coerceIn(0, view.schemaGallery.lastIndex)]
             // The view drawing carries the step's calipers, PW gates and CW / M-mode cursors.
             if (image.calipers) {
-                DiagramSource(image.asset, image.aspect, EchoPalette.Card, overlays, { it.schema },
+                // Same drawing re-coloured for the active theme (scripts/harmonize_schema_dark_theme.py).
+                val asset = if (darkTheme) image.asset else image.asset.replace("schema_dark/", "schema_light/")
+                DiagramSource(asset, image.aspect, Color.Transparent, overlays, { it.schema },
                     caption = image.caption.get(language), credit = image.credit)
             } else {
                 galleryPage(image, language, Color.Black)
@@ -574,6 +584,9 @@ private fun SplitStage(
     // 2D calipers belong to the 2D loop: hidden while a colour loop plays.
     val overlays = if (colorLoop == null) step?.overlays.orEmpty() else emptyList()
     val practising = videoAttached && practiceActive(step, loop, caliperOn)
+    // Imaging stays left-to-right in Arabic too: cine left, diagram right, probe sectors and
+    // calipers never mirrored (anatomical orientation of the screen is fixed).
+    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -612,10 +625,15 @@ private fun SplitStage(
             if (!practising && videoAttached && videoCaliperVisible(step, loop, caliperOn) && loop.videoAspect > 0f) {
                 CaliperCanvas(overlays, { it.video }, loop.videoAspect, Modifier.fillMaxSize())
             }
-            SourceBadge(simulated = colorLoop == null && view.videoSource.isSimulated, modifier = Modifier.align(Alignment.TopStart).padding(5.dp))
-            loop.frozenPhase?.let { FrozenBadge(it, Modifier.align(Alignment.BottomStart).padding(5.dp)) }
+            SourceBadge(
+                simulated = colorLoop == null && view.videoSource.isSimulated,
+                code = viewCode(view.id) + if (colorLoop != null) " · Color" else "",
+                // bottom-left, so the colour / caliper chips at the top never collide with it
+                modifier = Modifier.align(Alignment.BottomStart).padding(5.dp)
+            )
+            loop.frozenPhase?.let { FrozenBadge(it, Modifier.align(Alignment.BottomStart).padding(start = 5.dp, bottom = 26.dp)) }
         }
-        val source = diagramSource(view, diagramMode, step, caliperOn, language, diagramPage)
+        val source = diagramSource(view, diagramMode, step, caliperOn, language, diagramPage, MaterialTheme.echoColors.isDark)
         val pageTotal = pageCount(view, diagramMode)
         StageCard(
             modifier = Modifier.weight(0.48f),
@@ -643,6 +661,7 @@ private fun SplitStage(
                 fallback = probeFallback(source, view, language)
             )
         }
+    }
     }
 }
 
@@ -685,20 +704,82 @@ private fun StageCard(
     }
 }
 
+/** "A5C · LIVE" (real loop, green pulse dot) or "SIM" badge on the cine card. */
 @Composable
-private fun SourceBadge(simulated: Boolean, modifier: Modifier = Modifier) {
-    val color = if (simulated) EchoCaution else EchoNormal
-    Text(
-        text = stringResource(if (simulated) R.string.badge_simulated else R.string.badge_real),
-        color = color,
-        fontSize = 9.sp,
-        fontWeight = FontWeight.Bold,
+private fun SourceBadge(simulated: Boolean, code: String, modifier: Modifier = Modifier) {
+    val color = if (simulated) EchoPalette.Amber else EchoPalette.EcgTrace
+    Row(
         modifier = modifier
             .clip(RoundedCornerShape(6.dp))
-            .background(Color.Black.copy(alpha = 0.6f))
+            .background(Color.Black.copy(alpha = 0.66f))
             .border(1.dp, color.copy(alpha = 0.7f), RoundedCornerShape(6.dp))
-            .padding(horizontal = 5.dp, vertical = 1.dp)
+            .padding(horizontal = 5.dp, vertical = 1.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        if (!simulated) {
+            Box(Modifier.size(6.dp).clip(CircleShape).background(color))
+            Spacer(Modifier.width(4.dp))
+        }
+        Text(
+            text = ltr(if (simulated) stringResource(R.string.badge_simulated) else "$code · ${stringResource(R.string.badge_live)}"),
+            color = color,
+            fontSize = 9.sp,
+            fontWeight = FontWeight.Bold,
+            maxLines = 1
+        )
+    }
+}
+
+/** Short scanner label of a view (shown on the cine badge and the apical pills). */
+internal fun viewCode(viewId: String): String = when (viewId) {
+    "subcostal_4c" -> "SC 4C"
+    "subcostal_ivc" -> "IVC"
+    "plax_standard" -> "PLAX"
+    "psax_av" -> "PSAX AV"
+    "psax_papillary" -> "PSAX PM"
+    "apical_4c" -> "A4C"
+    "apical_5c" -> "A5C"
+    "apical_2c" -> "A2C"
+    "apical_3c" -> "A3C"
+    "suprasternal_arch" -> "SSN"
+    else -> viewId.uppercase()
+}
+
+/** The apical views, each an independent view with its own loop, steps and schema. */
+internal val APICAL_FAMILY = listOf("apical_2c", "apical_3c", "apical_4c", "apical_5c")
+
+@Composable
+private fun ApicalFamilyBar(current: String, language: AppLanguage, onSelect: (String) -> Unit) {
+    val labels = mapOf(
+        "apical_2c" to LocalizedText("2-Chamber", "2-Kammer", "ثنائي الحجرات"),
+        "apical_3c" to LocalizedText("3-Chamber", "3-Kammer", "ثلاثي الحجرات"),
+        "apical_4c" to LocalizedText("4-Chamber", "4-Kammer", "رباعي الحجرات"),
+        "apical_5c" to LocalizedText("5-Chamber", "5-Kammer", "خماسي الحجرات")
     )
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .horizontalScroll(rememberScrollState())
+            .padding(start = 10.dp, end = 10.dp, bottom = 6.dp),
+        horizontalArrangement = Arrangement.spacedBy(6.dp)
+    ) {
+        APICAL_FAMILY.forEach { id ->
+            val active = id == current
+            Row(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(if (active) EchoPrimaryFill else EchoSurface)
+                    .border(1.dp, if (active) EchoPrimaryFill else EchoOutline, RoundedCornerShape(16.dp))
+                    .clickable(enabled = !active) { onSelect(id) }
+                    .padding(horizontal = 12.dp, vertical = 5.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(ltr(viewCode(id)), color = if (active) EchoOnAccent else EchoPrimary, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                Spacer(Modifier.width(6.dp))
+                Text(labels.getValue(id).get(language), color = if (active) EchoOnAccent else EchoText, fontSize = 12.sp)
+            }
+        }
+    }
 }
 
 /**
@@ -956,7 +1037,7 @@ private fun DiagramOverlay(
     language: AppLanguage,
     onDismiss: () -> Unit
 ) {
-    val source = diagramSource(view, mode, step, caliperOn, language, page)
+    val source = diagramSource(view, mode, step, caliperOn, language, page, MaterialTheme.echoColors.isDark)
     val pageTotal = pageCount(view, mode)
     FullScreenDialog(onDismiss) {
         val hasCaliper = mode != DiagramMode.PROBE && (step?.overlays.orEmpty().isNotEmpty() || step?.caliper != null)
@@ -1049,7 +1130,7 @@ private fun ColorToggleChip(colorLoop: ColorLoop?, onCycle: () -> Unit) {
         maxLines = 1,
         modifier = Modifier
             .clip(RoundedCornerShape(11.dp))
-            .background(if (active) EchoCritical else Color.Black.copy(alpha = 0.6f))
+            .background(if (active) EchoCriticalFill else Color.Black.copy(alpha = 0.6f))
             .border(1.dp, EchoCritical.copy(alpha = 0.8f), RoundedCornerShape(11.dp))
             .clickable(onClick = onCycle)
             .padding(horizontal = 7.dp, vertical = 3.dp)
@@ -1096,7 +1177,7 @@ private fun ReferenceDialog(
                     selected = showChecklist == checklist,
                     onClick = { showChecklist = checklist },
                     label = { Text(stringResource(label)) },
-                    colors = FilterChipDefaults.filterChipColors(selectedContainerColor = EchoPrimary, selectedLabelColor = EchoOnAccent)
+                    colors = FilterChipDefaults.filterChipColors(selectedContainerColor = EchoPrimaryFill, selectedLabelColor = EchoOnAccent)
                 )
             }
         }

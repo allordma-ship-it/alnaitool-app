@@ -35,17 +35,17 @@ def candidates(name: str) -> list[str]:
     if name.lower().endswith((".webm", ".ogv")):
         return [f"{base}/transcoded/{h[0]}/{h[:2]}/{q}/{q}.{s}" for s in
                 ("480p.vp9.webm", "480p.webm", "360p.vp9.webm", "360p.webm", "240p.vp9.webm", "240p.webm")]
-    return [f"{base}/{h[0]}/{h[:2]}/{q}"] + [f"{base}/thumb/{h[0]}/{h[:2]}/{q}/{w}px-{q}" for w in (1280, 960, 500)]
+    return [f"{base}/thumb/{h[0]}/{h[:2]}/{q}/{w}px-{q}" for w in (1280, 960, 500)] + [f"{base}/{h[0]}/{h[:2]}/{q}"]
 
 
 def fetch(name: str) -> bytes:
     for url in candidates(name):
         try:
             data = get(url)
-            time.sleep(10)
+            time.sleep(90 if name.lower().endswith((".webm", ".ogv")) else 5)
             return data
         except urllib.error.HTTPError as e:
-            if e.code not in (404, 400):
+            if e.code not in (404, 400, 429, 503):
                 raise
             time.sleep(5)
     raise RuntimeError("no derivative for " + name)
@@ -57,7 +57,7 @@ def get(url: str) -> bytes:
             with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": UA}), timeout=120) as r:
                 return r.read()
         except urllib.error.HTTPError as e:
-            if e.code != 429:
+            if e.code not in (429, 502, 503, 504):
                 raise
             time.sleep(int(e.headers.get("Retry-After", "120")) + 30)
     raise RuntimeError("rate limited: " + url)
@@ -65,6 +65,9 @@ def get(url: str) -> bytes:
 
 def licence(wikitext: str) -> tuple[str, str]:
     t = wikitext.lower()
+    if "cardionetworks permission" in t:
+        # {{Cardionetworks permission}}: CardioNetworks publishes ECHOpedia under CC BY-SA 3.0 (OTRS 2011102310008874)
+        return "CC BY-SA 3.0", "CardioNetworks ECHOpedia (AMC Echolab, Amsterdam)"
     author = re.search(r"\|\s*author\s*=\s*(.+)", wikitext, re.I)
     author = re.sub(r"\[\[(?:[^|\]]*\|)?([^\]]+)\]\]", r"\1", author.group(1)).strip() if author else ""
     for key, name in [("cc-by-sa-4.0", "CC BY-SA 4.0"), ("cc-by-sa-3.0", "CC BY-SA 3.0"), ("cc-by-sa-2.5", "CC BY-SA 2.5"),
@@ -85,6 +88,8 @@ def main(names):
             data = fetch(name)
             with open(path, "wb") as f:
                 f.write(data)
+        if name in meta and not meta[name]["license"]:
+            meta[name]["license"], meta[name]["author"] = licence(meta[name]["wikitext"])
         if name not in meta:
             raw = get("https://commons.wikimedia.org/w/index.php?" +
                       urllib.parse.urlencode({"title": "File:" + name, "action": "raw"})).decode("utf-8", "replace")

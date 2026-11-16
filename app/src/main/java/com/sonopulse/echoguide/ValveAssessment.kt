@@ -57,9 +57,9 @@ import androidx.compose.ui.text.drawText
 /** Narrow table cells: hyphenate long German words ("Regurgitations-volumen") instead of cutting them. */
 private val CellText = TextStyle(fontSize = 10.5.sp, hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph)
 
-private val GradeMild = EchoPalette.Emerald
-private val GradeModerate = EchoPalette.Amber
-private val GradeSevere = EchoPalette.Crimson
+private val GradeMild: Color @Composable get() = EchoNormal
+private val GradeModerate: Color @Composable get() = EchoCaution
+private val GradeSevere: Color @Composable get() = EchoCritical
 
 /**
  * "Herzklappen" tab: structured assessment of the aortic, mitral, tricuspid and pulmonary valve –
@@ -344,7 +344,7 @@ private fun MeasurementGuide(valve: HeartValve, protocol: EchoProtocol, language
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier
                         .clip(RoundedCornerShape(10.dp))
-                        .background(if (active) EchoPrimary else EchoSurfaceHigh)
+                        .background(if (active) EchoPrimaryFill else EchoSurfaceHigh)
                         .clickable { selectedId = m.id }
                         .padding(horizontal = 10.dp, vertical = 6.dp)
                 )
@@ -370,7 +370,7 @@ private fun MeasurementGuide(valve: HeartValve, protocol: EchoProtocol, language
                 stringResource(if (meas.nyquistCmS != null) R.string.valve_loop_color else R.string.valve_loop_2d),
                 color = EchoOnAccent, fontSize = 10.sp, fontWeight = FontWeight.Bold,
                 modifier = Modifier.align(Alignment.TopEnd).padding(6.dp).clip(RoundedCornerShape(6.dp))
-                    .background((if (meas.nyquistCmS != null) EchoCritical else EchoPrimary).copy(alpha = 0.85f))
+                    .background(if (meas.nyquistCmS != null) EchoCriticalFill else EchoPrimaryFill)
                     .padding(horizontal = 6.dp, vertical = 2.dp)
             )
         }

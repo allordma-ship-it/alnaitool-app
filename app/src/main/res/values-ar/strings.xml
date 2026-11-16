@@ -102,7 +102,6 @@
     <string name="cockpit_enlarge">تكبير</string>
     <string name="cockpit_reference">القيم الطبيعية</string>
     <string name="cockpit_tips">نصائح التحسين</string>
-    <string name="badge_real">حقيقي</string>
     <string name="badge_simulated">محاكاة</string>
     <string name="about_this_view">هذا المقطع: %1$s</string>
     <string name="ecg_nominal">هذا المقطع بلا تخطيط قلب مسجّل – علامات ED/ES تتبع إيقاعاً افتراضياً.</string>
@@ -149,4 +148,6 @@
     <string name="about_commons_title">ويكيميديا كومنز · CardioNetworks ECHOpedia</string>
     <string name="about_commons_credit">مقاطع وصور الحالات المرضية (أمراض الصمامات الأبهري والتاجي وثلاثي الشرف، اعتلالات العضلة القلبية، انصباب التامور، توسع الأبهر، ASD) وصورة TAPSE بنمط M مأخوذة من ويكيميديا كومنز، ومعظمها من مجموعة CardioNetworks ECHOpedia، بترخيص CC BY-SA 3.0 وتراخيص حرة أخرى.</string>
     <string name="about_commons_detail">يُذكر المؤلف والترخيص مع كل حالة، وقائمة الملفات مع صفحاتها في assets/commons/ATTRIBUTION.txt. حُوِّلت المقاطع إلى MP4 (H.264 بلا صوت)، ويبقى محتوى CC BY-SA بنفس الترخيص.</string>
+    <string name="nav_settings">الإعدادات</string>
+    <string name="badge_live">مباشر</string>
 </resources>

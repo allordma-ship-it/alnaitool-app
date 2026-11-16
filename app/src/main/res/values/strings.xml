@@ -95,7 +95,6 @@
     <string name="cockpit_enlarge">Enlarge</string>
     <string name="cockpit_reference">Normal values</string>
     <string name="cockpit_tips">Optimisation tips</string>
-    <string name="badge_real">REAL</string>
     <string name="badge_simulated">SIM</string>
     <string name="about_this_view">This view: %1$s</string>
     <string name="ecg_nominal">This clip has no recorded ECG – ED/ES markers follow a nominal rhythm.</string>
@@ -142,4 +141,8 @@
     <string name="about_commons_title">Wikimedia Commons · CardioNetworks ECHOpedia</string>
     <string name="about_commons_credit">Pathology loops and stills (aortic / mitral / tricuspid disease, cardiomyopathies, pericardial effusion, aortic dilatation, ASD) and the TAPSE M-mode image come from Wikimedia Commons, mainly the CardioNetworks ECHOpedia collection, under CC BY-SA 3.0 and other free licences.</string>
     <string name="about_commons_detail">Author and licence are shown with every case; the list of files with their Commons pages is in assets/commons/ATTRIBUTION.txt. Clips were converted to MP4 (H.264, no audio); CC BY-SA content stays under CC BY-SA.</string>
+    <!-- Support address shown in Settings › Contact; empty = the user picks the recipient in the mail app. -->
+    <string name="support_email" translatable="false"></string>
+    <string name="nav_settings">Settings</string>
+    <string name="badge_live">LIVE</string>
 </resources>

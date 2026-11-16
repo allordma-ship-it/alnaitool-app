@@ -73,6 +73,17 @@ internal val CursorTeal = EchoPalette.Cursor
 /** PW sample gate and colour-Doppler box. */
 internal val GateRed = EchoPalette.Gate
 
+/**
+ * Acoustic beam colour by modality, as on the scanner: PW Doppler red, CW Doppler orange,
+ * M-mode blue (the sample gate itself stays red, the CW focus diamond orange).
+ */
+internal fun beamColor(overlay: CaliperOverlay): Color = when {
+    overlay.label.startsWith("CW") -> EchoPalette.BeamCw
+    overlay.label.startsWith("M-mode") -> EchoPalette.BeamMMode
+    overlay.type == CaliperOverlay.DOPPLER_GATE -> EchoPalette.BeamPw
+    else -> CursorTeal
+}
+
 /** Position of the CW focus diamond along the cursor (valve plane). */
 internal const val CW_FOCUS = 0.82f
 
@@ -143,7 +154,8 @@ internal fun DrawScope.drawCaliperOverlay(
         CaliperOverlay.DOPPLER_GATE, CaliperOverlay.CURSOR -> {
             val dash = PathEffect.dashPathEffect(floatArrayOf(6.dp.toPx() / zoom, 4.dp.toPx() / zoom))
             drawLine(halo, a, b, strokeWidth = stroke + 2f / zoom, pathEffect = dash)
-            drawLine(CursorTeal, a, b, strokeWidth = stroke, pathEffect = dash)
+            val beam = beamColor(overlay)
+            drawLine(beam, a, b, strokeWidth = stroke, pathEffect = dash)
             if (overlay.type == CaliperOverlay.DOPPLER_GATE) {
                 // Sample volume: two bars across the cursor, a gate length apart.
                 val half = 3.dp.toPx() / zoom
@@ -157,7 +169,7 @@ internal fun DrawScope.drawCaliperOverlay(
                 }
             } else {
                 val tick = 4.dp.toPx() / zoom
-                drawLine(CursorTeal, Offset(b.x - nx * tick, b.y - ny * tick), Offset(b.x + nx * tick, b.y + ny * tick), strokeWidth = stroke)
+                drawLine(beam, Offset(b.x - nx * tick, b.y - ny * tick), Offset(b.x + nx * tick, b.y + ny * tick), strokeWidth = stroke)
                 if (overlay.label.startsWith("CW")) {
                     // CW focus marker "--◇--" at the valve plane (82 % of the cursor, as in the audit script).
                     val f = Offset(a.x + (b.x - a.x) * CW_FOCUS, a.y + (b.y - a.y) * CW_FOCUS)
@@ -166,7 +178,7 @@ internal fun DrawScope.drawCaliperOverlay(
                         moveTo(f.x, f.y - r); lineTo(f.x + r, f.y); lineTo(f.x, f.y + r); lineTo(f.x - r, f.y); close()
                     }
                     drawPath(diamond, Color.Black)
-                    drawPath(diamond, CursorTeal, style = Stroke(stroke))
+                    drawPath(diamond, beam, style = Stroke(stroke))
                 }
             }
         }
@@ -190,7 +202,7 @@ private fun DrawScope.drawOverlayLabel(overlay: CaliperOverlay, a: Offset, b: Of
     val color = when (overlay.type) {
         CaliperOverlay.LINE -> CaliperYellow
         CaliperOverlay.AREA -> GateRed
-        else -> CursorTeal
+        else -> beamColor(overlay)
     }
     val layout = textMeasurer.measure(
         overlay.label,
@@ -441,7 +453,7 @@ internal fun DiagramModePills(
                 maxLines = 1,
                 modifier = Modifier
                     .clip(RoundedCornerShape(9.dp))
-                    .background(if (active) EchoPrimary else Color.Transparent)
+                    .background(if (active) EchoPrimaryFill else Color.Transparent)
                     .clickable { onSelect(mode) }
                     .semantics { this.selected = active; role = Role.Tab }
                     .padding(horizontal = if (large) 12.dp else 6.dp, vertical = if (large) 5.dp else 2.dp)

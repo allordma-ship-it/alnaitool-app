@@ -94,7 +94,6 @@
     <string name="cockpit_enlarge">Vergrößern</string>
     <string name="cockpit_reference">Normwerte</string>
     <string name="cockpit_tips">Optimierungstipps</string>
-    <string name="badge_real">ECHT</string>
     <string name="badge_simulated">SIM</string>
     <string name="about_this_view">Dieser Schnitt: %1$s</string>
     <string name="ecg_nominal">Dieser Clip enthält kein EKG – die ED/ES-Marker folgen einem nominellen Rhythmus.</string>
@@ -141,4 +140,6 @@
     <string name="about_commons_title">Wikimedia Commons · CardioNetworks ECHOpedia</string>
     <string name="about_commons_credit">Pathologie-Loops und -Bilder (Aorten-, Mitral-, Trikuspidalklappe, Kardiomyopathien, Perikarderguss, Aortendilatation, ASD) sowie das TAPSE-M-Mode-Bild stammen von Wikimedia Commons, überwiegend aus der Sammlung CardioNetworks ECHOpedia, unter CC BY-SA 3.0 und anderen freien Lizenzen.</string>
     <string name="about_commons_detail">Autor und Lizenz stehen bei jedem Fall; die Dateiliste mit Commons-Seiten steht in assets/commons/ATTRIBUTION.txt. Clips wurden nach MP4 (H.264, ohne Ton) konvertiert; CC-BY-SA-Inhalte bleiben unter CC BY-SA.</string>
+    <string name="nav_settings">Optionen</string>
+    <string name="badge_live">LIVE</string>
 </resources>

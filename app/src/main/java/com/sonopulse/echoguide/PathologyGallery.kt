@@ -74,8 +74,8 @@ fun PathologyGallery(protocol: EchoProtocol, cases: List<PathologyCase>, languag
                             fontWeight = FontWeight.SemiBold,
                             modifier = Modifier
                                 .clip(RoundedCornerShape(10.dp))
-                                .background(if (selected) EchoPalette.Crimson else Color.Transparent)
-                                .border(1.dp, if (selected) EchoPalette.Crimson else EchoSky.copy(alpha = 0.5f), RoundedCornerShape(10.dp))
+                                .background(if (selected) EchoCriticalFill else Color.Transparent)
+                                .border(1.dp, if (selected) EchoCriticalFill else EchoSky.copy(alpha = 0.5f), RoundedCornerShape(10.dp))
                                 .clickable { selectedId = c.id }
                                 .padding(horizontal = 10.dp, vertical = 6.dp)
                         )
@@ -122,7 +122,7 @@ fun PathologyGallery(protocol: EchoProtocol, cases: List<PathologyCase>, languag
                             color = if (i == index) Color.White else EchoMuted,
                             modifier = Modifier
                                 .clip(RoundedCornerShape(8.dp))
-                                .background(if (i == index) EchoPalette.MedicalBlue else EchoSurface)
+                                .background(if (i == index) EchoPrimaryFill else EchoSurface)
                                 .clickable { imageIndex = i }
                                 .padding(horizontal = 8.dp, vertical = 4.dp)
                         )

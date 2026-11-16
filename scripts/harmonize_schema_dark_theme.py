@@ -22,8 +22,12 @@ Three views have no view drawing on Echocardiographer.org, so it is built from m
   * subcostal_ivc  – drawn here in the same style (scripts/reference/subcostal_ivc_drawing.svg,
                      rendered with Chromium)
 
-Output: app/src/main/assets/schema_dark/<view_id>.png (written into schemaGallery by
-scripts/integrate_library.py).
+Light theme (daylight / ward): the same drawings re-coloured the other way round – page
+#FFFFFF, sector #EEF2F6 … #CBD5E1, labels slate #171E26 – into assets/schema_light/<view_id>.png;
+the app picks the variant of the active theme.
+
+Output: app/src/main/assets/schema_dark/<view_id>.png and schema_light/<view_id>.png (written into
+schemaGallery by scripts/integrate_library.py).
 
 Usage: python3 scripts/harmonize_schema_dark_theme.py
 """
@@ -42,12 +46,18 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 ASSETS = os.path.join(ROOT, "app", "src", "main", "assets")
 SRC = os.path.join(ASSETS, "echoorg")
 OUT = os.path.join(ASSETS, "schema_dark")
+OUT_LIGHT = os.path.join(ASSETS, "schema_light")
 REF = os.path.join(ROOT, "scripts", "reference")
 
 CARD = np.array([0x17, 0x1E, 0x26], np.float32)
 SLATE_LIGHT = np.array([0x1E, 0x29, 0x3B], np.float32)   # light grey of the sector
 SLATE_DARK = np.array([0x0F, 0x17, 0x2A], np.float32)    # darker grey
 WHITE = np.array([255, 255, 255], np.float32)
+# light theme
+L_PAGE = np.array([0xFF, 0xFF, 0xFF], np.float32)
+L_SLATE_LIGHT = np.array([0xEE, 0xF2, 0xF6], np.float32)
+L_SLATE_DARK = np.array([0xCB, 0xD5, 0xE1], np.float32)
+L_INK = np.array([0x17, 0x1E, 0x26], np.float32)
 TARGET_WIDTH = 1000   # small site drawings are upscaled (Lanczos) to about this width
 
 # view id -> drawing source
@@ -134,7 +144,7 @@ def source_image(key: str) -> Image.Image:
     return Image.open(os.path.join(SRC, key)).convert("RGB")
 
 
-def harmonize(im: Image.Image) -> Image.Image:
+def harmonize(im: Image.Image, dark: bool = True) -> Image.Image:
     scale = max(1, round(TARGET_WIDTH / im.width))
     if scale > 1:
         im = im.resize((im.width * scale, im.height * scale), Image.LANCZOS).filter(ImageFilter.UnsharpMask(2, 60, 2))
@@ -153,10 +163,11 @@ def harmonize(im: Image.Image) -> Image.Image:
 
     # neutral pixels: dark -> white text, light -> slate (light grey -> #1E293B, darker -> #0F172A)
     t_slate = np.clip((lum - 150) / (245 - 150), 0, 1)[..., None]
-    slate = SLATE_DARK + (SLATE_LIGHT - SLATE_DARK) * t_slate
+    lo, hi, ink, card = (SLATE_DARK, SLATE_LIGHT, WHITE, CARD) if dark else (L_SLATE_DARK, L_SLATE_LIGHT, L_INK, L_PAGE)
+    slate = lo + (hi - lo) * t_slate
     t_text = np.clip((lum - 95) / (165 - 95), 0, 1)[..., None]       # 0 = ink, 1 = background grey
-    neutral = WHITE * (1 - t_text) + slate * t_text
-    neutral = neutral * (1 - page_soft[..., None]) + CARD * page_soft[..., None]
+    neutral = ink * (1 - t_text) + slate * t_text
+    neutral = neutral * (1 - page_soft[..., None]) + card * page_soft[..., None]
 
     # saturated colours are kept; weak tints (anti-aliasing against white / grey) fade into the neutral map
     w = np.clip((sat - 0.10) / 0.22, 0, 1)[..., None]
@@ -170,19 +181,22 @@ def harmonize(im: Image.Image) -> Image.Image:
     out[tan] = a[tan] * 0.5
     head = cv2.morphologyEx(tan.astype(np.uint8), cv2.MORPH_CLOSE, np.ones((25, 25), np.uint8)).astype(bool)
     ink = head & ~tan & (lum < 175)
-    out[ink] = WHITE
+    out[ink] = WHITE   # white label on the darkened probe head (both themes)
     return Image.fromarray(np.clip(out, 0, 255).astype(np.uint8))
 
 
 def main(only: str | None = None):
-    os.makedirs(OUT, exist_ok=True)
+    for folder in (OUT, OUT_LIGHT):
+        os.makedirs(folder, exist_ok=True)
     for view_id, key in DRAWINGS.items():
         if only and view_id != only:
             continue
-        im = harmonize(source_image(key))
-        path = os.path.join(OUT, f"{view_id}.png")
-        im.quantize(colors=256, method=Image.Quantize.MEDIANCUT, dither=Image.Dither.NONE).save(path, optimize=True)
-        print(os.path.relpath(path, ROOT), im.size)
+        src = source_image(key)
+        for folder, dark in ((OUT, True), (OUT_LIGHT, False)):
+            im = harmonize(src, dark)
+            path = os.path.join(folder, f"{view_id}.png")
+            im.quantize(colors=256, method=Image.Quantize.MEDIANCUT, dither=Image.Dither.NONE).save(path, optimize=True)
+            print(os.path.relpath(path, ROOT), im.size)
 
 
 if __name__ == "__main__":

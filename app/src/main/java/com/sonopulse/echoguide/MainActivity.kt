@@ -45,12 +45,25 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import android.app.Activity
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.platform.LocalView
+import androidx.core.view.WindowCompat
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.sonopulse.echoguide.features.settings.SettingsScreen
+import com.sonopulse.echoguide.features.settings.SettingsViewModel
+import com.sonopulse.echoguide.features.settings.ThemeMode
 
 // ---------------------------------------------------------------------------------------------
 // Activity
 // ---------------------------------------------------------------------------------------------
 
 class MainActivity : ComponentActivity() {
+    // Edge-to-edge with transparent bars; their icon colour follows the theme (SystemBarAppearance).
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT),
@@ -69,25 +82,55 @@ private enum class EchoDestination(val labelRes: Int, val selectedIcon: ImageVec
     PROTOCOL(R.string.nav_protocol, Icons.Filled.MonitorHeart, Icons.Outlined.MonitorHeart),
     GUIDED(R.string.nav_guided, Icons.Filled.School, Icons.Outlined.School),
     VALVES(R.string.nav_valves, Icons.AutoMirrored.Filled.FactCheck, Icons.AutoMirrored.Outlined.FactCheck),
-    ZSCORE(R.string.nav_zscore, Icons.Filled.Calculate, Icons.Outlined.Calculate)
+    ZSCORE(R.string.nav_zscore, Icons.Filled.Calculate, Icons.Outlined.Calculate),
+    SETTINGS(R.string.nav_settings, Icons.Filled.Settings, Icons.Outlined.Settings)
 }
 
+/**
+ * App root: reads the persisted settings (DataStore via [SettingsViewModel]) and applies theme
+ * (system / light / dark), language and layout direction instantly – no activity restart.
+ */
 @Composable
-fun EchoScopeApp() {
+fun EchoScopeApp(settingsViewModel: SettingsViewModel = viewModel()) {
+    val ui by settingsViewModel.uiState.collectAsStateWithLifecycle()
     val appContext = LocalContext.current
-    var language by remember {
-        mutableStateOf(
-            LanguagePreferences.load(appContext) ?: AppLanguage.fromSystem(appContext.resources.configuration)
-        )
+    val language = ui.settings.language ?: AppLanguage.fromSystem(appContext.resources.configuration)
+    val dark = when (ui.settings.themeMode) {
+        ThemeMode.SYSTEM -> isSystemInDarkTheme()
+        ThemeMode.LIGHT -> false
+        ThemeMode.DARK -> true
     }
-    LocalizedRoot(language) {
-        EchoScopeScaffold(
-            language = language,
-            onLanguageChange = { selected ->
-                language = selected
-                LanguagePreferences.save(appContext, selected)
-            }
-        )
+    SystemBarAppearance(dark)
+    EchoScopeTheme(colors = if (dark) DarkEchoColors else LightEchoColors, language = language) {
+        LocalizedRoot(language) {
+            EchoScopeScaffold(
+                language = language,
+                onLanguageChange = settingsViewModel::setLanguage,
+                settings = {
+                    SettingsScreen(
+                        state = ui,
+                        language = language,
+                        onThemeMode = settingsViewModel::setThemeMode,
+                        onLanguage = settingsViewModel::setLanguage,
+                        onVerifyDatabase = settingsViewModel::verifyDatabase
+                    )
+                }
+            )
+        }
+    }
+}
+
+/** Status / navigation bar icons follow the active theme (light icons on dark, dark on light). */
+@Composable
+private fun SystemBarAppearance(dark: Boolean) {
+    val view = LocalView.current
+    if (view.isInEditMode) return
+    SideEffect {
+        val window = (view.context as? Activity)?.window ?: return@SideEffect
+        WindowCompat.getInsetsController(window, view).apply {
+            isAppearanceLightStatusBars = !dark
+            isAppearanceLightNavigationBars = !dark
+        }
     }
 }
 
@@ -137,7 +180,11 @@ fun rememberProtocolState(): ProtocolState {
  * system back gesture return to the selection screen.
  */
 @Composable
-private fun EchoScopeScaffold(language: AppLanguage, onLanguageChange: (AppLanguage) -> Unit) {
+private fun EchoScopeScaffold(
+    language: AppLanguage,
+    onLanguageChange: (AppLanguage) -> Unit,
+    settings: @Composable () -> Unit
+) {
     var destination by rememberSaveable { mutableStateOf(EchoDestination.PROTOCOL) }
     var openViewId by rememberSaveable { mutableStateOf<String?>(null) }
     // Schnitte selection lives here, above the detail screen, so Back returns to the same window,
@@ -186,7 +233,7 @@ private fun EchoScopeScaffold(language: AppLanguage, onLanguageChange: (AppLangu
                         colors = NavigationBarItemDefaults.colors(
                             selectedIconColor = EchoOnAccent,
                             selectedTextColor = EchoPrimary,
-                            indicatorColor = EchoPrimary,
+                            indicatorColor = EchoPrimaryFill,
                             unselectedIconColor = EchoMuted,
                             unselectedTextColor = EchoMuted
                         )
@@ -210,6 +257,7 @@ private fun EchoScopeScaffold(language: AppLanguage, onLanguageChange: (AppLangu
                 EchoDestination.GUIDED -> GuidedExamScreen(language, onLanguageChange)
                 EchoDestination.VALVES -> ValveAssessmentScreen(language, onOpenView = openView)
                 EchoDestination.ZSCORE -> ClinicalCalculatorsScreen(language)
+                EchoDestination.SETTINGS -> settings()
             }
         }
     }
@@ -414,7 +462,7 @@ private fun ViewCard(view: EchoView, language: AppLanguage, highlighted: Boolean
                         maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f, fill = false))
                     val simulated = view.videoSource.isSimulated
                     Text(
-                        stringResource(if (simulated) R.string.badge_simulated else R.string.badge_real),
+                        if (simulated) stringResource(R.string.badge_simulated) else ltr("${viewCode(view.id)} · ${stringResource(R.string.badge_live)}"),
                         color = if (simulated) EchoCaution else EchoNormal,
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Bold

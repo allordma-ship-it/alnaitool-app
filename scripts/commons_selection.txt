@@ -1,65 +1,41 @@
-# Wikimedia Commons files used by EchoScope (scripts/fetch_commons.py --list this file)
-# measurement / defect stills
+# Wikimedia Commons files used by EchoScope (scripts/fetch_commons.py --list this file).
+# Stills first (thumbnails are served), then the cine loops in order of priority.
 Echokardiographie M-Mode 4KB TAPSE.jpg
 Echokardiogram von Atriumseptumdefekt (Ostium secundum).jpg
-# normal views (CardioNetworks ECHOpedia)
-PLAXnormal (CardioNetworks ECHOpedia).webm
-SAXAP normal (CardioNetworks ECHOpedia).webm
-SAXPAP normal (CardioNetworks ECHOpedia).webm
-A4C normal (CardioNetworks ECHOpedia).webm
-A5Cnormal (CardioNetworks ECHOpedia).webm
-Subcostal normal (CardioNetworks ECHOpedia).webm
-SuprasternalNormal (CardioNetworks ECHOpedia).webm
-# aortic stenosis
-Severe aortic valve stenosis E00259 (CardioNetworks ECHOpedia).webm
-Severe aortic valve stenosis E00261 (CardioNetworks ECHOpedia).webm
-Severe aortic valve stenosis E00273 (CardioNetworks ECHOpedia).webm
-Severe aortic valve stenosis E00275 (CardioNetworks ECHOpedia).webm
 Severe aortic valve stenosis E00264 (CardioNetworks ECHOpedia).jpg
-# aortic regurgitation
-Severe aortic regurgitation E00179 (CardioNetworks ECHOpedia).webm
-Severe aortic regurgitation E00180 (CardioNetworks ECHOpedia).webm
-Severe aortic regurgitation E00182 (CardioNetworks ECHOpedia).webm
-Severe aortic regurgitation E00231 (CardioNetworks ECHOpedia).webm
 Severe aortic regurgitation E00181 (CardioNetworks ECHOpedia).jpg
-# mitral stenosis
+Apical HCM E00296 (CardioNetworks ECHOpedia).jpg
+Pericardial effusion E00676 (CardioNetworks ECHOpedia).jpg
+Dilated ascending aorta, severe aortic regurgitation E00448 (CardioNetworks ECHOpedia).jpg
+Dilated cardiomyopathy with severe mitral valve regurgitation E00139 (CardioNetworks ECHOpedia).jpg
+Flail of mitral valve E00467 (CardioNetworks ECHOpedia).jpg
+# loops
+Severe aortic valve stenosis E00259 (CardioNetworks ECHOpedia).webm
+Severe aortic regurgitation E00179 (CardioNetworks ECHOpedia).webm
 Severe mitral valve stenosis E00608 (CardioNetworks ECHOpedia).webm
-Severe mitral valve stenosis E00610 (CardioNetworks ECHOpedia).webm
-Severe mitral valve stenosis E00612 (CardioNetworks ECHOpedia).webm
-# mitral regurgitation
 Dilated cardiomyopathy with severe mitral valve regurgitation E00134 (CardioNetworks ECHOpedia).webm
-Dilated cardiomyopathy with severe mitral valve regurgitation E00136 (CardioNetworks ECHOpedia).webm
-Dilated cardiomyopathy with severe mitral valve regurgitation E00138 (CardioNetworks ECHOpedia).webm
-Flail of mitral valve E00462 (CardioNetworks ECHOpedia).webm
-Flail of mitral valve E00464 (CardioNetworks ECHOpedia).webm
-Flail of mitral valve E00466 (CardioNetworks ECHOpedia).webm
-# tricuspid regurgitation / RV
 Severe tricuspid regurgitation E00566 (CardioNetworks ECHOpedia).webm
+Dilated cardiomyopathy E00473 (CardioNetworks ECHOpedia).webm
+Apical HCM E00291 (CardioNetworks ECHOpedia).webm
+Pericardial effusion E00672 (CardioNetworks ECHOpedia).webm
+Dilated ascending aorta, severe aortic regurgitation E00442 (CardioNetworks ECHOpedia).webm
+ASD type II E00308 (CardioNetworks ECHOpedia).webm
+Severe aortic valve stenosis E00261 (CardioNetworks ECHOpedia).webm
+Severe aortic regurgitation E00180 (CardioNetworks ECHOpedia).webm
+Severe mitral valve stenosis E00610 (CardioNetworks ECHOpedia).webm
+Flail of mitral valve E00462 (CardioNetworks ECHOpedia).webm
 Severe tricuspid regurgitation E00567 (CardioNetworks ECHOpedia).webm
 Severe tricuspid regurgitation E00568 (CardioNetworks ECHOpedia).webm
-Severe tricuspid regurgitation E00569 (CardioNetworks ECHOpedia).webm
-# cardiomyopathies
-Dilated cardiomyopathy E00473 (CardioNetworks ECHOpedia).webm
 Dilated cardiomyopathy E00475 (CardioNetworks ECHOpedia).webm
-Dilated cardiomyopathy E00477 (CardioNetworks ECHOpedia).webm
-Apical HCM E00291 (CardioNetworks ECHOpedia).webm
 Apical HCM E00293 (CardioNetworks ECHOpedia).webm
-Apical HCM E00296 (CardioNetworks ECHOpedia).jpg
-HOCM with SAM E00502 (CardioNetworks ECHOpedia).webm
-HOCM with SAM E00504 (CardioNetworks ECHOpedia).webm
-# pericardium
-Pericardial effusion E00672 (CardioNetworks ECHOpedia).webm
-Pericardial effusion E00674 (CardioNetworks ECHOpedia).webm
-Pericardial effusion, "swinging heart" E00667 (CardioNetworks ECHOpedia).webm
 Tamponade E00167 (CardioNetworks ECHOpedia).webm
-Tamponade E00169 (CardioNetworks ECHOpedia).webm
-# aorta
-Dilated ascending aorta, severe aortic regurgitation E00442 (CardioNetworks ECHOpedia).webm
+Pericardial effusion, "swinging heart" E00667 (CardioNetworks ECHOpedia).webm
 Dilated ascending aorta, severe aortic regurgitation E00444 (CardioNetworks ECHOpedia).webm
-Dilated ascending aorta, severe aortic regurgitation E00446 (CardioNetworks ECHOpedia).webm
-Dilated aortic root and aortic regurgitation E00236 (CardioNetworks ECHOpedia).webm
-# ASD
-ASD type II E00308 (CardioNetworks ECHOpedia).webm
 ASD type II E00310 (CardioNetworks ECHOpedia).webm
 ASD type II E00312 (CardioNetworks ECHOpedia).webm
-ASD type II E00314 (CardioNetworks ECHOpedia).webm
+SAXAP normal (CardioNetworks ECHOpedia).webm
+A5Cnormal (CardioNetworks ECHOpedia).webm
+PLAXnormal (CardioNetworks ECHOpedia).webm
+Severe aortic valve stenosis E00273 (CardioNetworks ECHOpedia).webm
+Severe aortic regurgitation E00231 (CardioNetworks ECHOpedia).webm
+Dilated cardiomyopathy with severe mitral valve regurgitation E00136 (CardioNetworks ECHOpedia).webm

@@ -1,4 +1,4 @@
-Schema view drawings (dark-theme versions), made by scripts/harmonize_schema_dark_theme.py
+Schema view drawings (dark- and light-theme versions: schema_dark/, schema_light/), made by scripts/harmonize_schema_dark_theme.py
 
 subcostal_4c, plax_standard, apical_4c, apical_5c, apical_2c, apical_3c, suprasternal_arch:
   view drawings from Echocardiographer.org – Atif Qasim, MD MSCE (free reuse with credit),

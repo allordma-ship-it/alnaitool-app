@@ -166,12 +166,13 @@ private fun Double.f(decimals: Int): String = String.format(Locale.US, "%.${deci
 
 private fun String.num(): Double? = normalizeNumberInput(this).trim().toDoubleOrNull()?.takeIf { it > 0 && it.isFinite() }
 
+@Composable
 private fun severityColor(s: Severity): Color = when (s) {
-    Severity.NORMAL -> EchoPalette.Emerald
-    Severity.MILD -> EchoPalette.MedicalBlue
-    Severity.MODERATE -> EchoPalette.Amber
-    Severity.SEVERE -> EchoPalette.Crimson
-    Severity.INDETERMINATE -> EchoPalette.Amber
+    Severity.NORMAL -> EchoNormal
+    Severity.MILD -> EchoPrimary
+    Severity.MODERATE -> EchoCaution
+    Severity.SEVERE -> EchoCritical
+    Severity.INDETERMINATE -> EchoCaution
 }
 
 /** Bottom-navigation screen: tabs for Z-Score and the four echo calculators. */
@@ -190,7 +191,7 @@ fun ClinicalCalculatorsScreen(language: AppLanguage, modifier: Modifier = Modifi
                     onClick = { tabName = c.name },
                     label = { Text(c.label.get(language), fontSize = 13.sp) },
                     colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = EchoPalette.MedicalBlue,
+                        selectedContainerColor = EchoPrimaryFill,
                         selectedLabelColor = Color.White
                     )
                 )
@@ -390,7 +391,7 @@ private fun MvaCalculator(language: AppLanguage) {
 private fun CalcTitle(title: LocalizedText, language: AppLanguage, formula: String) {
     Column {
         Text(title.get(language), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = EchoText)
-        Text(formula, style = MaterialTheme.typography.bodySmall, fontFamily = FontFamily.Monospace, color = EchoSky)
+        Text(ltr(formula), style = MaterialTheme.typography.bodySmall, fontFamily = FontFamily.Monospace, color = EchoSky)
     }
 }
 
@@ -423,7 +424,7 @@ private fun Row2(label: String, value: String) {
     Row(Modifier.fillMaxWidth().padding(vertical = 3.dp), horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically) {
         Text(label, style = MaterialTheme.typography.bodyMedium, color = EchoMuted, modifier = Modifier.weight(1f))
-        Text(value, style = MaterialTheme.typography.titleMedium, fontFamily = FontFamily.Monospace, color = EchoText)
+        Text(ltr(value), style = MaterialTheme.typography.titleMedium, fontFamily = FontFamily.Monospace, color = EchoText)
     }
 }
 
@@ -438,7 +439,7 @@ private fun BigResult(label: String, value: String, severity: Severity, text: Lo
     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
         Column {
             Text(label, style = MaterialTheme.typography.labelLarge, color = EchoMuted)
-            Text(value, style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace, color = color)
+            Text(ltr(value), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace, color = color)
         }
         Box(Modifier.size(14.dp).background(color, CircleShape))
     }

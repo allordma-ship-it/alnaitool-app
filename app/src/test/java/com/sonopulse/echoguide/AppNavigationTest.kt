@@ -42,7 +42,9 @@ class AppNavigationTest {
     }
 
     private fun launch(language: AppLanguage) {
-        LanguagePreferences.save(ApplicationProvider.getApplicationContext(), language)
+        kotlinx.coroutines.runBlocking {
+            com.sonopulse.echoguide.features.settings.SettingsRepository(ApplicationProvider.getApplicationContext()).setLanguage(language)
+        }
         compose.mainClock.autoAdvance = false
         compose.setContent {
             // Robolectric cannot draw the TextureView video surface.

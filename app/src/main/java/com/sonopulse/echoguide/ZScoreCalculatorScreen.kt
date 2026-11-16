@@ -96,9 +96,9 @@ object ZScoreMath {
     }
 }
 
-private val ZTeal = EchoPalette.Emerald     // normal
-private val ZAmber = EchoPalette.Amber      // borderline
-private val ZRed = EchoPalette.Crimson       // abnormal
+private val ZTeal: Color @Composable get() = EchoNormal       // normal
+private val ZAmber: Color @Composable get() = EchoCaution     // borderline
+private val ZRed: Color @Composable get() = EchoCritical      // abnormal
 
 /** Accepts Western, Arabic-Indic (٠–٩) and Eastern Arabic-Indic (۰–۹) digits, with '.', ',' or '٫'. */
 internal fun normalizeNumberInput(input: String): String = buildString(input.length) {
@@ -313,7 +313,7 @@ private fun ResultCard(structure: CardiacStructure, bsa: Double?, measured: Doub
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
-                    text = (if (z > 0) "+" else "") + z.fmt(2),
+                    text = ltr((if (z > 0) "+" else "") + z.fmt(2)),
                     style = MaterialTheme.typography.displaySmall,
                     fontWeight = FontWeight.Bold,
                     fontFamily = FontFamily.Monospace,
@@ -343,7 +343,7 @@ private fun ResultCard(structure: CardiacStructure, bsa: Double?, measured: Doub
         }
         Spacer(Modifier.height(8.dp))
         Text(
-            text = "${stringResource(structure.labelRes)}: ${measured.fmt(1)} mm @ BSA ${bsa.fmt(2)} m²",
+            text = "${stringResource(structure.labelRes)}: ${ltr("${measured.fmt(1)} mm @ BSA ${bsa.fmt(2)} m²")}",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -389,7 +389,7 @@ private fun ResultRow(label: String, value: String) {
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Text(
-            text = value,
+            text = ltr(value),
             style = MaterialTheme.typography.titleMedium,
             fontFamily = FontFamily.Monospace,
             color = MaterialTheme.colorScheme.onSurface
@@ -397,7 +397,7 @@ private fun ResultRow(label: String, value: String) {
     }
 }
 
-/** Standard dark card used across the app (EchoPalette.Card). */
+/** Standard card used across the app (theme card surface). */
 @Composable
 fun EchoCard(
     modifier: Modifier = Modifier,

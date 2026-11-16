@@ -32,23 +32,6 @@ enum class AppLanguage(val tag: String, val nativeName: String, val isRtl: Boole
     }
 }
 
-/** Persists the user's in-app language choice (offline, SharedPreferences). */
-object LanguagePreferences {
-    private const val PREFS = "echoscope_prefs"
-    private const val KEY_LANGUAGE = "app_language"
-
-    fun load(context: Context): AppLanguage? =
-        AppLanguage.fromTag(
-            context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY_LANGUAGE, null)
-        )
-
-    fun save(context: Context, language: AppLanguage) {
-        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-            .edit()
-            .putString(KEY_LANGUAGE, language.tag)
-            .apply()
-    }
-}
 
 /** Text in the three app languages; German and Arabic fall back to English when absent. */
 @Immutable
