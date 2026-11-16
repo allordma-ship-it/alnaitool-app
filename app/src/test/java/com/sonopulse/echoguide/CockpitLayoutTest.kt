@@ -10,6 +10,7 @@ import androidx.compose.ui.test.getBoundsInRoot
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.isRoot
@@ -190,7 +191,7 @@ class CockpitLayoutTest {
             Thread.sleep(150)
             compose.mainClock.advanceTimeBy(300)
         }
-        compose.onNodeWithText("1 / 2").assertExists()
+        assertTrue(compose.onAllNodesWithText("1 / 2").fetchSemanticsNodes().size >= 2)  // schema pager + example viewer
         // The example viewer is a dialog: capture its own window (the second root).
         System.setProperty("roborazzi.test.record", "true")
         compose.onAllNodes(isRoot())[1].captureRoboImage("build/cockpit-screens/apical_4c_tdi_example.png")

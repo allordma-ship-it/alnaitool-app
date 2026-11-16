@@ -189,6 +189,33 @@ class ProtocolDatabaseTest {
     }
 
     @Test
+    fun apicalFiveChamberDopplerRunsThroughTheCentralAorticValve() {
+        // In the A5C loop the LVOT / aortic root is central (x ≈ 0.50); MV and LA lie to the right.
+        val a5c = protocol.allViews.first { it.id == "apical_5c" }
+        val overlays = a5c.steps.flatMap { it.overlays }.associateBy { it.label }
+        val gate = overlays.getValue("PW · LVOT").video!!
+        val cw = overlays.getValue("CW · AV").video!!
+        assertEquals(0.505f, gate[2], 0.03f)
+        assertEquals(0.50f, cw[0] + (cw[2] - cw[0]) * CW_FOCUS, 0.03f)
+        assertEquals(0.62f, cw[1] + (cw[3] - cw[1]) * CW_FOCUS, 0.03f)
+    }
+
+    @Test
+    fun realTracesAndCaseLibrary() {
+        val traces = protocol.valves.flatMap { it.measurements }.mapNotNull { m -> m.trace?.let { m.id to it } }.toMap()
+        assertTrue(traces.keys.containsAll(listOf("av_cw", "lvot_pw", "mv_pw", "tapse")))
+        traces.values.forEach { t ->
+            assertTrue("missing ${t.asset}", File(assetsDir, t.asset).isFile)
+            assertTrue(t.marks.all { it.x in 0f..1f && it.y in 0f..1f })
+        }
+        val lib = protocol.caseLibrary!!
+        assertTrue(lib.groups.sumOf { it.cases.size } >= 50)
+        assertTrue(lib.groups.flatMap { it.cases }.all { it.url.startsWith("https://youtu.be/") })
+        assertTrue(lib.groups.flatMap { it.cases }.map { it.title }.containsAll(
+            listOf("Dilated Cardiomyopathy", "Apical HCM", "Ascending Aortic Aneurysm with AR", "Cor Pulmonale")))
+    }
+
+    @Test
     fun everyViewHasAReadableAtlasDiagramWithCredit() {
         protocol.allViews.forEach { v ->
             val asset = v.diagramAsset
@@ -225,31 +252,16 @@ class ProtocolDatabaseTest {
         assertTrue("ED / ES steps present", frozen >= 15)
     }
 
-    /** (width, height) and colour type from a PNG's IHDR chunk. */
-    private fun pngInfo(f: File): Pair<Pair<Int, Int>, Int> {
-        val b = f.readBytes()
-        fun int(o: Int) = ((b[o].toInt() and 0xFF) shl 24) or ((b[o + 1].toInt() and 0xFF) shl 16) or
-            ((b[o + 2].toInt() and 0xFF) shl 8) or (b[o + 3].toInt() and 0xFF)
-        return (int(16) to int(20)) to (b[25].toInt() and 0xFF)
-    }
-
     @Test
     fun everyViewHasASchemaAndOrientationIllustrations() {
+        val attribution = File(assetsDir, "echoorg/ATTRIBUTION.txt").readText()
         protocol.allViews.forEach { view ->
-            val schema = view.schemaAsset
-            assertTrue("${view.id} schema", schema != null && File(assetsDir, schema).isFile)
-            // Pre-rendered schema PNG + transparent label layer of exactly the same size.
-            assertEquals("diagrams/schema/${view.id}_schema.png", schema)
-            val clean = pngInfo(File(assetsDir, schema!!))
-            val labels = pngInfo(File(assetsDir, "diagrams/schema/${view.id}_schema_labels.png"))
-            assertEquals("${view.id} label layer size", clean.first, labels.first)
-            assertTrue("${view.id} resolution", clean.first.first >= 1000)
-            assertEquals("${view.id} aspect", view.schemaAspect, clean.first.first.toFloat() / clean.first.second, 0.02f)
-            assertTrue("${view.id} labels transparent (RGBA)", labels.second == 6)
-            assertTrue("${view.id} schema aspect", view.schemaAspect in 0.6f..2.0f)
-            // Every caliper also has coordinates on the pre-rendered schema image.
-            view.steps.flatMap { it.overlays }.forEach { o ->
-                assertTrue("${view.id} ${o.label} schema coords", isNormalizedBox(o.schema))
+            // Schema = real medical drawings / labelled echo frames (Echocardiographer.org), no generated art.
+            assertTrue("${view.id} schema pages", view.schemaGallery.isNotEmpty())
+            view.schemaGallery.forEach { img ->
+                assertTrue("missing ${img.asset}", img.asset.startsWith("echoorg/") && File(assetsDir, img.asset).isFile)
+                assertTrue("${img.asset} credit", img.credit?.contains("Echocardiographer.org") == true)
+                assertTrue("${img.asset} attribution", attribution.contains(img.asset))
             }
             val orientation = view.orientationAsset
             assertTrue("${view.id} orientation", orientation != null)

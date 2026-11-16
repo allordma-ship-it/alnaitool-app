@@ -142,5 +142,6 @@
     <string name="valve_loop_2d">2D</string>
     <string name="valve_loop_color">ألوان</string>
     <string name="color_toggle">الدوبلر الملوّن</string>
-    <string name="schema_labels">التسميات</string>
+    <string name="case_library_title">أمثلة مرضية (مكتبة الفيديو)</string>
+    <string name="case_library_hint">مكتبة صور Echocardiographer.org – تُفتح الفيديوهات عبر الإنترنت (YouTube).</string>
 </resources>

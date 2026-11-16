@@ -324,12 +324,6 @@
                   0.7,
                   0.62,
                   0.86
-                ],
-                "schema": [
-                  0.228,
-                  0.5581,
-                  0.4213,
-                  0.7318
                 ]
               }
             },
@@ -370,12 +364,6 @@
                   0.375,
                   0.565,
                   0.415
-                ],
-                "schema": [
-                  0.4947,
-                  0.363,
-                  0.5046,
-                  0.4106
                 ]
               }
             }
@@ -469,8 +457,6 @@
             "de": "Illustration: Patrick J. Lynch & C. Carl Jaffe, MD (Yale) · CC BY 2.5 · bearbeitet (heller Hintergrund)",
             "ar": "الرسم: Patrick J. Lynch و C. Carl Jaffe, MD (Yale) · CC BY 2.5 · معدَّل (خلفية فاتحة)"
           },
-          "schemaAsset": "diagrams/schema/subcostal_4c_schema.png",
-          "schemaAspect": 1.1111,
           "orientationAsset": "orientation/subcostal_4c.svg",
           "probeGallery": [
             {
@@ -518,6 +504,30 @@
                 "de": "Ergebnisbild (Zeichnung)",
                 "ar": "المقطع الناتج (رسم)"
               }
+            }
+          ],
+          "schemaGallery": [
+            {
+              "asset": "echoorg/subcostal_02.jpg",
+              "aspect": 0.8083,
+              "caption": {
+                "en": "View drawing",
+                "de": "Schnittzeichnung",
+                "ar": "رسم المقطع"
+              },
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-subcostal"
+            },
+            {
+              "asset": "echoorg/subcostal_03.jpg",
+              "aspect": 1.3366,
+              "caption": {
+                "en": "Labelled echo frame",
+                "de": "Beschriftetes Echobild",
+                "ar": "صورة إيكو موسومة"
+              },
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-subcostal"
             }
           ]
         },
@@ -801,12 +811,6 @@
                   0.42,
                   0.36,
                   0.535
-                ],
-                "schema": [
-                  0.62,
-                  0.6422,
-                  0.614,
-                  0.7178
                 ]
               }
             },
@@ -846,12 +850,6 @@
                   0.3,
                   0.36,
                   0.7
-                ],
-                "schema": [
-                  0.5,
-                  0.0378,
-                  0.612,
-                  0.8
                 ]
               },
               "examples": [
@@ -953,8 +951,6 @@
             "de": "Beschriftetes Ultraschall-Referenzbild (bereitgestellt; Originalquelle und Lizenz noch zu klären)",
             "ar": "صورة إيكو مرجعية موسومة (مقدَّمة من المستخدم؛ المصدر الأصلي والترخيص بحاجة إلى تأكيد)"
           },
-          "schemaAsset": "diagrams/schema/subcostal_ivc_schema.png",
-          "schemaAspect": 1.1111,
           "orientationAsset": "orientation/subcostal_ivc.svg",
           "probeGallery": [
             {
@@ -969,7 +965,31 @@
               }
             }
           ],
-          "atlasGallery": []
+          "atlasGallery": [],
+          "schemaGallery": [
+            {
+              "asset": "echoorg/subcostal-greatvessels_01.jpg",
+              "aspect": 1.463,
+              "caption": {
+                "en": "IVC with M-mode",
+                "de": "VCI mit M-Mode",
+                "ar": "الوريد الأجوف مع نمط M"
+              },
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-subcostal-greatvessels"
+            },
+            {
+              "asset": "echoorg/subcostal-greatvessels_00.jpg",
+              "aspect": 1.5,
+              "caption": {
+                "en": "Probe position",
+                "de": "Schallkopfposition",
+                "ar": "وضع المسبار"
+              },
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-subcostal-greatvessels"
+            }
+          ]
         }
       ]
     },
@@ -1372,12 +1392,6 @@
                   0.555,
                   0.47,
                   0.605
-                ],
-                "schema": [
-                  0.45,
-                  0.4822,
-                  0.45,
-                  0.5511
                 ]
               }
             },
@@ -1418,12 +1432,6 @@
                   0.612,
                   0.47,
                   0.8
-                ],
-                "schema": [
-                  0.45,
-                  0.5533,
-                  0.45,
-                  0.7444
                 ]
               }
             },
@@ -1464,12 +1472,6 @@
                   0.807,
                   0.47,
                   0.89
-                ],
-                "schema": [
-                  0.45,
-                  0.7467,
-                  0.45,
-                  0.8267
                 ]
               }
             },
@@ -1510,12 +1512,6 @@
                   0.455,
                   0.705,
                   0.528
-                ],
-                "schema": [
-                  0.76,
-                  0.4933,
-                  0.76,
-                  0.64
                 ]
               },
               "examples": [
@@ -1574,12 +1570,6 @@
                   0.52,
                   0.74,
                   0.78
-                ],
-                "schema": [
-                  0.82,
-                  0.6667,
-                  0.82,
-                  0.8
                 ]
               }
             }
@@ -1680,8 +1670,6 @@
             "de": "Illustration: Patrick J. Lynch & C. Carl Jaffe, MD (Yale) · CC BY 2.5 · bearbeitet (heller Hintergrund)",
             "ar": "الرسم: Patrick J. Lynch و C. Carl Jaffe, MD (Yale) · CC BY 2.5 · معدَّل (خلفية فاتحة)"
           },
-          "schemaAsset": "diagrams/schema/plax_standard_schema.png",
-          "schemaAspect": 1.1111,
           "orientationAsset": "orientation/plax_standard.svg",
           "probeGallery": [
             {
@@ -1740,6 +1728,41 @@
                 "de": "Zoom auf Aorten- und Mitralklappe",
                 "ar": "تكبير على الصمام الأبهري والتاجي"
               }
+            }
+          ],
+          "schemaGallery": [
+            {
+              "asset": "echoorg/plax_03.jpg",
+              "aspect": 1.0316,
+              "caption": {
+                "en": "View drawing",
+                "de": "Schnittzeichnung",
+                "ar": "رسم المقطع"
+              },
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-plax"
+            },
+            {
+              "asset": "echoorg/plax_02.jpg",
+              "aspect": 1.3839,
+              "caption": {
+                "en": "Labelled echo frame",
+                "de": "Beschriftetes Echobild",
+                "ar": "صورة إيكو موسومة"
+              },
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-plax"
+            },
+            {
+              "asset": "echoorg/plax_04.jpg",
+              "aspect": 1.3831,
+              "caption": {
+                "en": "AV and MV zoom",
+                "de": "Zoom AK und MK",
+                "ar": "تكبير الأبهري والتاجي"
+              },
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-plax"
             }
           ]
         },
@@ -2080,12 +2103,6 @@
                   0.56,
                   0.91,
                   0.56
-                ],
-                "schema": [
-                  0.774,
-                  0.7111,
-                  0.836,
-                  0.7111
                 ]
               },
               "examples": [
@@ -2139,12 +2156,6 @@
                   0.28,
                   0.83,
                   0.43
-                ],
-                "schema": [
-                  0.5,
-                  0.0378,
-                  0.744,
-                  0.5622
                 ]
               }
             },
@@ -2174,12 +2185,6 @@
                   0.45,
                   0.93,
                   0.65
-                ],
-                "schema": [
-                  0.73,
-                  0.6667,
-                  0.87,
-                  0.8
                 ]
               }
             },
@@ -2214,12 +2219,6 @@
                   0.22,
                   0.605,
                   0.64
-                ],
-                "schema": [
-                  0.5,
-                  0.0378,
-                  0.2341,
-                  0.7939
                 ]
               }
             }
@@ -2312,8 +2311,6 @@
             "de": "Illustration: Patrick J. Lynch & C. Carl Jaffe, MD (Yale) · CC BY 2.5 · bearbeitet (heller Hintergrund)",
             "ar": "الرسم: Patrick J. Lynch و C. Carl Jaffe, MD (Yale) · CC BY 2.5 · معدَّل (خلفية فاتحة)"
           },
-          "schemaAsset": "diagrams/schema/psax_av_schema.png",
-          "schemaAspect": 1.1111,
           "orientationAsset": "orientation/psax_av.svg",
           "probeGallery": [
             {
@@ -2372,6 +2369,41 @@
                 "de": "Pulmonalarterie und Bifurkation",
                 "ar": "الشريان الرئوي وتفرعه"
               }
+            }
+          ],
+          "schemaGallery": [
+            {
+              "asset": "echoorg/psax_02.jpg",
+              "aspect": 1.4706,
+              "caption": {
+                "en": "Labelled echo frame",
+                "de": "Beschriftetes Echobild",
+                "ar": "صورة إيكو موسومة"
+              },
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-psax"
+            },
+            {
+              "asset": "echoorg/psax_03.jpg",
+              "aspect": 1.3468,
+              "caption": {
+                "en": "Aortic valve zoom",
+                "de": "Aortenklappe gezoomt",
+                "ar": "تكبير الصمام الأبهري"
+              },
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-psax"
+            },
+            {
+              "asset": "echoorg/psax_01.jpg",
+              "aspect": 0.7727,
+              "caption": {
+                "en": "Short-axis levels",
+                "de": "Kurzachsen-Ebenen",
+                "ar": "مستويات المحور القصير"
+              },
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-psax"
             }
           ]
         },
@@ -2668,12 +2700,6 @@
                   0.2,
                   0.725,
                   0.51
-                ],
-                "schema": [
-                  0.568,
-                  0.4933,
-                  0.568,
-                  0.8667
                 ]
               }
             },
@@ -2719,12 +2745,6 @@
                   0.2,
                   0.735,
                   0.51
-                ],
-                "schema": [
-                  0.56,
-                  0.4933,
-                  0.56,
-                  0.8667
                 ]
               },
               "extraOverlays": [
@@ -2742,12 +2762,6 @@
                     0.255,
                     0.808,
                     0.255
-                  ],
-                  "schema": [
-                    0.4,
-                    0.68,
-                    0.736,
-                    0.68
                   ]
                 }
               ]
@@ -2788,12 +2802,6 @@
                   0.2,
                   0.735,
                   0.51
-                ],
-                "schema": [
-                  0.56,
-                  0.5267,
-                  0.56,
-                  0.8333
                 ]
               },
               "extraOverlays": [
@@ -2811,12 +2819,6 @@
                     0.255,
                     0.808,
                     0.255
-                  ],
-                  "schema": [
-                    0.428,
-                    0.68,
-                    0.708,
-                    0.68
                   ]
                 }
               ]
@@ -2919,8 +2921,6 @@
             "de": "Illustration: Patrick J. Lynch & C. Carl Jaffe, MD (Yale) · CC BY 2.5 · bearbeitet (heller Hintergrund)",
             "ar": "الرسم: Patrick J. Lynch و C. Carl Jaffe, MD (Yale) · CC BY 2.5 · معدَّل (خلفية فاتحة)"
           },
-          "schemaAsset": "diagrams/schema/psax_papillary_schema.png",
-          "schemaAspect": 1.1111,
           "orientationAsset": "orientation/psax_papillary.svg",
           "probeGallery": [
             {
@@ -2979,6 +2979,30 @@
                 "de": "Apikale Ebene",
                 "ar": "المستوى القمي"
               }
+            }
+          ],
+          "schemaGallery": [
+            {
+              "asset": "echoorg/psax_06.jpg",
+              "aspect": 1.3369,
+              "caption": {
+                "en": "Labelled echo frame",
+                "de": "Beschriftetes Echobild",
+                "ar": "صورة إيكو موسومة"
+              },
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-psax"
+            },
+            {
+              "asset": "echoorg/psax_01.jpg",
+              "aspect": 0.7727,
+              "caption": {
+                "en": "Short-axis levels",
+                "de": "Kurzachsen-Ebenen",
+                "ar": "مستويات المحور القصير"
+              },
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-psax"
             }
           ]
         }
@@ -3380,12 +3404,6 @@
                   0.19,
                   0.725,
                   0.595
-                ],
-                "schema": [
-                  0.512,
-                  0.2289,
-                  0.636,
-                  0.6644
                 ]
               }
             },
@@ -3426,12 +3444,6 @@
                   0.06,
                   0.475,
                   0.665
-                ],
-                "schema": [
-                  0.5,
-                  0.0378,
-                  0.226,
-                  0.7222
                 ]
               },
               "examples": [
@@ -3485,12 +3497,6 @@
                   0.55,
                   0.588,
                   0.55
-                ],
-                "schema": [
-                  0.23,
-                  0.6222,
-                  0.466,
-                  0.6222
                 ]
               }
             },
@@ -3531,12 +3537,6 @@
                   0.06,
                   0.72,
                   0.52
-                ],
-                "schema": [
-                  0.5,
-                  0.0378,
-                  0.636,
-                  0.6422
                 ]
               },
               "examples": [
@@ -3590,12 +3590,6 @@
                   0.06,
                   0.675,
                   0.6
-                ],
-                "schema": [
-                  0.5,
-                  0.0378,
-                  0.51,
-                  0.6711
                 ]
               },
               "extraOverlays": [
@@ -3613,12 +3607,6 @@
                     0.06,
                     0.785,
                     0.575
-                  ],
-                  "schema": [
-                    0.5,
-                    0.0378,
-                    0.762,
-                    0.6711
                   ]
                 }
               ],
@@ -3683,12 +3671,6 @@
                   0.06,
                   0.5,
                   0.7
-                ],
-                "schema": [
-                  0.5,
-                  0.0378,
-                  0.3195,
-                  0.7912
                 ]
               }
             },
@@ -3729,12 +3711,6 @@
                   0.66,
                   0.78,
                   0.95
-                ],
-                "schema": [
-                  0.636,
-                  0.6911,
-                  0.64,
-                  0.9
                 ]
               }
             }
@@ -3844,8 +3820,6 @@
             "de": "Illustration: Patrick J. Lynch & C. Carl Jaffe, MD (Yale) · CC BY 2.5 · bearbeitet (heller Hintergrund)",
             "ar": "الرسم: Patrick J. Lynch و C. Carl Jaffe, MD (Yale) · CC BY 2.5 · معدَّل (خلفية فاتحة)"
           },
-          "schemaAsset": "diagrams/schema/apical_4c_schema.png",
-          "schemaAspect": 1.1111,
           "orientationAsset": "orientation/apical_4c.svg",
           "probeGallery": [
             {
@@ -3904,6 +3878,30 @@
                 "de": "LV-Zoom",
                 "ar": "تكبير البطين الأيسر"
               }
+            }
+          ],
+          "schemaGallery": [
+            {
+              "asset": "echoorg/apical4_02.jpg",
+              "aspect": 0.7839,
+              "caption": {
+                "en": "View drawing",
+                "de": "Schnittzeichnung",
+                "ar": "رسم المقطع"
+              },
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-apical4"
+            },
+            {
+              "asset": "echoorg/apical4_03.jpg",
+              "aspect": 1.3469,
+              "caption": {
+                "en": "Labelled echo frame",
+                "de": "Beschriftetes Echobild",
+                "ar": "صورة إيكو موسومة"
+              },
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-apical4"
             }
           ]
         },
@@ -4191,20 +4189,14 @@
                 "video": [
                   0.52,
                   0.06,
-                  0.576,
-                  0.55
+                  0.505,
+                  0.555
                 ],
                 "diagram": [
                   0.68,
                   0.06,
                   0.66,
                   0.57
-                ],
-                "schema": [
-                  0.5,
-                  0.0378,
-                  0.51,
-                  0.6556
                 ]
               },
               "examples": [
@@ -4255,20 +4247,14 @@
                 "video": [
                   0.52,
                   0.06,
-                  0.6,
-                  0.75
+                  0.496,
+                  0.743
                 ],
                 "diagram": [
                   0.68,
                   0.06,
                   0.66,
                   0.72
-                ],
-                "schema": [
-                  0.5,
-                  0.0378,
-                  0.5122,
-                  0.8725
                 ]
               },
               "examples": [
@@ -4374,8 +4360,6 @@
             "de": "Illustration: Patrick J. Lynch & C. Carl Jaffe, MD (Yale) · CC BY 2.5 · bearbeitet (heller Hintergrund)",
             "ar": "الرسم: Patrick J. Lynch و C. Carl Jaffe, MD (Yale) · CC BY 2.5 · معدَّل (خلفية فاتحة)"
           },
-          "schemaAsset": "diagrams/schema/apical_5c_schema.png",
-          "schemaAspect": 1.1111,
           "orientationAsset": "orientation/apical_5c.svg",
           "probeGallery": [
             {
@@ -4423,6 +4407,30 @@
                 "de": "Ergebnisbild (Zeichnung)",
                 "ar": "المقطع الناتج (رسم)"
               }
+            }
+          ],
+          "schemaGallery": [
+            {
+              "asset": "echoorg/apical5_02.jpg",
+              "aspect": 0.8,
+              "caption": {
+                "en": "View drawing",
+                "de": "Schnittzeichnung",
+                "ar": "رسم المقطع"
+              },
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-apical5"
+            },
+            {
+              "asset": "echoorg/apical5_03.jpg",
+              "aspect": 1.3323,
+              "caption": {
+                "en": "Labelled echo frame",
+                "de": "Beschriftetes Echobild",
+                "ar": "صورة إيكو موسومة"
+              },
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-apical5"
             }
           ]
         },
@@ -4724,12 +4732,6 @@
                   0.15,
                   0.56,
                   0.64
-                ],
-                "schema": [
-                  0.5,
-                  0.2289,
-                  0.5,
-                  0.6622
                 ]
               }
             },
@@ -4764,12 +4766,6 @@
                   0.66,
                   0.56,
                   0.86
-                ],
-                "schema": [
-                  0.5,
-                  0.6933,
-                  0.5,
-                  0.9067
                 ]
               }
             },
@@ -4840,9 +4836,31 @@
               }
             }
           ],
-          "schemaAsset": "diagrams/schema/apical_2c_schema.png",
-          "schemaAspect": 1.1111,
-          "orientationAsset": "orientation/apical_2c.svg"
+          "orientationAsset": "orientation/apical_2c.svg",
+          "schemaGallery": [
+            {
+              "asset": "echoorg/apical2_02.jpg",
+              "aspect": 0.5857,
+              "caption": {
+                "en": "View drawing",
+                "de": "Schnittzeichnung",
+                "ar": "رسم المقطع"
+              },
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-apical2"
+            },
+            {
+              "asset": "echoorg/apical2_03.jpg",
+              "aspect": 1.3364,
+              "caption": {
+                "en": "Labelled echo frame",
+                "de": "Beschriftetes Echobild",
+                "ar": "صورة إيكو موسومة"
+              },
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-apical2"
+            }
+          ]
         },
         {
           "id": "apical_3c",
@@ -5095,12 +5113,6 @@
                   0.5,
                   0.75,
                   0.8
-                ],
-                "schema": [
-                  0.43,
-                  0.5778,
-                  0.72,
-                  0.7778
                 ]
               }
             },
@@ -5135,12 +5147,6 @@
                   0.06,
                   0.58,
                   0.62
-                ],
-                "schema": [
-                  0.5,
-                  0.0378,
-                  0.628,
-                  0.6556
                 ]
               },
               "extraOverlays": [
@@ -5158,12 +5164,6 @@
                     0.06,
                     0.62,
                     0.8
-                  ],
-                  "schema": [
-                    0.5,
-                    0.0378,
-                    0.6585,
-                    0.8616
                   ]
                 }
               ]
@@ -5224,9 +5224,31 @@
               }
             }
           ],
-          "schemaAsset": "diagrams/schema/apical_3c_schema.png",
-          "schemaAspect": 1.1111,
-          "orientationAsset": "orientation/apical_3c.svg"
+          "orientationAsset": "orientation/apical_3c.svg",
+          "schemaGallery": [
+            {
+              "asset": "echoorg/apical-long-axis_02.jpg",
+              "aspect": 0.6718,
+              "caption": {
+                "en": "View drawing",
+                "de": "Schnittzeichnung",
+                "ar": "رسم المقطع"
+              },
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-apical-long-axis"
+            },
+            {
+              "asset": "echoorg/apical-long-axis_03.jpg",
+              "aspect": 1.4859,
+              "caption": {
+                "en": "Labelled echo frame",
+                "de": "Beschriftetes Echobild",
+                "ar": "صورة إيكو موسومة"
+              },
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-apical-long-axis"
+            }
+          ]
         }
       ]
     },
@@ -5558,12 +5580,6 @@
                   0.295,
                   0.4985,
                   0.439
-                ],
-                "schema": [
-                  0.47,
-                  0.4533,
-                  0.47,
-                  0.5733
                 ]
               }
             },
@@ -5604,12 +5620,6 @@
                   0.499,
                   0.651,
                   0.479
-                ],
-                "schema": [
-                  0.656,
-                  0.6667,
-                  0.768,
-                  0.6667
                 ]
               }
             },
@@ -5655,12 +5665,6 @@
                   0.2,
                   0.613,
                   0.719
-                ],
-                "schema": [
-                  0.5,
-                  0.0378,
-                  0.708,
-                  0.9667
                 ]
               },
               "examples": [
@@ -5769,8 +5773,6 @@
             "de": "Beschriftetes Echobild: Echocardiographer.org – Atif Qasim, MD MSCE (echocardiographer.org, freie Nutzung mit Quellenangabe)",
             "ar": "صورة إيكو موسومة: Echocardiographer.org – Atif Qasim, MD MSCE (echocardiographer.org، استخدام مجاني مع ذكر المصدر)"
           },
-          "schemaAsset": "diagrams/schema/suprasternal_arch_schema.png",
-          "schemaAspect": 1.1111,
           "orientationAsset": "orientation/suprasternal_arch.svg",
           "probeGallery": [
             {
@@ -5807,6 +5809,30 @@
                 "de": "Ergebnisbild (Zeichnung)",
                 "ar": "المقطع الناتج (رسم)"
               }
+            }
+          ],
+          "schemaGallery": [
+            {
+              "asset": "echoorg/suprasternal_02.jpg",
+              "aspect": 0.6638,
+              "caption": {
+                "en": "View drawing",
+                "de": "Schnittzeichnung",
+                "ar": "رسم المقطع"
+              },
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-suprasternal"
+            },
+            {
+              "asset": "echoorg/suprasternal_03.jpg",
+              "aspect": 1.4491,
+              "caption": {
+                "en": "Labelled echo frame",
+                "de": "Beschriftetes Echobild",
+                "ar": "صورة إيكو موسومة"
+              },
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-suprasternal"
             }
           ]
         }
@@ -6454,14 +6480,38 @@
             "video": [
               0.52,
               0.06,
-              0.6,
-              0.75
+              0.496,
+              0.743
             ],
             "diagram": [
               0.68,
               0.06,
               0.66,
               0.72
+            ]
+          },
+          "trace": {
+            "asset": "echoorg/apical5_05.jpg",
+            "aspect": 1.4654,
+            "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+            "marks": [
+              {
+                "label": "Vmax",
+                "x": 0.4,
+                "y": 0.79
+              },
+              {
+                "label": "VTI",
+                "x": 0.36,
+                "y": 0.5,
+                "x2": 0.49,
+                "y2": 0.5
+              },
+              {
+                "label": "meanPG",
+                "x": 0.44,
+                "y": 0.66
+              }
             ]
           }
         },
@@ -6504,14 +6554,33 @@
             "video": [
               0.52,
               0.06,
-              0.576,
-              0.55
+              0.505,
+              0.555
             ],
             "diagram": [
               0.68,
               0.06,
               0.66,
               0.57
+            ]
+          },
+          "trace": {
+            "asset": "echoorg/apical5_04.jpg",
+            "aspect": 1.4654,
+            "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+            "marks": [
+              {
+                "label": "V LVOT",
+                "x": 0.115,
+                "y": 0.8
+              },
+              {
+                "label": "LVOT VTI",
+                "x": 0.06,
+                "y": 0.5,
+                "x2": 0.18,
+                "y2": 0.5
+              }
             ]
           }
         },
@@ -6638,8 +6707,8 @@
             "video": [
               0.52,
               0.06,
-              0.6,
-              0.75
+              0.496,
+              0.743
             ],
             "diagram": [
               0.68,
@@ -7177,6 +7246,30 @@
               0.06,
               0.72,
               0.52
+            ]
+          },
+          "trace": {
+            "asset": "echoorg/apical4_07.jpg",
+            "aspect": 1.7921,
+            "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+            "marks": [
+              {
+                "label": "E",
+                "x": 0.548,
+                "y": 0.617
+              },
+              {
+                "label": "A",
+                "x": 0.621,
+                "y": 0.695
+              },
+              {
+                "label": "DT",
+                "x": 0.548,
+                "y": 0.617,
+                "x2": 0.607,
+                "y2": 0.87
+              }
             ]
           }
         },
@@ -7856,6 +7949,20 @@
               0.475,
               0.665
             ]
+          },
+          "trace": {
+            "asset": "echoorg/apical4_12.jpg",
+            "aspect": 1.4793,
+            "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+            "marks": [
+              {
+                "label": "TAPSE",
+                "x": 0.385,
+                "y": 0.845,
+                "x2": 0.385,
+                "y2": 0.715
+              }
+            ]
           }
         },
         {
@@ -8318,5 +8425,321 @@
       ],
       "valve": "AV"
     }
+  },
+  "caseLibrary": {
+    "source": "https://www.echocardiographer.org/image-library",
+    "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+    "groups": [
+      {
+        "id": "cardiomyopathy",
+        "title": {
+          "en": "Cardiomyopathies",
+          "de": "Kardiomyopathien",
+          "ar": "اعتلالات العضلة القلبية"
+        },
+        "cases": [
+          {
+            "title": "Dilated Cardiomyopathy",
+            "url": "https://youtu.be/nD4Xs6T00O8"
+          },
+          {
+            "title": "Endomyocardial Fibroelastosis",
+            "url": "https://youtu.be/ayT8ECZUJPI"
+          },
+          {
+            "title": "Apical HCM",
+            "url": "https://youtu.be/0qCunmLcQG0"
+          },
+          {
+            "title": "Stress Cardiomyopathy/Apical Ballooning",
+            "url": "https://youtu.be/DFlSY0DrA6U"
+          },
+          {
+            "title": "Reverse Stress Cardiomyopathy",
+            "url": "https://youtu.be/gLkLgA2fiBo"
+          },
+          {
+            "title": "MId Wall Stress Cardiomyopathy",
+            "url": "https://youtu.be/KpVrFKxF21Y"
+          },
+          {
+            "title": "LV diverticulum",
+            "url": "https://youtu.be/VgiQzYXhzFY"
+          },
+          {
+            "title": "Multiple LV assessment",
+            "url": "https://youtu.be/AEU43mDIzSU"
+          }
+        ]
+      },
+      {
+        "id": "valves",
+        "title": {
+          "en": "Valves",
+          "de": "Klappen",
+          "ar": "الصمامات"
+        },
+        "cases": [
+          {
+            "title": "Anterior Mitral Valve Prolapse",
+            "url": "https://youtu.be/mn6JvhYLfuY"
+          },
+          {
+            "title": "Posterior Mitral Valve Prolapse",
+            "url": "https://youtu.be/o3RGCSomOCE"
+          },
+          {
+            "title": "Bileaflet Mitral Valve Prolapse",
+            "url": "https://youtu.be/V_hqYV3K8Y4"
+          },
+          {
+            "title": "Quadracuspid Aortic Valve",
+            "url": "https://youtu.be/m6agyXhz_mY"
+          },
+          {
+            "title": "AV Endocarditis",
+            "url": "https://youtu.be/-P5HLLdLYWI"
+          },
+          {
+            "title": "Bicuspid Aortic Valve",
+            "url": "https://youtu.be/m6agyXhz_mY"
+          },
+          {
+            "title": "MV Endocarditis",
+            "url": "https://youtu.be/LnrmVVzVTcQ"
+          },
+          {
+            "title": "Unicuspid Aortic Valve",
+            "url": "https://youtu.be/Uih-pm34ids"
+          },
+          {
+            "title": "APLS Mitral Disease",
+            "url": "https://youtu.be/vcOl8vcgJ_s"
+          },
+          {
+            "title": "Tricuspid Valve in 3D with device lead",
+            "url": "https://youtu.be/N6GOJm3iboA"
+          },
+          {
+            "title": "M-TEER - MitraClip for Functional MR",
+            "url": "https://youtu.be/HjCBQSAY53E"
+          },
+          {
+            "title": "Bicuspid AV (RCC/NCC)",
+            "url": "https://youtu.be/p3cVYIbFulA"
+          },
+          {
+            "title": "The 4 Valve view",
+            "url": "https://youtu.be/oepQbFMTLy8"
+          },
+          {
+            "title": "EROA calculation for MR",
+            "url": "https://youtu.be/V_hqYV3K8Y4"
+          }
+        ]
+      },
+      {
+        "id": "ischemia",
+        "title": {
+          "en": "Ischaemia & infarction",
+          "de": "Ischämie & Infarkt",
+          "ar": "الإقفار والاحتشاء"
+        },
+        "cases": [
+          {
+            "title": "Positive Stress - LAD ischemia",
+            "url": "https://youtu.be/zo4-W5-dgC8"
+          },
+          {
+            "title": "Acute Mid LAD infarct",
+            "url": "https://youtu.be/pM-h_9Ccjss"
+          },
+          {
+            "title": "Acute RCA infarct",
+            "url": "https://youtu.be/Kv0bW-P0Ukk"
+          },
+          {
+            "title": "Acute OM infarct",
+            "url": "https://youtu.be/h5DWdfYHfGM"
+          },
+          {
+            "title": "Chronic RCA infarct",
+            "url": "https://youtu.be/qnej5dccuV0"
+          },
+          {
+            "title": "Large Post infarct LV apical thrombus",
+            "url": "https://youtu.be/qnKoocn-Y3c"
+          },
+          {
+            "title": "LAD infarct with Apical VSD",
+            "url": "https://youtu.be/0RKiNUQ7B1w"
+          }
+        ]
+      },
+      {
+        "id": "aorta",
+        "title": {
+          "en": "Aortic disease",
+          "de": "Aortenerkrankungen",
+          "ar": "أمراض الأبهر"
+        },
+        "cases": [
+          {
+            "title": "Ascending Aortic Aneurysm with AR",
+            "url": "https://youtu.be/OFwCgGKxgQA"
+          },
+          {
+            "title": "Aortic Plaque in 3D",
+            "url": "https://youtu.be/g4XePZr4dU4"
+          }
+        ]
+      },
+      {
+        "id": "rv",
+        "title": {
+          "en": "RV & pulmonary",
+          "de": "RV & pulmonal",
+          "ar": "البطين الأيمن والرئة"
+        },
+        "cases": [
+          {
+            "title": "Persistent left SVC",
+            "url": "https://youtu.be/ESWnmqzbB0s"
+          },
+          {
+            "title": "Cor Pulmonale",
+            "url": "https://youtu.be/ZfDsbq0lPbs"
+          }
+        ]
+      },
+      {
+        "id": "pericardium",
+        "title": {
+          "en": "Pericardial disease",
+          "de": "Perikarderkrankungen",
+          "ar": "أمراض التامور"
+        },
+        "cases": [
+          {
+            "title": "Pericardial Cyst",
+            "url": "https://youtu.be/rggZ67_HzYY"
+          },
+          {
+            "title": "Large Effusion/Tamponade",
+            "url": "https://youtu.be/OTchgKs9eZs"
+          }
+        ]
+      },
+      {
+        "id": "masses",
+        "title": {
+          "en": "Masses & thrombi",
+          "de": "Raumforderungen & Thromben",
+          "ar": "الكتل والخثرات"
+        },
+        "cases": [
+          {
+            "title": "LA Myxoma",
+            "url": "https://youtu.be/rgn2_PBHe54"
+          },
+          {
+            "title": "LV apical thrombus",
+            "url": "https://youtu.be/9QTqelTM21I"
+          },
+          {
+            "title": "LA appendage thrombus",
+            "url": "https://youtu.be/9QTqelTM21I"
+          },
+          {
+            "title": "Renal Cell Carcinoma in RA",
+            "url": "https://youtu.be/kWm_u9guPjQ"
+          },
+          {
+            "title": "Germ Cell Tumor in LA",
+            "url": "https://youtu.be/xX9oEkDxvIc"
+          },
+          {
+            "title": "LA appendage thrombus 2",
+            "url": "https://youtu.be/QRiMW5MctU0"
+          }
+        ]
+      },
+      {
+        "id": "congenital",
+        "title": {
+          "en": "Congenital & shunts",
+          "de": "Angeboren & Shunts",
+          "ar": "الخلقية والتحويلات"
+        },
+        "cases": [
+          {
+            "title": "Extracardiac Shunt - Late Bubbles",
+            "url": "https://youtu.be/uHD6tPBNHW8"
+          },
+          {
+            "title": "PFO with Valsalva",
+            "url": "https://youtu.be/hRlGNkR26Co"
+          },
+          {
+            "title": "Negative Saline Shunt Study",
+            "url": "https://youtu.be/b74iyLKDtUI"
+          },
+          {
+            "title": "PFO at Rest",
+            "url": "https://youtu.be/hRlGNkR26Co"
+          },
+          {
+            "title": "Extracardiac Shunt - Early Bubbles",
+            "url": "https://youtu.be/1E7TLx_olI8"
+          },
+          {
+            "title": "TEE - secundum ASD",
+            "url": "https://youtu.be/EEoorXwF-Ks"
+          },
+          {
+            "title": "AV Canal ASD/VSD",
+            "url": "https://youtu.be/c4kSK-2wlKg"
+          },
+          {
+            "title": "Primum ASD",
+            "url": "https://youtu.be/1LlkC2flU08"
+          },
+          {
+            "title": "How to measure the size of an ASD with 3D TEE",
+            "url": "https://youtu.be/FKCQs7WHZg0"
+          }
+        ]
+      },
+      {
+        "id": "other",
+        "title": {
+          "en": "Other",
+          "de": "Sonstiges",
+          "ar": "أخرى"
+        },
+        "cases": [
+          {
+            "title": "4 Chamber TTE, Swivel",
+            "url": "https://youtu.be/rWol2vWAnmQ"
+          },
+          {
+            "title": "Parasternal Long Axis 3D",
+            "url": "https://youtu.be/adyOZIPJoGk"
+          },
+          {
+            "title": "Mirror Artifact",
+            "url": "https://youtu.be/6mlKR2oUHso"
+          },
+          {
+            "title": "TEE Pre and post LVAD",
+            "url": "https://youtu.be/RWlYvXOeHp0"
+          },
+          {
+            "title": "Improper Impella Placement",
+            "url": "https://youtu.be/vSgHyuxGsmA"
+          }
+        ]
+      }
+    ]
   }
 }

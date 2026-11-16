@@ -82,7 +82,8 @@ data class EchoProtocol(
     /** Structured heart-valve assessment (AV, MV, TV, PV). */
     val valves: List<HeartValve> = emptyList(),
     /** Real colour Doppler loops (assets/loops/color), keyed by id. */
-    val colorLoops: Map<String, ColorLoop> = emptyMap()
+    val colorLoops: Map<String, ColorLoop> = emptyMap(),
+    val caseLibrary: CaseLibrary? = null
 ) {
     /** Colour loops offered by a view's 2D ⇄ colour toggle. */
     fun colorLoopsFor(viewId: String): List<ColorLoop> = colorLoops.values.filter { viewId in it.views }
@@ -122,15 +123,8 @@ data class EchoView(
     /** Width / height of [diagramAsset]. */
     val diagramAspect: Float = 1.15f,
     val diagramCredit: LocalizedText? = null,
-    /**
-     * Clean vector schema traced from the loop's end-diastolic frame, in the same normalised
-     * coordinates as the video (so `caliperOverlay.video` lines up), e.g. `schema/apical_4c.svg`.
-     */
-    val schemaAsset: String? = null,
-    /** Part of the video frame `[x0, y0, x1, y1]` (normalised) that [schemaAsset] shows. */
-    val schemaCrop: List<Float> = listOf(0f, 0f, 1f, 1f),
-    /** Width / height of [schemaAsset]. */
-    val schemaAspect: Float = 4f / 3f,
+    /** Schema tab: medical drawing + labelled echo frame (Echocardiographer.org), paged. */
+    val schemaGallery: List<GalleryImage> = emptyList(),
     /** Step-1 torso & transducer illustration (English file; `_de` / `_ar` variants beside it). */
     val orientationAsset: String? = null,
     /** Extra pages of the Sonde panel: probe photo, beam-cut drawing (Echocardiographer.org). */
@@ -257,14 +251,6 @@ data class GuideStep(
     val overlays: List<CaliperOverlay> get() = listOfNotNull(caliperOverlay) + extraOverlays
 }
 
-/** Maps a normalised video-frame line `[x1, y1, x2, y2]` into the schema crop [EchoView.schemaCrop]. */
-fun mapToCrop(coords: List<Float>?, crop: List<Float>): List<Float>? {
-    if (coords == null || coords.size != 4 || crop.size != 4) return coords
-    val w = crop[2] - crop[0]
-    val h = crop[3] - crop[1]
-    if (w <= 0f || h <= 0f) return coords
-    return listOf((coords[0] - crop[0]) / w, (coords[1] - crop[1]) / h, (coords[2] - crop[0]) / w, (coords[3] - crop[1]) / h)
-}
 
 /** A bundled reference image with caption and the credit its licence requires. */
 @Immutable
@@ -355,8 +341,32 @@ data class ValveMeasurement(
     val formula: LocalizedText? = null,
     val normal: LocalizedText? = null,
     val example: String? = null,
-    val nyquistCmS: Int? = null
+    val nyquistCmS: Int? = null,
+    /** Real spectral / M-mode recording with the measurement points marked on it. */
+    val trace: SpectralTrace? = null
 )
+
+/** A measurement point ("Vmax") or line ("DT", from x/y to x2/y2) on a real trace, normalised. */
+@Immutable
+@Serializable
+data class TraceMark(val label: String, val x: Float, val y: Float, val x2: Float? = null, val y2: Float? = null)
+
+@Immutable
+@Serializable
+data class SpectralTrace(val asset: String, val aspect: Float, val credit: String, val marks: List<TraceMark>)
+
+/** Echocardiographer.org Image Library: pathology cases (online YouTube videos), grouped. */
+@Immutable
+@Serializable
+data class CaseLibrary(val source: String, val credit: String, val groups: List<CaseGroup>)
+
+@Immutable
+@Serializable
+data class CaseGroup(val id: String, val title: LocalizedText, val cases: List<LibraryCase>)
+
+@Immutable
+@Serializable
+data class LibraryCase(val title: String, val url: String)
 
 /** Valve to open first from a view's cockpit. */
 fun valveForView(viewId: String): String = when (viewId) {

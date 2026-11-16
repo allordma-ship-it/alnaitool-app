@@ -516,38 +516,6 @@ internal object CaliperPreferences {
     }
 }
 
-/** Schema labels AN/AUS (default AUS – clean "ohne Labels" schema), saved like the caliper toggle. */
-@Composable
-internal fun rememberSchemaLabels(): Pair<Boolean, () -> Unit> {
-    val context = LocalContext.current
-    val prefs = remember { context.getSharedPreferences("echoscope_prefs", Context.MODE_PRIVATE) }
-    val state: MutableState<Boolean> = remember { mutableStateOf(prefs.getBoolean("schema_labels", false)) }
-    return state.value to {
-        state.value = !state.value
-        prefs.edit().putBoolean("schema_labels", state.value).apply()
-    }
-}
-
-/** "Labels AN / AUS" chip on the schema panel. */
-@Composable
-internal fun SchemaLabelToggle(enabled: Boolean, onToggle: () -> Unit, modifier: Modifier = Modifier) {
-    val color = if (enabled) EchoPalette.MedicalBlue else EchoPalette.TextMuted
-    val state = stringResource(if (enabled) R.string.caliper_on else R.string.caliper_off)
-    Text(
-        text = "${stringResource(R.string.schema_labels)} $state",
-        color = if (enabled) EchoPalette.OnAccent else color,
-        fontSize = 9.sp,
-        fontWeight = FontWeight.Bold,
-        maxLines = 1,
-        modifier = modifier
-            .clip(RoundedCornerShape(11.dp))
-            .background(if (enabled) EchoPalette.MedicalBlue else Color.Black.copy(alpha = 0.6f))
-            .border(1.dp, color.copy(alpha = 0.8f), RoundedCornerShape(11.dp))
-            .clickable(onClick = onToggle)
-            .padding(horizontal = 7.dp, vertical = 3.dp)
-    )
-}
-
 /** Caliper ON/OFF state, restored from and saved to [CaliperPreferences]. */
 @Composable
 internal fun rememberCaliperEnabled(): Pair<Boolean, () -> Unit> {

@@ -52,6 +52,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import androidx.compose.ui.text.drawText
 
 /** Narrow table cells: hyphenate long German words ("Regurgitations-volumen") instead of cutting them. */
 private val CellText = TextStyle(fontSize = 10.5.sp, hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph)
@@ -202,6 +203,7 @@ internal fun ValveAssessmentContent(
                 }
             }
         }
+        protocol.caseLibrary?.let { CaseLibrarySection(it, language) }
         Text(stringResource(R.string.valve_disclaimer), color = EchoMuted, style = MaterialTheme.typography.labelSmall)
         Spacer(Modifier.height(8.dp))
     }
@@ -347,7 +349,13 @@ private fun MeasurementGuide(valve: HeartValve, protocol: EchoProtocol, language
         // 2) How: the measurement on the trace
         Spacer(Modifier.height(6.dp))
         Text(stringResource(R.string.valve_how), color = EchoSky, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
-        SpectralGuide(meas.spectral, Modifier.fillMaxWidth().height(150.dp).clip(RoundedCornerShape(10.dp)))
+        val trace = meas.trace
+        if (trace != null) {
+            RealTrace(trace, Modifier.fillMaxWidth().clip(RoundedCornerShape(10.dp)))
+        } else {
+            // No real recording available for this measurement: drawn teaching trace (labelled "Schema").
+            SpectralGuide(meas.spectral, Modifier.fillMaxWidth().height(150.dp).clip(RoundedCornerShape(10.dp)))
+        }
         meas.steps.forEachIndexed { i, step ->
             Row(modifier = Modifier.padding(top = 4.dp)) {
                 Text("${i + 1}.", color = EchoPrimary, fontWeight = FontWeight.Bold, modifier = Modifier.width(18.dp))
@@ -370,5 +378,83 @@ private fun MeasurementGuide(valve: HeartValve, protocol: EchoProtocol, language
     if (exampleOpen && meas.example != null) {
         val img = GalleryImage(meas.example, 1.4f, meas.title, credit = "Echocardiographer.org – Atif Qasim, MD MSCE")
         ExampleDialog(listOf(img), meas.title.get(language), language) { exampleOpen = false }
+    }
+}
+
+
+/** Real spectral / M-mode recording with the measurement points (Vmax, VTI, E, A, DT, TAPSE) marked on it. */
+@Composable
+private fun RealTrace(trace: SpectralTrace, modifier: Modifier = Modifier) {
+    val text = androidx.compose.ui.text.rememberTextMeasurer()
+    Column(modifier = modifier) {
+        Box(modifier = Modifier.fillMaxWidth().aspectRatio(trace.aspect).background(Color.Black)) {
+            AsyncImage(
+                model = "file:///android_asset/${trace.asset}",
+                contentDescription = null,
+                contentScale = ContentScale.FillBounds,
+                modifier = Modifier.fillMaxSize()
+            )
+            androidx.compose.foundation.Canvas(modifier = Modifier.fillMaxSize()) {
+                trace.marks.forEach { m ->
+                    val p = androidx.compose.ui.geometry.Offset(m.x * size.width, m.y * size.height)
+                    val ring = 7.dp.toPx()
+                    if (m.x2 != null && m.y2 != null) {
+                        val q = androidx.compose.ui.geometry.Offset(m.x2 * size.width, m.y2 * size.height)
+                        drawLine(Color.Black, p, q, strokeWidth = 5.dp.toPx())
+                        drawLine(EchoPalette.Caliper, p, q, strokeWidth = 2.5.dp.toPx())
+                        drawCircle(EchoPalette.Caliper, 3.5.dp.toPx(), q)
+                    }
+                    drawCircle(Color.Black, ring + 1.5f, p, style = androidx.compose.ui.graphics.drawscope.Stroke(4.dp.toPx()))
+                    drawCircle(EchoPalette.Caliper, ring, p, style = androidx.compose.ui.graphics.drawscope.Stroke(2.dp.toPx()))
+                    val layout = text.measure(m.label, androidx.compose.ui.text.TextStyle(color = EchoPalette.Caliper,
+                        fontSize = 12.sp, fontWeight = FontWeight.Bold))
+                    val tx = (p.x + ring + 4f).coerceAtMost(size.width - layout.size.width - 2f)
+                    val ty = (p.y - layout.size.height - 2f).coerceAtLeast(0f)
+                    drawRect(Color.Black.copy(alpha = 0.7f), androidx.compose.ui.geometry.Offset(tx - 3f, ty - 1f),
+                        androidx.compose.ui.geometry.Size(layout.size.width + 6f, layout.size.height + 2f))
+                    drawText(layout, topLeft = androidx.compose.ui.geometry.Offset(tx, ty))
+                }
+            }
+        }
+        Text("© ${trace.credit}", color = EchoMuted, fontSize = 9.sp, modifier = Modifier.padding(top = 2.dp))
+    }
+}
+
+/**
+ * Pathology examples: the Echocardiographer.org Image Library (55 cases, YouTube videos, opened
+ * online – they cannot be bundled), grouped by disease category.
+ */
+@Composable
+internal fun CaseLibrarySection(library: CaseLibrary, language: AppLanguage) {
+    val uri = androidx.compose.ui.platform.LocalUriHandler.current
+    var open by rememberSaveable { mutableStateOf<String?>(null) }
+    ValveCard(stringResource(R.string.case_library_title)) {
+        Text(stringResource(R.string.case_library_hint), color = EchoMuted, style = MaterialTheme.typography.labelSmall)
+        library.groups.forEach { g ->
+            val expanded = open == g.id
+            Row(
+                modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp))
+                    .clickable { open = if (expanded) null else g.id }.padding(vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(g.title.get(language), color = EchoText, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
+                Text("${g.cases.size}", color = EchoMuted, fontSize = 12.sp)
+                Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = EchoMuted)
+            }
+            if (expanded) {
+                g.cases.forEach { c ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp))
+                            .clickable { runCatching { uri.openUri(c.url) } }
+                            .padding(start = 12.dp, top = 6.dp, bottom = 6.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text("▶", color = EchoCritical, fontSize = 12.sp, modifier = Modifier.width(20.dp))
+                        Text(c.title, color = EchoSky, style = MaterialTheme.typography.bodySmall, modifier = Modifier.weight(1f))
+                    }
+                }
+            }
+        }
+        Text("© ${library.credit}", color = EchoMuted, fontSize = 9.sp)
     }
 }

@@ -183,13 +183,13 @@ fun ViewCockpit(
                 onValves = if (protocol.valves.isNotEmpty()) ({ valvesOpen = true }) else null,
                 onDrawer = { scope.launch { drawerState.open() } }
             )
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(start = 10.dp, end = 10.dp, bottom = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(6.dp)
-            ) {
-                SplitStage(
+            // Phones: one column (stage 205 dp, ECG, tabs). Tablets / landscape (≥ 600 dp wide): two
+            // columns filling the whole screen – large video + diagram with the ECG on the left, the
+            // steps / console / timing deck on the right.
+            BoxWithConstraints(modifier = Modifier.weight(1f).fillMaxWidth()) {
+                val wide = maxWidth >= 600.dp
+                val stage: @Composable (Modifier) -> Unit = { stageModifier ->
+                    SplitStage(
                     view = view,
                     player = player,
                     loop = loop,
@@ -210,19 +210,45 @@ fun ViewCockpit(
                     videoAttached = !videoOverlay,
                     onOpenVideo = { videoOverlay = true },
                     onOpenDiagram = { diagramOverlay = true },
-                    language = language
-                )
-                EcgTransportBar(player = player, loop = loop, timing = view.ecg)
-                DeckTabBar(selected = tab, onSelect = { tab = it })
-                Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
-                    when (tab) {
-                        DeckTab.STEPS -> StepCard(view, navigator, language, onOpenReference = { referenceOpen = true })
-                        DeckTab.CONSOLE -> EchoControlConsole(view, protocol.consoleControls, language,
-                            onColorKey = if (colorLoops.isNotEmpty()) cycleColor else null)
-                        DeckTab.TIMING -> TimingProbePanel(view, language) {
-                            selectMode(DiagramMode.PROBE)
-                            diagramOverlay = true
+                    language = language,
+                    modifier = stageModifier
+                                    )
+                }
+                val deck: @Composable ColumnScope.() -> Unit = {
+                    DeckTabBar(selected = tab, onSelect = { tab = it })
+                    Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
+                        when (tab) {
+                            DeckTab.STEPS -> StepCard(view, navigator, language, onOpenReference = { referenceOpen = true })
+                            DeckTab.CONSOLE -> EchoControlConsole(view, protocol.consoleControls, language,
+                                onColorKey = if (colorLoops.isNotEmpty()) cycleColor else null)
+                            DeckTab.TIMING -> TimingProbePanel(view, language) {
+                                selectMode(DiagramMode.PROBE)
+                                diagramOverlay = true
+                            }
                         }
+                    }
+                }
+                if (wide) {
+                    Row(
+                        modifier = Modifier.fillMaxSize().padding(start = 12.dp, end = 12.dp, bottom = 10.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Column(modifier = Modifier.weight(0.62f).fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Box(modifier = Modifier.weight(1f).fillMaxWidth()) { stage(Modifier.fillMaxHeight()) }
+                            EcgTransportBar(player = player, loop = loop, timing = view.ecg)
+                        }
+                        Column(modifier = Modifier.weight(0.38f).fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            deck()
+                        }
+                    }
+                } else {
+                    Column(
+                        modifier = Modifier.fillMaxSize().padding(start = 10.dp, end = 10.dp, bottom = 8.dp),
+                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        stage(Modifier.height(StageHeight))
+                        EcgTransportBar(player = player, loop = loop, timing = view.ecg)
+                        deck()
                     }
                 }
             }
@@ -428,7 +454,7 @@ private class DiagramSource(
 internal fun pageCount(view: EchoView, mode: DiagramMode): Int = when (mode) {
     DiagramMode.PROBE -> 1 + view.probeGallery.size
     DiagramMode.ATLAS -> (if (view.diagramAsset != null) 1 else 0) + view.atlasGallery.size
-    DiagramMode.SCHEMA -> 1
+    DiagramMode.SCHEMA -> view.schemaGallery.size.coerceAtLeast(1)
 }
 
 private fun galleryPage(image: GalleryImage, language: AppLanguage, background: Color) =
@@ -441,8 +467,7 @@ private fun diagramSource(
     step: GuideStep?,
     caliperOn: Boolean,
     language: AppLanguage,
-    page: Int = 0,
-    schemaLabels: Boolean = false
+    page: Int = 0
 ): DiagramSource {
     val overlays = if (caliperOn) step?.overlays.orEmpty() else emptyList()
     val atlas = view.diagramAsset
@@ -465,14 +490,9 @@ private fun diagramSource(
         mode == DiagramMode.ATLAS && atlas != null ->
             DiagramSource(atlas, view.diagramAspect, if (atlas.endsWith(".png")) EchoPalette.AtlasCard else Color.Black, overlays, { it.diagram },
                 credit = view.diagramCredit?.get(language))
-        view.schemaAsset != null ->
-            // The schema is traced in the video frame's coordinates: the video calipers fit as they are.
-            // "ohne Labels" by default; the _labels variant has the same crop, so calipers stay aligned.
-            // Pre-rendered PNG (diagrams/schema/<view>_schema.png, scripts/build_schema_art.py) with its own
-            // caliper coordinates; labels are a transparent layer of the same size.
-            DiagramSource(view.schemaAsset, view.schemaAspect, SchemaBackground, overlays, { it.schema },
-                isSchema = true,
-                labelLayer = if (schemaLabels) view.schemaAsset.removeSuffix(".png") + "_labels.png" else null)
+        // Schema = real medical drawings / labelled frames from Echocardiographer.org (paged).
+        mode == DiagramMode.SCHEMA && view.schemaGallery.isNotEmpty() ->
+            galleryPage(view.schemaGallery[page.coerceIn(0, view.schemaGallery.lastIndex)], language, Color.Black)
         else ->
             DiagramSource(view.svgAsset, SVG_WIDTH / SVG_HEIGHT, EchoPalette.BgPrimary, emptyList(), { null },
                 svgCaliper = if (caliperOn) step?.caliper else null)
@@ -528,7 +548,8 @@ private fun SplitStage(
     videoAttached: Boolean,
     onOpenVideo: () -> Unit,
     onOpenDiagram: () -> Unit,
-    language: AppLanguage
+    language: AppLanguage,
+    modifier: Modifier = Modifier
 ) {
     // 2D calipers belong to the 2D loop: hidden while a colour loop plays.
     val overlays = if (colorLoop == null) step?.overlays.orEmpty() else emptyList()
@@ -536,7 +557,7 @@ private fun SplitStage(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(StageHeight),
+            .then(modifier),
         horizontalArrangement = Arrangement.spacedBy(6.dp)
     ) {
         StageCard(
@@ -574,8 +595,7 @@ private fun SplitStage(
             SourceBadge(simulated = colorLoop == null && view.videoSource.isSimulated, modifier = Modifier.align(Alignment.TopStart).padding(5.dp))
             loop.frozenPhase?.let { FrozenBadge(it, Modifier.align(Alignment.BottomStart).padding(5.dp)) }
         }
-        val (schemaLabels, toggleLabels) = rememberSchemaLabels()
-        val source = diagramSource(view, diagramMode, step, caliperOn, language, diagramPage, schemaLabels)
+        val source = diagramSource(view, diagramMode, step, caliperOn, language, diagramPage)
         val pageTotal = pageCount(view, diagramMode)
         StageCard(
             modifier = Modifier.weight(0.48f),
@@ -588,9 +608,7 @@ private fun SplitStage(
                 if (pageTotal > 1) {
                     PageStepper(diagramPage, pageTotal, onSelectPage, Modifier.align(Alignment.BottomCenter).padding(bottom = 4.dp))
                 }
-                if (source.isSchema) {
-                    SchemaLabelToggle(schemaLabels, toggleLabels, Modifier.align(Alignment.BottomStart).padding(5.dp))
-                }
+
             }
         ) {
             DiagramThumb(
@@ -904,15 +922,14 @@ private fun DiagramOverlay(
     language: AppLanguage,
     onDismiss: () -> Unit
 ) {
-    val (schemaLabels, toggleLabels) = rememberSchemaLabels()
-    val source = diagramSource(view, mode, step, caliperOn, language, page, schemaLabels)
+    val source = diagramSource(view, mode, step, caliperOn, language, page)
     val pageTotal = pageCount(view, mode)
     FullScreenDialog(onDismiss) {
         val hasCaliper = mode != DiagramMode.PROBE && (step?.overlays.orEmpty().isNotEmpty() || step?.caliper != null)
         OverlayStatusRow(frozenPhase = null, hasCaliper = hasCaliper, caliperOn, onToggleCaliper)
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             if (modes.size > 1) DiagramModePills(mode, modes, onSelectMode, large = true)
-            if (source.isSchema) SchemaLabelToggle(schemaLabels, toggleLabels)
+
         }
         Box(modifier = Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
             ZoomableDiagram(
@@ -997,12 +1014,11 @@ private fun ColorToggleChip(colorLoop: ColorLoop?, onCycle: () -> Unit) {
         fontWeight = FontWeight.Bold,
         maxLines = 1,
         modifier = Modifier
-            .height(22.dp)
             .clip(RoundedCornerShape(11.dp))
             .background(if (active) EchoCritical else Color.Black.copy(alpha = 0.6f))
             .border(1.dp, EchoCritical.copy(alpha = 0.8f), RoundedCornerShape(11.dp))
             .clickable(onClick = onCycle)
-            .padding(horizontal = 7.dp, vertical = 4.dp)
+            .padding(horizontal = 7.dp, vertical = 3.dp)
     )
 }
 

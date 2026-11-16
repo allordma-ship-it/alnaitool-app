@@ -126,11 +126,12 @@ STEPS = {
     ],
     "apical_5c": [
         ("LIVE", None),
-        # Real POCUS Atlas loop: PW sample volume in the LVOT just below the aortic valve
-        # (aortic root ring centred at ≈ 0.585 / 0.635 in systole).
-        ("LIVE", ov(G, "PW · LVOT", [0.52, 0.06, 0.576, 0.55], [0.68, 0.06, 0.66, 0.57])),
+        # Real POCUS Atlas loop: aortic root ring CENTRAL at ≈ 0.50 / 0.62 (between IVS and the
+        # anterior mitral leaflet); mitral valve and LA are to the right. PW gate in the LVOT just
+        # proximal to the cusps, CW focus (82 %) in the aortic orifice.
+        ("LIVE", ov(G, "PW · LVOT", [0.52, 0.06, 0.505, 0.555], [0.68, 0.06, 0.66, 0.57])),
         # CW from the apex through the aortic valve into the ascending aorta.
-        ("LIVE", ov(C, "CW · AV", [0.52, 0.06, 0.60, 0.75], [0.68, 0.06, 0.66, 0.72])),
+        ("LIVE", ov(C, "CW · AV", [0.52, 0.06, 0.496, 0.743], [0.68, 0.06, 0.66, 0.72])),
     ],
     "apical_2c": [
         ("LIVE", None),

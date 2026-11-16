@@ -135,5 +135,6 @@
     <string name="valve_loop_2d">2D</string>
     <string name="valve_loop_color">COLOUR</string>
     <string name="color_toggle">Colour Doppler</string>
-    <string name="schema_labels">Labels</string>
+    <string name="case_library_title">Pathology examples (video library)</string>
+    <string name="case_library_hint">Echocardiographer.org Image Library – videos open online (YouTube).</string>
 </resources>
