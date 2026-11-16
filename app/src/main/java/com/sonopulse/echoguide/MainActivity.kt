@@ -209,7 +209,7 @@ private fun EchoScopeScaffold(language: AppLanguage, onLanguageChange: (AppLangu
                 )
                 EchoDestination.GUIDED -> GuidedExamScreen(language, onLanguageChange)
                 EchoDestination.VALVES -> ValveAssessmentScreen(language, onOpenView = openView)
-                EchoDestination.ZSCORE -> ZScoreCalculatorScreen()
+                EchoDestination.ZSCORE -> ClinicalCalculatorsScreen(language)
             }
         }
     }
@@ -511,7 +511,7 @@ internal fun LanguageMenuButton(language: AppLanguage, onLanguageChange: (AppLan
  * the open licence question for supplied reference images, and the disclaimer.
  */
 @Composable
-internal fun AboutDialog(view: EchoView?, language: AppLanguage, onDismiss: () -> Unit) {
+internal fun AboutDialog(view: EchoView?, language: AppLanguage, onDismiss: () -> Unit, cases: List<PathologyCase> = emptyList()) {
     val context = LocalContext.current
     val version = remember(context) {
         runCatching {
@@ -553,11 +553,18 @@ internal fun AboutDialog(view: EchoView?, language: AppLanguage, onDismiss: () -
                             Text(stringResource(R.string.about_view_gallery, gallery.size, credit), color = EchoText,
                                 style = MaterialTheme.typography.bodySmall)
                         }
+                        // Pathology cases and Commons stills of this view, each with author and licence.
+                        (cases.map { "${it.title.get(language)}: © ${it.credit} (${it.license})" } +
+                            view.steps.flatMap { it.examples }.filter { it.source?.contains("wikimedia") == true }
+                                .map { "${it.caption.get(language)}: © ${it.credit}" }).distinct().forEach { line ->
+                            Text("• $line", color = EchoText, style = MaterialTheme.typography.bodySmall)
+                        }
                     }
                 }
                 AboutSection(R.string.about_illustrations_title, R.string.about_illustrations_credit, R.string.about_illustrations_detail)
                 AboutSection(R.string.about_clips_title, R.string.about_clips_credit, null)
                 AboutSection(R.string.about_echoorg_title, R.string.about_echoorg_credit, R.string.about_echoorg_detail)
+                AboutSection(R.string.about_commons_title, R.string.about_commons_credit, R.string.about_commons_detail)
                 AboutSection(R.string.about_reference_title, R.string.about_reference_credit, null)
                 AboutSection(R.string.about_disclaimer_title, R.string.about_disclaimer, null)
             }

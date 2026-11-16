@@ -3,7 +3,7 @@
     <string name="app_tagline">Offline-Leitfaden für das TTE-Protokoll</string>
     <string name="language_label">Sprache</string>
     <string name="nav_protocol">Schnitte</string>
-    <string name="nav_zscore">Z-Score</string>
+    <string name="nav_zscore">Rechner</string>
     <string name="section_windows">Schallfenster</string>
     <string name="section_views">Standardschnitte</string>
     <plurals name="views_count">
@@ -136,4 +136,9 @@
     <string name="color_toggle">Farbdoppler</string>
     <string name="case_library_title">Pathologie-Beispiele (Videobibliothek)</string>
     <string name="case_library_hint">Echocardiographer.org Image Library – Videos öffnen online (YouTube).</string>
+    <string name="pathology_title">Pathologie</string>
+    <string name="pathology_online">Weiteren Fall online ansehen (Echocardiographer.org)</string>
+    <string name="about_commons_title">Wikimedia Commons · CardioNetworks ECHOpedia</string>
+    <string name="about_commons_credit">Pathologie-Loops und -Bilder (Aorten-, Mitral-, Trikuspidalklappe, Kardiomyopathien, Perikarderguss, Aortendilatation, ASD) sowie das TAPSE-M-Mode-Bild stammen von Wikimedia Commons, überwiegend aus der Sammlung CardioNetworks ECHOpedia, unter CC BY-SA 3.0 und anderen freien Lizenzen.</string>
+    <string name="about_commons_detail">Autor und Lizenz stehen bei jedem Fall; die Dateiliste mit Commons-Seiten steht in assets/commons/ATTRIBUTION.txt. Clips wurden nach MP4 (H.264, ohne Ton) konvertiert; CC-BY-SA-Inhalte bleiben unter CC BY-SA.</string>
 </resources>

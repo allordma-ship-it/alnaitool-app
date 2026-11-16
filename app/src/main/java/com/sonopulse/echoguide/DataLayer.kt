@@ -83,10 +83,14 @@ data class EchoProtocol(
     val valves: List<HeartValve> = emptyList(),
     /** Real colour Doppler loops (assets/loops/color), keyed by id. */
     val colorLoops: Map<String, ColorLoop> = emptyMap(),
-    val caseLibrary: CaseLibrary? = null
+    val caseLibrary: CaseLibrary? = null,
+    /** Real pathology examples (Wikimedia Commons, POCUS Atlas, Echocardiographer.org) for comparison with normal. */
+    val pathology: List<PathologyCase> = emptyList()
 ) {
     /** Colour loops offered by a view's 2D ⇄ colour toggle. */
     fun colorLoopsFor(viewId: String): List<ColorLoop> = colorLoops.values.filter { viewId in it.views }
+    fun pathologyFor(viewId: String): List<PathologyCase> = pathology.filter { viewId in it.views }
+    fun pathologyForValve(valveId: String): List<PathologyCase> = pathology.filter { valveId in it.valves }
     val allViews: List<EchoView> get() = windows.flatMap { it.views }
 }
 
@@ -457,3 +461,25 @@ object EchoRepository {
         }
     }
 }
+
+/**
+ * One pathology example: a real cine [loop] (assets/pathology/, mp4) and / or still [images], the
+ * views and valves it belongs to, what to look for, and its licence (shown with every case).
+ */
+@Serializable
+data class PathologyCase(
+    val id: String,
+    /** Group key: aortic, mitral, tricuspid, cardiomyopathy, pericardium, aorta, congenital. */
+    val group: String,
+    val title: LocalizedText,
+    val findings: LocalizedText,
+    val views: List<String> = emptyList(),
+    val valves: List<String> = emptyList(),
+    val loop: String? = null,
+    val images: List<GalleryImage> = emptyList(),
+    val credit: String,
+    val license: String,
+    val source: String,
+    /** Optional further online video (Echocardiographer.org Image Library). */
+    val onlineUrl: String? = null
+)

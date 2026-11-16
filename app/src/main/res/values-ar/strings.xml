@@ -2,7 +2,7 @@
 <resources>
     <string name="app_tagline">دليل بروتوكول الإيكو عبر الصدر – دون اتصال</string>
     <string name="nav_protocol">المقاطع</string>
-    <string name="nav_zscore">Z-Score</string>
+    <string name="nav_zscore">الحاسبات</string>
     <string name="section_windows">النوافذ الصوتية</string>
     <string name="section_views">المقاطع القياسية</string>
     <string name="tab_measurements">القياسات (ED/ES)</string>
@@ -144,4 +144,9 @@
     <string name="color_toggle">الدوبلر الملوّن</string>
     <string name="case_library_title">أمثلة مرضية (مكتبة الفيديو)</string>
     <string name="case_library_hint">مكتبة صور Echocardiographer.org – تُفتح الفيديوهات عبر الإنترنت (YouTube).</string>
+    <string name="pathology_title">حالات مرضية</string>
+    <string name="pathology_online">مشاهدة حالة إضافية عبر الإنترنت (Echocardiographer.org)</string>
+    <string name="about_commons_title">ويكيميديا كومنز · CardioNetworks ECHOpedia</string>
+    <string name="about_commons_credit">مقاطع وصور الحالات المرضية (أمراض الصمامات الأبهري والتاجي وثلاثي الشرف، اعتلالات العضلة القلبية، انصباب التامور، توسع الأبهر، ASD) وصورة TAPSE بنمط M مأخوذة من ويكيميديا كومنز، ومعظمها من مجموعة CardioNetworks ECHOpedia، بترخيص CC BY-SA 3.0 وتراخيص حرة أخرى.</string>
+    <string name="about_commons_detail">يُذكر المؤلف والترخيص مع كل حالة، وقائمة الملفات مع صفحاتها في assets/commons/ATTRIBUTION.txt. حُوِّلت المقاطع إلى MP4 (H.264 بلا صوت)، ويبقى محتوى CC BY-SA بنفس الترخيص.</string>
 </resources>

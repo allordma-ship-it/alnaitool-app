@@ -224,7 +224,7 @@ fun ViewCockpit(
                     DeckTabBar(selected = tab, onSelect = { tab = it })
                     Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
                         when (tab) {
-                            DeckTab.STEPS -> StepCard(view, navigator, language, onOpenReference = { referenceOpen = true })
+                            DeckTab.STEPS -> StepCard(protocol, view, navigator, language, onOpenReference = { referenceOpen = true })
                             DeckTab.CONSOLE -> EchoControlConsole(view, protocol.consoleControls, language,
                                 onColorKey = if (colorLoops.isNotEmpty()) cycleColor else null)
                             DeckTab.TIMING -> TimingProbePanel(view, language) {
@@ -272,7 +272,7 @@ fun ViewCockpit(
             diagramOverlay = false
         }
     }
-    if (infoOpen) AboutDialog(view = view, language = language, onDismiss = { infoOpen = false })
+    if (infoOpen) AboutDialog(view = view, language = language, onDismiss = { infoOpen = false }, cases = protocol.pathologyFor(view.id))
     if (valvesOpen) {
         var valveId by rememberSaveable(view.id) { mutableStateOf(valveForView(view.id)) }
         FullScreenDialog(onDismiss = { valvesOpen = false }) {
@@ -1161,10 +1161,14 @@ private fun DeckCard(modifier: Modifier = Modifier, content: @Composable ColumnS
 
 /** Tab 1: the active step with its normal-range badge and inline step navigation. */
 @Composable
-private fun StepCard(view: EchoView, nav: StepNavigator, language: AppLanguage, onOpenReference: () -> Unit) {
+private fun StepCard(protocol: EchoProtocol, view: EchoView, nav: StepNavigator, language: AppLanguage, onOpenReference: () -> Unit) {
     var noteOpen by remember { mutableStateOf(false) }
     var exampleOpen by remember { mutableStateOf(false) }
+    var calculatorOpen by remember { mutableStateOf(false) }
+    var pathologyOpen by remember { mutableStateOf(false) }
     val step = nav.step
+    val calculator = calculatorForStep(step)
+    val cases = protocol.pathologyFor(view.id)
     DeckCard {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
@@ -1185,6 +1189,17 @@ private fun StepCard(view: EchoView, nav: StepNavigator, language: AppLanguage, 
                 Spacer(Modifier.width(6.dp))
             }
             SmallPill(stringResource(R.string.cockpit_reference), EchoSky, onClick = onOpenReference)
+        }
+        // Linked tools: the step's calculator and real pathology cases of this view.
+        if (calculator != null || cases.isNotEmpty()) {
+            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                calculator?.let { c ->
+                    SmallPill("∑ " + c.label.get(language), EchoNormal) { calculatorOpen = true }
+                }
+                if (cases.isNotEmpty()) {
+                    SmallPill(stringResource(R.string.pathology_title) + " (${cases.size})", EchoCritical) { pathologyOpen = true }
+                }
+            }
         }
         // Long instructions wrap inside the card; the card itself never pushes the page to scroll.
         Column(modifier = Modifier.weight(1f).verticalScroll(rememberScrollState())) {
@@ -1209,6 +1224,16 @@ private fun StepCard(view: EchoView, nav: StepNavigator, language: AppLanguage, 
             )
         }
         StepNavBar(nav)
+    }
+    if (calculatorOpen && calculator != null) {
+        FullScreenDialog(onDismiss = { calculatorOpen = false }) {
+            CalculatorBody(calculator, language, Modifier.weight(1f))
+        }
+    }
+    if (pathologyOpen) {
+        FullScreenDialog(onDismiss = { pathologyOpen = false }) {
+            PathologyGallery(protocol, cases, language, Modifier.weight(1f))
+        }
     }
     if (exampleOpen && step != null && step.examples.isNotEmpty()) {
         ExampleDialog(step.examples, step.title.get(language), language) { exampleOpen = false }

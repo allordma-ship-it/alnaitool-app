@@ -94,6 +94,7 @@ internal fun ValveAssessmentContent(
     val valve = protocol.valves.firstOrNull { it.id == valveId } ?: protocol.valves.firstOrNull() ?: return
     val checked = remember { mutableStateMapOf<String, Boolean>() }
     var exampleOpen by remember { mutableStateOf<Int?>(null) }
+    var pathologyOpen by remember { mutableStateOf<String?>(null) }
     val views = protocol.allViews.associateBy { it.id }
 
     Column(
@@ -203,11 +204,38 @@ internal fun ValveAssessmentContent(
                 }
             }
         }
+        val valveCases = protocol.pathologyForValve(valve.id)
+        if (valveCases.isNotEmpty()) {
+            ValveCard(stringResource(R.string.pathology_title)) {
+                Row(modifier = Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    valveCases.forEach { c ->
+                        Text(
+                            "▶ " + c.title.get(language),
+                            color = EchoSky,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(10.dp))
+                                .border(1.dp, EchoCritical.copy(alpha = 0.6f), RoundedCornerShape(10.dp))
+                                .clickable { pathologyOpen = c.id }
+                                .padding(horizontal = 10.dp, vertical = 6.dp)
+                        )
+                    }
+                }
+            }
+        }
         protocol.caseLibrary?.let { CaseLibrarySection(it, language) }
         Text(stringResource(R.string.valve_disclaimer), color = EchoMuted, style = MaterialTheme.typography.labelSmall)
         Spacer(Modifier.height(8.dp))
     }
 
+    pathologyOpen?.let { first ->
+        val cases = protocol.pathologyForValve(valve.id)
+        val ordered = cases.filter { it.id == first } + cases.filter { it.id != first }
+        FullScreenDialog(onDismiss = { pathologyOpen = null }) {
+            PathologyGallery(protocol, ordered, language, Modifier.weight(1f))
+        }
+    }
     exampleOpen?.let { start ->
         // Start the viewer on the tapped image.
         val ordered = valve.examples.drop(start) + valve.examples.take(start)
