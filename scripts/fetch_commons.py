@@ -85,7 +85,12 @@ def main(names):
         name = name.removeprefix("File:").strip()
         path = os.path.join(DIR, name)
         if not os.path.exists(path):
-            data = fetch(name)
+            try:
+                data = fetch(name)
+            except Exception as e:  # noqa: BLE001 – rate limited: leave it for the next run
+                print(f"SKIP {name}: {e}", flush=True)
+                time.sleep(120)
+                continue
             with open(path, "wb") as f:
                 f.write(data)
         if name in meta and not meta[name]["license"]:

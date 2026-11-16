@@ -230,6 +230,35 @@ class ProtocolDatabaseTest {
     }
 
     @Test
+    fun pathologyCasesHaveBundledLicensedMedia() {
+        assertTrue("pathology cases", protocol.pathology.size >= 6)
+        val viewIds = protocol.allViews.map { it.id }.toSet()
+        val valveIds = protocol.valves.map { it.id }.toSet()
+        val attribution = File(assetsDir, "commons/ATTRIBUTION.txt").readText()
+        protocol.pathology.forEach { c ->
+            assertTrue("${c.id} views", c.views.isNotEmpty() && viewIds.containsAll(c.views))
+            assertTrue("${c.id} valves", valveIds.containsAll(c.valves))
+            assertTrue("${c.id} media", c.media.isNotEmpty())
+            c.media.forEach { m ->
+                assertTrue("missing ${m.asset}", File(assetsDir, m.asset).isFile)
+                assertTrue("${m.asset} licence", m.license.isNotBlank() && m.credit.isNotBlank() && m.source.startsWith("https://"))
+                if (m.asset.startsWith("commons/") || m.asset.startsWith("pathology/")) {
+                    assertTrue("${m.asset} attribution", attribution.contains(m.asset))
+                }
+            }
+        }
+        // Requested Commons stills: TAPSE (A4C step + tricuspid valve) and ASD II (subcostal septum step).
+        val a4c = protocol.allViews.first { it.id == "apical_4c" }
+        assertTrue(a4c.steps.first { it.title.en == "TAPSE" }.examples.first().asset.contains("tapse"))
+        val sc = protocol.allViews.first { it.id == "subcostal_4c" }
+        assertTrue(sc.steps.first { it.title.en == "Interatrial septum" }.examples.first().asset.contains("atriumseptumdefekt"))
+        assertTrue(protocol.valves.first { it.id == "tricuspid" }.examples.any { it.asset.contains("tapse") })
+        // Every requested pathology group is offered somewhere.
+        val groups = protocol.pathology.map { it.group }.toSet()
+        assertTrue(groups.containsAll(listOf("aortic", "mitral", "tricuspid", "cardiomyopathy", "pericardium", "aorta")))
+    }
+
+    @Test
     fun realTracesAndCaseLibrary() {
         val traces = protocol.valves.flatMap { it.measurements }.mapNotNull { m -> m.trace?.let { m.id to it } }.toMap()
         assertTrue(traces.keys.containsAll(listOf("av_cw", "lvot_pw", "mv_pw", "tapse")))
@@ -330,7 +359,9 @@ class ProtocolDatabaseTest {
 
     @Test
     fun echocardiographerOrgImagesAreBundledAndCredited() {
+        // Commons stills (TAPSE, ASD) are credited separately (commons/ATTRIBUTION.txt, pathology test).
         val images = protocol.allViews.flatMap { v -> v.probeGallery + v.atlasGallery + v.steps.flatMap { it.examples } }
+            .filterNot { it.asset.startsWith("commons/") }
         assertTrue("gallery images", images.size >= 40)
         images.forEach { img ->
             assertTrue("missing ${img.asset}", File(assetsDir, img.asset).isFile)
@@ -371,7 +402,8 @@ class ProtocolDatabaseTest {
             }
             v.examples.forEach { img ->
                 assertTrue("missing ${img.asset}", File(assetsDir, img.asset).isFile)
-                assertTrue("${img.asset} not in ATTRIBUTION", attribution.contains(img.asset))
+                val credits = if (img.asset.startsWith("commons/")) File(assetsDir, "commons/ATTRIBUTION.txt").readText() else attribution
+                assertTrue("${img.asset} not in ATTRIBUTION", credits.contains(img.asset))
             }
         }
         // Severe aortic stenosis per EACVI/ASE 2017.

@@ -1,0 +1,54 @@
+Wikimedia Commons media used by EchoScope (scripts/integrate_pathology.py)
+
+Loops were converted to MP4 (H.264, no audio, max. 720p) and stills scaled to max. 1280 px.
+CC BY-SA content remains under CC BY-SA; CardioNetworks ECHOpedia files carry
+{{Cardionetworks permission}} = CC BY-SA 3.0 (Wikimedia OTRS ticket 2011102310008874).
+
+commons/apical_hcm_e00296.jpg
+  File: Apical HCM E00296 (CardioNetworks ECHOpedia).jpg
+  Author: CardioNetworks ECHOpedia (AMC Echolab, Amsterdam), via Wikimedia Commons
+  Licence: CC BY-SA 3.0
+  Source: https://commons.wikimedia.org/wiki/File:Apical_HCM_E00296_%28CardioNetworks_ECHOpedia%29.jpg
+
+commons/dilated_ascending_aorta_severe_aortic_regurgitation_e00448.jpg
+  File: Dilated ascending aorta, severe aortic regurgitation E00448 (CardioNetworks ECHOpedia).jpg
+  Author: CardioNetworks ECHOpedia (AMC Echolab, Amsterdam), via Wikimedia Commons
+  Licence: CC BY-SA 3.0
+  Source: https://commons.wikimedia.org/wiki/File:Dilated_ascending_aorta%2C_severe_aortic_regurgitation_E00448_%28CardioNetworks_ECHOpedia%29.jpg
+
+commons/dilated_cardiomyopathy_with_severe_mitral_valve_regurgitation_e00139.jpg
+  File: Dilated cardiomyopathy with severe mitral valve regurgitation E00139 (CardioNetworks ECHOpedia).jpg
+  Author: CardioNetworks ECHOpedia (AMC Echolab, Amsterdam), via Wikimedia Commons
+  Licence: CC BY-SA 3.0
+  Source: https://commons.wikimedia.org/wiki/File:Dilated_cardiomyopathy_with_severe_mitral_valve_regurgitation_E00139_%28CardioNetworks_ECHOpedia%29.jpg
+
+commons/echokardiogram_von_atriumseptumdefekt_ostium_secundum.jpg
+  File: Echokardiogram von Atriumseptumdefekt (Ostium secundum).jpg
+  Author: CardioNetworks ECHOpedia
+  Licence: Public domain
+  Source: https://commons.wikimedia.org/wiki/File:Echokardiogram_von_Atriumseptumdefekt_%28Ostium_secundum%29.jpg
+
+commons/echokardiographie_m_mode_4kb_tapse.jpg
+  File: Echokardiographie M-Mode 4KB TAPSE.jpg
+  Author: Wolff-BI
+  Licence: CC BY-SA 3.0
+  Source: https://commons.wikimedia.org/wiki/File:Echokardiographie_M-Mode_4KB_TAPSE.jpg
+
+commons/pericardial_effusion_e00676.jpg
+  File: Pericardial effusion E00676 (CardioNetworks ECHOpedia).jpg
+  Author: CardioNetworks ECHOpedia (AMC Echolab, Amsterdam), via Wikimedia Commons
+  Licence: CC BY-SA 3.0
+  Source: https://commons.wikimedia.org/wiki/File:Pericardial_effusion_E00676_%28CardioNetworks_ECHOpedia%29.jpg
+
+commons/severe_aortic_regurgitation_e00181.jpg
+  File: Severe aortic regurgitation E00181 (CardioNetworks ECHOpedia).jpg
+  Author: CardioNetworks ECHOpedia (AMC Echolab, Amsterdam), via Wikimedia Commons
+  Licence: CC BY-SA 3.0
+  Source: https://commons.wikimedia.org/wiki/File:Severe_aortic_regurgitation_E00181_%28CardioNetworks_ECHOpedia%29.jpg
+
+commons/severe_aortic_valve_stenosis_e00264.jpg
+  File: Severe aortic valve stenosis E00264 (CardioNetworks ECHOpedia).jpg
+  Author: CardioNetworks ECHOpedia (AMC Echolab, Amsterdam), via Wikimedia Commons
+  Licence: CC BY-SA 3.0
+  Source: https://commons.wikimedia.org/wiki/File:Severe_aortic_valve_stenosis_E00264_%28CardioNetworks_ECHOpedia%29.jpg
+

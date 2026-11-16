@@ -602,7 +602,7 @@ internal fun AboutDialog(view: EchoView?, language: AppLanguage, onDismiss: () -
                                 style = MaterialTheme.typography.bodySmall)
                         }
                         // Pathology cases and Commons stills of this view, each with author and licence.
-                        (cases.map { "${it.title.get(language)}: © ${it.credit} (${it.license})" } +
+                        (cases.flatMap { c -> c.media.map { "${c.title.get(language)} – ${it.caption.get(language)}: © ${it.credit} (${it.license})" } } +
                             view.steps.flatMap { it.examples }.filter { it.source?.contains("wikimedia") == true }
                                 .map { "${it.caption.get(language)}: © ${it.credit}" }).distinct().forEach { line ->
                             Text("• $line", color = EchoText, style = MaterialTheme.typography.bodySmall)

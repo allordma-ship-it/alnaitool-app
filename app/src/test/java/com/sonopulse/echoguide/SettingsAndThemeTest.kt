@@ -3,12 +3,15 @@ package com.sonopulse.echoguide
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.test.core.app.ApplicationProvider
@@ -103,5 +106,33 @@ class SettingsAndThemeTest {
         compose.onNodeWithText("خماسي الحجرات").assertExists()
         System.setProperty("roborazzi.test.record", "true")
         compose.onRoot().captureRoboImage("build/cockpit-screens/cockpit_light_ar_a5c.png")
+    }
+
+    @Test
+    @Config(qualifiers = "w400dp-h1000dp-xxhdpi")
+    fun pathologyGalleryForAorticValve() {
+        val protocol = runBlocking {
+            (EchoRepository.load(ApplicationProvider.getApplicationContext()) as ProtocolState.Ready).protocol
+        }
+        val cases = protocol.pathologyForValve("aortic")
+        compose.mainClock.autoAdvance = false
+        compose.setContent {
+            CompositionLocalProvider(LocalVideoSurfaceEnabled provides false) {
+                EchoScopeTheme(colors = DarkEchoColors, language = AppLanguage.DE) {
+                    LocalizedRoot(AppLanguage.DE) {
+                        Column(Modifier.fillMaxSize().padding(12.dp)) {
+                            PathologyGallery(protocol, cases.sortedBy { it.id != "as_severe" }, AppLanguage.DE, Modifier.weight(1f))
+                        }
+                    }
+                }
+            }
+        }
+        repeat(10) {
+            Thread.sleep(150)
+            compose.mainClock.advanceTimeBy(300)
+        }
+        assertEquals(2, compose.onAllNodesWithText("Hochgradige Aortenklappenstenose").fetchSemanticsNodes().size)  // chip + title
+        System.setProperty("roborazzi.test.record", "true")
+        compose.onRoot().captureRoboImage("build/cockpit-screens/pathology_aortic_de.png")
     }
 }

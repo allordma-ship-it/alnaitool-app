@@ -74,9 +74,9 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
                 is ProtocolState.Ready -> withContext(Dispatchers.IO) {
                     val p = state.protocol
                     val loops = (p.allViews.map { it.videoAsset } + p.colorLoops.values.map { it.asset } +
-                        p.pathology.mapNotNull { it.loop }).distinct()
+                        p.pathology.flatMap { c -> c.media.filter { it.isLoop }.map { it.asset } }).distinct()
                     val images = (p.allViews.flatMap { v -> v.schemaGallery.map { it.asset } + v.steps.flatMap { s -> s.examples.map { it.asset } } } +
-                        p.pathology.flatMap { c -> c.images.map { it.asset } }).distinct()
+                        p.pathology.flatMap { c -> c.media.filterNot { it.isLoop }.map { it.asset } }).distinct()
                     val missing = (loops + images).filterNot { EchoRepository.assetExists(app, it) }
                     if (missing.isNotEmpty()) {
                         DatabaseStatus.Error("${missing.size} missing: ${missing.take(3).joinToString()}")

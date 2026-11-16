@@ -18,6 +18,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
@@ -84,42 +87,44 @@ fun PathologyGallery(protocol: EchoProtocol, cases: List<PathologyCase>, languag
             }
         }
         Text(case.title.get(language), color = EchoPrimary, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-        // Media: the loop first, then the still images.
-        val media = listOfNotNull(case.loop) + case.images.map { it.asset }
+        // Media: real loops first, then the still images; each with its own credit and licence.
+        val media = case.media
         val index = imageIndex.coerceIn(0, (media.size - 1).coerceAtLeast(0))
-        if (media.isNotEmpty()) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(case.images.getOrNull(index - if (case.loop != null) 1 else 0)?.aspect ?: (4f / 3f))
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(Color.Black)
-            ) {
-                val asset = media[index]
-                if (asset.endsWith(".mp4")) {
-                    key(asset) {
-                        val player = rememberEchoPlayer()
-                        val loop = rememberLoopState(player, asset)
-                        LoopBox(player, loop, asset, attached = true, modifier = Modifier.matchParentSize())
+        val item = media.getOrNull(index)
+        if (item != null) {
+            // Imaging keeps its left-to-right orientation in Arabic.
+            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(item.aspect.coerceIn(0.6f, 2.2f))
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(Color.Black)
+                ) {
+                    if (item.isLoop) {
+                        key(item.asset) {
+                            val player = rememberEchoPlayer()
+                            val loop = rememberLoopState(player, item.asset)
+                            LoopBox(player, loop, item.asset, attached = true, modifier = Modifier.matchParentSize())
+                        }
+                    } else {
+                        AsyncImage(
+                            model = ImageRequest.Builder(LocalContext.current).data("file:///android_asset/${item.asset}").build(),
+                            contentDescription = item.caption.get(language),
+                            contentScale = ContentScale.Fit,
+                            modifier = Modifier.matchParentSize()
+                        )
                     }
-                } else {
-                    AsyncImage(
-                        model = ImageRequest.Builder(LocalContext.current).data("file:///android_asset/$asset").build(),
-                        contentDescription = case.title.get(language),
-                        contentScale = ContentScale.Fit,
-                        modifier = Modifier.fillMaxWidth()
-                    )
                 }
             }
             if (media.size > 1) {
-                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                    media.indices.forEach { i ->
-                        val label = if (media[i].endsWith(".mp4")) "▶ Loop" else
-                            case.images[i - if (case.loop != null) 1 else 0].caption.get(language)
+                Row(modifier = Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    media.forEachIndexed { i, m ->
                         Text(
-                            label,
+                            (if (m.isLoop) "▶ " else "▣ ") + m.caption.get(language),
                             fontSize = 11.sp,
                             color = if (i == index) Color.White else EchoMuted,
+                            maxLines = 1,
                             modifier = Modifier
                                 .clip(RoundedCornerShape(8.dp))
                                 .background(if (i == index) EchoPrimaryFill else EchoSurface)
@@ -129,15 +134,16 @@ fun PathologyGallery(protocol: EchoProtocol, cases: List<PathologyCase>, languag
                     }
                 }
             }
+            Text("© ${item.credit} · ${item.license}", color = EchoMuted, style = MaterialTheme.typography.labelSmall)
+            Text(
+                item.source,
+                color = EchoSky.copy(alpha = 0.8f),
+                style = MaterialTheme.typography.labelSmall,
+                maxLines = 1,
+                modifier = Modifier.clickable { runCatching { uri.openUri(item.source) } }
+            )
         }
         Text(case.findings.get(language), color = EchoText, style = MaterialTheme.typography.bodyMedium)
-        Text("© ${case.credit} · ${case.license}", color = EchoMuted, style = MaterialTheme.typography.labelSmall)
-        Text(
-            case.source,
-            color = EchoSky.copy(alpha = 0.8f),
-            style = MaterialTheme.typography.labelSmall,
-            modifier = Modifier.clickable { runCatching { uri.openUri(case.source) } }
-        )
         case.onlineUrl?.let { url ->
             Row(
                 modifier = Modifier

@@ -331,7 +331,20 @@
                   0.47,
                   0.84
                 ]
-              }
+              },
+              "examples": [
+                {
+                  "asset": "commons/echokardiogram_von_atriumseptumdefekt_ostium_secundum.jpg",
+                  "aspect": 1.4662,
+                  "caption": {
+                    "en": "Pathology: ASD II (secundum)",
+                    "de": "Pathologie: ASD II (Sekundum)",
+                    "ar": "حالة مرضية: ASD II"
+                  },
+                  "credit": "CardioNetworks ECHOpedia (Public domain)",
+                  "source": "https://commons.wikimedia.org/wiki/File:Echokardiogram_von_Atriumseptumdefekt_%28Ostium_secundum%29.jpg"
+                }
+              ]
             },
             {
               "title": {
@@ -3604,6 +3617,17 @@
                 ]
               },
               "examples": [
+                {
+                  "asset": "commons/echokardiographie_m_mode_4kb_tapse.jpg",
+                  "aspect": 1.435,
+                  "caption": {
+                    "en": "TAPSE 31 mm (M-mode, normal ≥ 17 mm)",
+                    "de": "TAPSE 31 mm (M-Mode, normal ≥ 17 mm)",
+                    "ar": "TAPSE ‏31 ملم (نمط M، طبيعي ≥ 17 ملم)"
+                  },
+                  "credit": "Wolff-BI (CC BY-SA 3.0)",
+                  "source": "https://commons.wikimedia.org/wiki/File:Echokardiographie_M-Mode_4KB_TAPSE.jpg"
+                },
                 {
                   "asset": "echoorg/apical4_12.jpg",
                   "aspect": 1.4793,
@@ -8106,6 +8130,17 @@
             "de": "VCI im M-Mode: Exspiration vs. Inspiration",
             "ar": "الوريد الأجوف بنمط M: زفير مقابل شهيق"
           }
+        },
+        {
+          "asset": "commons/echokardiographie_m_mode_4kb_tapse.jpg",
+          "aspect": 1.435,
+          "caption": {
+            "en": "RV function: TAPSE M-mode (normal ≥ 17 mm)",
+            "de": "RV-Funktion: TAPSE im M-Mode (normal ≥ 17 mm)",
+            "ar": "وظيفة البطين الأيمن: TAPSE (طبيعي ≥ 17 ملم)"
+          },
+          "credit": "Wolff-BI (CC BY-SA 3.0)",
+          "source": "https://commons.wikimedia.org/wiki/File:Echokardiographie_M-Mode_4KB_TAPSE.jpg"
         }
       ],
       "measurements": [
@@ -8999,5 +9034,347 @@
         ]
       }
     ]
-  }
+  },
+  "pathology": [
+    {
+      "id": "as_severe",
+      "group": "aortic",
+      "title": {
+        "en": "Severe aortic stenosis",
+        "de": "Hochgradige Aortenklappenstenose",
+        "ar": "تضيق أبهري شديد"
+      },
+      "findings": {
+        "en": "Calcified, thickened cusps with restricted opening (normal: thin cusps opening to the aortic walls). CW: Vmax ≥ 4 m/s, mean gradient ≥ 40 mmHg, AVA < 1.0 cm² (continuity equation – see Rechner).",
+        "de": "Verkalkte, verdickte Taschen mit eingeschränkter Öffnung (normal: zarte Taschen, die bis an die Aortenwand öffnen). CW: Vmax ≥ 4 m/s, mittlerer Gradient ≥ 40 mmHg, KÖF < 1,0 cm² (Kontinuitätsgleichung – siehe Rechner).",
+        "ar": "وريقات متكلسة سميكة محدودة الانفتاح (الطبيعي: وريقات رقيقة تنفتح حتى جدار الأبهر). CW: سرعة قصوى ≥ 4 م/ث، مدروج وسطي ≥ 40 ملم زئبق، مساحة < 1.0 سم² (معادلة الاستمرارية – انظر الحاسبات)."
+      },
+      "views": [
+        "plax_standard",
+        "psax_av",
+        "apical_5c",
+        "apical_3c"
+      ],
+      "valves": [
+        "aortic"
+      ],
+      "media": [
+        {
+          "asset": "commons/severe_aortic_valve_stenosis_e00264.jpg",
+          "aspect": 1.2549,
+          "caption": {
+            "en": "CW: Vmax 6.8 m/s, mean PG 119 mmHg",
+            "de": "CW: Vmax 6,8 m/s, mittlerer PG 119 mmHg",
+            "ar": "CW: سرعة 6.8 م/ث، مدروج وسطي 119"
+          },
+          "credit": "CardioNetworks ECHOpedia (AMC Echolab, Amsterdam), via Wikimedia Commons",
+          "license": "CC BY-SA 3.0",
+          "source": "https://commons.wikimedia.org/wiki/File:Severe_aortic_valve_stenosis_E00264_%28CardioNetworks_ECHOpedia%29.jpg"
+        }
+      ]
+    },
+    {
+      "id": "ar",
+      "group": "aortic",
+      "title": {
+        "en": "Aortic regurgitation",
+        "de": "Aortenklappeninsuffizienz",
+        "ar": "قلس الصمام الأبهري"
+      },
+      "findings": {
+        "en": "Diastolic colour jet from the aortic valve into the LVOT. Severe: vena contracta > 6 mm, jet width ≥ 65 % of LVOT, PHT < 200 ms, holodiastolic flow reversal in the descending aorta, dilated LV.",
+        "de": "Diastolischer Farbjet von der Aortenklappe in den LVOT. Schwer: Vena contracta > 6 mm, Jetbreite ≥ 65 % des LVOT, PHT < 200 ms, holodiastolischer Rückfluss in der Aorta descendens, dilatierter LV.",
+        "ar": "نفث ملوّن انبساطي من الصمام الأبهري إلى LVOT. شديد: Vena contracta > 6 ملم، عرض النفث ≥ 65% من LVOT، PHT < 200 ms، جريان عكسي شامل في الأبهر النازل، توسّع البطين الأيسر."
+      },
+      "views": [
+        "plax_standard",
+        "apical_5c",
+        "apical_3c",
+        "suprasternal_arch"
+      ],
+      "valves": [
+        "aortic"
+      ],
+      "media": [
+        {
+          "asset": "loops/color/plax_color.mp4",
+          "aspect": 1.3333,
+          "caption": {
+            "en": "Colour: moderate AR (PLAX)",
+            "de": "Farbe: mittelgradige AI (PLAX)",
+            "ar": "ملوّن: قلس متوسط (PLAX)"
+          },
+          "credit": "Justin Bowra MBBS, FACEM, CCPU (RNSH) et al. (Dr. Giles, Dr. Jacob)",
+          "license": "CC BY-NC 4.0",
+          "source": "https://www.thepocusatlas.com/valvulopathy"
+        },
+        {
+          "asset": "loops/color/a5c_av_color.mp4",
+          "aspect": 1.3333,
+          "caption": {
+            "en": "Colour: mild AR (A5C)",
+            "de": "Farbe: leichte AI (5K)",
+            "ar": "ملوّن: قلس خفيف (A5C)"
+          },
+          "credit": "Justin Bowra MBBS, FACEM, CCPU (RNSH) et al. (Dr. Mo Haywood)",
+          "license": "CC BY-NC 4.0",
+          "source": "https://www.thepocusatlas.com/valvulopathy"
+        },
+        {
+          "asset": "commons/severe_aortic_regurgitation_e00181.jpg",
+          "aspect": 1.2549,
+          "caption": {
+            "en": "M-mode: severe AR",
+            "de": "M-Mode: schwere AI",
+            "ar": "نمط M: قلس شديد"
+          },
+          "credit": "CardioNetworks ECHOpedia (AMC Echolab, Amsterdam), via Wikimedia Commons",
+          "license": "CC BY-SA 3.0",
+          "source": "https://commons.wikimedia.org/wiki/File:Severe_aortic_regurgitation_E00181_%28CardioNetworks_ECHOpedia%29.jpg"
+        }
+      ]
+    },
+    {
+      "id": "mr",
+      "group": "mitral",
+      "title": {
+        "en": "Mitral regurgitation",
+        "de": "Mitralklappeninsuffizienz",
+        "ar": "قلس الصمام التاجي"
+      },
+      "findings": {
+        "en": "Systolic colour jet into the LA. Severe: vena contracta ≥ 7 mm, EROA ≥ 0.4 cm², jet > 50 % of the LA, systolic flow reversal in the pulmonary veins. Look for the mechanism: flail / prolapse (primary) or tenting in a dilated LV (secondary).",
+        "de": "Systolischer Farbjet in den LA. Schwer: Vena contracta ≥ 7 mm, EROA ≥ 0,4 cm², Jet > 50 % des LA, systolische Flussumkehr in den Pulmonalvenen. Mechanismus suchen: Flail / Prolaps (primär) oder Tenting bei dilatiertem LV (sekundär).",
+        "ar": "نفث ملوّن انقباضي إلى الأذين الأيسر. شديد: Vena contracta ≥ 7 ملم، EROA ≥ 0.4 سم²، النفث > 50% من الأذين، انعكاس انقباضي في الأوردة الرئوية. ابحث عن الآلية: سائبة/هبوط (أولي) أو شدّ الوريقات مع توسّع البطين (ثانوي)."
+      },
+      "views": [
+        "apical_4c",
+        "apical_2c",
+        "apical_3c",
+        "plax_standard"
+      ],
+      "valves": [
+        "mitral"
+      ],
+      "media": [
+        {
+          "asset": "loops/color/a4c_mv_color.mp4",
+          "aspect": 1.2996,
+          "caption": {
+            "en": "Colour: moderate MR (A4C)",
+            "de": "Farbe: mittelgradige MI (4K)",
+            "ar": "ملوّن: قلس تاجي متوسط"
+          },
+          "credit": "Sukh Singh, MD",
+          "license": "CC BY-NC 4.0",
+          "source": "https://www.thepocusatlas.com/valvulopathy"
+        },
+        {
+          "asset": "commons/dilated_cardiomyopathy_with_severe_mitral_valve_regurgitation_e00139.jpg",
+          "aspect": 1.2549,
+          "caption": {
+            "en": "Severe MR (still)",
+            "de": "Schwere MI (Standbild)",
+            "ar": "قلس شديد (صورة)"
+          },
+          "credit": "CardioNetworks ECHOpedia (AMC Echolab, Amsterdam), via Wikimedia Commons",
+          "license": "CC BY-SA 3.0",
+          "source": "https://commons.wikimedia.org/wiki/File:Dilated_cardiomyopathy_with_severe_mitral_valve_regurgitation_E00139_%28CardioNetworks_ECHOpedia%29.jpg"
+        }
+      ]
+    },
+    {
+      "id": "tr_ph",
+      "group": "tricuspid",
+      "title": {
+        "en": "Tricuspid regurgitation / cor pulmonale",
+        "de": "Trikuspidalinsuffizienz / Cor pulmonale",
+        "ar": "قلس ثلاثي الشرف / القلب الرئوي"
+      },
+      "findings": {
+        "en": "Colour jet into the RA; dilated RV and RA, D-shaped LV in pressure overload, plethoric IVC. TR Vmax > 3.4 m/s → high probability of pulmonary hypertension (sPAP = 4·V² + RAP – see Rechner). TAPSE < 17 mm = RV dysfunction.",
+        "de": "Farbjet in den RA; dilatierter RV und RA, D-förmiger LV bei Drucklast, gestaute VCI. TR-Vmax > 3,4 m/s → hohe PH-Wahrscheinlichkeit (sPAP = 4·V² + ZVD – siehe Rechner). TAPSE < 17 mm = RV-Dysfunktion.",
+        "ar": "نفث ملوّن إلى الأذين الأيمن؛ توسّع البطين والأذين الأيمنين، بطين أيسر على شكل D عند زيادة الضغط، وريد أجوف ممتلئ. سرعة TR > 3.4 م/ث → احتمال مرتفع لارتفاع الضغط الرئوي (sPAP = 4·V² + RAP – انظر الحاسبات). TAPSE < 17 ملم = خلل البطين الأيمن."
+      },
+      "views": [
+        "apical_4c",
+        "psax_av",
+        "psax_papillary",
+        "subcostal_4c",
+        "subcostal_ivc"
+      ],
+      "valves": [
+        "tricuspid",
+        "pulmonary"
+      ],
+      "media": [
+        {
+          "asset": "loops/color/a4c_tv_color.mp4",
+          "aspect": 1.3333,
+          "caption": {
+            "en": "Colour: mod.–severe TR (A4C)",
+            "de": "Farbe: mittel- bis hochgradige TI (4K)",
+            "ar": "ملوّن: قلس متوسط–شديد"
+          },
+          "credit": "Justin Bowra MBBS, FACEM, CCPU (RNSH) et al.",
+          "license": "CC BY-NC 4.0",
+          "source": "https://www.thepocusatlas.com/valvulopathy"
+        },
+        {
+          "asset": "commons/echokardiographie_m_mode_4kb_tapse.jpg",
+          "aspect": 1.435,
+          "caption": {
+            "en": "TAPSE M-mode (normal ≥ 17 mm)",
+            "de": "TAPSE im M-Mode (normal ≥ 17 mm)",
+            "ar": "TAPSE بنمط M (طبيعي ≥ 17 ملم)"
+          },
+          "credit": "Wolff-BI",
+          "license": "CC BY-SA 3.0",
+          "source": "https://commons.wikimedia.org/wiki/File:Echokardiographie_M-Mode_4KB_TAPSE.jpg"
+        }
+      ],
+      "onlineUrl": "https://youtu.be/ZfDsbq0lPbs"
+    },
+    {
+      "id": "apical_hcm",
+      "group": "cardiomyopathy",
+      "title": {
+        "en": "Apical hypertrophic cardiomyopathy",
+        "de": "Apikale hypertrophe Kardiomyopathie",
+        "ar": "اعتلال عضلة القلب الضخامي القمي"
+      },
+      "findings": {
+        "en": "Apical wall thickness ≥ 15 mm with an 'ace-of-spades' LV cavity in diastole and apical obliteration in systole (normal: apex thinner than the base). Use contrast if the apex is not seen; CW may show a mid-cavity gradient.",
+        "de": "Apikale Wanddicke ≥ 15 mm mit „Pik-As“-förmigem LV-Cavum in der Diastole und apikaler Obliteration in der Systole (normal: Apex dünner als die Basis). Bei schlecht sichtbarem Apex Kontrastmittel; CW zeigt evtl. einen mittventrikulären Gradienten.",
+        "ar": "سماكة الجدار القمي ≥ 15 ملم مع تجويف على شكل «بستوني» في الانبساط وانطماس القمة في الانقباض (الطبيعي: القمة أرقّ من القاعدة). استخدم التباين إذا لم تظهر القمة؛ قد يُظهر CW مدروجاً في منتصف التجويف."
+      },
+      "views": [
+        "apical_4c",
+        "apical_2c",
+        "apical_3c"
+      ],
+      "valves": [],
+      "media": [
+        {
+          "asset": "commons/apical_hcm_e00296.jpg",
+          "aspect": 1.2549,
+          "caption": {
+            "en": "CW: mid-cavity gradient 3.2 m/s",
+            "de": "CW: mittventrikulärer Gradient 3,2 m/s",
+            "ar": "CW: مدروج منتصف التجويف 3.2 م/ث"
+          },
+          "credit": "CardioNetworks ECHOpedia (AMC Echolab, Amsterdam), via Wikimedia Commons",
+          "license": "CC BY-SA 3.0",
+          "source": "https://commons.wikimedia.org/wiki/File:Apical_HCM_E00296_%28CardioNetworks_ECHOpedia%29.jpg"
+        }
+      ],
+      "onlineUrl": "https://youtu.be/0qCunmLcQG0"
+    },
+    {
+      "id": "pericardial_effusion",
+      "group": "pericardium",
+      "title": {
+        "en": "Pericardial effusion / tamponade",
+        "de": "Perikarderguss / Tamponade",
+        "ar": "انصباب التامور / الدكاك"
+      },
+      "findings": {
+        "en": "Echo-free space around the heart (measure in diastole: small < 10 mm, moderate 10–20 mm, large > 20 mm). Tamponade: RA systolic and RV diastolic collapse, plethoric IVC without collapse, respiratory variation of mitral E > 25 % / tricuspid E > 40 %.",
+        "de": "Echofreier Saum um das Herz (in der Diastole messen: klein < 10 mm, mittel 10–20 mm, groß > 20 mm). Tamponade: systolischer RA- und diastolischer RV-Kollaps, gestaute VCI ohne Kollaps, atemabhängige Variation von Mitral-E > 25 % / Trikuspidal-E > 40 %.",
+        "ar": "فراغ خالٍ من الصدى حول القلب (يُقاس في الانبساط: صغير < 10 ملم، متوسط 10–20، كبير > 20). الدكاك: انخماص الأذين الأيمن انقباضياً والبطين الأيمن انبساطياً، وريد أجوف ممتلئ لا ينخمص، تغيّر تنفسي لموجة E التاجية > 25% / ثلاثية الشرف > 40%."
+      },
+      "views": [
+        "subcostal_4c",
+        "subcostal_ivc",
+        "plax_standard",
+        "psax_papillary",
+        "apical_4c"
+      ],
+      "valves": [],
+      "media": [
+        {
+          "asset": "commons/pericardial_effusion_e00676.jpg",
+          "aspect": 1.2549,
+          "caption": {
+            "en": "Respiratory variation of inflow",
+            "de": "Atemvariation des Einstroms",
+            "ar": "التغيّر التنفسي للتدفق"
+          },
+          "credit": "CardioNetworks ECHOpedia (AMC Echolab, Amsterdam), via Wikimedia Commons",
+          "license": "CC BY-SA 3.0",
+          "source": "https://commons.wikimedia.org/wiki/File:Pericardial_effusion_E00676_%28CardioNetworks_ECHOpedia%29.jpg"
+        }
+      ],
+      "onlineUrl": "https://youtu.be/OTchgKs9eZs"
+    },
+    {
+      "id": "aortic_aneurysm",
+      "group": "aorta",
+      "title": {
+        "en": "Ascending aortic aneurysm with AR",
+        "de": "Aneurysma der Aorta ascendens mit AI",
+        "ar": "أم دم الأبهر الصاعد مع قلس أبهري"
+      },
+      "findings": {
+        "en": "Dilated sinuses / ascending aorta (normal ≤ 40 mm; aneurysm ≥ 45–50 mm, index to BSA – see Z-Score) with central AR from annular dilatation. Measure leading-edge to leading-edge in end-diastole, perpendicular to the axis (PLAX, higher intercostal space).",
+        "de": "Dilatierte Sinus / Aorta ascendens (normal ≤ 40 mm; Aneurysma ≥ 45–50 mm, auf KOF beziehen – siehe Z-Score) mit zentraler AI durch Anulusdilatation. Enddiastolisch, leading edge zu leading edge, senkrecht zur Achse messen (PLAX, einen ICR höher).",
+        "ar": "توسّع الجيوب / الأبهر الصاعد (الطبيعي ≤ 40 ملم؛ أم الدم ≥ 45–50 ملم، يُنسب لمساحة الجسم – انظر Z-Score) مع قلس مركزي بسبب توسّع الحلقة. يُقاس نهاية الانبساط من الحافة الأمامية للأمامية عمودياً على المحور (PLAX، مسافة وربية أعلى)."
+      },
+      "views": [
+        "plax_standard",
+        "suprasternal_arch"
+      ],
+      "valves": [
+        "aortic"
+      ],
+      "media": [
+        {
+          "asset": "commons/dilated_ascending_aorta_severe_aortic_regurgitation_e00448.jpg",
+          "aspect": 1.2549,
+          "caption": {
+            "en": "Still",
+            "de": "Standbild",
+            "ar": "صورة"
+          },
+          "credit": "CardioNetworks ECHOpedia (AMC Echolab, Amsterdam), via Wikimedia Commons",
+          "license": "CC BY-SA 3.0",
+          "source": "https://commons.wikimedia.org/wiki/File:Dilated_ascending_aorta%2C_severe_aortic_regurgitation_E00448_%28CardioNetworks_ECHOpedia%29.jpg"
+        }
+      ],
+      "onlineUrl": "https://youtu.be/OFwCgGKxgQA"
+    },
+    {
+      "id": "asd_secundum",
+      "group": "congenital",
+      "title": {
+        "en": "Atrial septal defect (secundum, ASD II)",
+        "de": "Vorhofseptumdefekt (Sekundum, ASD II)",
+        "ar": "عيب الحاجز الأذيني (الثانوي)"
+      },
+      "findings": {
+        "en": "Gap in the mid (fossa ovalis) portion of the interatrial septum, best seen subcostally (beam perpendicular to the septum; apical views cause 'drop-out'). Colour: left-to-right shunt across the defect; volume-loaded RV and RA, Qp:Qs > 1.5.",
+        "de": "Lücke im mittleren Septumanteil (Fossa ovalis), am besten subkostal (Schallstrahl senkrecht zum Septum; apikal entstehen „Drop-outs“). Farbe: Links-rechts-Shunt über den Defekt; volumenbelasteter RV und RA, Qp:Qs > 1,5.",
+        "ar": "فجوة في الجزء الأوسط من الحاجز الأذيني (الحفرة البيضوية)، تُرى أفضل تحت الضلع (الحزمة عمودية على الحاجز؛ في المقاطع القمية يحدث «انقطاع» كاذب). الملوّن: تحويلة من اليسار لليمين عبر العيب؛ تحميل حجمي للبطين والأذين الأيمنين، Qp:Qs > 1.5."
+      },
+      "views": [
+        "subcostal_4c",
+        "apical_4c"
+      ],
+      "valves": [],
+      "media": [
+        {
+          "asset": "commons/echokardiogram_von_atriumseptumdefekt_ostium_secundum.jpg",
+          "aspect": 1.4662,
+          "caption": {
+            "en": "ASD II (subcostal)",
+            "de": "ASD II (subkostal)",
+            "ar": "ASD II (تحت الضلع)"
+          },
+          "credit": "CardioNetworks ECHOpedia",
+          "license": "Public domain",
+          "source": "https://commons.wikimedia.org/wiki/File:Echokardiogram_von_Atriumseptumdefekt_%28Ostium_secundum%29.jpg"
+        }
+      ]
+    }
+  ]
 }

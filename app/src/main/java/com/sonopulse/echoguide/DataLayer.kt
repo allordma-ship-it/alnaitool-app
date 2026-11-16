@@ -446,8 +446,8 @@ object EchoRepository {
 }
 
 /**
- * One pathology example: a real cine [loop] (assets/pathology/, mp4) and / or still [images], the
- * views and valves it belongs to, what to look for, and its licence (shown with every case).
+ * One pathology example: real cine loops and still images ([media], each with its own author and
+ * licence), the views and valves it belongs to, and what to look for compared with normal.
  */
 @Serializable
 data class PathologyCase(
@@ -458,11 +458,20 @@ data class PathologyCase(
     val findings: LocalizedText,
     val views: List<String> = emptyList(),
     val valves: List<String> = emptyList(),
-    val loop: String? = null,
-    val images: List<GalleryImage> = emptyList(),
-    val credit: String,
-    val license: String,
-    val source: String,
+    val media: List<CaseMedia> = emptyList(),
     /** Optional further online video (Echocardiographer.org Image Library). */
     val onlineUrl: String? = null
 )
+
+/** A loop (assets/pathology, mp4) or still image of a [PathologyCase]. */
+@Serializable
+data class CaseMedia(
+    val asset: String,
+    val aspect: Float,
+    val caption: LocalizedText,
+    val credit: String,
+    val license: String,
+    val source: String
+) {
+    val isLoop: Boolean get() = asset.endsWith(".mp4")
+}
