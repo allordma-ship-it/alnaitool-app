@@ -16,9 +16,16 @@ Run after scripts/integrate_library.py.
 
 import json
 import os
+import sys
+
+from PIL import Image
+
+sys.path.insert(0, os.path.dirname(__file__))
+import schema_raster as sr  # noqa: E402  (ES warp)
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-DB = os.path.join(ROOT, "app", "src", "main", "assets", "echo_protocol_full.json")
+ASSETS = os.path.join(ROOT, "app", "src", "main", "assets")
+DB = os.path.join(ASSETS, "echo_protocol_full.json")
 CW_FOCUS = 0.82
 
 
@@ -37,8 +44,9 @@ A4C_TIP, A5C_TIP, A3C_TIP, PSAX_TIP = (0.40, 0.17), (0.41, 0.15), (0.38, 0.17), 
 
 SCHEMA = {
     "subcostal_4c": {
-        "Color · IAS": [0.22, 0.64, 0.47, 0.84],             # atrial septum between RA and LA
-        "Pericardium": [0.50, 0.45, 0.50, 0.485],            # in front of the RV free wall
+        # subcostal_4c = reference SVG (1000 x 900): RA/RV above, LA/LV below the septum
+        "Color · IAS": [0.18, 0.53, 0.45, 0.68],             # interatrial septum between RA and LA
+        "Pericardium": [0.55, 0.375, 0.55, 0.425],           # pericardium in front of the RV free wall
     },
     "subcostal_ivc": {
         "IVC": ivc([0.555, 0.583, 0.536, 0.652]),
@@ -64,7 +72,7 @@ SCHEMA = {
     },
     "apical_4c": {
         "LV length (EDV)": [0.45, 0.255, 0.57, 0.66],        # apex -> mid mitral annulus
-        "M-mode · TAPSE": [A4C_TIP[0], A4C_TIP[1], 0.18, 0.645],   # lateral tricuspid annulus
+        "M-mode · TAPSE": [A4C_TIP[0], A4C_TIP[1], 0.185, 0.635],  # lateral tricuspid annulus, RV free wall
         "RVD1": [0.225, 0.565, 0.31, 0.565],                    # basal RV
         "PW · E/A": [A4C_TIP[0], A4C_TIP[1], 0.57, 0.62],    # mitral leaflet tips
         "e' septal": [A4C_TIP[0], A4C_TIP[1], 0.44, 0.665],
@@ -91,8 +99,8 @@ SCHEMA = {
         "CW · DAo": cw((0.30, 0.15), (0.61, 0.66)),
     },
 }
-# systolic eccentricity: smaller cavity on the same drawing
-ES = {("psax_papillary", "D1"): [0.47, 0.44, 0.47, 0.71], ("psax_papillary", "D2"): [0.365, 0.645, 0.585, 0.645]}
+# End-systolic steps are measured on the ES drawing (scripts/schema_raster.py warps the LV cavity
+# to 72 %): their end-diastolic positions are moved with the same warp.
 
 
 def main():
@@ -104,8 +112,11 @@ def main():
             for st in view["steps"]:
                 for o in ([st["caliperOverlay"]] if st.get("caliperOverlay") else []) + st.get("extraOverlays", []):
                     coords = SCHEMA[view["id"]][o["label"]]
-                    if st.get("requiredPhase") == "ES":
-                        coords = ES.get((view["id"], o["label"]), coords)
+                    if st.get("requiredPhase") == "ES" and view["id"] in sr.LV_PARAMS:
+                        W, H = Image.open(os.path.join(ASSETS, f"schema/{view['id']}_dark.webp")).size
+                        x0, y0 = sr.to_systolic_point(view["id"], W, H, coords[0], coords[1])
+                        x1, y1 = sr.to_systolic_point(view["id"], W, H, coords[2], coords[3])
+                        coords = [x0, y0, x1, y1]
                     o["schema"] = [round(c, 3) for c in coords]
                     n += 1
     with open(DB, "w", encoding="utf-8") as f:

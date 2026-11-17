@@ -116,7 +116,6 @@ fun ViewCockpit(
     var videoOverlay by rememberSaveable { mutableStateOf(false) }
     var diagramOverlay by rememberSaveable { mutableStateOf(false) }
     var referenceOpen by rememberSaveable { mutableStateOf(false) }
-    var valvesOpen by rememberSaveable { mutableStateOf(false) }
     val checked = remember { mutableStateMapOf<String, Boolean>() }
     val (caliperOn, toggleCaliper) = rememberCaliperEnabled()
     val step = navigator.step
@@ -181,7 +180,6 @@ fun ViewCockpit(
             SlimTopBar(
                 title = view.title.get(language),
                 onBack = onBack,
-                onValves = if (protocol.valves.isNotEmpty()) ({ valvesOpen = true }) else null,
                 onDrawer = { scope.launch { drawerState.open() } }
             )
             // Apical views as separate, isolated views: 2- / 3- / 4- / 5-chamber pills switch between
@@ -276,24 +274,9 @@ fun ViewCockpit(
         ) { videoOverlay = false }
     }
     if (diagramOverlay) {
-        DiagramOverlay(view, step, caliperOn, toggleCaliper, diagramMode, modes, selectMode, diagramPage, selectPage, language) {
+        DiagramOverlay(view, step, caliperOn, toggleCaliper, diagramMode, modes, selectMode, diagramPage, selectPage, language,
+            systolic = step?.requiredPhase == StepPhase.ES || loop.frozenPhase == StepPhase.ES) {
             diagramOverlay = false
-        }
-    }
-    if (valvesOpen) {
-        var valveId by rememberSaveable(view.id) { mutableStateOf(valveForView(view.id)) }
-        FullScreenDialog(onDismiss = { valvesOpen = false }) {
-            ValveAssessmentContent(
-                protocol = protocol,
-                language = language,
-                valveId = valveId,
-                onSelectValve = { valveId = it },
-                onOpenView = { id ->
-                    valvesOpen = false
-                    protocol.allViews.firstOrNull { it.id == id }?.let(onSelectView)
-                },
-                modifier = Modifier.weight(1f).fillMaxWidth()
-            )
         }
     }
     if (referenceOpen) {
@@ -315,7 +298,6 @@ fun ViewCockpit(
 private fun SlimTopBar(
     title: String,
     onBack: (() -> Unit)?,
-    onValves: (() -> Unit)?,
     onDrawer: () -> Unit
 ) {
     Row(
@@ -341,11 +323,6 @@ private fun SlimTopBar(
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f)
         )
-        if (onValves != null) {
-            IconButton(onClick = onValves, modifier = Modifier.size(40.dp)) {
-                Icon(Icons.AutoMirrored.Filled.FactCheck, contentDescription = stringResource(R.string.nav_valves), tint = EchoCaution)
-            }
-        }
         LocalOpenSettings.current?.let { SettingsGearButton(it, Modifier.size(40.dp)) }
         IconButton(onClick = onDrawer, modifier = Modifier.size(40.dp)) {
             Icon(Icons.AutoMirrored.Filled.FormatListBulleted, contentDescription = stringResource(R.string.guided_protocol_list), tint = EchoPrimary)
@@ -479,7 +456,9 @@ private fun diagramSource(
     caliperOn: Boolean,
     language: AppLanguage,
     page: Int = 0,
-    darkTheme: Boolean = true
+    darkTheme: Boolean = true,
+    /** End-systole (ES step or ES key): the schema shows its contracted version. */
+    systolic: Boolean = false
 ): DiagramSource {
     val overlays = if (caliperOn) step?.overlays.orEmpty() else emptyList()
     val atlas = view.diagramAsset
@@ -507,8 +486,10 @@ private fun diagramSource(
             val image = view.schemaGallery[page.coerceIn(0, view.schemaGallery.lastIndex)]
             // The view drawing carries the step's calipers, PW gates and CW / M-mode cursors.
             if (image.calipers) {
-                // Vector schema of the active theme (scripts/build_schema_vector.py: *_dark.svg / *_light.svg).
-                val asset = if (darkTheme) image.asset else image.asset.replace("_dark.svg", "_light.svg")
+                // Original drawing in the active theme (scripts/schema_raster.py: *_dark.webp / *_light.webp),
+                // its end-systolic version when the step / frozen frame is ES.
+                val base = if (systolic) image.systolicAsset ?: image.asset else image.asset
+                val asset = if (darkTheme) base else base.replace("_dark.webp", "_light.webp")
                 DiagramSource(asset, image.aspect, Color.Transparent, overlays, { it.schema },
                     caption = image.caption.get(language), credit = image.credit, labels = image.labels)
             } else {
@@ -625,7 +606,10 @@ private fun SplitStage(
             )
             loop.frozenPhase?.let { FrozenBadge(it, Modifier.align(Alignment.BottomStart).padding(start = 5.dp, bottom = 26.dp)) }
         }
-        val source = diagramSource(view, diagramMode, step, caliperOn, language, diagramPage, MaterialTheme.echoColors.isDark)
+        // End-systole (ES step, or the loop frozen on ES): the schema contracts with the real heart.
+        val systolic = step?.requiredPhase == StepPhase.ES || loop.frozenPhase == StepPhase.ES
+        val source = diagramSource(view, diagramMode, step, caliperOn, language, diagramPage, MaterialTheme.echoColors.isDark, systolic)
+        val showsSystole = systolic && diagramMode == DiagramMode.SCHEMA && view.schemaGallery.getOrNull(diagramPage)?.systolicAsset != null
         val pageTotal = pageCount(view, diagramMode)
         StageCard(
             modifier = Modifier.weight(0.48f),
@@ -637,6 +621,21 @@ private fun SplitStage(
                 }
                 if (pageTotal > 1) {
                     PageStepper(diagramPage, pageTotal, onSelectPage, Modifier.align(Alignment.BottomCenter).padding(bottom = 4.dp))
+                }
+                if (showsSystole) {
+                    // compact "ES" chip under the mode pills: the schema shows the contracted ventricle
+                    Text(
+                        "ES",
+                        color = Color.White,
+                        fontSize = 9.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier
+                            .align(Alignment.TopStart)
+                            .padding(start = 6.dp, top = PillsHeight + 8.dp)
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(EchoCriticalFill)
+                            .padding(horizontal = 5.dp, vertical = 1.dp)
+                    )
                 }
 
             }
@@ -1022,9 +1021,10 @@ private fun DiagramOverlay(
     page: Int,
     onSelectPage: (Int) -> Unit,
     language: AppLanguage,
+    systolic: Boolean = false,
     onDismiss: () -> Unit
 ) {
-    val source = diagramSource(view, mode, step, caliperOn, language, page, MaterialTheme.echoColors.isDark)
+    val source = diagramSource(view, mode, step, caliperOn, language, page, MaterialTheme.echoColors.isDark, systolic)
     val pageTotal = pageCount(view, mode)
     FullScreenDialog(onDismiss) {
         val hasCaliper = mode != DiagramMode.PROBE && (step?.overlays.orEmpty().isNotEmpty() || step?.caliper != null)

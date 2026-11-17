@@ -251,7 +251,9 @@ data class GalleryImage(
     /** Schema view drawing: the step's calipers / Doppler cursors are drawn on it ([CaliperOverlay.schema]). */
     val calipers: Boolean = false,
     /** Structure names drawn by the app as pills over a vector schema (scale with the font size). */
-    val labels: List<SchemaLabel> = emptyList()
+    val labels: List<SchemaLabel> = emptyList(),
+    /** End-systolic version of the schema (LV cavity contracted), shown in ES steps and after the ES key. */
+    val systolicAsset: String? = null
 )
 
 /** One label of a vector schema: normalised position; [kind] left / right (heart side), valve or other. */

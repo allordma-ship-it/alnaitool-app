@@ -89,7 +89,7 @@ def main(only: str | None = None):
             if only and view["id"] != only:
                 continue
             loop = os.path.join(vc.ASSETS, view["videoAsset"])
-            drawing = os.path.join(vc.ASSETS, "schema_dark", f"{view['id']}.png")
+            drawing = os.path.join(vc.ASSETS, "schema", f"{view['id']}_dark.webp")
             schema = Image.open(drawing).convert("RGB") if os.path.exists(drawing) else None
             atlas = Image.open(os.path.join(vc.ASSETS, view["diagramAsset"])).convert("RGB") if view.get("diagramAsset") else None
             for i, step in enumerate(view["steps"]):

@@ -217,6 +217,27 @@ class ProtocolDatabaseTest {
     }
 
     @Test
+    fun endSystoleContractsTheLeftVentricleOnTheSchema() {
+        // Views with an LV have an ES drawing; ES steps are measured on it (smaller cavity).
+        listOf("plax_standard", "psax_papillary", "apical_4c", "apical_5c", "apical_2c", "apical_3c").forEach { id ->
+            assertTrue("$id ES drawing", protocol.allViews.first { it.id == id }.schemaGallery.first().systolicAsset != null)
+        }
+        val pm = protocol.allViews.first { it.id == "psax_papillary" }
+        fun len(c: List<Float>) = kotlin.math.hypot(c[2] - c[0], c[3] - c[1])
+        val ed = pm.steps.first { it.requiredPhase == StepPhase.ED && it.overlays.any { o -> o.label == "D1" } }.overlays.first { it.label == "D1" }.schema!!
+        val es = pm.steps.first { it.requiredPhase == StepPhase.ES }.overlays.first { it.label == "D1" }.schema!!
+        assertEquals(0.72f, len(es) / len(ed), 0.03f)
+    }
+
+    @Test
+    fun tapseRunsToTheLateralTricuspidAnnulus() {
+        val tapse = protocol.allViews.first { it.id == "apical_4c" }.steps.first { it.title.en == "TAPSE" }.overlays.first()
+        // RV free wall side (left in A4C), at the tricuspid annular plane
+        assertTrue(tapse.video!![2] < 0.26f && tapse.video[3] in 0.56f..0.62f)
+        assertTrue(tapse.schema!![2] < 0.21f && tapse.schema[3] in 0.61f..0.66f)
+    }
+
+    @Test
     fun colourDopplerFollowsTheStep() {
         val a4c = protocol.allViews.first { it.id == "apical_4c" }
         val loops = protocol.colorLoopsFor(a4c.id)
@@ -318,15 +339,20 @@ class ProtocolDatabaseTest {
             // labelled echo frames from Echocardiographer.org.
             assertTrue("${view.id} schema pages", view.schemaGallery.size >= 2)
             val drawing = view.schemaGallery.first()
-            assertEquals("schema_vector/${view.id}_dark.svg", drawing.asset)
+            // subcostal_4c: the clean reference SVG; all others: the original drawing (dark / light WebP)
+            if (view.id == "subcostal_4c") {
+                assertEquals("schema/subcostal_4c.svg", drawing.asset)
+                assertTrue("${view.id} labels", drawing.labels.size >= 4 && drawing.labels.all { it.x in 0f..1f && it.y in 0f..1f })
+            } else {
+                assertEquals("schema/${view.id}_dark.webp", drawing.asset)
+                assertTrue("missing light variant", File(assetsDir, drawing.asset.replace("_dark.webp", "_light.webp")).isFile)
+            }
             assertTrue("${view.id} drawing carries calipers", drawing.calipers)
             assertTrue("missing ${drawing.asset}", File(assetsDir, drawing.asset).isFile)
-            assertTrue("missing light variant", File(assetsDir, drawing.asset.replace("_dark.svg", "_light.svg")).isFile)
             assertEquals("Schema", drawing.caption.de)
-            // Labels are drawn by the app (pills); every chamber label sits inside the image.
-            assertTrue("${view.id} labels", drawing.labels.size >= 3 && drawing.labels.all { it.x in 0f..1f && it.y in 0f..1f })
-            assertTrue("${view.id} label kinds", drawing.labels.all { it.kind in setOf("left", "right", "valve", "other") })
-            assertTrue("${view.id} drawing credit", drawing.credit != null)
+            drawing.systolicAsset?.let { es ->
+                assertTrue("missing $es", File(assetsDir, es).isFile && File(assetsDir, es.replace("_dark.webp", "_light.webp")).isFile)
+            }
             view.schemaGallery.drop(1).forEach { img ->
                 assertTrue("missing ${img.asset}", img.asset.startsWith("echoorg/") && File(assetsDir, img.asset).isFile)
                 assertTrue("${img.asset} credit", img.credit?.contains("Echocardiographer.org") == true)
@@ -347,7 +373,7 @@ class ProtocolDatabaseTest {
         // Android's SVG parser rejects malformed XML (e.g. an unescaped "&" in a title) and shows
         // nothing; it also ignores paint-order, which would hide labels under their outline.
         val factory = javax.xml.parsers.DocumentBuilderFactory.newInstance()
-        val svgs = listOf("orientation", "svg", "schema_vector").flatMap { dir ->
+        val svgs = listOf("orientation", "svg", "schema").flatMap { dir ->
             File(assetsDir, dir).listFiles { f -> f.name.endsWith(".svg") }.orEmpty().toList()
         }
         assertTrue("SVG assets found", svgs.size >= 10 * 3 + 9)

@@ -1,0 +1,14 @@
+Schema drawings (assets/schema/), made by scripts/schema_raster.py – no re-drawing, no contour tracing
+
+subcostal_4c.svg
+  EchoScope subcostal 4-chamber reference drawing (scripts/reference/subcostal_4ch_ohne_labels.svg), unchanged.
+plax_standard, apical_4c, apical_5c, apical_2c, apical_3c, suprasternal_arch (*_light.webp / *_dark.webp)
+  View drawings from Echocardiographer.org – Atif Qasim, MD MSCE (free reuse with credit). Light: original;
+  dark: smooth per-pixel colour mapping of the original (anti-aliasing and gradients preserved).
+psax_av, psax_papillary
+  "A. Aortic Valve Level" / "C. Mid-Ventricular Level" of the Echocardiographer.org parasternal
+  short-axis drawing (tte-psax), set into a sector (adapted).
+subcostal_ivc
+  Drawn for EchoScope (scripts/reference/subcostal_ivc_drawing.svg).
+*_es_*.webp
+  End-systolic versions: the same drawings with the LV cavity smoothly warped to 72 % (adapted).

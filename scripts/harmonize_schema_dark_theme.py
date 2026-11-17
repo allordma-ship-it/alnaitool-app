@@ -26,7 +26,7 @@ Light theme (daylight / ward): the same drawings re-coloured the other way round
 #FFFFFF, sector #EEF2F6 … #CBD5E1, labels slate #171E26 – into assets/schema_light/<view_id>.png;
 the app picks the variant of the active theme.
 
-Since 2.0.1 the app shows the vector schema (scripts/build_schema_vector.py), which imports this
+The app shows the drawings made by scripts/schema_raster.py, which imports this
 module for the source drawings (DRAWINGS, source_image, TARGET_WIDTH). Running this script writes
 the re-coloured PNGs to temp_real/schema_png/ as a reference only (not bundled).
 
@@ -122,11 +122,11 @@ def sector_frame(drawing: Image.Image, label_pos=None) -> Image.Image:
     mask = Image.new("L", (W, H), 0)
     ImageDraw.Draw(mask).polygon(pts, fill=255)
     page.paste(grad, (0, 0), mask)
-    d.line(pts + [apex], fill=(150, 205, 200), width=2)
+    d.line(pts + [apex], fill=(150, 205, 200), width=max(2, W // 260))
     # probe head
     pw, ph = W * 0.16, H * 0.10
     d.rounded_rectangle([apex[0] - pw / 2, apex[1] - ph - 2, apex[0] + pw / 2, apex[1] + 2], radius=8,
-                        fill=(214, 190, 170), outline=(150, 128, 110))
+                        fill=(214, 190, 170), outline=(150, 128, 110), width=max(1, W // 400))
     font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", max(10, int(ph * 0.32)))
     d.text((apex[0], apex[1] - ph / 2), "Probe", fill=(60, 50, 45), anchor="mm", font=font)
     # drawing: white of the drawing becomes sector grey (multiply)
@@ -142,7 +142,9 @@ def source_image(key: str) -> Image.Image:
         return render_svg(os.path.join(REF, "subcostal_ivc_drawing.svg"), 1000)
     if key in PSAX_CROPS:
         im = Image.open(os.path.join(SRC, "psax_01.jpg")).convert("RGB").crop(PSAX_CROPS[key])
-        return sector_frame(im)
+        # drawn 4x supersampled and reduced with Lanczos: smooth (anti-aliased) sector and probe edges
+        big = sector_frame(im.resize((im.width * 4, im.height * 4), Image.LANCZOS))
+        return big.resize((big.width // 4, big.height // 4), Image.LANCZOS)
     return Image.open(os.path.join(SRC, key)).convert("RGB")
 
 

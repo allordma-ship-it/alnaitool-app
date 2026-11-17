@@ -326,10 +326,10 @@
                   0.86
                 ],
                 "schema": [
-                  0.22,
-                  0.64,
-                  0.47,
-                  0.84
+                  0.18,
+                  0.53,
+                  0.45,
+                  0.68
                 ]
               },
               "examples": [
@@ -385,10 +385,10 @@
                   0.415
                 ],
                 "schema": [
-                  0.5,
-                  0.45,
-                  0.5,
-                  0.485
+                  0.55,
+                  0.375,
+                  0.55,
+                  0.425
                 ]
               }
             }
@@ -533,8 +533,8 @@
           ],
           "schemaGallery": [
             {
-              "asset": "schema_vector/subcostal_4c_dark.svg",
-              "aspect": 0.8083,
+              "asset": "schema/subcostal_4c.svg",
+              "aspect": 1.1111,
               "caption": {
                 "en": "Schema",
                 "de": "Schema",
@@ -543,50 +543,49 @@
               "calipers": true,
               "labels": [
                 {
-                  "text": "RV",
-                  "x": 0.5,
-                  "y": 0.53,
+                  "text": "RA",
+                  "x": 0.27,
+                  "y": 0.5,
                   "kind": "right"
                 },
                 {
-                  "text": "LV",
-                  "x": 0.71,
-                  "y": 0.65,
-                  "kind": "left"
-                },
-                {
-                  "text": "RA",
-                  "x": 0.27,
-                  "y": 0.7,
+                  "text": "RV",
+                  "x": 0.58,
+                  "y": 0.47,
                   "kind": "right"
                 },
                 {
                   "text": "LA",
-                  "x": 0.45,
-                  "y": 0.84,
+                  "x": 0.31,
+                  "y": 0.7,
+                  "kind": "left"
+                },
+                {
+                  "text": "LV",
+                  "x": 0.67,
+                  "y": 0.62,
                   "kind": "left"
                 },
                 {
                   "text": "TV",
-                  "x": 0.42,
-                  "y": 0.605,
+                  "x": 0.445,
+                  "y": 0.505,
                   "kind": "valve"
                 },
                 {
                   "text": "MV",
-                  "x": 0.59,
-                  "y": 0.74,
+                  "x": 0.53,
+                  "y": 0.735,
                   "kind": "valve"
                 },
                 {
                   "text": "Liver",
-                  "x": 0.18,
-                  "y": 0.4,
+                  "x": 0.5,
+                  "y": 0.2,
                   "kind": "other"
                 }
               ],
-              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE (traced as vector schema)",
-              "source": "https://www.echocardiographer.org/tte-subcostal"
+              "credit": "EchoScope (subcostal 4-chamber reference drawing)"
             },
             {
               "asset": "echoorg/subcostal_03.jpg",
@@ -1050,7 +1049,7 @@
           "atlasGallery": [],
           "schemaGallery": [
             {
-              "asset": "schema_vector/subcostal_ivc_dark.svg",
+              "asset": "schema/subcostal_ivc_dark.webp",
               "aspect": 1.2937,
               "caption": {
                 "en": "Schema",
@@ -1058,32 +1057,6 @@
                 "ar": "مخطط المقطع"
               },
               "calipers": true,
-              "labels": [
-                {
-                  "text": "IVC",
-                  "x": 0.42,
-                  "y": 0.655,
-                  "kind": "right"
-                },
-                {
-                  "text": "RA",
-                  "x": 0.79,
-                  "y": 0.745,
-                  "kind": "right"
-                },
-                {
-                  "text": "HV",
-                  "x": 0.556,
-                  "y": 0.53,
-                  "kind": "right"
-                },
-                {
-                  "text": "Liver",
-                  "x": 0.46,
-                  "y": 0.4,
-                  "kind": "other"
-                }
-              ],
               "credit": "EchoScope"
             },
             {
@@ -1881,7 +1854,7 @@
           ],
           "schemaGallery": [
             {
-              "asset": "schema_vector/plax_standard_dark.svg",
+              "asset": "schema/plax_standard_dark.webp",
               "aspect": 1.0316,
               "caption": {
                 "en": "Schema",
@@ -1889,57 +1862,8 @@
                 "ar": "مخطط المقطع"
               },
               "calipers": true,
-              "labels": [
-                {
-                  "text": "RVOT",
-                  "x": 0.47,
-                  "y": 0.38,
-                  "kind": "right"
-                },
-                {
-                  "text": "LV",
-                  "x": 0.2,
-                  "y": 0.51,
-                  "kind": "left"
-                },
-                {
-                  "text": "LA",
-                  "x": 0.75,
-                  "y": 0.6,
-                  "kind": "left"
-                },
-                {
-                  "text": "Ao",
-                  "x": 0.73,
-                  "y": 0.37,
-                  "kind": "left"
-                },
-                {
-                  "text": "DA",
-                  "x": 0.655,
-                  "y": 0.8,
-                  "kind": "left"
-                },
-                {
-                  "text": "LVOT",
-                  "x": 0.55,
-                  "y": 0.51,
-                  "kind": "left"
-                },
-                {
-                  "text": "MV",
-                  "x": 0.6,
-                  "y": 0.66,
-                  "kind": "valve"
-                },
-                {
-                  "text": "AV",
-                  "x": 0.63,
-                  "y": 0.465,
-                  "kind": "valve"
-                }
-              ],
-              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE (traced as vector schema)",
+              "systolicAsset": "schema/plax_standard_es_dark.webp",
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
               "source": "https://www.echocardiographer.org/tte-plax"
             },
             {
@@ -2597,7 +2521,7 @@
           ],
           "schemaGallery": [
             {
-              "asset": "schema_vector/psax_av_dark.svg",
+              "asset": "schema/psax_av_dark.webp",
               "aspect": 1.0691,
               "caption": {
                 "en": "Schema",
@@ -2605,51 +2529,7 @@
                 "ar": "مخطط المقطع"
               },
               "calipers": true,
-              "labels": [
-                {
-                  "text": "RVOT",
-                  "x": 0.43,
-                  "y": 0.4,
-                  "kind": "right"
-                },
-                {
-                  "text": "RA",
-                  "x": 0.35,
-                  "y": 0.72,
-                  "kind": "right"
-                },
-                {
-                  "text": "LA",
-                  "x": 0.51,
-                  "y": 0.76,
-                  "kind": "left"
-                },
-                {
-                  "text": "PA",
-                  "x": 0.69,
-                  "y": 0.62,
-                  "kind": "right"
-                },
-                {
-                  "text": "PV",
-                  "x": 0.62,
-                  "y": 0.43,
-                  "kind": "valve"
-                },
-                {
-                  "text": "TV",
-                  "x": 0.3,
-                  "y": 0.52,
-                  "kind": "valve"
-                },
-                {
-                  "text": "AV",
-                  "x": 0.495,
-                  "y": 0.535,
-                  "kind": "valve"
-                }
-              ],
-              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE (traced as vector schema)",
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE (adapted)",
               "source": "https://www.echocardiographer.org/tte-psax"
             },
             {
@@ -3102,10 +2982,10 @@
                   0.51
                 ],
                 "schema": [
-                  0.47,
-                  0.44,
-                  0.47,
-                  0.71
+                  0.471,
+                  0.463,
+                  0.471,
+                  0.687
                 ]
               },
               "extraOverlays": [
@@ -3125,10 +3005,10 @@
                     0.255
                   ],
                   "schema": [
-                    0.365,
-                    0.645,
-                    0.585,
-                    0.645
+                    0.377,
+                    0.63,
+                    0.573,
+                    0.63
                   ]
                 }
               ]
@@ -3293,7 +3173,7 @@
           ],
           "schemaGallery": [
             {
-              "asset": "schema_vector/psax_papillary_dark.svg",
+              "asset": "schema/psax_papillary_dark.webp",
               "aspect": 1.059,
               "caption": {
                 "en": "Schema",
@@ -3301,33 +3181,8 @@
                 "ar": "مخطط المقطع"
               },
               "calipers": true,
-              "labels": [
-                {
-                  "text": "RV",
-                  "x": 0.29,
-                  "y": 0.46,
-                  "kind": "right"
-                },
-                {
-                  "text": "LV",
-                  "x": 0.47,
-                  "y": 0.6,
-                  "kind": "left"
-                },
-                {
-                  "text": "ALPM",
-                  "x": 0.66,
-                  "y": 0.55,
-                  "kind": "other"
-                },
-                {
-                  "text": "PMPM",
-                  "x": 0.5,
-                  "y": 0.76,
-                  "kind": "other"
-                }
-              ],
-              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE (traced as vector schema)",
+              "systolicAsset": "schema/psax_papillary_es_dark.webp",
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE (adapted)",
               "source": "https://www.echocardiographer.org/tte-psax"
             },
             {
@@ -3790,20 +3645,20 @@
                 "video": [
                   0.5,
                   0.07,
-                  0.272,
-                  0.64
+                  0.235,
+                  0.59
                 ],
                 "diagram": [
-                  0.68,
-                  0.06,
-                  0.475,
-                  0.665
+                  0.62,
+                  0.07,
+                  0.5,
+                  0.63
                 ],
                 "schema": [
                   0.4,
                   0.17,
-                  0.18,
-                  0.645
+                  0.185,
+                  0.635
                 ]
               },
               "examples": [
@@ -4114,8 +3969,8 @@
                   0.95
                 ],
                 "schema": [
-                  0.57,
-                  0.665,
+                  0.555,
+                  0.612,
                   0.56,
                   0.885
                 ]
@@ -4289,7 +4144,7 @@
           ],
           "schemaGallery": [
             {
-              "asset": "schema_vector/apical_4c_dark.svg",
+              "asset": "schema/apical_4c_dark.webp",
               "aspect": 0.7839,
               "caption": {
                 "en": "Schema",
@@ -4297,51 +4152,8 @@
                 "ar": "مخطط المقطع"
               },
               "calipers": true,
-              "labels": [
-                {
-                  "text": "RV",
-                  "x": 0.26,
-                  "y": 0.44,
-                  "kind": "right"
-                },
-                {
-                  "text": "LV",
-                  "x": 0.47,
-                  "y": 0.4,
-                  "kind": "left"
-                },
-                {
-                  "text": "RA",
-                  "x": 0.28,
-                  "y": 0.75,
-                  "kind": "right"
-                },
-                {
-                  "text": "LA",
-                  "x": 0.55,
-                  "y": 0.77,
-                  "kind": "left"
-                },
-                {
-                  "text": "DA",
-                  "x": 0.83,
-                  "y": 0.865,
-                  "kind": "left"
-                },
-                {
-                  "text": "TV",
-                  "x": 0.3,
-                  "y": 0.585,
-                  "kind": "valve"
-                },
-                {
-                  "text": "MV",
-                  "x": 0.6,
-                  "y": 0.605,
-                  "kind": "valve"
-                }
-              ],
-              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE (traced as vector schema)",
+              "systolicAsset": "schema/apical_4c_es_dark.webp",
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
               "source": "https://www.echocardiographer.org/tte-apical4"
             },
             {
@@ -4875,7 +4687,7 @@
           ],
           "schemaGallery": [
             {
-              "asset": "schema_vector/apical_5c_dark.svg",
+              "asset": "schema/apical_5c_dark.webp",
               "aspect": 0.8,
               "caption": {
                 "en": "Schema",
@@ -4883,57 +4695,8 @@
                 "ar": "مخطط المقطع"
               },
               "calipers": true,
-              "labels": [
-                {
-                  "text": "RV",
-                  "x": 0.27,
-                  "y": 0.47,
-                  "kind": "right"
-                },
-                {
-                  "text": "LV",
-                  "x": 0.5,
-                  "y": 0.42,
-                  "kind": "left"
-                },
-                {
-                  "text": "RA",
-                  "x": 0.27,
-                  "y": 0.78,
-                  "kind": "right"
-                },
-                {
-                  "text": "LA",
-                  "x": 0.56,
-                  "y": 0.8,
-                  "kind": "left"
-                },
-                {
-                  "text": "LVOT",
-                  "x": 0.465,
-                  "y": 0.61,
-                  "kind": "left"
-                },
-                {
-                  "text": "TV",
-                  "x": 0.31,
-                  "y": 0.595,
-                  "kind": "valve"
-                },
-                {
-                  "text": "MV",
-                  "x": 0.57,
-                  "y": 0.625,
-                  "kind": "valve"
-                },
-                {
-                  "text": "AV",
-                  "x": 0.4,
-                  "y": 0.725,
-                  "kind": "valve"
-                }
-              ],
-              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE (traced as vector schema)",
+              "systolicAsset": "schema/apical_5c_es_dark.webp",
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
               "source": "https://www.echocardiographer.org/tte-apical5"
             },
             {
@@ -5289,8 +5052,8 @@
                   0.86
                 ],
                 "schema": [
-                  0.42,
-                  0.705,
+                  0.417,
+                  0.649,
                   0.43,
                   0.945
                 ]
@@ -5366,7 +5129,7 @@
           "orientationAsset": "orientation/apical_2c.svg",
           "schemaGallery": [
             {
-              "asset": "schema_vector/apical_2c_dark.svg",
+              "asset": "schema/apical_2c_dark.webp",
               "aspect": 0.5857,
               "caption": {
                 "en": "Schema",
@@ -5374,33 +5137,8 @@
                 "ar": "مخطط المقطع"
               },
               "calipers": true,
-              "labels": [
-                {
-                  "text": "LV",
-                  "x": 0.4,
-                  "y": 0.38,
-                  "kind": "left"
-                },
-                {
-                  "text": "LA",
-                  "x": 0.42,
-                  "y": 0.84,
-                  "kind": "left"
-                },
-                {
-                  "text": "LAA",
-                  "x": 0.69,
-                  "y": 0.75,
-                  "kind": "left"
-                },
-                {
-                  "text": "MV",
-                  "x": 0.42,
-                  "y": 0.66,
-                  "kind": "valve"
-                }
-              ],
-              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE (traced as vector schema)",
+              "systolicAsset": "schema/apical_2c_es_dark.webp",
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
               "source": "https://www.echocardiographer.org/tte-apical2"
             },
             {
@@ -5799,7 +5537,7 @@
           "orientationAsset": "orientation/apical_3c.svg",
           "schemaGallery": [
             {
-              "asset": "schema_vector/apical_3c_dark.svg",
+              "asset": "schema/apical_3c_dark.webp",
               "aspect": 0.6718,
               "caption": {
                 "en": "Schema",
@@ -5807,51 +5545,8 @@
                 "ar": "مخطط المقطع"
               },
               "calipers": true,
-              "labels": [
-                {
-                  "text": "LV",
-                  "x": 0.44,
-                  "y": 0.42,
-                  "kind": "left"
-                },
-                {
-                  "text": "LA",
-                  "x": 0.44,
-                  "y": 0.89,
-                  "kind": "left"
-                },
-                {
-                  "text": "RVOT",
-                  "x": 0.71,
-                  "y": 0.58,
-                  "kind": "right"
-                },
-                {
-                  "text": "Ao",
-                  "x": 0.72,
-                  "y": 0.78,
-                  "kind": "left"
-                },
-                {
-                  "text": "LVOT",
-                  "x": 0.53,
-                  "y": 0.66,
-                  "kind": "left"
-                },
-                {
-                  "text": "MV",
-                  "x": 0.4,
-                  "y": 0.76,
-                  "kind": "valve"
-                },
-                {
-                  "text": "AV",
-                  "x": 0.57,
-                  "y": 0.735,
-                  "kind": "valve"
-                }
-              ],
-              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE (traced as vector schema)",
+              "systolicAsset": "schema/apical_3c_es_dark.webp",
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
               "source": "https://www.echocardiographer.org/tte-apical-long-axis"
             },
             {
@@ -6448,7 +6143,7 @@
           ],
           "schemaGallery": [
             {
-              "asset": "schema_vector/suprasternal_arch_dark.svg",
+              "asset": "schema/suprasternal_arch_dark.webp",
               "aspect": 0.6638,
               "caption": {
                 "en": "Schema",
@@ -6456,27 +6151,7 @@
                 "ar": "مخطط المقطع"
               },
               "calipers": true,
-              "labels": [
-                {
-                  "text": "Ao",
-                  "x": 0.39,
-                  "y": 0.43,
-                  "kind": "left"
-                },
-                {
-                  "text": "RPA",
-                  "x": 0.36,
-                  "y": 0.575,
-                  "kind": "right"
-                },
-                {
-                  "text": "LA",
-                  "x": 0.21,
-                  "y": 0.82,
-                  "kind": "left"
-                }
-              ],
-              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE (traced as vector schema)",
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
               "source": "https://www.echocardiographer.org/tte-suprasternal"
             },
             {
@@ -8607,14 +8282,14 @@
             "video": [
               0.5,
               0.07,
-              0.272,
-              0.64
+              0.235,
+              0.59
             ],
             "diagram": [
-              0.68,
-              0.06,
-              0.475,
-              0.665
+              0.62,
+              0.07,
+              0.5,
+              0.63
             ]
           },
           "trace": {

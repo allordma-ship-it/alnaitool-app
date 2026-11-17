@@ -63,6 +63,8 @@ import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.Dp
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.unit.sp
@@ -122,6 +124,17 @@ internal fun isNormalizedBox(coords: List<Float>?): Boolean =
  *  * AREA         – red colour-Doppler box
  * [zoom] keeps strokes and text the same size on screen inside a scaled layer.
  */
+/** Line weight, "+" arm, dash and label size of the measurement overlays for one image box. */
+internal data class CaliperMetrics(val stroke: Dp, val tick: Dp, val dash: Dp, val label: TextUnit, val labelGap: Dp)
+
+/**
+ * Compact on phone-sized boxes (< 600 dp wide: stage cards, phone full screen): 1.5 dp line, 4 dp
+ * "+" arms, 10 sp labels set 8 dp off the end point; expanded on tablet-sized boxes.
+ */
+internal fun DrawScope.caliperMetrics(target: Rect): CaliperMetrics =
+    if (target.width < 600.dp.toPx()) CaliperMetrics(1.5.dp, 4.dp, 5.dp, 10.sp, 8.dp)
+    else CaliperMetrics(2.5.dp, 6.dp, 7.dp, 12.sp, 10.dp)
+
 internal fun DrawScope.drawCaliperOverlay(
     overlay: CaliperOverlay,
     coords: List<Float>,
@@ -134,7 +147,8 @@ internal fun DrawScope.drawCaliperOverlay(
     fun at(x: Float, y: Float) = Offset(target.left + x * target.width, target.top + y * target.height)
     val a = at(coords[0], coords[1])
     val b = at(coords[2], coords[3])
-    val stroke = 2.dp.toPx() / zoom
+    val m = caliperMetrics(target)
+    val stroke = m.stroke.toPx() / zoom
     val halo = Color.Black.copy(alpha = 0.55f)
     val dx = b.x - a.x
     val dy = b.y - a.y
@@ -150,33 +164,33 @@ internal fun DrawScope.drawCaliperOverlay(
             val topLeft = Offset(minOf(a.x, b.x), minOf(a.y, b.y))
             val size = Size(kotlin.math.abs(dx), kotlin.math.abs(dy))
             drawRect(GateRed.copy(alpha = 0.12f), topLeft, size)
-            drawRect(halo, topLeft, size, style = Stroke(stroke + 2f / zoom))
+            drawRect(halo, topLeft, size, style = Stroke(stroke + 1.5f / zoom))
             drawRect(GateRed, topLeft, size, style = Stroke(stroke))
         }
 
         CaliperOverlay.DOPPLER_GATE, CaliperOverlay.CURSOR -> {
-            val dash = PathEffect.dashPathEffect(floatArrayOf(6.dp.toPx() / zoom, 4.dp.toPx() / zoom))
-            drawLine(halo, a, b, strokeWidth = stroke + 2f / zoom, pathEffect = dash)
+            val dash = PathEffect.dashPathEffect(floatArrayOf(m.dash.toPx() / zoom, (m.dash * 0.66f).toPx() / zoom))
+            drawLine(halo, a, b, strokeWidth = stroke + 1.5f / zoom, pathEffect = dash)
             val beam = beamColor(overlay)
             drawLine(beam, a, b, strokeWidth = stroke, pathEffect = dash)
             if (overlay.type == CaliperOverlay.DOPPLER_GATE) {
                 // Sample volume: two bars across the cursor, a gate length apart.
-                val half = 3.dp.toPx() / zoom
-                val bar = 7.dp.toPx() / zoom
+                val half = (m.tick * 0.7f).toPx() / zoom
+                val bar = (m.tick * 1.5f).toPx() / zoom
                 listOf(-half, half).forEach { s ->
                     val c = Offset(b.x + ux * s, b.y + uy * s)
                     val p = Offset(c.x - nx * bar, c.y - ny * bar)
                     val q = Offset(c.x + nx * bar, c.y + ny * bar)
-                    drawLine(halo, p, q, strokeWidth = stroke + 2f / zoom, cap = StrokeCap.Round)
+                    drawLine(halo, p, q, strokeWidth = stroke + 1.5f / zoom, cap = StrokeCap.Round)
                     drawLine(GateRed, p, q, strokeWidth = stroke, cap = StrokeCap.Round)
                 }
             } else {
-                val tick = 4.dp.toPx() / zoom
+                val tick = m.tick.toPx() / zoom
                 drawLine(beam, Offset(b.x - nx * tick, b.y - ny * tick), Offset(b.x + nx * tick, b.y + ny * tick), strokeWidth = stroke)
                 if (overlay.label.startsWith("CW")) {
                     // CW focus marker "--◇--" at the valve plane (82 % of the cursor, as in the audit script).
                     val f = Offset(a.x + (b.x - a.x) * CW_FOCUS, a.y + (b.y - a.y) * CW_FOCUS)
-                    val r = 5.dp.toPx() / zoom
+                    val r = (m.tick * 1.1f).toPx() / zoom
                     val diamond = Path().apply {
                         moveTo(f.x, f.y - r); lineTo(f.x + r, f.y); lineTo(f.x, f.y + r); lineTo(f.x - r, f.y); close()
                     }
@@ -187,9 +201,9 @@ internal fun DrawScope.drawCaliperOverlay(
         }
 
         else -> { // LINE
-            drawLine(halo, a, b, strokeWidth = stroke + 2f / zoom, cap = StrokeCap.Round)
+            drawLine(halo, a, b, strokeWidth = stroke + 1.5f / zoom, cap = StrokeCap.Round)
             drawLine(CaliperYellow, a, b, strokeWidth = stroke, cap = StrokeCap.Round)
-            val tick = 5.dp.toPx() / zoom
+            val tick = m.tick.toPx() / zoom
             listOf(a, b).forEach { p ->
                 // "+" end mark: a bar across the line and a short bar along it.
                 drawLine(CaliperYellow, Offset(p.x - nx * tick, p.y - ny * tick), Offset(p.x + nx * tick, p.y + ny * tick), strokeWidth = stroke, cap = StrokeCap.Round)
@@ -212,7 +226,7 @@ private fun DrawScope.drawOverlayLabel(
     }
     val layout = textMeasurer.measure(
         overlay.label,
-        TextStyle(color = color, fontSize = (9f / zoom).sp, fontWeight = FontWeight.Bold)
+        TextStyle(color = color, fontSize = (caliperMetrics(target).label.value / zoom).sp, fontWeight = FontWeight.Bold)
     )
     val pad = 2.dp.toPx() / zoom
     val padX = 6.dp.toPx() / zoom
@@ -222,7 +236,7 @@ private fun DrawScope.drawOverlayLabel(
     // candidate spots (right, left, below, above) take the first that covers no structure label
     // or other caliper label, else the one with the least overlap.
     val anchor = if (overlay.type == CaliperOverlay.AREA) Offset(maxOf(a.x, b.x), minOf(a.y, b.y)) else b
-    val gap = 6.dp.toPx() / zoom
+    val gap = caliperMetrics(target).labelGap.toPx() / zoom
     fun clampTo(x: Float, y: Float) = Offset(
         x.coerceIn(target.left, (target.right - w).coerceAtLeast(target.left)),
         y.coerceIn(target.top, (target.bottom - h).coerceAtLeast(target.top))
@@ -239,7 +253,7 @@ private fun DrawScope.drawOverlayLabel(
     val pos = candidates.firstOrNull { overlap(it) == 0f } ?: candidates.minBy { overlap(it) }
     blocked += Rect(pos, Size(w, h))
     // pill-shaped label
-    drawRoundRect(Color.Black.copy(alpha = 0.66f), pos, Size(w, h), CornerRadius(h / 2f))
+    drawRoundRect(Color.Black.copy(alpha = 0.55f), pos, Size(w, h), CornerRadius(h / 2f))
     drawText(layout, topLeft = Offset(pos.x + padX, pos.y + pad))
 }
 

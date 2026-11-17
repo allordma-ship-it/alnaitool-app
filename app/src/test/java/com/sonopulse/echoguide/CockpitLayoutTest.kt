@@ -185,6 +185,14 @@ class CockpitLayoutTest {
 
     @Test fun plaxCaliperOnSchema() = schemaScreen("plax_standard", stepIndex = 4, name = "plax_lvidd_schema")
 
+    @Test fun a4cTapseOnSchema() = schemaScreen("apical_4c", stepIndex = 3, name = "a4c_tapse_schema")
+
+    @Test fun psaxEndSystoleSchema() = schemaScreen("psax_papillary", stepIndex = 4, name = "psax_es_schema")
+
+    @Test fun psaxEndDiastoleSchema() = schemaScreen("psax_papillary", stepIndex = 3, name = "psax_ed_schema")
+
+    @Test fun subcostalReferenceSchema() = schemaScreen("subcostal_4c", stepIndex = 2, name = "subcostal_ias_schema")
+
     @Test fun psaxAvSchemaDrawing() = schemaScreen("psax_av", stepIndex = 3, name = "psax_av_pw_schema")
 
     @Test fun subcostalSchemaWithReadableLabels() = schemaScreen("subcostal_4c")

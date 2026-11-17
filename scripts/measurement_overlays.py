@@ -112,7 +112,7 @@ STEPS = {
         ("LIVE", None),
         ("ED", ov(L, "LV length (EDV)", [0.495, 0.13, 0.55, 0.59], [0.69, 0.19, 0.725, 0.595])),
         # M-mode through the lateral tricuspid annulus.
-        ("LIVE", ov(C, "M-mode · TAPSE", [0.50, 0.07, 0.272, 0.64], [0.68, 0.06, 0.475, 0.665])),
+        ("LIVE", ov(C, "M-mode · TAPSE", [0.50, 0.07, 0.235, 0.59], [0.62, 0.07, 0.50, 0.63])),   # lateral TV annulus (RV free wall)
         # Basal RV: free-wall to septal endocardium just above the tricuspid annulus.
         ("ED", ov(L, "RVD1", [0.29, 0.52, 0.40, 0.52], [0.50, 0.55, 0.588, 0.55])),
         # PW sample volume at the mitral leaflet tips.
