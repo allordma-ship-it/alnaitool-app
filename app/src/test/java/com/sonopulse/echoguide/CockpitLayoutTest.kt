@@ -13,6 +13,8 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.assertCountEquals
+import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.isRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
@@ -184,6 +186,20 @@ class CockpitLayoutTest {
     @Test fun a5cCwCursorOnSchema() = schemaScreen("apical_5c", stepIndex = 2, name = "apical_5c_cw_schema")
 
     @Test fun plaxCaliperOnSchema() = schemaScreen("plax_standard", stepIndex = 4, name = "plax_lvidd_schema")
+
+    @Test
+    fun fullScreenAlwaysHasACloseButton() {
+        showCockpit("apical_4c", stepIndex = 3)
+        val enlarge = compose.onAllNodesWithContentDescription("Enlarge")
+        enlarge[1].performClick()          // diagram card → full screen
+        compose.mainClock.advanceTimeBy(500)
+        compose.onAllNodesWithContentDescription("Close").assertCountEquals(1)
+        System.setProperty("roborazzi.test.record", "true")
+        compose.onAllNodes(isRoot())[1].captureRoboImage("build/cockpit-screens/fullscreen_close.png")
+        compose.onNodeWithContentDescription("Close").performClick()
+        compose.mainClock.advanceTimeBy(500)
+        compose.onAllNodesWithContentDescription("Close").assertCountEquals(0)
+    }
 
     @Test fun a4cTapseOnSchema() = schemaScreen("apical_4c", stepIndex = 3, name = "a4c_tapse_schema")
 

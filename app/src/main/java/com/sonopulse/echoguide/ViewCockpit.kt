@@ -859,28 +859,43 @@ internal fun FullScreenDialog(onDismiss: () -> Unit, content: @Composable Column
         properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false)
     ) {
         val bars = WindowInsets.systemBars.asPaddingValues()
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(EchoBackground)
-                .padding(
-                    start = maxOf(bars.calculateStartPadding(layoutDirection), hostBars.calculateStartPadding(layoutDirection)),
-                    top = maxOf(bars.calculateTopPadding(), hostBars.calculateTopPadding()),
-                    end = maxOf(bars.calculateEndPadding(layoutDirection), hostBars.calculateEndPadding(layoutDirection)),
-                    bottom = maxOf(bars.calculateBottomPadding(), hostBars.calculateBottomPadding())
-                )
-                .padding(start = 10.dp, top = 10.dp, end = 10.dp, bottom = 10.dp + DialogBottomLift),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                IconButton(onClick = onDismiss) {
-                    Icon(Icons.Filled.Close, contentDescription = stringResource(R.string.about_close), tint = EchoText)
-                }
+        val top = maxOf(bars.calculateTopPadding(), hostBars.calculateTopPadding())
+        val end = maxOf(bars.calculateEndPadding(layoutDirection), hostBars.calculateEndPadding(layoutDirection))
+        Box(modifier = Modifier.fillMaxSize().background(EchoBackground)) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(
+                        start = maxOf(bars.calculateStartPadding(layoutDirection), hostBars.calculateStartPadding(layoutDirection)),
+                        top = top,
+                        end = end,
+                        bottom = maxOf(bars.calculateBottomPadding(), hostBars.calculateBottomPadding())
+                    )
+                    // room for the close button above the content
+                    .padding(start = 10.dp, top = 10.dp + CloseButtonSize + 8.dp, end = 10.dp, bottom = 10.dp + DialogBottomLift),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                content()
             }
-            content()
+            // Close (X): drawn last, so it stays on top of any video, image or zoomed content.
+            IconButton(
+                onClick = onDismiss,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(top = top, end = end)
+                    .padding(16.dp)
+                    .size(CloseButtonSize)
+                    .clip(CircleShape)
+                    .background(EchoPalette.CloseScrim)
+                    .border(1.dp, Color.White.copy(alpha = 0.85f), CircleShape)
+            ) {
+                Icon(Icons.Filled.Close, contentDescription = stringResource(R.string.about_close), tint = Color.White)
+            }
         }
     }
 }
+
+private val CloseButtonSize = 44.dp
 
 /** Extra space under the bottom control row of full-screen dialogs (above the navigation bar). */
 internal val DialogBottomLift = 16.dp

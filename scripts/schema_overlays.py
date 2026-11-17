@@ -44,9 +44,8 @@ A4C_TIP, A5C_TIP, A3C_TIP, PSAX_TIP = (0.40, 0.17), (0.41, 0.15), (0.38, 0.17), 
 
 SCHEMA = {
     "subcostal_4c": {
-        # subcostal_4c = reference SVG (1000 x 900): RA/RV above, LA/LV below the septum
-        "Color · IAS": [0.18, 0.53, 0.45, 0.68],             # interatrial septum between RA and LA
-        "Pericardium": [0.55, 0.375, 0.55, 0.425],           # pericardium in front of the RV free wall
+        "Color · IAS": [0.22, 0.64, 0.47, 0.84],             # atrial septum between RA and LA
+        "Pericardium": [0.50, 0.45, 0.50, 0.485],            # in front of the RV free wall
     },
     "subcostal_ivc": {
         "IVC": ivc([0.555, 0.583, 0.536, 0.652]),

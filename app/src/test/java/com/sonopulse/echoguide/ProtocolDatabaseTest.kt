@@ -339,14 +339,9 @@ class ProtocolDatabaseTest {
             // labelled echo frames from Echocardiographer.org.
             assertTrue("${view.id} schema pages", view.schemaGallery.size >= 2)
             val drawing = view.schemaGallery.first()
-            // subcostal_4c: the clean reference SVG; all others: the original drawing (dark / light WebP)
-            if (view.id == "subcostal_4c") {
-                assertEquals("schema/subcostal_4c.svg", drawing.asset)
-                assertTrue("${view.id} labels", drawing.labels.size >= 4 && drawing.labels.all { it.x in 0f..1f && it.y in 0f..1f })
-            } else {
-                assertEquals("schema/${view.id}_dark.webp", drawing.asset)
-                assertTrue("missing light variant", File(assetsDir, drawing.asset.replace("_dark.webp", "_light.webp")).isFile)
-            }
+            // every view: its illustrative drawing (dark / light WebP), one consistent style
+            assertEquals("schema/${view.id}_dark.webp", drawing.asset)
+            assertTrue("missing light variant", File(assetsDir, drawing.asset.replace("_dark.webp", "_light.webp")).isFile)
             assertTrue("${view.id} drawing carries calipers", drawing.calipers)
             assertTrue("missing ${drawing.asset}", File(assetsDir, drawing.asset).isFile)
             assertEquals("Schema", drawing.caption.de)

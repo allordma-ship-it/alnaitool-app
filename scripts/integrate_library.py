@@ -84,26 +84,12 @@ CATEGORIES = [
 ]
 
 
-# subcostal_4c reference drawing has no labels: the app draws them as pills (normalised positions).
-SUBCOSTAL_LABELS = [{"text": "RA", "x": .27, "y": .50, "kind": "right"}, {"text": "RV", "x": .58, "y": .47, "kind": "right"},
-                    {"text": "LA", "x": .31, "y": .70, "kind": "left"}, {"text": "LV", "x": .67, "y": .62, "kind": "left"},
-                    {"text": "TV", "x": .445, "y": .505, "kind": "valve"}, {"text": "MV", "x": .53, "y": .735, "kind": "valve"},
-                    {"text": "Liver", "x": .50, "y": .20, "kind": "other"}]
-
-
 def drawing_page(view_id):
     """
-    Schema page 1 (scripts/schema_raster.py): subcostal_4c = the clean reference SVG; every other
-    view = the original drawing (dark mapping / light original, lossless WebP) with an end-systolic
-    version for views with a left ventricle. Carries the step's calipers.
+    Schema page 1 (scripts/schema_raster.py): the original view drawing of every view (dark mapping /
+    light original, lossless WebP, realistic transducer) with an end-systolic version for views
+    with a left ventricle. Carries the step's calipers.
     """
-    if view_id == "subcostal_4c":
-        asset = "schema/subcostal_4c.svg"
-        svg = open(os.path.join(ASSETS, asset), encoding="utf-8").read()
-        w, h = (float(v) for v in re.search(r'viewBox="0 0 ([\d.]+) ([\d.]+)"', svg).groups())
-        page = {"asset": asset, "aspect": round(w / h, 4), "caption": dict(zip(("en", "de", "ar"), D)), "calipers": True,
-                "labels": SUBCOSTAL_LABELS, "credit": "EchoScope (subcostal 4-chamber reference drawing)"}
-        return page
     asset = f"schema/{view_id}_dark.webp"
     iw, ih = Image.open(os.path.join(ASSETS, asset)).size
     page = {"asset": asset, "aspect": round(iw / ih, 4), "caption": dict(zip(("en", "de", "ar"), D)), "calipers": True}

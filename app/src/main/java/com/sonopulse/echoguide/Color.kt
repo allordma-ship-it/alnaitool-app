@@ -41,6 +41,7 @@ object EchoPalette {
     val Caliper = Color(0xFFFFD60A)        // yellow caliper "+-----+"
     val Cursor = Color(0xFF26C6DA)         // Doppler / M-mode cursor
     val Gate = Crimson                     // PW gate, colour box
+    val CloseScrim = Color(0xCC0F1419)     // close button of full-screen views
     val BeamPw = Color(0xFFFF5252)         // PW Doppler beam (red)
     val BeamCw = Color(0xFFFF9100)         // CW Doppler beam (orange)
     val BeamMMode = Color(0xFF448AFF)      // M-mode beam (blue)

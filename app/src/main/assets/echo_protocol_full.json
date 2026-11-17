@@ -326,10 +326,10 @@
                   0.86
                 ],
                 "schema": [
-                  0.18,
-                  0.53,
-                  0.45,
-                  0.68
+                  0.22,
+                  0.64,
+                  0.47,
+                  0.84
                 ]
               },
               "examples": [
@@ -385,10 +385,10 @@
                   0.415
                 ],
                 "schema": [
-                  0.55,
-                  0.375,
-                  0.55,
-                  0.425
+                  0.5,
+                  0.45,
+                  0.5,
+                  0.485
                 ]
               }
             }
@@ -533,59 +533,16 @@
           ],
           "schemaGallery": [
             {
-              "asset": "schema/subcostal_4c.svg",
-              "aspect": 1.1111,
+              "asset": "schema/subcostal_4c_dark.webp",
+              "aspect": 0.8083,
               "caption": {
                 "en": "Schema",
                 "de": "Schema",
                 "ar": "مخطط المقطع"
               },
               "calipers": true,
-              "labels": [
-                {
-                  "text": "RA",
-                  "x": 0.27,
-                  "y": 0.5,
-                  "kind": "right"
-                },
-                {
-                  "text": "RV",
-                  "x": 0.58,
-                  "y": 0.47,
-                  "kind": "right"
-                },
-                {
-                  "text": "LA",
-                  "x": 0.31,
-                  "y": 0.7,
-                  "kind": "left"
-                },
-                {
-                  "text": "LV",
-                  "x": 0.67,
-                  "y": 0.62,
-                  "kind": "left"
-                },
-                {
-                  "text": "TV",
-                  "x": 0.445,
-                  "y": 0.505,
-                  "kind": "valve"
-                },
-                {
-                  "text": "MV",
-                  "x": 0.53,
-                  "y": 0.735,
-                  "kind": "valve"
-                },
-                {
-                  "text": "Liver",
-                  "x": 0.5,
-                  "y": 0.2,
-                  "kind": "other"
-                }
-              ],
-              "credit": "EchoScope (subcostal 4-chamber reference drawing)"
+              "credit": "Echocardiographer.org – Atif Qasim, MD MSCE",
+              "source": "https://www.echocardiographer.org/tte-subcostal"
             },
             {
               "asset": "echoorg/subcostal_03.jpg",
@@ -2983,9 +2940,9 @@
                 ],
                 "schema": [
                   0.471,
-                  0.463,
+                  0.459,
                   0.471,
-                  0.687
+                  0.691
                 ]
               },
               "extraOverlays": [
@@ -3005,10 +2962,10 @@
                     0.255
                   ],
                   "schema": [
-                    0.377,
-                    0.63,
-                    0.573,
-                    0.63
+                    0.374,
+                    0.631,
+                    0.576,
+                    0.631
                   ]
                 }
               ]
@@ -3969,8 +3926,8 @@
                   0.95
                 ],
                 "schema": [
-                  0.555,
-                  0.612,
+                  0.556,
+                  0.618,
                   0.56,
                   0.885
                 ]
@@ -5052,8 +5009,8 @@
                   0.86
                 ],
                 "schema": [
-                  0.417,
-                  0.649,
+                  0.418,
+                  0.655,
                   0.43,
                   0.945
                 ]
