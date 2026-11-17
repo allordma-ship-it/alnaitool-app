@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 900" width="1000" height="900">
+<defs>
+<clipPath id="sec"><path d="M500,34 L2.9,693.7 A826,826 0 0 0 997.1,693.7 Z"/></clipPath>
+<clipPath id="liv"><path d="M-60,-10 L-60,500 L120,500 C190,440 245,392 300,380 C380,340 470,334 540,350 C650,378 770,440 900,540 L1060,540 L1060,-10 Z"/></clipPath>
+<clipPath id="epi"><path d="M3,-30 C0,-92 30,-150 100,-164 C150,-173 200,-164 234,-147 C300,-151 380,-131 440,-95 C492,-64 548,-24 574,32 C586,58 574,94 548,120 C510,166 420,188 330,188 C290,188 250,182 220,169 C170,180 80,178 34,139 C6,112 2,60 2,20 Z"/></clipPath>
+<radialGradient id="depth" gradientUnits="userSpaceOnUse" cx="500" cy="34" r="826">
+ <stop offset="0" stop-color="#000" stop-opacity="0"/><stop offset=".55" stop-color="#000" stop-opacity=".08"/><stop offset="1" stop-color="#000" stop-opacity=".55"/></radialGradient>
+<radialGradient id="bg" gradientUnits="userSpaceOnUse" cx="500" cy="34" r="826">
+ <stop offset="0" stop-color="#16232a"/><stop offset="1" stop-color="#0a1217"/></radialGradient>
+<linearGradient id="liverG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8a7a5c"/><stop offset="1" stop-color="#6b5f49"/></linearGradient>
+<linearGradient id="myo" gradientUnits="userSpaceOnUse" x1="0" y1="-170" x2="0" y2="190"><stop offset="0" stop-color="#c9a48f"/><stop offset="1" stop-color="#a47f6e"/></linearGradient>
+<radialGradient id="bloodL" cx=".45" cy=".5" r=".7"><stop offset="0" stop-color="#1d0f12"/><stop offset="1" stop-color="#2c1418"/></radialGradient>
+<radialGradient id="bloodR" cx=".5" cy=".5" r=".7"><stop offset="0" stop-color="#0b1622"/><stop offset="1" stop-color="#10253a"/></radialGradient>
+<filter id="spk" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+ <feTurbulence type="fractalNoise" baseFrequency="0.22 0.34" numOctaves="2" seed="7"/>
+ <feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  2.4 0 0 0 -1.05"/></filter>
+<filter id="spkD" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+ <feTurbulence type="fractalNoise" baseFrequency="0.2 0.3" numOctaves="2" seed="23"/>
+ <feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 2.4 0 0 -1.0"/></filter>
+<filter id="soft"><feGaussianBlur stdDeviation="1.6"/></filter>
+<filter id="glow"><feGaussianBlur stdDeviation="5"/></filter>
+</defs>
+<g clip-path="url(#sec)">
+ <rect width="1000" height="900" fill="url(#bg)"/>
+ <!-- faint far-field noise -->
+ <rect width="1000" height="900" filter="url(#spk)" opacity=".10"/>
+ <!-- liver -->
+ <g clip-path="url(#liv)">
+  <rect width="1000" height="900" fill="url(#liverG)"/>
+  <rect width="1000" height="900" filter="url(#spk)" opacity=".30"/>
+  <rect width="1000" height="900" filter="url(#spkD)" opacity=".45"/>
+  <!-- hepatic veins -->
+  <g fill="none" stroke="#141c22" stroke-linecap="round" filter="url(#soft)">
+   <path d="M250,455 C300,400 350,330 380,250" stroke-width="20"/>
+   <path d="M352,318 C400,300 440,262 462,225" stroke-width="12"/>
+   <path d="M330,360 C300,330 290,300 292,268" stroke-width="10"/>
+   <path d="M640,300 C610,290 585,268 570,238" stroke-width="9"/>
+  </g>
+  <path d="M500,34 L420,140 L580,140 Z" fill="#fff" opacity=".10" filter="url(#glow)"/>
+ </g>
+ <!-- diaphragm / pericardium interface -->
+ <path d="M120,500 C190,440 245,392 300,380 C380,340 470,334 540,350 C650,378 770,440 900,540" fill="none" stroke="#f1e9d8" stroke-width="12" opacity=".35" filter="url(#glow)"/>
+ <path d="M120,500 C190,440 245,392 300,380 C380,340 470,334 540,350 C650,378 770,440 900,540" fill="none" stroke="#f4eee2" stroke-width="5" stroke-linecap="round" opacity=".9"/>
+ <!-- IVC entering RA -->
+ <!-- heart -->
+ <g transform="translate(188,612) rotate(-13) scale(1.1)">
+  <path d="M3,-30 C0,-92 30,-150 100,-164 C150,-173 200,-164 234,-147 C300,-151 380,-131 440,-95 C492,-64 548,-24 574,32 C586,58 574,94 548,120 C510,166 420,188 330,188 C290,188 250,182 220,169 C170,180 80,178 34,139 C6,112 2,60 2,20 Z" fill="none" stroke="#f4eee2" stroke-width="16" opacity=".22" filter="url(#glow)"/>
+  <path d="M3,-30 C0,-92 30,-150 100,-164 C150,-173 200,-164 234,-147 C300,-151 380,-131 440,-95 C492,-64 548,-24 574,32 C586,58 574,94 548,120 C510,166 420,188 330,188 C290,188 250,182 220,169 C170,180 80,178 34,139 C6,112 2,60 2,20 Z" fill="url(#myo)" stroke="#f4eee2" stroke-width="3.5" stroke-linejoin="round"/>
+  <g clip-path="url(#epi)">
+   <rect x="-40" y="-220" width="680" height="460" filter="url(#spk)" opacity=".38"/>
+   <rect x="-40" y="-220" width="680" height="460" filter="url(#spkD)" opacity=".42"/>
+  </g>
+  <!-- chambers -->
+  <path d="M233,-17 C300,-31 400,-41 474,-20 C490,-15 492,-29 482,-42 C448,-84 380,-128 237,-136 Z" fill="url(#bloodR)"/>
+  <path d="M234,-18 L238,-136 C180,-160 92,-162 46,-122 C14,-92 11,-40 28,-9 C80,-3 150,-4 234,-18 Z" fill="url(#bloodR)"/>
+  <path d="M221,15 C290,-1 400,-13 486,9 C528,22 554,44 553,66 C551,100 502,136 440,150 C370,164 280,162 223,145 Z" fill="url(#bloodL)"/>
+  <path d="M222,15 L224,145 C170,166 80,162 40,126 C12,98 10,40 28,9 C80,3 150,4 222,15 Z" fill="url(#bloodL)"/>
+  <!-- pulmonary veins -->
+  
+  
+  <!-- papillary muscle + trabeculae -->
+  <path d="M352,160 C372,128 402,118 418,130 C430,140 426,152 440,150 C410,160 380,162 352,160 Z" fill="url(#myo)"/>
+  <path d="M300,6 C330,22 352,20 372,2 Z" fill="url(#myo)" opacity="0"/>
+  <path d="M436,-33 C446,-48 450,-62 448,-80" stroke="#c9a48f" stroke-width="7" stroke-linecap="round" fill="none"/>
+  <path d="M470,-24 C474,-32 474,-40 470,-50" stroke="#c9a48f" stroke-width="5" stroke-linecap="round" fill="none" opacity=".8"/>
+  <!-- chordae -->
+  <g stroke="#f4eee2" stroke-width="1.4" opacity=".55" fill="none">
+   <path d="M282,66 L368,132"/><path d="M270,112 L362,138"/>
+   
+  </g>
+  <!-- valves (diastole, half-open) -->
+  <g fill="#f7f1e6" stroke="#f7f1e6" stroke-width="1" stroke-linejoin="round">
+   <path d="M221,13 C245,22 268,42 284,68 C262,50 240,36 219,24 Z"/>
+   <path d="M223,147 C240,138 258,126 272,110 C262,130 244,146 222,156 Z"/>
+   <path d="M233,-19 C250,-26 268,-38 282,-54 C270,-34 252,-20 232,-9 Z"/>
+   <path d="M237,-136 C256,-126 274,-110 288,-90 C268,-104 250,-116 235,-124 Z"/>
+  </g>
+  <!-- AV annulus fibrous crux -->
+  <ellipse cx="225" cy="-1" rx="9" ry="14" fill="#efe2d2"/>
+ </g>
+ <!-- depth attenuation + scanline feel -->
+ <rect width="1000" height="900" fill="url(#depth)"/>
+</g>
+<!-- sector frame -->
+<path d="M500,34 L2.9,693.7" stroke="#12a08c" stroke-width="3.5" fill="none"/>
+<path d="M500,34 L997.1,693.7" stroke="#12a08c" stroke-width="3.5" fill="none"/>
+<path d="M2.9,693.7 A826,826 0 0 0 997.1,693.7" stroke="#12a08c" stroke-width="3.5" stroke-dasharray="20 14" fill="none"/>
+<!-- probe + index marker -->
+<rect x="438" y="8" width="124" height="30" rx="15" fill="#cdd5de"/>
+<circle cx="422" cy="23" r="11" fill="#38b6f5"/>
+
+</svg>

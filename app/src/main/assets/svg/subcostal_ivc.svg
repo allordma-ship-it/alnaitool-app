@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="420" viewBox="0 0 600 420">
+  <title>Subcostal IVC &amp; Bicaval</title>
+  <defs>
+    <linearGradient id="myo" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#D45D70"/>
+      <stop offset="1" stop-color="#8E2B3E"/>
+    </linearGradient>
+    <linearGradient id="myoThin" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#C9707E"/>
+      <stop offset="1" stop-color="#9A4352"/>
+    </linearGradient>
+    <radialGradient id="bloodL" cx="0.45" cy="0.4" r="0.7">
+      <stop offset="0" stop-color="#5E1824"/>
+      <stop offset="1" stop-color="#2B0A11"/>
+    </radialGradient>
+    <radialGradient id="bloodR" cx="0.45" cy="0.4" r="0.7">
+      <stop offset="0" stop-color="#1D3566"/>
+      <stop offset="1" stop-color="#0C1630"/>
+    </radialGradient>
+    <linearGradient id="aortaWall" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#E07A86"/>
+      <stop offset="1" stop-color="#B04456"/>
+    </linearGradient>
+    <linearGradient id="veinWall" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#7F9BD6"/>
+      <stop offset="1" stop-color="#4C66A6"/>
+    </linearGradient>
+    <linearGradient id="liver" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5A3B2E"/>
+      <stop offset="1" stop-color="#3A271F"/>
+    </linearGradient>
+    <radialGradient id="sectorFill" cx="0.5" cy="0" r="1">
+      <stop offset="0" stop-color="#16202E"/>
+      <stop offset="1" stop-color="#0D141D"/>
+    </radialGradient>
+  </defs>
+  <rect x="0" y="0" width="600" height="420" fill="#0A0E14"/>
+  <clipPath id="sectorClip"><path d="M300,22 L12.3,299.9 A400,400 0 0,0 587.7,299.9 Z"/></clipPath>
+  <path d="M300,22 L12.3,299.9 A400,400 0 0,0 587.7,299.9 Z" fill="url(#sectorFill)" stroke="#22314A" stroke-width="1.5"/>
+  <g clip-path="url(#sectorClip)">
+    <path d="M0,20 C100,-36.7 500,-26.7 600,20 C700,66.7 628.3,250.7 600,300 C571.7,349.3 480,311 430,316 C380,321 345,324 300,330 C255,336 210,347 160,352 C110,357 26.7,415.3 0,360 C-26.7,304.7 -100,76.7 0,20 Z" fill="url(#liver)" stroke="#6B4A3A" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M330,352 C345,347.7 391.7,334.7 420,326 C448.3,317.3 470,307.7 500,300 C530,292.3 583.3,283.3 600,280" fill="none" stroke="#F4E1E5" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.85"/>
+    <path d="M30,300 C51.7,297.7 115,291 160,286 C205,281 256.7,275.7 300,270 C343.3,264.3 400,255 420,252" fill="none" stroke="url(#veinWall)" stroke-width="46" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M30,300 C51.7,297.7 115,291 160,286 C205,281 256.7,275.7 300,270 C343.3,264.3 400,255 420,252" fill="none" stroke="#0C1630" stroke-width="40" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M206,160 C211.7,169 226,197 240,214 C254,231 281.7,254 290,262" fill="none" stroke="url(#veinWall)" stroke-width="23" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M206,160 C211.7,169 226,197 240,214 C254,231 281.7,254 290,262" fill="none" stroke="#0C1630" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M426.6,212.1 C435.8,202.2 458.4,194.4 475.4,193 C492.4,191.6 515,195.8 528.4,203.6 C541.8,211.4 553.5,226.6 556,239.6 C558.4,252.7 553.5,272.1 543.2,282 C533,291.9 511.1,297.9 494.5,299 C477.9,300 456,296.2 443.6,288.4 C431.2,280.6 423.1,265.1 420.3,252.3 C417.5,239.6 417.5,222 426.6,212.1 Z" fill="url(#myoThin)" stroke="#E58A97" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M430,214 C438.7,204.7 460,197.3 476,196 C492,194.7 513.3,198.7 526,206 C538.7,213.3 549.7,227.7 552,240 C554.3,252.3 549.7,270.7 540,280 C530.3,289.3 509.7,295 494,296 C478.3,297 457.7,293.3 446,286 C434.3,278.7 426.7,264 424,252 C421.3,240 421.3,223.3 430,214 Z" fill="url(#bloodR)" stroke="none" stroke-width="0" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M452,150 C453,155 455.7,170.7 458,180 C460.3,189.3 464.7,201.7 466,206" fill="none" stroke="url(#veinWall)" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M452,150 C453,155 455.7,170.7 458,180 C460.3,189.3 464.7,201.7 466,206" fill="none" stroke="#0C1630" stroke-width="26" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M428,270 C430.7,268.7 440,265.3 444,262 C448,258.7 450.7,252 452,250" fill="none" stroke="#FBD38D" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <path d="M300,22 L12.3,299.9 A400,400 0 0,0 587.7,299.9 Z" fill="none" stroke="#2C3F5E" stroke-width="1.5"/>
+  <text x="200" y="120" font-family="sans-serif" font-size="13" fill="#C8A995" text-anchor="middle">Liver</text>
+  <text x="110" y="296" font-family="sans-serif" font-size="17" font-weight="bold" fill="#A9C1FF" text-anchor="middle">IVC</text>
+  <text x="492" y="250" font-family="sans-serif" font-size="17" font-weight="bold" fill="#A9C1FF" text-anchor="middle">RA</text>
+  <text x="430" y="156" font-family="sans-serif" font-size="17" font-weight="bold" fill="#A9C1FF" text-anchor="middle">SVC</text>
+  <polyline points="124,184 226,196" fill="none" stroke="#7C8BA1" stroke-width="1"/>
+  <circle cx="226" cy="196" r="2.6" fill="#E2E8F0"/>
+  <text x="120" y="188" font-family="sans-serif" font-size="12.5" fill="#E2E8F0" text-anchor="end">Hepatic vein</text>
+  <polyline points="348,376 446,258" fill="none" stroke="#7C8BA1" stroke-width="1"/>
+  <circle cx="446" cy="258" r="2.6" fill="#E2E8F0"/>
+  <text x="352" y="380" font-family="sans-serif" font-size="12.5" fill="#E2E8F0" text-anchor="start">Eustachian valve</text>
+  <polyline points="564,326 520,296" fill="none" stroke="#7C8BA1" stroke-width="1"/>
+  <circle cx="520" cy="296" r="2.6" fill="#E2E8F0"/>
+  <text x="560" y="330" font-family="sans-serif" font-size="12.5" fill="#E2E8F0" text-anchor="end">Diaphragm</text>
+  <line x1="300" y1="22" x2="380" y2="300" stroke="#00D2B8" stroke-width="1.6" stroke-dasharray="2,5" stroke-linecap="round"/>
+  <text x="420" y="236" font-family="sans-serif" font-size="11.5" font-weight="bold" fill="#00D2B8" text-anchor="end">M-mode · 1–2 cm from RA</text>
+  <line x1="300" y1="22" x2="236" y2="210" stroke="#FF4D6D" stroke-width="1.4" stroke-dasharray="7,5" stroke-opacity="0.9"/>
+  <line x1="244.2" y1="207.5" x2="231" y2="203" stroke="#FF4D6D" stroke-width="2.4" stroke-linecap="round"/>
+  <line x1="241" y1="217" x2="227.8" y2="212.5" stroke="#FF4D6D" stroke-width="2.4" stroke-linecap="round"/>
+  <rect x="60" y="217" width="130.4" height="18" rx="9" fill="#FF4D6D" fill-opacity="0.18" stroke="#FF4D6D" stroke-width="1"/>
+  <text x="125.2" y="230" font-family="sans-serif" font-size="11.5" font-weight="bold" fill="#FFC2CC" text-anchor="middle">PW · hepatic vein</text>
+  <circle cx="330" cy="28" r="5" fill="#FF8A3D"/>
+  <g>
+  <circle cx="44" cy="46" r="26" fill="#111824" stroke="#334155" stroke-width="1.2"/>
+  <line x1="44" y1="46" x2="44" y2="35" stroke="#00D2B8" stroke-width="1.6"/>
+  <line x1="44" y1="46" x2="44" y2="57" stroke="#00D2B8" stroke-width="1.6"/>
+  <line x1="44" y1="46" x2="33" y2="46" stroke="#00D2B8" stroke-width="1.6"/>
+  <line x1="44" y1="46" x2="55" y2="46" stroke="#00D2B8" stroke-width="1.6"/>
+  <circle cx="44" cy="46" r="2.4" fill="#00D2B8"/>
+  <text x="44" y="32" font-family="sans-serif" font-size="11" font-weight="bold" fill="#E2E8F0" text-anchor="middle">A</text>
+  <text x="44" y="69" font-family="sans-serif" font-size="11" font-weight="bold" fill="#E2E8F0" text-anchor="middle">P</text>
+  <text x="27" y="50" font-family="sans-serif" font-size="11" font-weight="bold" fill="#E2E8F0" text-anchor="middle">I</text>
+  <text x="61" y="50" font-family="sans-serif" font-size="11" font-weight="bold" fill="#E2E8F0" text-anchor="middle">S</text>
+  <text x="44" y="87" font-family="sans-serif" font-size="11" font-weight="bold" fill="#00D2B8" text-anchor="middle">IVC</text>
+  </g>
+  <rect x="466" y="9" width="124" height="73" rx="6" fill="#0A0E14" fill-opacity="0.85" stroke="#1F2A3A"/>
+  <rect x="474" y="14" width="10" height="10" rx="2" fill="url(#myo)"/>
+  <text x="490" y="23" font-family="sans-serif" font-size="10" fill="#94A3B8">Myocardium</text>
+  <rect x="474" y="27" width="10" height="10" rx="2" fill="#B03A4E"/>
+  <text x="490" y="36" font-family="sans-serif" font-size="10" fill="#94A3B8">Oxygenated</text>
+  <rect x="474" y="40" width="10" height="10" rx="2" fill="#3A5BA8"/>
+  <text x="490" y="49" font-family="sans-serif" font-size="10" fill="#94A3B8">Deoxygenated</text>
+  <rect x="474" y="53" width="10" height="10" rx="2" fill="#FBD38D"/>
+  <text x="490" y="62" font-family="sans-serif" font-size="10" fill="#94A3B8">Valves</text>
+  <rect x="474" y="66" width="10" height="10" rx="2" fill="#FF4D6D"/>
+  <text x="490" y="75" font-family="sans-serif" font-size="10" fill="#94A3B8">Doppler</text>
+</svg>

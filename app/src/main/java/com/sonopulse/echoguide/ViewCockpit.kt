@@ -1,0 +1,1686 @@
+package com.sonopulse.echoguide
+
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.*
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.calculatePan
+import androidx.compose.foundation.gestures.calculateZoom
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.FactCheck
+import androidx.compose.material.icons.automirrored.filled.FormatListBulleted
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.OpenInFull
+import androidx.compose.material.icons.filled.Pause
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.SkipNext
+import androidx.compose.material.icons.filled.SkipPrevious
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.snapshots.SnapshotStateMap
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.positionChanged
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import androidx.media3.exoplayer.ExoPlayer
+import coil.ImageLoader
+import coil.compose.AsyncImage
+import coil.compose.SubcomposeAsyncImage
+import coil.decode.SvgDecoder
+import coil.request.ImageRequest
+import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.math.sqrt
+import kotlinx.coroutines.launch
+
+/** Step navigation shown inside the cockpit's step card ("< Zurück | 27 / 45 | Weiter >"). */
+class StepNavigator(
+    val step: GuideStep?,
+    val counter: String,
+    val canGoBack: Boolean,
+    val isLast: Boolean,
+    val onBack: () -> Unit,
+    val onNext: () -> Unit
+)
+
+private enum class DeckTab(val labelRes: Int) {
+    STEPS(R.string.cockpit_tab_steps),
+    CONSOLE(R.string.cockpit_tab_console),
+    TIMING(R.string.cockpit_tab_timing)
+}
+
+private val StageHeight = 205.dp
+
+/**
+ * Zero-scroll clinical cockpit for one view, shared by the view-detail screen and the guided exam:
+ * slim 48 dp top bar → 205 dp split stage (cine loop 52 % | diagram 48 %) → 54 dp ECG/transport bar →
+ * a three-tab lower deck (steps · console · timing & probe) that fills the remaining height.
+ * The Ablauf button opens a drawer with all views; credits live in the (i) dialog.
+ */
+@Composable
+fun ViewCockpit(
+    protocol: EchoProtocol,
+    view: EchoView,
+    language: AppLanguage,
+    navigator: StepNavigator,
+    onSelectView: (EchoView) -> Unit,
+    modifier: Modifier = Modifier,
+    onBack: (() -> Unit)? = null
+) {
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+    val player = rememberEchoPlayer()
+    // 2D ⇄ colour Doppler: -1 = the view's 2D loop, otherwise an index into its colour loops.
+    val colorLoops = remember(view.id) { protocol.colorLoopsFor(view.id) }
+    var colorIndex by rememberSaveable(view.id) { mutableIntStateOf(-1) }
+    val colorLoop = colorLoops.getOrNull(colorIndex)
+    val cycleColor: () -> Unit = { colorIndex = if (colorIndex + 1 < colorLoops.size) colorIndex + 1 else -1 }
+    val videoAsset = colorLoop?.asset ?: view.videoAsset
+    val loop = rememberLoopState(player, videoAsset)
+
+    var tab by rememberSaveable { mutableStateOf(DeckTab.STEPS) }
+    var videoOverlay by rememberSaveable { mutableStateOf(false) }
+    var diagramOverlay by rememberSaveable { mutableStateOf(false) }
+    var referenceOpen by rememberSaveable { mutableStateOf(false) }
+    val checked = remember { mutableStateMapOf<String, Boolean>() }
+    val (caliperOn, toggleCaliper) = rememberCaliperEnabled()
+    val step = navigator.step
+    val stepIndex = step?.let { view.steps.indexOf(it) } ?: -1
+
+    // Right-hand panel: the probe-orientation illustration on step 1, the vector schema from
+    // step 2 on; the atlas stays one tap away and is remembered once chosen for this view.
+    val modes = remember(view) { diagramModesFor(view) }
+    var preferAtlas by rememberSaveable(view.id) { mutableStateOf(false) }
+    var manualMode by remember(view.id, stepIndex) { mutableStateOf<DiagramMode?>(null) }
+    val autoMode = when {
+        stepIndex <= 0 && DiagramMode.PROBE in modes -> DiagramMode.PROBE
+        preferAtlas && DiagramMode.ATLAS in modes -> DiagramMode.ATLAS
+        else -> DiagramMode.SCHEMA
+    }
+    val diagramMode = manualMode?.takeIf { it in modes } ?: autoMode
+    val pages = remember(view.id) { mutableStateMapOf<DiagramMode, Int>() }
+    val diagramPage = (pages[diagramMode] ?: 0).coerceIn(0, (pageCount(view, diagramMode) - 1).coerceAtLeast(0))
+    val selectPage: (Int) -> Unit = { pages[diagramMode] = it }
+    val selectMode: (DiagramMode) -> Unit = { mode ->
+        manualMode = mode
+        if (mode != DiagramMode.PROBE) preferAtlas = mode == DiagramMode.ATLAS
+    }
+
+    // Trainee-dragged caliper positions, keyed per view / step / caliper; Reset clears a step.
+    val practice = remember { mutableStateMapOf<String, List<Float>>() }
+    val practicePrefix = "${view.id}#$stepIndex"
+    val practised = practice.keys.any { it.startsWith("$practicePrefix#") }
+    val resetPractice: () -> Unit = { practice.keys.filter { it.startsWith("$practicePrefix#") }.forEach(practice::remove) }
+
+    // Colour Doppler follows the step: every step change (Weiter / Zurück) returns to the 2D loop,
+    // unless the new step is itself a colour Doppler step of a valve this view has a colour loop for.
+    LaunchedEffect(view.id, stepIndex) {
+        colorIndex = colorIndexForStep(step, colorLoops)
+    }
+
+    // Measurement steps open on the frame they are measured on (ED / ES / end-expiration);
+    // orientation, Doppler and colour steps keep the loop running.
+    LaunchedEffect(view.id, step, videoAsset) {
+        // Colour loops have no ECG: they always play.
+        val phase = if (colorLoop != null) StepPhase.LIVE else step?.requiredPhase ?: StepPhase.LIVE
+        loop.requestPhase(phase, view.ecg, step?.freezeAtMs)
+    }
+
+    BackHandler(enabled = drawerState.isOpen) { scope.launch { drawerState.close() } }
+
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        modifier = modifier,
+        drawerContent = {
+            ProtocolDrawer(protocol, view, language) { selected ->
+                scope.launch { drawerState.close() }
+                onSelectView(selected)
+            }
+        }
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(EchoBackground)
+        ) {
+            SlimTopBar(
+                title = view.title.get(language),
+                onBack = onBack,
+                onDrawer = { scope.launch { drawerState.open() } }
+            )
+            // Apical views as separate, isolated views: 2- / 3- / 4- / 5-chamber pills switch between
+            // them (each has its own loop, steps, schema and state).
+            if (view.id in APICAL_FAMILY) {
+                ApicalFamilyBar(current = view.id, language = language) { id ->
+                    protocol.allViews.firstOrNull { it.id == id }?.let(onSelectView)
+                }
+            }
+            // Phones: one column (stage 205 dp, ECG, tabs). Tablets / landscape (≥ 600 dp wide): two
+            // columns filling the whole screen – large video + diagram with the ECG on the left, the
+            // steps / console / timing deck on the right.
+            BoxWithConstraints(modifier = Modifier.weight(1f).fillMaxWidth()) {
+                val wide = maxWidth >= 600.dp
+                val stage: @Composable (Modifier) -> Unit = { stageModifier ->
+                    SplitStage(
+                    view = view,
+                    player = player,
+                    loop = loop,
+                    step = step,
+                    caliperOn = caliperOn,
+                    onToggleCaliper = toggleCaliper,
+                    practice = practice,
+                    practicePrefix = practicePrefix,
+                    onResetPractice = if (practised) resetPractice else null,
+                    colorLoop = colorLoop,
+                    onCycleColor = if (colorLoops.isNotEmpty()) cycleColor else null,
+                    videoAsset = videoAsset,
+                    diagramMode = diagramMode,
+                    modes = modes,
+                    onSelectMode = selectMode,
+                    diagramPage = diagramPage,
+                    onSelectPage = selectPage,
+                    videoAttached = !videoOverlay,
+                    onOpenVideo = { videoOverlay = true },
+                    onOpenDiagram = { diagramOverlay = true },
+                    language = language,
+                    modifier = stageModifier
+                                    )
+                }
+                val deck: @Composable ColumnScope.() -> Unit = {
+                    DeckTabBar(selected = tab, onSelect = { tab = it })
+                    Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
+                        when (tab) {
+                            DeckTab.STEPS -> StepCard(protocol, view, navigator, language, onOpenReference = { referenceOpen = true })
+                            DeckTab.CONSOLE -> EchoControlConsole(view, protocol.consoleControls, language,
+                                onColorKey = if (colorLoops.isNotEmpty()) cycleColor else null)
+                            DeckTab.TIMING -> TimingProbePanel(view, language) {
+                                selectMode(DiagramMode.PROBE)
+                                diagramOverlay = true
+                            }
+                        }
+                    }
+                }
+                if (wide) {
+                    Row(
+                        modifier = Modifier.fillMaxSize().padding(start = 12.dp, end = 12.dp, bottom = 10.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Column(modifier = Modifier.weight(0.62f).fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Box(modifier = Modifier.weight(1f).fillMaxWidth()) { stage(Modifier.fillMaxHeight()) }
+                            EcgTransportBar(player = player, loop = loop, timing = view.ecg)
+                        }
+                        Column(modifier = Modifier.weight(0.38f).fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            deck()
+                        }
+                    }
+                } else {
+                    Column(
+                        modifier = Modifier.fillMaxSize().padding(start = 10.dp, end = 10.dp, bottom = 8.dp),
+                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        stage(Modifier.height(StageHeight))
+                        EcgTransportBar(player = player, loop = loop, timing = view.ecg)
+                        deck()
+                    }
+                }
+            }
+        }
+    }
+
+    if (videoOverlay) {
+        // Licence credit of the clip on screen (CC BY-SA / CC BY-NC attribution).
+        val credit = colorLoop?.let { stringResource(R.string.player_real_credit, it.author, it.license, "The POCUS Atlas") }
+            ?: view.videoSource.let { src ->
+                if (src.isSimulated) stringResource(R.string.player_simulated_note)
+                else stringResource(R.string.player_real_credit, src.author.orEmpty(), src.license.orEmpty(), src.platform)
+            }
+        VideoOverlay(
+            player, loop, videoAsset, if (colorLoop == null) step else null, caliperOn, toggleCaliper,
+            practice, practicePrefix, if (practised) resetPractice else null, credit
+        ) { videoOverlay = false }
+    }
+    if (diagramOverlay) {
+        DiagramOverlay(view, step, caliperOn, toggleCaliper, diagramMode, modes, selectMode, diagramPage, selectPage, language,
+            systolic = step?.requiredPhase == StepPhase.ES || loop.frozenPhase == StepPhase.ES) {
+            diagramOverlay = false
+        }
+    }
+    if (referenceOpen) {
+        ReferenceDialog(
+            view = view,
+            language = language,
+            isChecked = { i -> checked["${view.id}#$i"] == true },
+            onToggle = { i, value -> checked["${view.id}#$i"] = value },
+            onDismiss = { referenceOpen = false }
+        )
+    }
+}
+
+// ---------------------------------------------------------------------------------------------
+// Top bar & drawer
+// ---------------------------------------------------------------------------------------------
+
+@Composable
+private fun SlimTopBar(
+    title: String,
+    onBack: (() -> Unit)?,
+    onDrawer: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(48.dp)
+            .padding(horizontal = 4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        if (onBack != null) {
+            IconButton(onClick = onBack, modifier = Modifier.size(40.dp)) {
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.cockpit_back), tint = EchoText)
+            }
+        } else {
+            Spacer(Modifier.width(8.dp))
+        }
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleSmall,
+            fontWeight = FontWeight.Bold,
+            color = EchoText,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(1f)
+        )
+        LocalOpenSettings.current?.let { SettingsGearButton(it, Modifier.size(40.dp)) }
+        IconButton(onClick = onDrawer, modifier = Modifier.size(40.dp)) {
+            Icon(Icons.AutoMirrored.Filled.FormatListBulleted, contentDescription = stringResource(R.string.guided_protocol_list), tint = EchoPrimary)
+        }
+    }
+}
+
+@Composable
+private fun ProtocolDrawer(protocol: EchoProtocol, current: EchoView, language: AppLanguage, onSelect: (EchoView) -> Unit) {
+    ModalDrawerSheet(drawerContainerColor = EchoSurface, modifier = Modifier.width(300.dp)) {
+        Text(
+            text = stringResource(R.string.guided_sequence_title),
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = EchoText,
+            modifier = Modifier.padding(16.dp)
+        )
+        Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+            var number = 0
+            protocol.windows.forEach { window ->
+                Text(
+                    text = window.title.get(language).uppercase(),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = EchoMuted,
+                    modifier = Modifier.padding(start = 16.dp, top = 8.dp, bottom = 4.dp)
+                )
+                window.views.forEach { v ->
+                    number++
+                    val active = v.id == current.id
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 8.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(if (active) EchoPrimary.copy(alpha = 0.14f) else Color.Transparent)
+                            .clickable { onSelect(v) }
+                            .padding(horizontal = 8.dp, vertical = 9.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        NumberBadge(number, if (active) EchoPrimaryFill else EchoCautionFill)
+                        Spacer(Modifier.width(10.dp))
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(v.title.get(language), color = EchoText, style = MaterialTheme.typography.bodyMedium, maxLines = 2)
+                            Text(
+                                pluralStringResource(R.plurals.guided_steps_count, v.steps.size, v.steps.size),
+                                color = EchoMuted,
+                                style = MaterialTheme.typography.labelSmall
+                            )
+                        }
+                    }
+                }
+            }
+            Spacer(Modifier.height(16.dp))
+        }
+    }
+}
+
+@Composable
+private fun NumberBadge(number: Int, color: Color) {
+    Box(
+        modifier = Modifier
+            .size(24.dp)
+            .clip(CircleShape)
+            .background(color),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(number.toString(), color = EchoOnAccent, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+    }
+}
+
+// ---------------------------------------------------------------------------------------------
+// Split stage: cine loop (52 %) | diagram (48 %)
+// ---------------------------------------------------------------------------------------------
+
+/** True when the step's calipers belong on the current video frame (frozen phase or a live Doppler/colour step). */
+private fun videoCaliperVisible(step: GuideStep?, loop: LoopState, caliperOn: Boolean): Boolean =
+    caliperOn && loop.ready && step != null && step.overlays.any { it.video != null } &&
+        (step.requiredPhase == StepPhase.LIVE || loop.frozenPhase != null)
+
+/** Drag-to-practice is offered on a frozen frame for steps with caliper lines. */
+private fun practiceActive(step: GuideStep?, loop: LoopState, caliperOn: Boolean): Boolean =
+    caliperOn && loop.ready && loop.frozenPhase != null && loop.videoAspect > 0f &&
+        step != null && step.overlays.any { it.type == CaliperOverlay.LINE && it.video != null }
+
+/** Colour loop a step asks for: its colour box ("Color · MV") names the valve; -1 = the 2D loop. */
+internal fun colorIndexForStep(step: GuideStep?, colorLoops: List<ColorLoop>): Int {
+    val area = step?.overlays?.firstOrNull { it.type == CaliperOverlay.AREA } ?: return -1
+    return colorLoops.indexOfFirst { it.valve.isNotEmpty() && area.label.contains(it.valve) }
+}
+
+/** Panels a view can show on the right: orientation, schema (always) and atlas. */
+internal fun diagramModesFor(view: EchoView): List<DiagramMode> = buildList {
+    if (view.orientationAsset != null) add(DiagramMode.PROBE)
+    add(DiagramMode.SCHEMA)
+    if (view.diagramAsset != null) add(DiagramMode.ATLAS)
+}
+
+/** Asset, aspect and calipers of one diagram panel. */
+private class DiagramSource(
+    val asset: String,
+    val aspect: Float,
+    val background: Color,
+    val overlays: List<CaliperOverlay>,
+    val coords: (CaliperOverlay) -> List<Float>?,
+    /** Legacy caliper in 600x420 SVG units, only for the old schematic fallback. */
+    val svgCaliper: List<Float>? = null,
+    /** Probe panel: falls back to a drawn clock badge so it can never stay blank. */
+    val isProbe: Boolean = false,
+    /** Caption and licence credit of a gallery page (shown in full screen). */
+    val caption: String? = null,
+    val credit: String? = null,
+    /** Structure names of a vector schema (drawn as pills; caliper labels avoid them). */
+    val labels: List<SchemaLabel> = emptyList()
+)
+
+/** Number of pages a panel mode has: the illustration plus its Echocardiographer.org gallery. */
+internal fun pageCount(view: EchoView, mode: DiagramMode): Int = when (mode) {
+    DiagramMode.PROBE -> 1 + view.probeGallery.size
+    DiagramMode.ATLAS -> (if (view.diagramAsset != null) 1 else 0) + view.atlasGallery.size
+    DiagramMode.SCHEMA -> view.schemaGallery.size.coerceAtLeast(1)
+}
+
+private fun galleryPage(image: GalleryImage, language: AppLanguage, background: Color) =
+    DiagramSource(image.asset, image.aspect, background, emptyList(), { null },
+        caption = image.caption.get(language), credit = image.credit)
+
+private fun diagramSource(
+    view: EchoView,
+    mode: DiagramMode,
+    step: GuideStep?,
+    caliperOn: Boolean,
+    language: AppLanguage,
+    page: Int = 0,
+    darkTheme: Boolean = true,
+    /** End-systole (ES step or ES key): the schema shows its contracted version. */
+    systolic: Boolean = false
+): DiagramSource {
+    val overlays = if (caliperOn) step?.overlays.orEmpty() else emptyList()
+    val atlas = view.diagramAsset
+    val orientation = view.orientationAsset
+    // Pages after the first come from the view's Echocardiographer.org gallery (no calipers).
+    if (mode == DiagramMode.PROBE && page >= 1) {
+        view.probeGallery.getOrNull(page - 1)?.let { return galleryPage(it, language, Color.Black) }
+    }
+    if (mode == DiagramMode.ATLAS) {
+        val galleryIndex = if (atlas != null) page - 1 else page
+        if (galleryIndex >= 0) view.atlasGallery.getOrNull(galleryIndex)?.let { return galleryPage(it, language, Color.Black) }
+    }
+    return when {
+        mode == DiagramMode.PROBE && orientation != null ->
+            DiagramSource(localizedOrientationAsset(orientation, language), ORIENTATION_ASPECT, SchemaBackground, emptyList(), { null },
+                isProbe = true)
+        mode == DiagramMode.PROBE ->
+            // A view without an illustration still gets the clock badge (see ProbeOrientationFallback).
+            DiagramSource("orientation/${view.id}.svg", ORIENTATION_ASPECT, SchemaBackground, emptyList(), { null }, isProbe = true)
+        mode == DiagramMode.ATLAS && atlas != null ->
+            DiagramSource(atlas, view.diagramAspect, if (atlas.endsWith(".png")) EchoPalette.AtlasCard else Color.Black, overlays, { it.diagram },
+                credit = view.diagramCredit?.get(language))
+        // Schema = real medical drawings / labelled frames from Echocardiographer.org (paged).
+        mode == DiagramMode.SCHEMA && view.schemaGallery.isNotEmpty() -> {
+            val image = view.schemaGallery[page.coerceIn(0, view.schemaGallery.lastIndex)]
+            // The view drawing carries the step's calipers, PW gates and CW / M-mode cursors.
+            if (image.calipers) {
+                // Original drawing in the active theme (scripts/schema_raster.py: *_dark.webp / *_light.webp),
+                // its end-systolic version when the step / frozen frame is ES.
+                val base = if (systolic) image.systolicAsset ?: image.asset else image.asset
+                val asset = if (darkTheme) base else base.replace("_dark.webp", "_light.webp")
+                DiagramSource(asset, image.aspect, Color.Transparent, overlays, { it.schema },
+                    caption = image.caption.get(language), credit = image.credit, labels = image.labels)
+            } else {
+                galleryPage(image, language, Color.Black)
+            }
+        }
+        else ->
+            DiagramSource(view.svgAsset, SVG_WIDTH / SVG_HEIGHT, EchoPalette.BgPrimary, emptyList(), { null },
+                svgCaliper = if (caliperOn) step?.caliper else null)
+    }
+}
+
+private val SchemaBackground = EchoPalette.BgPrimary
+
+private fun probeFallback(source: DiagramSource, view: EchoView, language: AppLanguage): (@Composable () -> Unit)? =
+    if (source.isProbe) ({ ProbeOrientationFallback(view, language) }) else null
+
+/** Height reserved under the Sonde | Schema | Atlas pills so they never cover the diagram. */
+private val PillsHeight = 24.dp
+
+/**
+ * Drawn stand-in for the probe illustration (missing or undecodable asset): clock face with the
+ * index direction and the window, so the Sonde panel is never blank.
+ */
+@Composable
+private fun ProbeOrientationFallback(view: EchoView, language: AppLanguage) {
+    Column(
+        modifier = Modifier.fillMaxSize().background(SchemaBackground).padding(6.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        NotchClock(hours = view.notchHours, modifier = Modifier.size(56.dp))
+        Spacer(Modifier.height(4.dp))
+        Text(stringResource(R.string.notch_label, view.notchClock), color = EchoSky, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+        Text(view.probePosition.get(language), color = EchoText, fontSize = 9.sp, maxLines = 2, overflow = TextOverflow.Ellipsis,
+            textAlign = TextAlign.Center)
+    }
+}
+
+@Composable
+private fun SplitStage(
+    view: EchoView,
+    player: ExoPlayer,
+    loop: LoopState,
+    step: GuideStep?,
+    caliperOn: Boolean,
+    onToggleCaliper: () -> Unit,
+    practice: SnapshotStateMap<String, List<Float>>,
+    practicePrefix: String,
+    onResetPractice: (() -> Unit)?,
+    colorLoop: ColorLoop?,
+    onCycleColor: (() -> Unit)?,
+    videoAsset: String,
+    diagramMode: DiagramMode,
+    modes: List<DiagramMode>,
+    onSelectMode: (DiagramMode) -> Unit,
+    diagramPage: Int,
+    onSelectPage: (Int) -> Unit,
+    videoAttached: Boolean,
+    onOpenVideo: () -> Unit,
+    onOpenDiagram: () -> Unit,
+    language: AppLanguage,
+    modifier: Modifier = Modifier
+) {
+    // 2D calipers belong to the 2D loop: hidden while a colour loop plays.
+    val overlays = if (colorLoop == null) step?.overlays.orEmpty() else emptyList()
+    val practising = videoAttached && practiceActive(step, loop, caliperOn)
+    // Imaging stays left-to-right in Arabic too: cine left, diagram right, probe sectors and
+    // calipers never mirrored (anatomical orientation of the screen is fixed).
+    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(modifier),
+        horizontalArrangement = Arrangement.spacedBy(6.dp)
+    ) {
+        StageCard(
+            modifier = Modifier.weight(0.52f),
+            onClick = onOpenVideo,
+            controls = {
+                if (practising) {
+                    CaliperPracticeLayer(
+                        overlays = overlays,
+                        practice = practice,
+                        keyPrefix = practicePrefix,
+                        videoAspect = loop.videoAspect,
+                        captureFrame = loop::captureFrame,
+                        modifier = Modifier.fillMaxSize(),
+                        onTap = onOpenVideo
+                    )
+                }
+                if (overlays.isNotEmpty() || onCycleColor != null) {
+                    Row(
+                        modifier = Modifier.align(Alignment.TopEnd).padding(5.dp),
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        if (onCycleColor != null) ColorToggleChip(colorLoop, onCycleColor)
+                        if (onResetPractice != null && overlays.isNotEmpty()) CaliperResetChip(onResetPractice)
+                        if (overlays.isNotEmpty()) CaliperToggle(caliperOn, onToggleCaliper)
+                    }
+                }
+            }
+        ) {
+            LoopBox(player, loop, videoAsset, attached = videoAttached, modifier = Modifier.fillMaxSize())
+            colorLoop?.let { NyquistBar(it.nyquistCmS, Modifier.align(Alignment.CenterStart).padding(start = 3.dp).width(36.dp).height(96.dp)) }
+            if (!practising && videoAttached && videoCaliperVisible(step, loop, caliperOn) && loop.videoAspect > 0f) {
+                CaliperCanvas(overlays, { it.video }, loop.videoAspect, Modifier.fillMaxSize())
+            }
+            SourceBadge(
+                simulated = colorLoop == null && view.videoSource.isSimulated,
+                code = viewCode(view.id) + if (colorLoop != null) " · Color" else "",
+                // bottom-left, so the colour / caliper chips at the top never collide with it
+                modifier = Modifier.align(Alignment.BottomStart).padding(5.dp)
+            )
+            loop.frozenPhase?.let { FrozenBadge(it, Modifier.align(Alignment.BottomStart).padding(start = 5.dp, bottom = 26.dp)) }
+        }
+        // End-systole (ES step, or the loop frozen on ES): the schema contracts with the real heart.
+        val systolic = step?.requiredPhase == StepPhase.ES || loop.frozenPhase == StepPhase.ES
+        val source = diagramSource(view, diagramMode, step, caliperOn, language, diagramPage, MaterialTheme.echoColors.isDark, systolic)
+        val showsSystole = systolic && diagramMode == DiagramMode.SCHEMA && view.schemaGallery.getOrNull(diagramPage)?.systolicAsset != null
+        val pageTotal = pageCount(view, diagramMode)
+        StageCard(
+            modifier = Modifier.weight(0.48f),
+            onClick = onOpenDiagram,
+            background = source.background,
+            controls = {
+                if (modes.size > 1) {
+                    DiagramModePills(diagramMode, modes, onSelectMode, Modifier.align(Alignment.TopCenter).padding(top = 4.dp))
+                }
+                if (pageTotal > 1) {
+                    PageStepper(diagramPage, pageTotal, onSelectPage, Modifier.align(Alignment.BottomCenter).padding(bottom = 4.dp))
+                }
+                if (showsSystole) {
+                    // compact "ES" chip under the mode pills: the schema shows the contracted ventricle
+                    Text(
+                        "ES",
+                        color = Color.White,
+                        fontSize = 9.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier
+                            .align(Alignment.TopStart)
+                            .padding(start = 6.dp, top = PillsHeight + 8.dp)
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(EchoCriticalFill)
+                            .padding(horizontal = 5.dp, vertical = 1.dp)
+                    )
+                }
+
+            }
+        ) {
+            DiagramThumb(
+                assetPath = source.asset,
+                aspectRatio = source.aspect,
+                caliper = source.svgCaliper,
+                contentDescription = view.title.get(language),
+                overlays = source.overlays,
+                overlayCoords = source.coords,
+                labels = source.labels,
+                topInset = if (modes.size > 1) PillsHeight else 0.dp,
+                fallback = probeFallback(source, view, language)
+            )
+        }
+    }
+    }
+}
+
+@Composable
+private fun StageCard(
+    modifier: Modifier,
+    onClick: () -> Unit,
+    background: Color = Color.Black,
+    controls: @Composable BoxScope.() -> Unit = {},
+    content: @Composable BoxScope.() -> Unit
+) {
+    Box(
+        modifier = modifier
+            .fillMaxHeight()
+            .clip(RoundedCornerShape(12.dp))
+            .background(background)
+            .border(1.dp, EchoOutline, RoundedCornerShape(12.dp))
+    ) {
+        content()
+        // Transparent tap layer above the (Android) video view so the whole card opens the overlay.
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .clickable(onClick = onClick)
+        )
+        Icon(
+            Icons.Filled.OpenInFull,
+            contentDescription = stringResource(R.string.cockpit_enlarge),
+            tint = Color.White.copy(alpha = 0.85f),
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(5.dp)
+                .size(22.dp)
+                .clip(CircleShape)
+                .background(Color.Black.copy(alpha = 0.45f))
+                .padding(4.dp)
+        )
+        // Interactive controls sit above the tap layer.
+        controls()
+    }
+}
+
+/** "A5C · LIVE" (real loop, green pulse dot) or "SIM" badge on the cine card. */
+@Composable
+private fun SourceBadge(simulated: Boolean, code: String, modifier: Modifier = Modifier) {
+    val color = if (simulated) EchoPalette.Amber else EchoPalette.EcgTrace
+    Row(
+        modifier = modifier
+            .clip(RoundedCornerShape(6.dp))
+            .background(Color.Black.copy(alpha = 0.66f))
+            .border(1.dp, color.copy(alpha = 0.7f), RoundedCornerShape(6.dp))
+            .padding(horizontal = 5.dp, vertical = 1.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        if (!simulated) {
+            Box(Modifier.size(6.dp).clip(CircleShape).background(color))
+            Spacer(Modifier.width(4.dp))
+        }
+        Text(
+            text = ltr(if (simulated) stringResource(R.string.badge_simulated) else "$code · ${stringResource(R.string.badge_live)}"),
+            color = color,
+            fontSize = 9.sp,
+            fontWeight = FontWeight.Bold,
+            maxLines = 1
+        )
+    }
+}
+
+/** Short scanner label of a view (shown on the cine badge and the apical pills). */
+internal fun viewCode(viewId: String): String = when (viewId) {
+    "subcostal_4c" -> "SC 4C"
+    "subcostal_ivc" -> "IVC"
+    "plax_standard" -> "PLAX"
+    "psax_av" -> "PSAX AV"
+    "psax_papillary" -> "PSAX PM"
+    "apical_4c" -> "A4C"
+    "apical_5c" -> "A5C"
+    "apical_2c" -> "A2C"
+    "apical_3c" -> "A3C"
+    "suprasternal_arch" -> "SSN"
+    else -> viewId.uppercase()
+}
+
+/** The apical views, each an independent view with its own loop, steps and schema. */
+internal val APICAL_FAMILY = listOf("apical_2c", "apical_3c", "apical_4c", "apical_5c")
+
+@Composable
+private fun ApicalFamilyBar(current: String, language: AppLanguage, onSelect: (String) -> Unit) {
+    val labels = mapOf(
+        "apical_2c" to LocalizedText("2-Chamber", "2-Kammer", "ثنائي الحجرات"),
+        "apical_3c" to LocalizedText("3-Chamber", "3-Kammer", "ثلاثي الحجرات"),
+        "apical_4c" to LocalizedText("4-Chamber", "4-Kammer", "رباعي الحجرات"),
+        "apical_5c" to LocalizedText("5-Chamber", "5-Kammer", "خماسي الحجرات")
+    )
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .horizontalScroll(rememberScrollState())
+            .padding(start = 10.dp, end = 10.dp, bottom = 6.dp),
+        horizontalArrangement = Arrangement.spacedBy(6.dp)
+    ) {
+        APICAL_FAMILY.forEach { id ->
+            val active = id == current
+            Row(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(if (active) EchoPrimaryFill else EchoSurface)
+                    .border(1.dp, if (active) EchoPrimaryFill else EchoOutline, RoundedCornerShape(16.dp))
+                    .clickable(enabled = !active) { onSelect(id) }
+                    .padding(horizontal = 12.dp, vertical = 5.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(ltr(viewCode(id)), color = if (active) EchoOnAccent else EchoPrimary, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                Spacer(Modifier.width(6.dp))
+                Text(labels.getValue(id).get(language), color = if (active) EchoOnAccent else EchoText, fontSize = 12.sp)
+            }
+        }
+    }
+}
+
+/**
+ * Non-interactive diagram preview fitted into its card, with an optional caliper on SVG diagrams
+ * ([caliper], SVG units) or a normalised measurement [overlay] on the atlas illustration.
+ */
+@Composable
+private fun DiagramThumb(
+    assetPath: String,
+    aspectRatio: Float,
+    caliper: List<Float>?,
+    contentDescription: String,
+    overlays: List<CaliperOverlay> = emptyList(),
+    overlayCoords: (CaliperOverlay) -> List<Float>? = { it.diagram },
+    /** Space kept free above the image (e.g. for the mode pills). */
+    topInset: Dp = 0.dp,
+    /** Shown instead of a blank box when the asset is missing or cannot be decoded. */
+    fallback: (@Composable () -> Unit)? = null,
+    labels: List<SchemaLabel> = emptyList()
+) {
+    val context = LocalContext.current
+    val imageLoader = remember(context) {
+        ImageLoader.Builder(context.applicationContext).components { add(SvgDecoder.Factory()) }.build()
+    }
+    val isSvg = assetPath.endsWith(".svg", ignoreCase = true)
+    Box(
+        modifier = Modifier.fillMaxSize().padding(start = 4.dp, end = 4.dp, bottom = 4.dp, top = 4.dp + topInset),
+        contentAlignment = Alignment.Center
+    ) {
+        Box(modifier = Modifier.aspectRatio(aspectRatio, matchHeightConstraintsFirst = true)) {
+            SubcomposeAsyncImage(
+                model = ImageRequest.Builder(context)
+                    .data("file:///android_asset/$assetPath")
+                    .apply { if (isSvg) decoderFactory(SvgDecoder.Factory()) }
+                    .build(),
+                imageLoader = imageLoader,
+                contentDescription = contentDescription,
+                contentScale = ContentScale.FillBounds,
+                error = { fallback?.invoke() },
+                modifier = Modifier.fillMaxSize()
+            )
+            SchemaLabelLayer(labels, Modifier.fillMaxSize(), compact = true)
+            if (overlays.isNotEmpty()) {
+                CaliperCanvas(overlays, overlayCoords, aspect = 0f, modifier = Modifier.fillMaxSize(),
+                    avoid = labels.filter { it.kind == "left" || it.kind == "right" })
+            }
+            if (isSvg && caliper != null && caliper.size == 4) {
+                Canvas(modifier = Modifier.fillMaxSize()) {
+                    val sx = size.width / SVG_WIDTH
+                    val sy = size.height / SVG_HEIGHT
+                    val a = Offset(caliper[0] * sx, caliper[1] * sy)
+                    val b = Offset(caliper[2] * sx, caliper[3] * sy)
+                    drawLine(CaliperRed, a, b, strokeWidth = 2.dp.toPx(), cap = StrokeCap.Round)
+                    val dx = b.x - a.x
+                    val dy = b.y - a.y
+                    val len = sqrt(dx * dx + dy * dy)
+                    if (len > 0f) {
+                        val t = 4.dp.toPx()
+                        val px = -dy / len * t
+                        val py = dx / len * t
+                        listOf(a, b).forEach { p ->
+                            drawLine(CaliperRed, Offset(p.x - px, p.y - py), Offset(p.x + px, p.y + py), strokeWidth = 2.dp.toPx())
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+private val CaliperRed = EchoPalette.Gate
+
+// ---------------------------------------------------------------------------------------------
+// Full-screen overlays
+// ---------------------------------------------------------------------------------------------
+
+@Composable
+internal fun FullScreenDialog(onDismiss: () -> Unit, content: @Composable ColumnScope.() -> Unit) {
+    // The dialog window is drawn edge to edge, but its own insets can arrive as zero (e.g. 3-button
+    // navigation): take the activity's system-bar insets as a floor so the play / speed / page
+    // controls always sit above the navigation bar, plus 16 dp to keep them easy to reach.
+    val hostBars = WindowInsets.systemBars.asPaddingValues()
+    val layoutDirection = LocalLayoutDirection.current
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false)
+    ) {
+        val bars = WindowInsets.systemBars.asPaddingValues()
+        val top = maxOf(bars.calculateTopPadding(), hostBars.calculateTopPadding())
+        val end = maxOf(bars.calculateEndPadding(layoutDirection), hostBars.calculateEndPadding(layoutDirection))
+        Box(modifier = Modifier.fillMaxSize().background(EchoBackground)) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(
+                        start = maxOf(bars.calculateStartPadding(layoutDirection), hostBars.calculateStartPadding(layoutDirection)),
+                        top = top,
+                        end = end,
+                        bottom = maxOf(bars.calculateBottomPadding(), hostBars.calculateBottomPadding())
+                    )
+                    // room for the close button above the content
+                    .padding(start = 10.dp, top = 10.dp + CloseButtonSize + 8.dp, end = 10.dp, bottom = 10.dp + DialogBottomLift),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                content()
+            }
+            // Close (X): drawn last, so it stays on top of any video, image or zoomed content.
+            IconButton(
+                onClick = onDismiss,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(top = top, end = end)
+                    .padding(16.dp)
+                    .size(CloseButtonSize)
+                    .clip(CircleShape)
+                    .background(EchoPalette.CloseScrim)
+                    .border(1.dp, Color.White.copy(alpha = 0.85f), CircleShape)
+            ) {
+                Icon(Icons.Filled.Close, contentDescription = stringResource(R.string.about_close), tint = Color.White)
+            }
+        }
+    }
+}
+
+private val CloseButtonSize = 44.dp
+
+/** Extra space under the bottom control row of full-screen dialogs (above the navigation bar). */
+internal val DialogBottomLift = 16.dp
+
+/** Pinch-to-zoom container: two fingers zoom, one finger pans while zoomed, double-tap toggles 2.5×. */
+@Composable
+private fun ZoomBox(modifier: Modifier = Modifier, content: @Composable BoxScope.() -> Unit) {
+    var scale by remember { mutableFloatStateOf(1f) }
+    var offset by remember { mutableStateOf(Offset.Zero) }
+    var size by remember { mutableStateOf(IntSize.Zero) }
+    fun clamp(raw: Offset, s: Float): Offset {
+        val mx = size.width * (s - 1f) / 2f
+        val my = size.height * (s - 1f) / 2f
+        return Offset(raw.x.coerceIn(-mx, mx), raw.y.coerceIn(-my, my))
+    }
+    Box(
+        modifier = modifier
+            .clipToBounds()
+            .onSizeChanged { size = it }
+            .pointerInput(Unit) {
+                awaitEachGesture {
+                    awaitFirstDown(requireUnconsumed = false)
+                    do {
+                        val event = awaitPointerEvent()
+                        // A caliper end being dragged inside the content owns the gesture.
+                        if (event.changes.any { it.isConsumed }) continue
+                        if (event.changes.count { it.pressed } >= 2 || scale > 1f) {
+                            val s = (scale * event.calculateZoom()).coerceIn(1f, 5f)
+                            offset = clamp(offset + event.calculatePan(), s)
+                            scale = s
+                            event.changes.forEach { if (it.positionChanged()) it.consume() }
+                        }
+                    } while (event.changes.any { it.pressed })
+                }
+            }
+            .pointerInput(Unit) {
+                detectTapGestures(onDoubleTap = { tap ->
+                    if (scale > 1f) {
+                        scale = 1f; offset = Offset.Zero
+                    } else {
+                        scale = 2.5f
+                        offset = clamp((Offset(size.width / 2f, size.height / 2f) - tap) * 1.5f, 2.5f)
+                    }
+                })
+            }
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .graphicsLayer {
+                    scaleX = scale; scaleY = scale
+                    translationX = offset.x; translationY = offset.y
+                },
+            content = content
+        )
+    }
+}
+
+@Composable
+private fun VideoOverlay(
+    player: ExoPlayer,
+    loop: LoopState,
+    assetPath: String,
+    step: GuideStep?,
+    caliperOn: Boolean,
+    onToggleCaliper: () -> Unit,
+    practice: SnapshotStateMap<String, List<Float>>,
+    practicePrefix: String,
+    onResetPractice: (() -> Unit)?,
+    credit: String,
+    onDismiss: () -> Unit
+) {
+    val overlays = step?.overlays.orEmpty()
+    val practising = practiceActive(step, loop, caliperOn)
+    FullScreenDialog(onDismiss) {
+        OverlayStatusRow(loop.frozenPhase, overlays.isNotEmpty(), caliperOn, onToggleCaliper, onResetPractice)
+        ZoomBox(modifier = Modifier.weight(1f).fillMaxWidth()) {
+            LoopBox(player, loop, assetPath, attached = true, modifier = Modifier.fillMaxSize(), compactFallback = false)
+            if (practising) {
+                CaliperPracticeLayer(
+                    overlays = overlays,
+                    practice = practice,
+                    keyPrefix = practicePrefix,
+                    videoAspect = loop.videoAspect,
+                    captureFrame = loop::captureFrame,
+                    modifier = Modifier.fillMaxSize()
+                )
+            } else if (videoCaliperVisible(step, loop, caliperOn) && loop.videoAspect > 0f) {
+                CaliperCanvas(overlays, { it.video }, loop.videoAspect, Modifier.fillMaxSize())
+            }
+        }
+        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    OutlinedIconButton(onClick = { loop.stepFrame(forward = false) }, enabled = loop.ready) {
+                        Icon(Icons.Filled.SkipPrevious, contentDescription = stringResource(R.string.player_step_back))
+                    }
+                    FilledIconButton(onClick = { loop.togglePlay() }, enabled = loop.ready) {
+                        Icon(
+                            if (loop.isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow,
+                            contentDescription = stringResource(if (loop.isPlaying) R.string.player_pause else R.string.player_play)
+                        )
+                    }
+                    OutlinedIconButton(onClick = { loop.stepFrame(forward = true) }, enabled = loop.ready) {
+                        Icon(Icons.Filled.SkipNext, contentDescription = stringResource(R.string.player_step_forward))
+                    }
+                }
+                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    listOf(0.25f, 0.5f, 1.0f).forEach { option ->
+                        FilterChip(
+                            selected = loop.speed == option,
+                            enabled = loop.ready,
+                            onClick = { loop.setPlaybackSpeed(option) },
+                            label = { Text("${option}x", fontSize = 12.sp) }
+                        )
+                    }
+                }
+            }
+        }
+        Text("© $credit", style = MaterialTheme.typography.labelSmall, color = EchoMuted, maxLines = 2, overflow = TextOverflow.Ellipsis)
+        Text(stringResource(R.string.zoom_hint), style = MaterialTheme.typography.labelSmall, color = EchoMuted)
+    }
+}
+
+@Composable
+private fun DiagramOverlay(
+    view: EchoView,
+    step: GuideStep?,
+    caliperOn: Boolean,
+    onToggleCaliper: () -> Unit,
+    mode: DiagramMode,
+    modes: List<DiagramMode>,
+    onSelectMode: (DiagramMode) -> Unit,
+    page: Int,
+    onSelectPage: (Int) -> Unit,
+    language: AppLanguage,
+    systolic: Boolean = false,
+    onDismiss: () -> Unit
+) {
+    val source = diagramSource(view, mode, step, caliperOn, language, page, MaterialTheme.echoColors.isDark, systolic)
+    val pageTotal = pageCount(view, mode)
+    FullScreenDialog(onDismiss) {
+        val hasCaliper = mode != DiagramMode.PROBE && (step?.overlays.orEmpty().isNotEmpty() || step?.caliper != null)
+        OverlayStatusRow(frozenPhase = null, hasCaliper = hasCaliper, caliperOn, onToggleCaliper)
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            if (modes.size > 1) DiagramModePills(mode, modes, onSelectMode, large = true)
+
+        }
+        Box(modifier = Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
+            ZoomableDiagram(
+                assetPath = source.asset,
+                contentDescription = view.title.get(language),
+                aspectRatio = source.aspect,
+                caliper = source.svgCaliper,
+                background = source.background,
+                overlays = source.overlays,
+                overlayCoords = source.coords,
+                labels = source.labels,
+                fallback = probeFallback(source, view, language)
+            )
+        }
+        if (source.asset == view.svgAsset) LegendRow()
+        GalleryFooter(source.caption, source.credit, page, pageTotal, onSelectPage)
+    }
+}
+
+/** "‹ 2 / 4 ›" stepper through the pages of a diagram panel. */
+@Composable
+private fun PageStepper(page: Int, total: Int, onSelect: (Int) -> Unit, modifier: Modifier = Modifier, large: Boolean = false) {
+    val size = if (large) 36.dp else 22.dp
+    Row(
+        modifier = modifier
+            .clip(RoundedCornerShape(size / 2))
+            .background(Color.Black.copy(alpha = 0.62f)),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        IconButton(onClick = { onSelect((page - 1 + total) % total) }, modifier = Modifier.size(size)) {
+            Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = stringResource(R.string.gallery_previous),
+                tint = Color.White, modifier = Modifier.size(size * 0.75f))
+        }
+        Text("${page + 1} / $total", color = Color.White, fontSize = if (large) 14.sp else 9.sp, fontWeight = FontWeight.Bold)
+        IconButton(onClick = { onSelect((page + 1) % total) }, modifier = Modifier.size(size)) {
+            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = stringResource(R.string.gallery_next),
+                tint = Color.White, modifier = Modifier.size(size * 0.75f))
+        }
+    }
+}
+
+/** Caption, licence credit and page stepper under a full-screen diagram or example. */
+@Composable
+private fun GalleryFooter(caption: String?, credit: String?, page: Int, total: Int, onSelectPage: (Int) -> Unit) {
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Column(modifier = Modifier.weight(1f)) {
+            caption?.let { Text(it, color = EchoText, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold) }
+            credit?.let { Text("© $it", color = EchoMuted, style = MaterialTheme.typography.labelSmall) }
+            Text(stringResource(R.string.zoom_hint), style = MaterialTheme.typography.labelSmall, color = EchoMuted)
+        }
+        if (total > 1) PageStepper(page, total, onSelectPage, large = true)
+    }
+}
+
+/** Full-screen viewer for a step's real example recordings (PW / CW / TDI / M-mode). */
+@Composable
+internal fun ExampleDialog(examples: List<GalleryImage>, title: String, language: AppLanguage, onDismiss: () -> Unit) {
+    var page by rememberSaveable { mutableIntStateOf(0) }
+    val image = examples[page.coerceIn(0, examples.size - 1)]
+    FullScreenDialog(onDismiss) {
+        Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = EchoText)
+        Box(modifier = Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
+            ZoomableDiagram(
+                assetPath = image.asset,
+                contentDescription = image.caption.get(language),
+                aspectRatio = image.aspect,
+                background = Color.Black
+            )
+        }
+        GalleryFooter(image.caption.get(language), image.credit, page, examples.size) { page = it }
+    }
+}
+
+/** "2D | Farbe MV" chip: cycles the view's 2D loop and its colour Doppler loops. */
+@Composable
+private fun ColorToggleChip(colorLoop: ColorLoop?, onCycle: () -> Unit) {
+    val active = colorLoop != null
+    Text(
+        text = if (active) "${stringResource(R.string.color_toggle)} ${colorLoop!!.valve}" else stringResource(R.string.color_toggle),
+        color = if (active) EchoOnAccent else EchoText,
+        fontSize = 9.sp,
+        fontWeight = FontWeight.Bold,
+        maxLines = 1,
+        modifier = Modifier
+            .clip(RoundedCornerShape(11.dp))
+            .background(if (active) EchoCriticalFill else Color.Black.copy(alpha = 0.6f))
+            .border(1.dp, EchoCritical.copy(alpha = 0.8f), RoundedCornerShape(11.dp))
+            .clickable(onClick = onCycle)
+            .padding(horizontal = 7.dp, vertical = 3.dp)
+    )
+}
+
+/** Frozen-phase badge and Caliper ON/OFF toggle above a full-screen overlay. */
+@Composable
+private fun OverlayStatusRow(
+    frozenPhase: String?,
+    hasCaliper: Boolean,
+    caliperOn: Boolean,
+    onToggleCaliper: () -> Unit,
+    onResetPractice: (() -> Unit)? = null
+) {
+    if (frozenPhase == null && !hasCaliper) return
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        frozenPhase?.let { FrozenBadge(it) }
+        Spacer(Modifier.weight(1f))
+        if (onResetPractice != null) CaliperResetChip(onResetPractice)
+        if (hasCaliper) CaliperToggle(caliperOn, onToggleCaliper)
+    }
+}
+
+/** Full reference tables (adult ED/ES & pediatric) and the clinical checklist for the view. */
+@Composable
+private fun ReferenceDialog(
+    view: EchoView,
+    language: AppLanguage,
+    isChecked: (Int) -> Boolean,
+    onToggle: (Int, Boolean) -> Unit,
+    onDismiss: () -> Unit
+) {
+    var showChecklist by rememberSaveable { mutableStateOf(false) }
+    FullScreenDialog(onDismiss) {
+        Text(view.title.get(language), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = EchoText)
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            listOf(false to R.string.tab_measurements, true to R.string.tab_checklist).forEach { (checklist, label) ->
+                FilterChip(
+                    selected = showChecklist == checklist,
+                    onClick = { showChecklist = checklist },
+                    label = { Text(stringResource(label)) },
+                    colors = FilterChipDefaults.filterChipColors(selectedContainerColor = EchoPrimaryFill, selectedLabelColor = EchoOnAccent)
+                )
+            }
+        }
+        Column(modifier = Modifier.weight(1f).verticalScroll(rememberScrollState())) {
+            if (showChecklist) ChecklistPanel(view, language, isChecked, onToggle) else MeasurementsPanel(view, language)
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------------------------
+// Lower deck
+// ---------------------------------------------------------------------------------------------
+
+@Composable
+private fun DeckTabBar(selected: DeckTab, onSelect: (DeckTab) -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(36.dp)
+            .clip(RoundedCornerShape(10.dp))
+            .background(EchoSurface)
+            .padding(3.dp),
+        horizontalArrangement = Arrangement.spacedBy(3.dp)
+    ) {
+        DeckTab.entries.forEach { tab ->
+            val active = tab == selected
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight()
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(if (active) EchoPrimary.copy(alpha = 0.18f) else Color.Transparent)
+                    .clickable { onSelect(tab) },
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = stringResource(tab.labelRes),
+                    color = if (active) EchoPrimary else EchoMuted,
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = if (active) FontWeight.Bold else FontWeight.Medium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun DeckCard(modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .clip(RoundedCornerShape(14.dp))
+            .background(EchoSurface)
+            .border(1.dp, EchoOutline, RoundedCornerShape(14.dp))
+            .padding(12.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp),
+        content = content
+    )
+}
+
+/** Tab 1: the active step with its normal-range badge and inline step navigation. */
+@Composable
+private fun StepCard(protocol: EchoProtocol, view: EchoView, nav: StepNavigator, language: AppLanguage, onOpenReference: () -> Unit) {
+    var noteOpen by remember { mutableStateOf(false) }
+    var exampleOpen by remember { mutableStateOf(false) }
+    var calculatorOpen by remember { mutableStateOf(false) }
+    var pathologyOpen by remember { mutableStateOf(false) }
+    val step = nav.step
+    val calculator = calculatorForStep(step)
+    val cases = protocol.pathologyFor(view.id)
+    DeckCard {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = step?.title?.get(language) ?: view.title.get(language),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = EchoPrimary,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f)
+            )
+            if (step != null && step.examples.isNotEmpty()) {
+                SmallPill(stringResource(R.string.step_example), EchoCaution) { exampleOpen = true }
+                Spacer(Modifier.width(6.dp))
+            }
+            if (step?.note != null) {
+                SmallPill(stringResource(R.string.guided_note), EchoCaution) { noteOpen = true }
+                Spacer(Modifier.width(6.dp))
+            }
+            SmallPill(stringResource(R.string.cockpit_reference), EchoSky, onClick = onOpenReference)
+        }
+        // Linked tools: the step's calculator and real pathology cases of this view.
+        if (calculator != null || cases.isNotEmpty()) {
+            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                calculator?.let { c ->
+                    SmallPill("∑ " + c.label.get(language), EchoNormal) { calculatorOpen = true }
+                }
+                if (cases.isNotEmpty()) {
+                    SmallPill(stringResource(R.string.pathology_title) + " (${cases.size})", EchoCritical) { pathologyOpen = true }
+                }
+            }
+        }
+        // Long instructions wrap inside the card; the card itself never pushes the page to scroll.
+        Column(modifier = Modifier.weight(1f).verticalScroll(rememberScrollState())) {
+            Text(
+                text = step?.instruction?.get(language) ?: view.probePosition.get(language),
+                style = MaterialTheme.typography.bodyMedium,
+                color = EchoText
+            )
+        }
+        step?.normal?.let { normal ->
+            Text(
+                text = stringResource(R.string.guided_normal, normal.get(language)),
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.SemiBold,
+                color = EchoNormal,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(EchoNormal.copy(alpha = 0.14f))
+                    .padding(horizontal = 10.dp, vertical = 5.dp)
+            )
+        }
+        StepNavBar(nav)
+    }
+    if (calculatorOpen && calculator != null) {
+        FullScreenDialog(onDismiss = { calculatorOpen = false }) {
+            CalculatorBody(calculator, language, Modifier.weight(1f))
+        }
+    }
+    if (pathologyOpen) {
+        FullScreenDialog(onDismiss = { pathologyOpen = false }) {
+            PathologyGallery(protocol, cases, language, Modifier.weight(1f))
+        }
+    }
+    if (exampleOpen && step != null && step.examples.isNotEmpty()) {
+        ExampleDialog(step.examples, step.title.get(language), language) { exampleOpen = false }
+    }
+    if (noteOpen && step?.note != null) {
+        AlertDialog(
+            onDismissRequest = { noteOpen = false },
+            confirmButton = { TextButton(onClick = { noteOpen = false }) { Text(stringResource(R.string.guided_done)) } },
+            title = { Text(stringResource(R.string.guided_note_title), color = EchoCaution, fontWeight = FontWeight.Bold) },
+            text = { Text(step.note.get(language), color = EchoText) },
+            containerColor = EchoSurface
+        )
+    }
+}
+
+@Composable
+private fun StepNavBar(nav: StepNavigator) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(40.dp)
+            .clip(RoundedCornerShape(10.dp))
+            .background(EchoBackground),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        TextButton(onClick = nav.onBack, enabled = nav.canGoBack, modifier = Modifier.weight(1f)) {
+            Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = null, modifier = Modifier.size(18.dp))
+            Text(stringResource(R.string.guided_previous), maxLines = 1, overflow = TextOverflow.Ellipsis)
+        }
+        Text(
+            text = nav.counter,
+            color = EchoMuted,
+            style = MaterialTheme.typography.labelLarge,
+            fontFamily = FontFamily.Monospace,
+            textAlign = TextAlign.Center
+        )
+        TextButton(onClick = nav.onNext, modifier = Modifier.weight(1f)) {
+            Text(
+                stringResource(if (nav.isLast) R.string.guided_restart else R.string.guided_next),
+                fontWeight = FontWeight.Bold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, modifier = Modifier.size(18.dp))
+        }
+    }
+}
+
+@Composable
+private fun SmallPill(text: String, color: Color, onClick: () -> Unit) {
+    Text(
+        text = text,
+        color = color,
+        fontSize = 11.sp,
+        fontWeight = FontWeight.Bold,
+        maxLines = 1,
+        modifier = Modifier
+            .clip(RoundedCornerShape(12.dp))
+            .border(1.dp, color.copy(alpha = 0.7f), RoundedCornerShape(12.dp))
+            .clickable(onClick = onClick)
+            .padding(horizontal = 9.dp, vertical = 4.dp)
+    )
+}
+
+/** Tab 3: probe orientation clock, ED/ES measurement rules and view-specific optimisation tips. */
+@Composable
+private fun TimingProbePanel(view: EchoView, language: AppLanguage, onOpenOrientation: () -> Unit) {
+    val ed = view.referenceMeasurements.adult.filter { "ED" in it.phases }.map { it.parameter.get(language) }
+    val es = view.referenceMeasurements.adult.filter { "ES" in it.phases }.map { it.parameter.get(language) }
+    val tips = view.steps.mapNotNull { it.note?.get(language) }
+    DeckCard {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            val orientation = view.orientationAsset
+            if (orientation != null) {
+                // "How the probe sees the heart": torso, transducer, index marker and scan plane.
+                Box(
+                    modifier = Modifier
+                        .width(112.dp)
+                        .aspectRatio(ORIENTATION_ASPECT)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(SchemaBackground)
+                        .border(1.dp, EchoOutline, RoundedCornerShape(8.dp))
+                        .clickable(onClick = onOpenOrientation)
+                ) {
+                    DiagramThumb(
+                        assetPath = localizedOrientationAsset(orientation, language),
+                        aspectRatio = ORIENTATION_ASPECT,
+                        caliper = null,
+                        contentDescription = stringResource(R.string.diagram_probe)
+                    )
+                }
+            } else {
+                NotchClock(hours = view.notchHours, modifier = Modifier.size(58.dp))
+            }
+            Spacer(Modifier.width(10.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    stringResource(R.string.notch_label, view.notchClock),
+                    color = EchoCaution,
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    view.probePosition.get(language),
+                    color = EchoText,
+                    style = MaterialTheme.typography.bodySmall,
+                    maxLines = 3,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+        }
+        Column(modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(5.dp)) {
+            view.timingNote?.let {
+                Text(it.get(language), color = EchoText, style = MaterialTheme.typography.bodySmall)
+            }
+            if (view.ecg.nominal) {
+                Text(stringResource(R.string.ecg_nominal), color = EchoCaution, style = MaterialTheme.typography.labelSmall)
+            }
+            if (ed.isNotEmpty()) PhaseRule("ED", stringResource(R.string.phase_ed_hint), ed.joinToString(" · "))
+            if (es.isNotEmpty()) PhaseRule("ES", stringResource(R.string.phase_es_hint), es.joinToString(" · "))
+            if (tips.isNotEmpty()) {
+                Text(stringResource(R.string.cockpit_tips), color = EchoSky, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
+                tips.forEach { tip ->
+                    Row {
+                        Text("•", color = EchoCaution, modifier = Modifier.width(12.dp))
+                        Text(tip, color = EchoText, style = MaterialTheme.typography.bodySmall)
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun PhaseRule(phase: String, hint: String, items: String) {
+    Row(verticalAlignment = Alignment.Top) {
+        PhaseChip(phase)
+        Column(modifier = Modifier.weight(1f)) {
+            Text(hint, color = EchoMuted, style = MaterialTheme.typography.labelSmall)
+            Text(items, color = EchoText, style = MaterialTheme.typography.bodySmall, maxLines = 3, overflow = TextOverflow.Ellipsis)
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------------------------
+// Shared building blocks (also used by the reference dialog)
+// ---------------------------------------------------------------------------------------------
+
+/** Clock face showing where the transducer index mark (notch) points. */
+@Composable
+internal fun NotchClock(hours: List<Double>, modifier: Modifier = Modifier) {
+    // Theme colours are read here, in composition; the canvas lambda only draws.
+    val face = EchoSurfaceHigh
+    val rim = EchoOutline
+    val majorTick = EchoMuted
+    val index = EchoPrimary
+    Canvas(modifier = modifier) {
+        val radius = size.minDimension / 2f
+        val c = center
+        drawCircle(color = face, radius = radius)
+        drawCircle(color = rim, radius = radius, style = Stroke(width = 2.dp.toPx()))
+        for (h in 0 until 12) {
+            val angle = h * PI / 6.0
+            val outer = Offset(c.x + radius * 0.92f * sin(angle).toFloat(), c.y - radius * 0.92f * cos(angle).toFloat())
+            val inner = Offset(c.x + radius * 0.78f * sin(angle).toFloat(), c.y - radius * 0.78f * cos(angle).toFloat())
+            drawLine(
+                color = if (h % 3 == 0) majorTick else rim,
+                start = inner,
+                end = outer,
+                strokeWidth = (if (h % 3 == 0) 2.5f else 1.5f).dp.toPx(),
+                cap = StrokeCap.Round
+            )
+        }
+        hours.forEach { hour ->
+            val angle = (hour % 12.0) * PI / 6.0
+            val tip = Offset(c.x + radius * 0.66f * sin(angle).toFloat(), c.y - radius * 0.66f * cos(angle).toFloat())
+            drawLine(color = index, start = c, end = tip, strokeWidth = 3.dp.toPx(), cap = StrokeCap.Round)
+            drawCircle(color = index, radius = 5.dp.toPx(), center = tip)
+        }
+        drawCircle(color = index, radius = 3.dp.toPx(), center = c)
+    }
+}
+
+@Composable
+internal fun LegendRow() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .horizontalScroll(rememberScrollState()),
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        listOf(
+            EchoPalette.Myocardium to stringResource(R.string.legend_myocardium),
+            EchoPalette.Oxygenated to stringResource(R.string.legend_oxygenated),
+            EchoPalette.Deoxygenated to stringResource(R.string.legend_deoxygenated),
+            EchoCaution to stringResource(R.string.legend_valves),
+            EchoPalette.Gate to stringResource(R.string.legend_doppler),
+            EchoCaution to stringResource(R.string.legend_notch)
+        ).forEach { (color, label) ->
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(
+                    Modifier
+                        .size(10.dp)
+                        .clip(RoundedCornerShape(3.dp))
+                        .background(color)
+                )
+                Spacer(Modifier.width(4.dp))
+                Text(label, style = MaterialTheme.typography.labelSmall, color = EchoMuted)
+            }
+        }
+    }
+}
+
+/** Small ED (teal) / ES (orange) chip showing which ECG phase to freeze for a measurement. */
+@Composable
+internal fun PhaseChip(phase: String) {
+    val color = if (phase == "ES") EchoCritical else EchoNormal
+    Box(
+        modifier = Modifier
+            .padding(end = 4.dp)
+            .clip(RoundedCornerShape(6.dp))
+            .background(color.copy(alpha = 0.15f))
+            .border(1.dp, color.copy(alpha = 0.7f), RoundedCornerShape(6.dp))
+            .padding(horizontal = 6.dp, vertical = 1.dp)
+    ) {
+        Text(phase, color = color, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
+    }
+}
+
+@Composable
+internal fun MeasurementsPanel(view: EchoView, language: AppLanguage) {
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        EchoCard {
+            Text(
+                text = stringResource(R.string.adult_reference),
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold,
+                color = EchoPrimary
+            )
+            Row(modifier = Modifier.padding(top = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+                PhaseChip("ED")
+                Text(stringResource(R.string.phase_ed_hint), style = MaterialTheme.typography.labelSmall, color = EchoMuted)
+                Spacer(Modifier.width(10.dp))
+                PhaseChip("ES")
+                Text(stringResource(R.string.phase_es_hint), style = MaterialTheme.typography.labelSmall, color = EchoMuted)
+            }
+            view.referenceMeasurements.adult.forEachIndexed { index, m ->
+                if (index > 0) HorizontalDivider(color = EchoOutline)
+                Column(modifier = Modifier.padding(vertical = 8.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = m.parameter.get(language),
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            color = EchoText,
+                            modifier = Modifier.weight(1f)
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        Text(
+                            text = m.normal.get(language),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = EchoNormal,
+                            textAlign = TextAlign.End,
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                    if (m.phases.isNotEmpty()) {
+                        Row(modifier = Modifier.padding(top = 2.dp)) { m.phases.forEach { PhaseChip(it) } }
+                    }
+                    val note = m.note?.get(language).orEmpty()
+                    if (note.isNotBlank()) {
+                        Text(
+                            text = note,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = EchoMuted
+                        )
+                    }
+                }
+            }
+        }
+        EchoCard {
+            Text(
+                text = stringResource(R.string.pediatric_reference),
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold,
+                color = EchoCaution
+            )
+            view.referenceMeasurements.pediatric.forEachIndexed { index, p ->
+                if (index > 0) HorizontalDivider(color = EchoOutline)
+                Column(modifier = Modifier.padding(vertical = 8.dp)) {
+                    Text(
+                        text = p.parameter.get(language),
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        color = EchoText
+                    )
+                    Text(
+                        text = p.focus.get(language),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = EchoMuted
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+internal fun ChecklistPanel(
+    view: EchoView,
+    language: AppLanguage,
+    isChecked: (Int) -> Boolean,
+    onToggle: (Int, Boolean) -> Unit
+) {
+    val total = view.checklist.size
+    val done = view.checklist.indices.count { isChecked(it) }
+    EchoCard {
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Text(
+                text = stringResource(R.string.checklist_progress, done, total),
+                style = MaterialTheme.typography.labelLarge,
+                color = if (done == total) EchoNormal else EchoCaution
+            )
+            Spacer(Modifier.height(6.dp))
+            LinearProgressIndicator(
+                progress = { if (total == 0) 0f else done.toFloat() / total },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(4.dp)),
+                color = EchoPrimary,
+                trackColor = EchoSurfaceHigh,
+                drawStopIndicator = {}
+            )
+            Spacer(Modifier.height(8.dp))
+            view.checklist.forEachIndexed { index, item ->
+                val itemChecked = isChecked(index)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(8.dp))
+                        .clickable { onToggle(index, !itemChecked) }
+                        .padding(vertical = 2.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Checkbox(
+                        checked = itemChecked,
+                        onCheckedChange = { onToggle(index, it) },
+                        colors = CheckboxDefaults.colors(
+                            checkedColor = EchoPrimary,
+                            checkmarkColor = EchoBackground,
+                            uncheckedColor = EchoMuted
+                        )
+                    )
+                    Text(
+                        text = item.get(language),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = if (itemChecked) EchoMuted else EchoText,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
+        }
+    }
+}
