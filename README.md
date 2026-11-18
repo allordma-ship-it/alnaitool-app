@@ -39,6 +39,10 @@ optimiert für das **Lenovo Idea Tab Pro mit Lenovo Tab Pen Plus**.
 - **Tabs**: zuletzt geöffnete Dokumente oben, direkt wechseln (max. 8)
 - **Bilder auf Seiten** (unter der Tinte, verschieben/skalieren mit dem Auswahlwerkzeug), **eigene Vorlagen** (aus einer Seite, einem Bild oder der ersten PDF-Seite)
 - **Checklisten** im Textwerkzeug (`[ ]` / `[x]`, mit dem Stift abhaken), **Erinnerungen** (einmal/täglich/wöchentlich, öffnen die Seite)
+- **Scanner**: Seiten fotografieren; Seite wird erkannt, entzerrt (auch gewölbte Buchseiten über die Kantenmitten), Schatten entfernt; offenes Buch → zwei Seiten
+- **Texterkennung (OCR)** offline auf dem Gerät (Tesseract, Arabisch/Deutsch/Englisch): gescannte Seiten werden durchsuchbar, Ausschnitte bekommen ihren Text, „als Text teilen“
+- **PDF-Text ändern**: Zeile antippen → Original wird abgedeckt, korrigierter Text an seiner Stelle (Bildschirm und Export)
+- **Beim Verlassen fragen**: Speichern / Nicht speichern / Abbrechen (abschaltbar)
 - **Sperre** (optional) für Dokumente und Ordner per Fingerabdruck oder PIN; verschlüsselt keine Dateien
 
 ## Stift-Unterstützung (Pen Plus)

@@ -132,6 +132,15 @@ export interface TextIndex {
   /** page index -> PDF page number (0 = not a PDF page), valid while `key` matches the doc's pageIds */
   pageMap: number[];
   key: string;
+  /** text read from page pictures (scans, photos, scanned PDF pages) by text recognition, by page id */
+  ocr?: Record<string, OcrPage>;
+}
+
+export interface OcrPage {
+  text: string;
+  /** lines in page coordinates, so clips on a scanned page get their text */
+  lines: { text: string; x0: number; y0: number; x1: number; y1: number }[];
+  langs: string[];
 }
 
 /**

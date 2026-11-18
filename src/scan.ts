@@ -40,6 +40,8 @@ export class ScanView {
   private strip = h('div', { class: 'scan-strip' });
   private tools = h('div', { class: 'scan-tools' });
   private saveBtn = h('button', { type: 'button', class: 'btn primary' });
+  /** read the text of the pages right after saving (Arabic, German, English) */
+  private readText = readPref();
   private mode: 'edges' | 'result' = 'edges';
 
   constructor(private onDone: (doc: DocMeta) => void) {
@@ -47,8 +49,17 @@ export class ScanView {
     close.innerHTML = icons.close;
     close.addEventListener('click', () => this.close());
     this.saveBtn.addEventListener('click', () => void this.save());
+    const ocr = h('button', { type: 'button', class: `scan-book ${this.readText ? 'active' : ''}`, 'aria-pressed': String(this.readText), title: t('ocrHint') });
+    ocr.innerHTML = icons.text;
+    ocr.append(h('span', {}, t('scanReadText')));
+    ocr.addEventListener('click', () => {
+      this.readText = !this.readText;
+      writePref(this.readText);
+      ocr.classList.toggle('active', this.readText);
+      ocr.setAttribute('aria-pressed', String(this.readText));
+    });
     this.root.append(
-      h('header', { class: 'pv-head' }, h('h2', {}, t('scanTitle')), h('div', { class: 'spacer' }), this.saveBtn, close),
+      h('header', { class: 'pv-head' }, h('h2', {}, t('scanTitle')), h('div', { class: 'spacer' }), ocr, this.saveBtn, close),
       this.stage, this.tools, this.strip,
     );
     this.root.addEventListener('close', () => this.root.remove());
@@ -350,12 +361,22 @@ export class ScanView {
       this.pages = [];
       this.root.close();
       this.onDone(doc);
+      // the text is read in the background, so the pages are searchable and can be clipped as text
+      if (this.readText) void import('./ocrUi').then(({ runOcr }) => runOcr(doc));
     } catch (e) {
       console.error(e);
       toast(String(e));
       this.saveBtn.disabled = false;
     }
   }
+}
+
+const OCR_PREF = 'notiva-scan-ocr';
+function readPref(): boolean {
+  try { return localStorage.getItem(OCR_PREF) !== '0'; } catch { return true; }
+}
+function writePref(on: boolean) {
+  try { localStorage.setItem(OCR_PREF, on ? '1' : '0'); } catch { /* private mode */ }
 }
 
 /** An open book: two pages, in reading order (right page first for Arabic books). */

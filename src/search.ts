@@ -57,13 +57,22 @@ export async function searchContent(query: string, docs: DocMeta[], limit = 60):
   const byId = new Map(docs.map((d) => [d.id, d]));
   const hits: Hit[] = [];
   for (const d of docs) {
-    if (d.kind !== 'pdf') continue;
     let ix = await getTextIndex(d.id);
     if (!ix) continue;
-    if (ix.key !== d.pageIds.join(',')) ix = (await indexDoc(d)) ?? ix;
-    ix.pageMap.forEach((pdfPage, page) => {
+    if (d.kind === 'pdf' && ix.key !== d.pageIds.join(',')) ix = (await indexDoc(d)) ?? ix;
+    const pdfText = new Set<number>();
+    if (d.kind === 'pdf') ix.pageMap.forEach((pdfPage, page) => {
       if (!pdfPage) return;
-      const { count, snippets } = findSnippets(ix!.byPdfPage[pdfPage - 1] ?? '', q, 1);
+      const text = ix!.byPdfPage[pdfPage - 1] ?? '';
+      if (text.trim()) pdfText.add(page);
+      const { count, snippets } = findSnippets(text, q, 1);
+      if (count) hits.push({ doc: d, page, kind: 'text', count, snippet: snippets[0] });
+    });
+    // pages read by text recognition (scans, photos, scanned PDF pages without a text layer)
+    if (ix.ocr) d.pageIds.forEach((id, page) => {
+      const o = ix!.ocr![id];
+      if (!o || pdfText.has(page)) return;
+      const { count, snippets } = findSnippets(o.text, q, 1);
       if (count) hits.push({ doc: d, page, kind: 'text', count, snippet: snippets[0] });
     });
   }

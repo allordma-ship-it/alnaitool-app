@@ -65,10 +65,13 @@ export async function convertDoc(meta: DocMeta, pages: PageData[], format: Forma
     return [{ name: `${base}.pdf`, bytes: new Uint8Array(buf), mime: 'application/pdf' }];
   }
   if (format === 'text') {
-    const text = pages
+    const typed = pages
       .map((p) => [...(p.texts ?? [])].sort((a, b) => a.y - b.y).map((tb) => tb.text).join('\n\n'))
       .filter(Boolean)
       .join('\n\n');
+    // scanned pages: the text read by text recognition
+    const read = await (await import('./ocr')).ocrText(meta);
+    const text = [read, typed].filter(Boolean).join('\n\n');
     if (!text) throw new Error(t('noText'));
     return [{ name: `${base}.txt`, bytes: new TextEncoder().encode(text), mime: 'text/plain' }];
   }

@@ -3,6 +3,7 @@ import type { Clip, DocMeta, PageData } from './types';
 import { uid, A4 } from './types';
 import { listClips, putClip, deleteClip, putFile, getFile } from './db';
 import { hiddenDocIds } from './lock';
+import { ocrTextIn } from './ocr';
 import { pdfTextLines, pdfTextIn, paragraphAt, joinLines } from './pdf';
 import { renderPageToCanvas, canvasToBytes } from './render';
 import { drawTextBox, textHeight } from './text';
@@ -82,6 +83,8 @@ export async function clipFromRect(meta: DocMeta, pages: PageData[], index: numb
   const page = pages[index];
   const rect = clampRect(r, page);
   if (!text && page.bg.kind === 'pdf') text = await pdfTextIn(meta.id, page.bg.pdfPage, rect).catch(() => '');
+  // a scanned page: the text recognised on it, if it was read
+  if (!text && (page.bg.kind === 'image' || page.bg.kind === 'pdf')) text = await ocrTextIn(meta.id, page.id, rect).catch(() => '');
   const clip: Clip = {
     id: uid(), kind: 'clip', docId: meta.id, docTitle: meta.title, page: index, pageId: page.id, rect,
     image: await snapshot(meta, page, rect), text, note: '', createdAt: Date.now(),

@@ -189,6 +189,7 @@ export class Library {
       h('button', { value: 'color' }, t('colorLabel')),
       h('button', { value: 'tags' }, t('tags')),
       h('button', { value: 'remind' }, t('reminders')),
+      ...(d.kind === 'pdf' || d.kind === 'images' ? [h('button', { value: 'ocr' }, t('ocrTitle'))] : []),
       h('button', { value: 'lock' }, d.locked && lockEnabled() ? t('unlockDoc') : t('lockDoc')),
       h('button', { value: 'move' }, t('moveToFolder')),
       h('button', { value: 'delete', class: 'danger' }, t('delete')),
@@ -214,6 +215,8 @@ export class Library {
         await this.colorDialog(d);
       } else if (v === 'tags') {
         await this.tagsDialog(d);
+      } else if (v === 'ocr') {
+        await (await import('./ocrUi')).ocrDialog(d);
       } else if (v === 'remind') {
         await reminderDialog(d, d.lastPage ?? 0);
       } else if (v === 'lock') {

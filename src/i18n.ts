@@ -385,6 +385,20 @@ const dict = {
   scanBook: { ar: 'كتاب مفتوح', de: 'Offenes Buch', en: 'Open book' },
   scanBookHint: { ar: 'الصورة فيها صفحتان: تُقسم عند منتصفها (الكعب) إلى صفحتين', de: 'Das Foto zeigt zwei Seiten: es wird in der Mitte (am Buchrücken) geteilt', en: 'The photo shows two pages: it is split in the middle (at the spine)' },
   scanEdgeMid: { ar: 'منتصف الحافة (لانحناء الصفحة)', de: 'Kantenmitte (für gewölbte Seiten)', en: 'Edge middle (for curved pages)' },
+  ocrTitle: { ar: 'التعرّف على النص (OCR)', de: 'Text erkennen (OCR)', en: 'Recognise text (OCR)' },
+  ocrHint: {
+    ar: 'يقرأ النص من الصفحات المصوّرة على الجهاز نفسه دون إنترنت، فتصبح قابلة للبحث، والاقتطاعات تأخذ نصها، ويمكن مشاركتها كنص.',
+    de: 'Liest den Text gescannter Seiten direkt auf dem Gerät, ohne Internet: danach durchsuchbar, Ausschnitte bekommen ihren Text, als Text teilbar.',
+    en: 'Reads the text of scanned pages on the device, without internet: then they are searchable, clips get their text, and they can be shared as text.',
+  },
+  ocrLanguages: { ar: 'لغات النص', de: 'Sprachen', en: 'Languages' },
+  ocrStart: { ar: 'ابدأ', de: 'Starten', en: 'Start' },
+  ocrRunning: { ar: 'قراءة النص', de: 'Text wird erkannt', en: 'Reading text' },
+  ocrDone: { ar: 'تمت قراءة النص', de: 'Text erkannt', en: 'Text read' },
+  ocrNothing: { ar: 'لم يُعثر على نص', de: 'Kein Text gefunden', en: 'No text found' },
+  ocrFailed: { ar: 'تعذّرت قراءة النص', de: 'Texterkennung fehlgeschlagen', en: 'Text recognition failed' },
+  ocrBusy: { ar: 'قراءة نص أخرى جارية، انتظر حتى تنتهي', de: 'Es läuft schon eine Texterkennung', en: 'Text recognition is already running' },
+  scanReadText: { ar: 'قراءة النص', de: 'Text erkennen', en: 'Read text' },
 } as const;
 
 export type Key = keyof typeof dict;
