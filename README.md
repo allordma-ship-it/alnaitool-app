@@ -46,7 +46,9 @@ optimiert für das **Lenovo Idea Tab Pro mit Lenovo Tab Pen Plus**.
 
 Jeder Push baut über `.github/workflows/android.yml` ein signiertes APK (Capacitor) und veröffentlicht es
 unter **Releases** (`alnai-notes-v1.0.<Nr>`). Auf dem Tablet herunterladen, öffnen, „Aus dieser Quelle installieren“ erlauben.
-Alle APKs sind mit demselben Schlüssel (`android/keystore/`) signiert – neue Versionen installieren sich als Update, die Notizen bleiben erhalten.
+Alle APKs sind mit demselben Schlüssel signiert – neue Versionen installieren sich als Update, die Notizen bleiben erhalten.
+Der Schlüssel liegt **nicht** im Repository, sondern in den GitHub-Secrets (Settings → Secrets and variables → Actions):
+`ANDROID_KEYSTORE_BASE64` (Keystore als Base64), `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD`.
 
 ## Als Web-App installieren (Alternative)
 

@@ -29,14 +29,28 @@ jobs:
       - run: npm test
       - run: npm run build
       - run: npx cap sync android
+      - name: Write the signing key from the repository secrets
+        env:
+          KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          if [ -z "$KEYSTORE_B64" ]; then
+            echo "::error::Secret ANDROID_KEYSTORE_BASE64 is missing (Settings → Secrets and variables → Actions)."
+            exit 1
+          fi
+          echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/release.jks"
       - name: Build release APK
         working-directory: android
         env:
           VERSION_CODE: ${{ github.run_number }}
           VERSION_NAME: 1.0.${{ github.run_number }}
+          ANDROID_KEYSTORE_FILE: ${{ runner.temp }}/release.jks
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
           chmod +x gradlew
           ./gradlew --no-daemon assembleRelease
+          rm -f "$RUNNER_TEMP/release.jks"
           cp app/build/outputs/apk/release/app-release.apk "$GITHUB_WORKSPACE/AlnaiNotes-1.0.${{ github.run_number }}.apk"
       - uses: actions/upload-artifact@v4
         with:

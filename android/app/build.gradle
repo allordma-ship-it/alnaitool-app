@@ -20,22 +20,23 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
-    // A fixed key, so every new APK installs as an update over the old one and keeps your notes.
-    // For a Play Store release, replace it with a private key kept outside the repository.
+    // The signing key is NOT in the repository. CI writes it from the GitHub secret ANDROID_KEYSTORE_BASE64
+    // and passes the passwords as environment variables (see .github/workflows/android.yml).
+    // Locally: export the same four variables, or build a debug APK instead.
+    def keystorePath = System.getenv("ANDROID_KEYSTORE_FILE")
     signingConfigs {
-        alnai {
-            storeFile file('../keystore/alnai-notes.jks')
-            storePassword 'alnainotes'
-            keyAlias 'alnai'
-            keyPassword 'alnainotes'
+        if (keystorePath) {
+            alnai {
+                storeFile file(keystorePath)
+                storePassword System.getenv("ANDROID_KEYSTORE_PASSWORD")
+                keyAlias System.getenv("ANDROID_KEY_ALIAS") ?: "alnai"
+                keyPassword System.getenv("ANDROID_KEY_PASSWORD") ?: System.getenv("ANDROID_KEYSTORE_PASSWORD")
+            }
         }
     }
     buildTypes {
-        debug {
-            signingConfig signingConfigs.alnai
-        }
         release {
-            signingConfig signingConfigs.alnai
+            if (keystorePath) signingConfig signingConfigs.alnai
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
