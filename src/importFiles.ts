@@ -174,7 +174,8 @@ export async function importFiles(files: File[]): Promise<{ docs: DocMeta[]; fai
       docs.push(await fn());
     } catch (err) {
       console.error(err);
-      failed.push(name);
+      const why = err instanceof Error ? err.message : String(err);
+      failed.push(why ? `${name} (${why.slice(0, 120)})` : name);
     }
   };
   if (images.length) await attempt(images[0].name, () => importImages(images));

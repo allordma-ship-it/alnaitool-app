@@ -81,7 +81,10 @@ const RTL = /[֐-ࣿיִ-﷿ﹰ-ﻼ]/;
 
 /** Text items of a PDF page as boxes in our page coordinates (pdf.js viewport at scale 1). */
 async function pdfItems(docId: string, pageNo: number): Promise<Item[]> {
-  const doc = await pdfForDoc(docId);
+  return itemsOf(await pdfForDoc(docId), pageNo);
+}
+
+async function itemsOf(doc: PDFDocumentProxy, pageNo: number): Promise<Item[]> {
   const page = await doc.getPage(pageNo);
   const vp = page.getViewport({ scale: 1 });
   const content = await page.getTextContent();
@@ -132,6 +135,29 @@ function toLines(items: Item[]): TextLine[] {
 
 export async function pdfTextLines(docId: string, pageNo: number): Promise<TextLine[]> {
   return toLines(await pdfItems(docId, pageNo));
+}
+
+/**
+ * The text of every page, read from a separate copy of the PDF. It must not use (and then close) the copy the
+ * reader is showing: closing that one while the document is open made every further page fail to load.
+ */
+export async function pdfAllText(docId: string): Promise<string[]> {
+  const buf = await getFile(docId);
+  if (!buf) throw new Error('missing pdf');
+  const doc = await loadPdf(buf);
+  const out: string[] = [];
+  try {
+    for (let i = 1; i <= doc.numPages; i++) {
+      try {
+        out.push(joinLines(toLines(await itemsOf(doc, i))));
+      } catch {
+        out.push('');
+      }
+    }
+  } finally {
+    destroyPdf(doc);
+  }
+  return out;
 }
 
 /** Text inside a rectangle (items whose centre lies inside it). */

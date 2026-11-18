@@ -1,5 +1,5 @@
 import { getTextIndex, putTextIndex, getPages, listClips } from './db';
-import { pdfForDoc, pdfTextLines, joinLines, closePdf } from './pdf';
+import { pdfAllText } from './pdf';
 import { normQuery, findSnippets, type Snippet } from './searchText';
 import type { DocMeta, TextIndex } from './types';
 
@@ -33,19 +33,7 @@ export function indexDoc(doc: DocMeta): Promise<TextIndex | null> {
         await putTextIndex(fresh);
         return fresh;
       }
-      const pdf = await pdfForDoc(doc.id);
-      const byPdfPage: string[] = [];
-      try {
-        for (let i = 1; i <= pdf.numPages; i++) {
-          try {
-            byPdfPage.push(joinLines(await pdfTextLines(doc.id, i)));
-          } catch {
-            byPdfPage.push('');
-          }
-        }
-      } finally {
-        closePdf(doc.id);
-      }
+      const byPdfPage = await pdfAllText(doc.id);
       const ix: TextIndex = { docId: doc.id, byPdfPage, pageMap: await pageMap(doc), key };
       await putTextIndex(ix);
       return ix;
