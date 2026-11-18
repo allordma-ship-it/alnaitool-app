@@ -351,6 +351,14 @@ const dict = {
   deleteTemplate: { ar: 'حذف القالب', de: 'Vorlage löschen', en: 'Delete template' },
   tabs: { ar: 'الملفات المفتوحة', de: 'Offene Dokumente', en: 'Open documents' },
   closeTab: { ar: 'إغلاق التبويب', de: 'Tab schließen', en: 'Close tab' },
+  editPdfText: { ar: 'تعديل نص PDF', de: 'PDF-Text ändern', en: 'Edit PDF text' },
+  editPdfTextHint: {
+    ar: 'اضغط على سطر في الـPDF لتعديله: يُغطّى الأصل ويظهر نصك مكانه (على الشاشة وفي التصدير)',
+    de: 'Auf eine Zeile im PDF tippen, um sie zu ändern: das Original wird abgedeckt, dein Text steht an seiner Stelle (am Bildschirm und im Export)',
+    en: 'Tap a line in the PDF to change it: the original is covered and your text takes its place (on screen and in export)',
+  },
+  noPdfLine: { ar: 'لا يوجد نص قابل للتعديل هنا (ربما صفحة مصوّرة)، أُضيف مربع نص عادي', de: 'Hier ist kein Text (evtl. gescannte Seite) – normales Textfeld', en: 'No text here (maybe a scanned page) – plain text box added' },
+  done: { ar: 'تم', de: 'Fertig', en: 'Done' },
 } as const;
 
 export type Key = keyof typeof dict;

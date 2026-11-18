@@ -92,10 +92,16 @@ export function textHeight(tb: TextBox): number {
   return wrapText(tb.text, tb.size, tb.w, tb.bold).length * tb.size * LINE_HEIGHT;
 }
 
-export function drawTextBox(ctx: CanvasRenderingContext2D, tb: TextBox, color = tb.color) {
+/** `coverColor` paints over the original PDF text of a correction box; null leaves the cover out (PDF export draws it itself). */
+export function drawTextBox(ctx: CanvasRenderingContext2D, tb: TextBox, color = tb.color, coverColor: string | null = '#ffffff') {
   const lines = wrapText(tb.text, tb.size, tb.w, tb.bold);
   const lh = tb.size * LINE_HEIGHT;
   ctx.save();
+  if (tb.cover && coverColor) {
+    const [x0, y0, x1, y1] = tb.cover;
+    ctx.fillStyle = coverColor;
+    ctx.fillRect(x0, y0, x1 - x0, y1 - y0);
+  }
   ctx.font = fontOf(tb.size, tb.bold);
   ctx.fillStyle = color;
   ctx.textBaseline = 'middle';

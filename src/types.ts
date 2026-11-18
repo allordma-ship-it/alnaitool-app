@@ -25,6 +25,8 @@ export interface TextBox {
   bold?: boolean;
   /** note bubble: tail points at (ax, ay); h = minimum inner height so there is room to handwrite */
   bubble?: { ax: number; ay: number; h: number };
+  /** PDF correction: this area of the original page is covered (whited out) under the text, [x0, y0, x1, y1] */
+  cover?: [number, number, number, number];
 }
 
 export type PageBackground =

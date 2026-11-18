@@ -16,7 +16,7 @@ import { Ruler, type Edge } from './ruler';
 import { NotesPanel, VoiceRecorder, clipFromStroke, clipFromRect, saveVoiceMemo, fmtTime } from './clips';
 import { findFreeSpot } from './freeSpace';
 import { settings, saveSettings, type ButtonAction } from './settings';
-import { pdfForDoc, renderPdfPage, closePdf, pdfOutline, pdfLinks, type OutlineItem, type PdfLink } from './pdf';
+import { pdfForDoc, renderPdfPage, closePdf, pdfOutline, pdfLinks, pdfTextLines, type OutlineItem, type PdfLink } from './pdf';
 import { Capacitor } from '@capacitor/core';
 import { openSettings } from './settingsDialog';
 import { icons } from './icons';
@@ -319,6 +319,8 @@ export class Editor {
     on(vp, 'contextmenu', (e: Event) => e.preventDefault());
     on(vp, 'wheel', (e: WheelEvent) => this.onWheel(e), { passive: false });
     on(window, 'resize', () => this.resize());
+    if (window.visualViewport) on(window.visualViewport, 'resize', () => requestAnimationFrame(() => { this.checkKeyboard(); this.keepEditingVisible(); }));
+    on(window, 'resize', () => this.checkKeyboard());
     // the pane changes size without a window resize when a second document opens beside it
     const vro = new ResizeObserver(() => { if (this.viewport.clientWidth && Math.abs(this.viewport.clientWidth - this.vw) > 1) this.resize(); });
     vro.observe(this.viewport);
@@ -515,7 +517,24 @@ export class Editor {
       check.addEventListener('pointerdown', (e) => e.preventDefault());
       check.addEventListener('click', () => this.checklistButton());
       bar.append(swatches, sizes, check);
+      if (this.pages.some((pg) => pg.bg.kind === 'pdf')) {
+        const fix = h('button', { class: `pdf-edit-btn ${this.pdfEdit ? 'active' : ''}`, 'aria-pressed': String(this.pdfEdit), title: t('editPdfTextHint') });
+        fix.innerHTML = icons.text;
+        fix.append(h('span', {}, t('editPdfText')));
+        fix.addEventListener('pointerdown', (e) => e.preventDefault());
+        fix.addEventListener('click', () => {
+          this.pdfEdit = !this.pdfEdit;
+          this.renderOptions();
+          if (this.pdfEdit) toast(t('editPdfTextHint'));
+        });
+        bar.append(fix);
+      }
       if (this.editing) {
+        const done = h('button', { class: 'done-btn', title: t('done') });
+        done.innerHTML = icons.check;
+        done.append(h('span', {}, t('done')));
+        done.addEventListener('click', () => this.finishEditing());
+        bar.append(done);
         const del = h('button', { class: 'icon-btn danger', title: t('deleteText'), 'aria-label': t('deleteText') });
         del.innerHTML = icons.trash;
         del.addEventListener('click', () => this.deleteEditing());
@@ -579,14 +598,28 @@ export class Editor {
   }
 
   /** When the on-screen keyboard shrinks the viewport, scroll the text being typed back into view. */
+  private typingBaseH = 0;
+
+  /** The keyboard is open when the screen got clearly shorter since typing started (resized, or overlaid). */
+  private checkKeyboard() {
+    if (!this.editing) return;
+    const h = Math.min(window.innerHeight, window.visualViewport?.height ?? window.innerHeight);
+    this.root.classList.toggle('kb-open', h < this.typingBaseH - 120);
+  }
+
+  /** While typing: keep the box between the options bar (moved to the top) and the keyboard. */
   private keepEditingVisible() {
     if (!this.editing) return;
     const r = this.editing.el.getBoundingClientRect();
     const vr = this.viewport.getBoundingClientRect();
-    if (r.bottom > vr.bottom - 12) {
-      this.cam.ty -= r.bottom - vr.bottom + 28;
-      this.applyCamera();
-    }
+    // the keyboard may cover the page without resizing it: the visual viewport says where it starts
+    const vv = window.visualViewport;
+    const bottom = Math.min(vr.bottom, vv ? vv.offsetTop + vv.height : vr.bottom) - 16;
+    const top = vr.top + (this.optionsBar.offsetHeight || 60) + 20;
+    if (r.bottom > bottom) this.cam.ty -= r.bottom - bottom;
+    else if (r.top < top) this.cam.ty += top - r.top;
+    else return;
+    this.applyCamera();
   }
 
   private fitScale() {
@@ -1560,12 +1593,47 @@ export class Editor {
           const hit = m.hit;
           this.commitTexts(m.page, texts.map((tb) => (tb.id === hit.id ? { ...tb, x: tb.x + m.d[0], y: tb.y + m.d[1] } : tb)));
         } else if (m.hit) this.editText(m.page, m.hit, false);
+        else if (this.pdfEdit && this.pages[m.page].bg.kind === 'pdf') void this.editPdfLine(m.page, m.start[0], m.start[1]);
         else this.editText(m.page, this.newTextBox(m.page, m.start[0], m.start[1]), true);
         return;
       }
       case 'pan':
         return;
     }
+  }
+
+  // ---------------------------------------------------------------- correcting PDF text
+
+  /** text tool option: a tap on a PDF line opens it for correction */
+  private pdfEdit = false;
+
+  /**
+   * Correcting a line of the PDF: a box over the line holds its text to edit, on a white cover that hides the
+   * original. The PDF itself is not rewritten; on screen and in the exported PDF the correction replaces the line.
+   */
+  private async editPdfLine(page: number, x: number, y: number) {
+    const p = this.pages[page];
+    if (p.bg.kind !== 'pdf') return;
+    let lines: Awaited<ReturnType<typeof pdfTextLines>> = [];
+    try { lines = await pdfTextLines(this.meta.id, p.bg.pdfPage); } catch { /* scanned page: no text */ }
+    const pad = 3;
+    const line = lines.find((l) => x >= l.x0 - pad && x <= l.x1 + pad && y >= l.y0 - pad && y <= l.y1 + pad)
+      ?? lines.filter((l) => y >= l.y0 - pad && y <= l.y1 + pad).sort((a, b) => Math.abs((a.x0 + a.x1) / 2 - x) - Math.abs((b.x0 + b.x1) / 2 - x))[0];
+    if (!line) {
+      toast(t('noPdfLine'));
+      this.editText(page, this.newTextBox(page, x, y), true);
+      return;
+    }
+    const size = Math.max(6, Math.round(line.h * 10) / 10);
+    const rtl = isRtl(line.text);
+    // room to write a little more than was there; long corrections wrap
+    const w = Math.min(p.w - 8, line.x1 - line.x0 + size * 4);
+    const cy = (line.y0 + line.y1) / 2;
+    const tb: TextBox = {
+      id: uid(), x: rtl ? line.x1 + 2 - w : line.x0 - 2, y: cy - (size * LINE_HEIGHT) / 2, w, text: line.text, size, color: '#111111',
+      cover: [line.x0 - 2, line.y0 - 2, line.x1 + 2, line.y1 + 2],
+    };
+    this.editText(page, tb, true);
   }
 
   // ---------------------------------------------------------------- typed text
@@ -1634,10 +1702,15 @@ export class Editor {
     });
     v.el.append(ta);
     this.editing = { page, tb, orig: isNew ? null : tb, el: ta };
+    // the keyboard takes the bottom of the screen: tool bars step aside while it is open
+    this.root.classList.add('typing');
+    this.typingBaseH = Math.max(window.innerHeight, window.visualViewport?.height ?? 0);
+    this.checkKeyboard();
     if (tb.bubble) {
       ta.classList.add('bubble-edit');
       ta.style.minHeight = `${tb.bubble.h}px`;
     }
+    if (tb.cover) ta.classList.add('cover-edit');
     this.restyleEditing(false);
     this.renderInk(page);
     if (this.tool === 'text') {
@@ -1691,14 +1764,15 @@ export class Editor {
     const ed = this.editing;
     if (!ed) return;
     this.editing = null;
+    this.root.classList.remove('typing', 'kb-open');
     const text = ed.el.value.replace(/\s+$/, '');
     ed.el.remove();
     const p = this.pages[ed.page];
     const before = p.texts ?? [];
     const next: TextBox = { ...ed.tb, text };
     let after = before;
-    // an empty bubble stays (it may hold handwriting); an empty plain text box is removed
-    if (!text && !ed.tb.bubble) {
+    // an empty bubble stays (it may hold handwriting), an empty correction still hides the original; other empty boxes go
+    if (!text && !ed.tb.bubble && !ed.tb.cover) {
       if (ed.orig) after = before.filter((tb) => tb.id !== ed.tb.id);
     } else if (!ed.orig) after = [...before, next];
     else if (JSON.stringify(ed.orig) !== JSON.stringify(next)) after = before.map((tb) => (tb.id === next.id ? next : tb));

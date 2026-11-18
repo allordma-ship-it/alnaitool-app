@@ -740,3 +740,16 @@ details[open] > summary .pv-caret::before { transform: rotate(90deg); }
 .tab-title { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .tab-x { flex: none; width: 26px; height: 26px; display: grid; place-items: center; border-radius: 8px; font-size: 17px; line-height: 1; color: var(--faint); }
 .tab-x:hover { background: var(--surface-2); color: var(--text); }
+
+/* ---------------------------------------------------------------- typing: the keyboard has the bottom of the screen */
+.editor.typing.kb-open .dock-wrap { display: none; }
+.editor.typing.kb-open .options-bar { bottom: auto; top: 10px; }
+.done-btn { display: flex; align-items: center; gap: 6px; height: 38px; padding: 0 14px; border: 0; border-radius: 10px; background: var(--grad); color: #fff; font-weight: 650; }
+.done-btn svg { width: 18px; height: 18px; }
+
+/* ---------------------------------------------------------------- correcting PDF text */
+.text-edit.cover-edit { background: #fff; }
+.eye-care .text-edit.cover-edit { background: #15171c; }
+.pdf-edit-btn { display: flex; align-items: center; gap: 6px; height: 38px; padding: 0 12px; border-radius: 10px; border: 1px solid var(--line-2); background: transparent; color: var(--muted); font-weight: 600; }
+.pdf-edit-btn svg { width: 18px; height: 18px; }
+.pdf-edit-btn.active { background: var(--accent-soft); color: var(--accent-text); border-color: rgb(6 182 212 / .45); }

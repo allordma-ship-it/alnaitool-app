@@ -100,7 +100,7 @@ async function drawTexts(out: PDFDocument, page: PDFPage, texts: TextBox[], map:
     c.height = Math.ceil((hgt + pad * 2) * S);
     const ctx = c.getContext('2d')!;
     ctx.setTransform(S, 0, 0, S, (pad - tb.x) * S, (pad - tb.y) * S);
-    drawTextBox(ctx, tb, (tb.bubble ? bubbleColor : colorFor)(tb.color));
+    drawTextBox(ctx, tb, (tb.bubble ? bubbleColor : colorFor)(tb.color), null);
     const img = await out.embedPng(await canvasToBytes(c));
     // corners in our page space → PDF space (also correct on rotated PDF pages for 0°)
     const bl = map(tb.x - pad, tb.y + hgt + pad);
@@ -164,6 +164,13 @@ export async function exportDocToPdf(meta: DocMeta, pages: PageData[]): Promise<
       const img = im.mime === 'image/png' ? await out.embedPng(buf) : await out.embedJpg(buf);
       const bl = map(im.x, im.y + im.h);
       page.drawImage(img, { x: bl.x, y: bl.y, width: im.w, height: im.h });
+    }
+    // corrections: a white rectangle over the original text, as real PDF content
+    for (const tb of pd.texts ?? []) {
+      if (!tb.cover) continue;
+      const [x0, y0, x1, y1] = tb.cover;
+      const bl = map(x0, y1), tr = map(x1, y0);
+      page.drawRectangle({ x: Math.min(bl.x, tr.x), y: Math.min(bl.y, tr.y), width: Math.abs(tr.x - bl.x), height: Math.abs(tr.y - bl.y), color: rgb(1, 1, 1) });
     }
     if (pd.texts?.length) await drawBubbles(out, page, pd.texts, map);
     drawInk(page, pd.strokes, map, colorFor);

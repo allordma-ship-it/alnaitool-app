@@ -32,6 +32,11 @@ function luminance(hex: string) {
   return (0.2126 * ((n >> 16) & 255) + 0.7152 * ((n >> 8) & 255) + 0.0722 * (n & 255)) / 255;
 }
 
+/** The cover of a PDF correction matches the paper: white, or the darkened page in eye-care mode. */
+export function coverColorFor(screen: boolean): string {
+  return screen && settings.eyeCare ? '#15171c' : '#ffffff';
+}
+
 /** In eye-care mode the page is shown inverted, so dark ink is shown light (on screen only). */
 export function screenColor(p: PageData, color: string, screen: boolean): string {
   const c = inkColorForPaper(p.bg, color);
@@ -53,7 +58,7 @@ export function drawPageContent(ctx: CanvasRenderingContext2D, p: PageData, excl
   drawStrokes(ctx, strokes, settings.pressure);
   for (const tb of p.texts ?? []) {
     if (exclude?.has(tb.id)) continue;
-    drawTextBox(ctx, tb, tb.bubble ? tb.color : screenColor(p, tb.color, screen));
+    drawTextBox(ctx, tb, tb.bubble ? tb.color : screenColor(p, tb.color, screen), coverColorFor(screen));
   }
 }
 
