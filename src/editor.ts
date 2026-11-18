@@ -2,6 +2,7 @@ import type { DocMeta, PageData, Stroke, Tool, InkTool, TextBox, PageImage, Clip
 import { prepareImage, imageUrl, placeImage, dataUrlToBlob } from './pageImages';
 import { A4, uid } from './types';
 import { getPages, putDoc, putPages, deletePages, deleteFile, listClips, putClip, putFile } from './db';
+import { modal } from './ui';
 import { PagesView } from './pagesView';
 import { reminderDialog } from './reminders';
 import { isTemplateFile, pageFromTemplate, templateFromPage } from './templates';
@@ -153,6 +154,8 @@ export class Editor {
     this.buildUI();
     this.pages = await getPages(this.meta.pageIds);
     this.pages = this.pages.filter(Boolean);
+    // how the document was when opened: "Don't save" on leaving goes back to this
+    this.orig = { pages: structuredClone(this.pages), meta: structuredClone(this.meta) };
     // read before the first layout: it updates lastPage to the page in view (the first one)
     const lp = this.meta.lastPage ?? 0;
     this.relayout();
@@ -1421,7 +1424,7 @@ export class Editor {
   private async openOther(docId: string, page: number) {
     if (!this.openDocAt) return;
     const open = this.openDocAt;
-    await this.close();
+    if (!(await this.close())) return;
     open(docId, page);
   }
 
@@ -2035,6 +2038,7 @@ export class Editor {
   }
 
   private markDirty(pageId: string) {
+    this.changed = true;
     this.dirty.add(pageId);
     this.metaDirty = true;
     clearTimeout(this.saveTimer);
@@ -2304,6 +2308,7 @@ export class Editor {
 
   private async deletePageAt(i: number) {
     if (this.pages.length <= 1 || !this.pages[i]) return;
+    this.changed = true;
     const oldIds = this.meta.pageIds.slice();
     const [removed] = this.pages.splice(i, 1);
     this.meta.pageIds = this.pages.map((p) => p.id);
@@ -2322,7 +2327,8 @@ export class Editor {
     for (const fid of new Set(fids)) {
       if (!fileUnused(this.pages, fid) || isTemplateFile(fid)) continue;
       this.meta.fileIds = (this.meta.fileIds ?? []).filter((f) => f !== fid);
-      await deleteFile(fid);
+      // deleted for good only when the changes are kept (see close)
+      this.pendingDeletes.push(fid);
     }
     await this.flush();
     await this.fixClips(oldIds);
@@ -2337,6 +2343,7 @@ export class Editor {
 
   /** Applies a new page order (after a move, duplicate or insert) and shows page `focus`. */
   private async setPages(pages: PageData[], focus: number, newPage?: PageData) {
+    this.changed = true;
     const oldIds = this.meta.pageIds.slice();
     this.pages = pages;
     this.meta.pageIds = pages.map((p) => p.id);
@@ -2367,6 +2374,7 @@ export class Editor {
     if (set.has(p.id)) set.delete(p.id);
     else set.add(p.id);
     this.meta.bookmarks = this.meta.pageIds.filter((id) => set.has(id));
+    this.changed = true;
     this.metaDirty = true;
     void this.flush();
     this.updateMarkBtn(this.currentPage());
@@ -2494,23 +2502,80 @@ export class Editor {
     return (await renderPageToCanvas(this.meta, p, 240 / p.w)).toDataURL('image/jpeg', 0.75);
   }
 
-  async close() {
-    if (this.closed) return;
+  // ---------------------------------------------------------------- leaving: save or not
+
+  private orig: { pages: PageData[]; meta: DocMeta } | null = null;
+  /** content changed since the document was opened */
+  private changed = false;
+  /** picture files of deleted pages: removed only if the changes are kept */
+  private pendingDeletes: string[] = [];
+  private closing: Promise<boolean> | null = null;
+
+  /** Save / Don't save / Cancel. */
+  private async askSave(): Promise<'save' | 'discard' | 'cancel'> {
+    const form = h('form', { method: 'dialog', class: 'menu save-ask' },
+      h('h2', {}, t('saveChangesTitle')),
+      h('p', { class: 'hint' }, this.meta.title),
+      h('button', { value: 'save', class: 'primary' }, t('saveChanges')),
+      h('button', { value: 'discard', class: 'danger' }, t('discardChanges')),
+      h('button', { value: 'cancel' }, t('cancel')),
+    );
+    const v = await modal(form).closed;
+    return v === 'save' || v === 'discard' ? v : 'cancel';
+  }
+
+  /** Puts the document back as it was when opened (it was saved as you worked, for safety). */
+  private async discardChanges() {
+    const o = this.orig;
+    if (!o) return;
+    clearTimeout(this.saveTimer);
+    this.dirty.clear();
+    const currentIds = this.meta.pageIds.slice();
+    const keep = new Set(o.meta.pageIds);
+    await deletePages(currentIds.filter((id) => !keep.has(id)));
+    await putPages(o.pages);
+    // pictures added during this visit go; the ones of deleted pages were never removed
+    const before = new Set([...(o.meta.fileIds ?? []), ...o.pages.flatMap((p) => [...(p.bg.kind === 'image' ? [p.bg.fileId] : []), ...(p.images ?? []).map((im) => im.fileId)])]);
+    for (const fid of this.meta.fileIds ?? []) if (!before.has(fid) && !isTemplateFile(fid)) await deleteFile(fid);
+    const meta: DocMeta = { ...o.meta, lastPage: this.meta.lastPage, reading: this.meta.reading };
+    await putDoc(meta);
+    // clips were moved along with reordered pages: move them back
+    const changedClips = remapClips(await listClips(meta.id), currentIds, o.meta.pageIds);
+    for (const c of changedClips) await putClip(c);
+  }
+
+  /** Closes the document; false when you chose to stay. */
+  close(): Promise<boolean> {
+    if (this.closed) return Promise.resolve(true);
+    this.closing ??= this.doClose().finally(() => { this.closing = null; });
+    return this.closing;
+  }
+
+  private async doClose(): Promise<boolean> {
+    this.finishEditing();
+    let choice: 'save' | 'discard' | 'cancel' = 'save';
+    if (this.changed && settings.askSave) choice = await this.askSave();
+    if (choice === 'cancel') return false;
+    if (this.closed) return true;
     this.closed = true;
     if (Editor.active === this) Editor.active = null;
     Editor.open.delete(this);
-    this.finishEditing();
     this.pagesView?.close();
     if (this.recorder.recording) await this.toggleRecording();
     cancelAnimationFrame(this.laserLoop);
     this.panel.dispose();
-    try {
-      this.meta.thumb = (await this.makeThumb()) ?? this.meta.thumb;
-      this.metaDirty = true;
-    } catch (err) {
-      console.warn('thumbnail failed', err);
+    if (choice === 'discard') {
+      await this.discardChanges();
+    } else {
+      try {
+        this.meta.thumb = (await this.makeThumb()) ?? this.meta.thumb;
+        this.metaDirty = true;
+      } catch (err) {
+        console.warn('thumbnail failed', err);
+      }
+      await this.flush();
+      for (const fid of this.pendingDeletes) if (fileUnused(this.pages, fid) && !isTemplateFile(fid)) await deleteFile(fid);
     }
-    await this.flush();
     for (const d of this.disposers) d();
     cancelAnimationFrame(this.fling);
     for (const v of this.views.values()) v.bgJob.cancelled = true;
@@ -2518,5 +2583,6 @@ export class Editor {
     clearImageCache();
     this.root.remove();
     this.onClose();
+    return true;
   }
 }

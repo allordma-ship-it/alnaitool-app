@@ -175,6 +175,7 @@ export function openSettings(onChange: () => void) {
     toggle('showHud', settings.showHud, (v) => { settings.showHud = v; changed(); }),
     curveSlider(changed),
     penTester(),
+    toggle('askSave', settings.askSave, (v) => { settings.askSave = v; changed(); }),
     h('h3', {}, t('appearance')),
     toggle('eyeCare', settings.eyeCare, (v) => { settings.eyeCare = v; changed(); }),
     toggle('spread', settings.spread === 'dual', (v) => { settings.spread = v ? 'dual' : 'single'; changed(); }),

@@ -36,6 +36,8 @@ export interface Settings {
   /** live pressure/tilt indicator in the header */
   showHud: boolean;
   notesPanel: boolean;
+  /** leaving a changed document asks: save, don't save, cancel */
+  askSave: boolean;
 }
 
 const DEFAULTS: Settings = {
@@ -61,6 +63,7 @@ const DEFAULTS: Settings = {
   theme: 'dark',
   showHud: true,
   notesPanel: false,
+  askSave: true,
   palette: ['#0f172a', '#06b6d4', '#2563eb', '#ef4444', '#10b981', '#8b5cf6', '#f59e0b', '#ffe14d'],
 };
 

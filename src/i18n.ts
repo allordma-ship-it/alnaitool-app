@@ -359,6 +359,10 @@ const dict = {
   },
   noPdfLine: { ar: 'لا يوجد نص قابل للتعديل هنا (ربما صفحة مصوّرة)، أُضيف مربع نص عادي', de: 'Hier ist kein Text (evtl. gescannte Seite) – normales Textfeld', en: 'No text here (maybe a scanned page) – plain text box added' },
   done: { ar: 'تم', de: 'Fertig', en: 'Done' },
+  saveChangesTitle: { ar: 'حفظ التغييرات؟', de: 'Änderungen speichern?', en: 'Save changes?' },
+  saveChanges: { ar: 'حفظ', de: 'Speichern', en: 'Save' },
+  discardChanges: { ar: 'عدم الحفظ (الرجوع إلى ما كان عند الفتح)', de: 'Nicht speichern (zurück zum Stand beim Öffnen)', en: "Don't save (back to how it was when opened)" },
+  askSave: { ar: 'السؤال عن حفظ التغييرات عند الخروج من الملف', de: 'Beim Verlassen nach dem Speichern fragen', en: 'Ask to save changes when leaving a document' },
 } as const;
 
 export type Key = keyof typeof dict;

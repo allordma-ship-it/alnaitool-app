@@ -95,7 +95,8 @@ async function closeTab(id: string) {
   const next = tabs[Math.min(i, tabs.length - 1)];
   const doc = next ? await getDoc(next) : undefined;
   if (doc) await openDoc(doc);
-  else await editor.close();
+  else if (!(await editor.close())) addTab(id); // chose to stay: the tab comes back
+  void renderTabs();
 }
 
 /** true while one document is being swapped for another (no trip through the library) */
@@ -112,10 +113,16 @@ async function openDoc(doc: DocMeta) {
   const wasOpen = !!editor;
   if (editor) {
     switching = true;
-    try { await editor.close(); } finally { switching = false; }
+    let left = false;
+    try { left = await editor.close(); } finally { switching = false; }
+    // "Cancel" in the save question: stay where you are
+    if (!left) return;
   }
   // Android back gesture closes the document instead of leaving the app.
-  const onPop = () => void ed.close();
+  const onPop = () => void ed.close().then((left) => {
+    // the back gesture already left this page's history entry: put it back when you chose to stay
+    if (!left) history.pushState({ doc: doc.id }, '', '');
+  });
   const ed = new Editor(doc, async () => {
     editor = null;
     window.removeEventListener('popstate', onPop);
@@ -146,7 +153,7 @@ function splitShare(): number {
 async function openSide(doc: DocMeta) {
   if (!editor) return;
   if (!(await ensureUnlocked(doc))) return;
-  if (side) await side.close();
+  if (side && !(await side.close())) return;
   const ed = new Editor(doc, () => closeSide(ed), undefined, { side: true });
   if (!splitRoot) {
     const divider = h('div', { class: 'split-divider', role: 'separator', 'aria-orientation': 'vertical', tabindex: 0 });
