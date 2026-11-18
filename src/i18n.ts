@@ -342,6 +342,8 @@ const dict = {
   reminderPast: { ar: 'اختر وقتًا في المستقبل', de: 'Bitte eine Zeit in der Zukunft wählen', en: 'Choose a time in the future' },
   reminderNoPermission: { ar: 'اسمح للتطبيق بالإشعارات من إعدادات Android', de: 'Benachrichtigungen in den Android-Einstellungen erlauben', en: 'Allow notifications in Android settings' },
   reminderNativeOnly: { ar: 'التذكيرات تعمل في تطبيق Android فقط', de: 'Erinnerungen gibt es nur in der Android-App', en: 'Reminders work in the Android app only' },
+  openLink: { ar: 'فتح هذا الرابط في المتصفح؟', de: 'Diesen Link im Browser öffnen?', en: 'Open this link in the browser?' },
+  backToPage: { ar: 'رجوع إلى الصفحة', de: 'Zurück zu Seite', en: 'Back to page' },
 } as const;
 
 export type Key = keyof typeof dict;

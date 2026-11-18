@@ -15,7 +15,8 @@ import { Ruler, type Edge } from './ruler';
 import { NotesPanel, VoiceRecorder, clipFromStroke, clipFromRect, saveVoiceMemo, fmtTime } from './clips';
 import { findFreeSpot } from './freeSpace';
 import { settings, saveSettings, type ButtonAction } from './settings';
-import { pdfForDoc, renderPdfPage, closePdf, pdfOutline, type OutlineItem } from './pdf';
+import { pdfForDoc, renderPdfPage, closePdf, pdfOutline, pdfLinks, type OutlineItem, type PdfLink } from './pdf';
+import { Capacitor } from '@capacitor/core';
 import { openSettings } from './settingsDialog';
 import { icons } from './icons';
 import { t } from './i18n';
@@ -726,6 +727,7 @@ export class Editor {
     imgs.addEventListener('pointerdown', (e) => this.onImageDown(e, i));
     this.renderPage(i);
     this.renderImages(i);
+    if (pg.bg.kind === 'pdf') void this.mountLinks(i, el, pg.bg.pdfPage);
   }
 
   private rerenderForScale() {
@@ -1983,6 +1985,76 @@ export class Editor {
     const next = this.pages.slice();
     next.splice(cur + 1, 0, page);
     void this.setPages(next, cur + 1, page);
+  }
+
+  // ---------------------------------------------------------------- links inside PDFs
+
+  /** Invisible tap areas over the PDF's links; they answer in reading mode (where PDFs open). */
+  private async mountLinks(i: number, el: HTMLElement, pdfPage: number) {
+    let links: PdfLink[];
+    try {
+      links = await pdfLinks(this.meta.id, pdfPage);
+    } catch {
+      return;
+    }
+    if (!links.length || !el.isConnected) return;
+    const layer = h('div', { class: 'links' });
+    for (const ln of links) {
+      const [x0, y0, x1, y1] = ln.rect;
+      const a = h('a', { class: `plink ${ln.url ? 'web' : 'inner'}`, style: `left:${x0}px;top:${y0}px;width:${x1 - x0}px;height:${y1 - y0}px`, title: ln.url ?? `${t('page')} ${ln.pdfPage}` });
+      // the viewport captures the pointer to scroll, so the tap is judged when the pointer lifts, wherever it is
+      a.addEventListener('pointerdown', (e) => {
+        if (!this.reading) return;
+        const x = e.clientX, y = e.clientY, id = e.pointerId, t0 = e.timeStamp;
+        const up = (ev: PointerEvent) => {
+          if (ev.pointerId !== id) return;
+          window.removeEventListener('pointerup', up, true);
+          // a drag that started on a link scrolled the page: that is not a tap
+          if (Math.hypot(ev.clientX - x, ev.clientY - y) <= 10 && ev.timeStamp - t0 < 700) this.followLink(ln, i);
+        };
+        window.addEventListener('pointerup', up, true);
+      });
+      a.addEventListener('click', (e) => e.preventDefault());
+      layer.append(a);
+    }
+    el.append(layer);
+  }
+
+  private followLink(ln: PdfLink, from: number) {
+    if (ln.pdfPage) {
+      const backY = this.cam.ty;
+      this.goOutline({ title: '', items: [], pdfPage: ln.pdfPage, y: ln.y ?? null });
+      this.showJumpBack(from, backY);
+      return;
+    }
+    if (!ln.url || !confirm(`${t('openLink')}\n${ln.url}`)) return;
+    if (Capacitor.isNativePlatform()) {
+      // the app hands web addresses to the system browser
+      const a = document.createElement('a');
+      a.href = ln.url;
+      a.click();
+    } else window.open(ln.url, '_blank', 'noopener');
+  }
+
+  private jumpBack: HTMLButtonElement | null = null;
+  private jumpTimer = 0;
+
+  /** After following a reference: a button back to where you were reading, for 10 seconds. */
+  private showJumpBack(page: number, ty: number) {
+    this.jumpBack?.remove();
+    const b = h('button', { class: 'jump-back', type: 'button' });
+    b.innerHTML = icons.undo;
+    b.append(h('span', {}, `${t('backToPage')} ${page + 1}`));
+    b.addEventListener('click', () => {
+      this.cam.ty = ty;
+      this.clampCamera();
+      this.applyCamera();
+      b.remove();
+    });
+    this.stage.append(b);
+    this.jumpBack = b;
+    clearTimeout(this.jumpTimer);
+    this.jumpTimer = window.setTimeout(() => b.remove(), 10_000);
   }
 
   // ---------------------------------------------------------------- pictures on pages

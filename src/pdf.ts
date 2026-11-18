@@ -34,6 +34,7 @@ export function pdfForDoc(docId: string): Promise<PDFDocumentProxy> {
 }
 
 export function closePdf(docId: string) {
+  for (const k of linkCache.keys()) if (k.startsWith(`${docId}:`)) linkCache.delete(k);
   const p = cache.get(docId);
   cache.delete(docId);
   p?.then(destroyPdf).catch(() => {});
@@ -209,6 +210,27 @@ export interface OutlineItem {
   items: OutlineItem[];
 }
 
+/** A destination inside the PDF (a name or an explicit array) as page number + height on the page. */
+async function resolveDest(doc: PDFDocumentProxy, raw: unknown): Promise<{ pdfPage: number | null; y: number | null }> {
+  try {
+    const dest = typeof raw === 'string' ? await doc.getDestination(raw) : raw;
+    if (!Array.isArray(dest) || dest[0] == null) return { pdfPage: null, y: null };
+    const ref = dest[0];
+    const idx = typeof ref === 'number' ? ref : await doc.getPageIndex(ref);
+    const pdfPage = idx + 1;
+    const kind = (dest[1] as { name?: string } | undefined)?.name;
+    const top = kind === 'XYZ' ? dest[3] : kind === 'FitH' || kind === 'FitBH' ? dest[2] : null;
+    let y: number | null = null;
+    if (typeof top === 'number') {
+      const vp = (await doc.getPage(pdfPage)).getViewport({ scale: 1 });
+      y = Math.max(0, vp.convertToViewportPoint(0, top)[1]);
+    }
+    return { pdfPage, y };
+  } catch {
+    return { pdfPage: null, y: null };
+  }
+}
+
 /** The PDF's own table of contents (bookmarks panel in other readers), with every entry resolved to a page. */
 export async function pdfOutline(docId: string): Promise<OutlineItem[]> {
   const doc = await pdfForDoc(docId);
@@ -217,27 +239,52 @@ export async function pdfOutline(docId: string): Promise<OutlineItem[]> {
   let budget = 3000; // very large outlines: stop resolving after this many entries
   type Raw = (typeof raw)[number];
   const resolve = async (it: Raw, depth: number): Promise<OutlineItem> => {
-    let pdfPage: number | null = null, y: number | null = null;
-    if (budget-- > 0) {
-      try {
-        const dest = typeof it.dest === 'string' ? await doc.getDestination(it.dest) : it.dest;
-        if (Array.isArray(dest) && dest[0] != null) {
-          const ref = dest[0];
-          const idx = typeof ref === 'number' ? ref : await doc.getPageIndex(ref);
-          pdfPage = idx + 1;
-          const kind = (dest[1] as { name?: string } | undefined)?.name;
-          const top = kind === 'XYZ' ? dest[3] : kind === 'FitH' || kind === 'FitBH' ? dest[2] : null;
-          if (typeof top === 'number') {
-            const vp = (await doc.getPage(pdfPage)).getViewport({ scale: 1 });
-            y = Math.max(0, vp.convertToViewportPoint(0, top)[1]);
-          }
-        }
-      } catch {
-        /* broken destination: show the entry without a target */
-      }
-    }
+    const target = budget-- > 0 ? await resolveDest(doc, it.dest) : { pdfPage: null, y: null };
     const kids = depth < 6 ? await Promise.all((it.items ?? []).map((k) => resolve(k, depth + 1))) : [];
-    return { title: (it.title || '—').trim(), pdfPage, y, items: kids };
+    return { title: (it.title || '—').trim(), ...target, items: kids };
   };
   return Promise.all(raw.map((it) => resolve(it, 0)));
+}
+
+export interface PdfLink {
+  /** our page coordinates [x0, y0, x1, y1] */
+  rect: [number, number, number, number];
+  /** a web address … */
+  url?: string;
+  /** … or a place in this PDF */
+  pdfPage?: number;
+  y?: number | null;
+}
+
+const linkCache = new Map<string, Promise<PdfLink[]>>();
+
+/** Clickable links on a PDF page: web addresses and jumps inside the document (references, contents). */
+export function pdfLinks(docId: string, pageNo: number): Promise<PdfLink[]> {
+  const key = `${docId}:${pageNo}`;
+  let p = linkCache.get(key);
+  if (!p) {
+    p = (async () => {
+      const doc = await pdfForDoc(docId);
+      const page = await doc.getPage(pageNo);
+      const vp = page.getViewport({ scale: 1 });
+      const out: PdfLink[] = [];
+      for (const a of await page.getAnnotations({ intent: 'display' })) {
+        if (a.subtype !== 'Link' || !a.rect) continue;
+        const [x0, y0] = vp.convertToViewportPoint(a.rect[0], a.rect[1]);
+        const [x1, y1] = vp.convertToViewportPoint(a.rect[2], a.rect[3]);
+        const rect: PdfLink['rect'] = [Math.min(x0, x1), Math.min(y0, y1), Math.max(x0, x1), Math.max(y0, y1)];
+        if (rect[2] - rect[0] < 2 || rect[3] - rect[1] < 2) continue;
+        const url = (a.url || a.unsafeUrl) as string | undefined;
+        if (url && /^(https?:|mailto:)/i.test(url)) out.push({ rect, url });
+        else if (a.dest) {
+          const t = await resolveDest(doc, a.dest);
+          if (t.pdfPage) out.push({ rect, pdfPage: t.pdfPage, y: t.y });
+        }
+      }
+      return out;
+    })();
+    linkCache.set(key, p);
+    p.catch(() => linkCache.delete(key));
+  }
+  return p;
 }
