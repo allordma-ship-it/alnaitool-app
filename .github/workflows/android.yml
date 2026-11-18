@@ -38,7 +38,22 @@ jobs:
             echo "::error::Secret ANDROID_KEYSTORE_BASE64 is missing (Settings → Secrets and variables → Actions)."
             exit 1
           fi
-          echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/release.jks"
+          # copying on a phone often adds spaces or line breaks: drop them
+          if ! printf '%s' "$KEYSTORE_B64" | tr -d ' \r\n\t' | base64 -d > "$RUNNER_TEMP/release.jks"; then
+            echo "::error::ANDROID_KEYSTORE_BASE64 is not valid base64 - copy the whole long line again."
+            exit 1
+          fi
+          echo "Keystore: $(wc -c < "$RUNNER_TEMP/release.jks") bytes"
+      - name: Check the signing key and passwords
+        env:
+          PW: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+        run: |
+          if ! keytool -list -keystore "$RUNNER_TEMP/release.jks" -storepass "$PW" -alias "${ALIAS:-alnai}" > /dev/null; then
+            echo "::error::Keystore, ANDROID_KEYSTORE_PASSWORD or ANDROID_KEY_ALIAS do not match - check those secrets."
+            exit 1
+          fi
+          keytool -list -v -keystore "$RUNNER_TEMP/release.jks" -storepass "$PW" -alias "${ALIAS:-alnai}" | grep "SHA256:"
       - name: Build release APK
         working-directory: android
         env:
