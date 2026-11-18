@@ -73,6 +73,7 @@ export class Library {
           search,
           btn(icons.plus, t('newNotebook'), () => void this.newNotebookDialog(), 'primary'),
           btn(icons.file, t('importFile'), () => fileInput.click()),
+          btn(icons.scan, t('scanTitle'), () => void import('./scan').then(({ ScanView }) => new ScanView((d) => this.openDoc(d)).open())),
           settingsBtn,
         ),
         fileInput,

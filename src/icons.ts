@@ -21,6 +21,9 @@ export const icons = {
   /** the Notiva mark: an N whose right stroke rises into a pen nib, and an ink dot */
   logo: `<svg viewBox="22 22 64 64" width="26" height="26" aria-hidden="true"><path d="M37 74 V40 L66 72 V45" fill="none" stroke="#fff" stroke-width="9.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M60.2 50 L58.6 41.5 Q58.4 39.6 59.6 38.2 L66 27.5 L72.4 38.2 Q73.6 39.6 73.4 41.5 L71.8 50 Z" fill="#fff"/><path d="M66 30.5 V39.4" stroke="#1e3a8a" stroke-width="1.6" stroke-linecap="round"/><circle cx="66" cy="41.4" r="2" fill="#1e3a8a"/><circle cx="75.5" cy="72.5" r="4.2" fill="#a5f3fc"/></svg>`,
   check: s('<path d="M5 12.5l4.5 4.5L19 7.5"/>'),
+  camera: s('<path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/>'),
+  rotate: s('<path d="M20 11a8 8 0 1 1-2.3-5.7"/><path d="M20 4v5h-5"/>'),
+  scan: s('<path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><path d="M7 12h10"/>'),
   folder: s('<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>'),
   trash: s('<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>'),
   share: s('<path d="M12 3v12M7 8l5-5 5 5"/><path d="M5 14v6h14v-6"/>'),

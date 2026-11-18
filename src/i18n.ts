@@ -363,6 +363,25 @@ const dict = {
   saveChanges: { ar: 'حفظ', de: 'Speichern', en: 'Save' },
   discardChanges: { ar: 'عدم الحفظ (الرجوع إلى ما كان عند الفتح)', de: 'Nicht speichern (zurück zum Stand beim Öffnen)', en: "Don't save (back to how it was when opened)" },
   askSave: { ar: 'السؤال عن حفظ التغييرات عند الخروج من الملف', de: 'Beim Verlassen nach dem Speichern fragen', en: 'Ask to save changes when leaving a document' },
+  scanTitle: { ar: 'مسح ضوئي', de: 'Scan', en: 'Scan' },
+  scanHint: {
+    ar: 'صوّر صفحات كتاب أو ورق: يُحدَّد إطار الصفحة تلقائيًا ويُعدَّل منظورها، وتزول الظلال. اسحب النقاط الزرقاء لتصحيح الزوايا.',
+    de: 'Buch- oder Papierseiten fotografieren: die Seite wird erkannt, gerade gerückt und Schatten werden entfernt. Die blauen Punkte ziehen, um die Ecken zu korrigieren.',
+    en: 'Photograph book or paper pages: the page is found, straightened and shadows removed. Drag the blue dots to fix the corners.',
+  },
+  scanCamera: { ar: 'الكاميرا', de: 'Kamera', en: 'Camera' },
+  scanGallery: { ar: 'من المعرض', de: 'Aus der Galerie', en: 'From gallery' },
+  scanSave: { ar: 'حفظ كمستند', de: 'Als Dokument speichern', en: 'Save as document' },
+  scanEdges: { ar: 'الحواف', de: 'Ränder', en: 'Edges' },
+  scanResult: { ar: 'النتيجة', de: 'Ergebnis', en: 'Result' },
+  scanFilterDoc: { ar: 'مستند', de: 'Dokument', en: 'Document' },
+  scanFilterColor: { ar: 'ألوان', de: 'Farbe', en: 'Colour' },
+  scanFilterOriginal: { ar: 'أصلي', de: 'Original', en: 'Original' },
+  scanRotate: { ar: 'تدوير', de: 'Drehen', en: 'Rotate' },
+  scanAuto: { ar: 'كشف الحواف تلقائيًا', de: 'Ränder automatisch', en: 'Detect edges' },
+  scanDelete: { ar: 'حذف الصفحة', de: 'Seite entfernen', en: 'Remove page' },
+  scanCorner: { ar: 'زاوية', de: 'Ecke', en: 'Corner' },
+  scanDiscard: { ar: 'إغلاق المسح؟ الصفحات غير المحفوظة ستُحذف.', de: 'Scan schließen? Nicht gespeicherte Seiten gehen verloren.', en: 'Close the scan? Unsaved pages are lost.' },
 } as const;
 
 export type Key = keyof typeof dict;

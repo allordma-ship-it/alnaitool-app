@@ -753,3 +753,38 @@ details[open] > summary .pv-caret::before { transform: rotate(90deg); }
 .pdf-edit-btn { display: flex; align-items: center; gap: 6px; height: 38px; padding: 0 12px; border-radius: 10px; border: 1px solid var(--line-2); background: transparent; color: var(--muted); font-weight: 600; }
 .pdf-edit-btn svg { width: 18px; height: 18px; }
 .pdf-edit-btn.active { background: var(--accent-soft); color: var(--accent-text); border-color: rgb(6 182 212 / .45); }
+
+/* ---------------------------------------------------------------- scanner */
+.scan-view {
+  position: fixed; inset: 0; width: 100%; height: 100%; max-width: none; max-height: none; margin: 0; padding: 0; border: 0;
+  display: flex; flex-direction: column; background: #05070d; color: var(--text);
+}
+.scan-view:not([open]) { display: none; }
+.scan-view .pv-head .btn { height: 40px; }
+.scan-stage { flex: 1; min-height: 0; display: grid; place-items: center; overflow: hidden; position: relative; }
+.scan-photo { position: relative; touch-action: none; }
+.scan-photo canvas { display: block; border-radius: 4px; }
+.scan-quad { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+.scan-quad polygon { fill: rgb(6 182 212 / .16); stroke: #22d3ee; stroke-width: 2.5; stroke-linejoin: round; }
+.scan-handle {
+  position: absolute; width: 34px; height: 34px; margin: -17px 0 0 -17px; border-radius: 50%; touch-action: none; cursor: grab;
+  background: rgb(6 182 212 / .35); border: 3px solid #fff; box-shadow: 0 2px 10px rgb(0 0 0 / .5);
+}
+.scan-handle::after { content: ''; position: absolute; inset: 11px; border-radius: 50%; background: #06b6d4; }
+.scan-handle.drag { transform: scale(1.25); background: rgb(6 182 212 / .55); }
+.scan-result { position: absolute; inset: 0; display: grid; place-items: center; padding: 16px; }
+.scan-result img { max-width: 100%; max-height: 100%; min-height: 0; object-fit: contain; background: #fff; box-shadow: 0 10px 40px rgb(0 0 0 / .6); border-radius: 3px; }
+.scan-tools { display: flex; gap: 10px; align-items: center; justify-content: center; flex-wrap: wrap; padding: 10px 12px; border-top: 1px solid var(--line); background: var(--surface); }
+.scan-tools:empty { display: none; }
+.scan-strip { display: flex; gap: 10px; align-items: center; padding: 10px 12px calc(10px + var(--sab)); overflow-x: auto; background: var(--surface); border-top: 1px solid var(--line); }
+.scan-thumb { position: relative; flex: none; width: 64px; height: 84px; padding: 0; border-radius: 8px; overflow: hidden; border: 2px solid transparent; background: #fff; }
+.scan-thumb.active { border-color: var(--accent); }
+.scan-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.scan-thumb span { position: absolute; bottom: 2px; inset-inline-end: 4px; font-size: 11px; font-weight: 700; color: #fff; background: rgb(0 0 0 / .6); border-radius: 6px; padding: 0 5px; }
+.scan-add { flex: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; width: 84px; height: 84px; border-radius: 10px; border: 1px dashed var(--line-2); background: transparent; color: var(--accent-text); font-size: 12px; font-weight: 600; }
+.scan-empty { display: grid; justify-items: center; gap: 20px; padding: 24px; max-width: 560px; text-align: center; }
+.scan-big-row { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
+.scan-big { display: flex; flex-direction: column; align-items: center; gap: 10px; width: 180px; padding: 26px 10px; border-radius: 18px; border: 1px solid var(--line-2); background: var(--surface); color: var(--text); font-weight: 650; font-size: 15px; }
+.scan-big svg { width: 40px; height: 40px; color: var(--accent-text); }
+.scan-big.primary { background: var(--grad); border-color: transparent; color: #fff; }
+.scan-big.primary svg { color: #fff; }
