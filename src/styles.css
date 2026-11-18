@@ -670,3 +670,26 @@ details[open] > summary .pv-caret::before { transform: rotate(90deg); }
 .rem-item { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 12px; border-radius: 10px; background: var(--surface-2); }
 .rem-item b { display: block; font-size: 14px; }
 .rem-item small { color: var(--muted); }
+
+/* ---------------------------------------------------------------- narrow panes (split view): size by the pane, not the screen */
+.editor { container: pane / inline-size; }
+/* centred, but never cut off: when the bar is wider than the pane it starts at the edge and scrolls */
+.dock-wrap { justify-content: safe center; }
+.dock::-webkit-scrollbar, .nav-pill::-webkit-scrollbar { display: none; }
+@container pane (max-width: 820px) {
+  .topbar { overflow-x: auto; scrollbar-width: none; flex-wrap: nowrap; }
+  .topbar::-webkit-scrollbar { display: none; }
+  .topbar .hud, .topbar .brand-mark, .labelled > span { display: none; }
+  .labelled { width: 40px !important; padding: 0 !important; justify-content: center; }
+  .doc-title { max-width: 26cqw; }
+  .doc-sub { display: none; }
+}
+@container pane (max-width: 640px) {
+  .dock .icon-btn, .nav-pill .icon-btn { width: 34px; height: 34px; border-radius: 9px; }
+  .dock svg, .nav-pill svg { width: 19px; height: 19px; }
+  .dock .sep, .nav-pill .sep { margin: 0 1px; }
+  .dock .color-dot { width: 26px; height: 26px; }
+  .dock-wrap { gap: 6px; padding: 0 6px; }
+  .topbar .icon-btn { width: 36px; height: 36px; }
+  .topbar .toggle-group { display: none; }
+}
