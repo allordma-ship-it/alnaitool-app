@@ -154,6 +154,8 @@ export interface PanelHost {
   jump(page: number, rect?: Rect): void;
   /** open another document at a page */
   openDoc(docId: string, page: number): void;
+  /** put a clip's picture into the notebook beside (split view) or else into this page */
+  insertClip?(c: Clip): Promise<void>;
   close(): void;
 }
 
@@ -234,6 +236,16 @@ export class NotesPanel {
       const img = h('img', { src: c.image, alt: '', class: 'np-img', loading: 'lazy' });
       img.addEventListener('click', go);
       card.append(img);
+      if (this.host.insertClip) {
+        const ins = h('button', { class: 'np-insert', type: 'button' });
+        ins.innerHTML = icons.image;
+        ins.append(h('span', {}, t('insertClip')));
+        ins.addEventListener('click', async () => {
+          ins.disabled = true;
+          try { await this.host.insertClip!(c); } catch (e) { console.error(e); toast(String(e)); } finally { ins.disabled = false; }
+        });
+        card.append(ins);
+      }
     }
     if (c.text) {
       const p = h('p', { class: 'np-text', dir: 'auto' }, c.text);

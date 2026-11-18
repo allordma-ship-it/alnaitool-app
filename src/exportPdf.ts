@@ -158,6 +158,13 @@ export async function exportDocToPdf(meta: DocMeta, pages: PageData[]): Promise<
       map = (x, y) => ({ x, y: pd.h - y });
       colorFor = (c) => inkColorForPaper(pd.bg, c);
     }
+    for (const im of pd.images ?? []) {
+      const buf = await getFile(im.fileId);
+      if (!buf) continue;
+      const img = im.mime === 'image/png' ? await out.embedPng(buf) : await out.embedJpg(buf);
+      const bl = map(im.x, im.y + im.h);
+      page.drawImage(img, { x: bl.x, y: bl.y, width: im.w, height: im.h });
+    }
     if (pd.texts?.length) await drawBubbles(out, page, pd.texts, map);
     drawInk(page, pd.strokes, map, colorFor);
     if (pd.texts?.length) await drawTexts(out, page, pd.texts, map, (c) => c, colorFor);

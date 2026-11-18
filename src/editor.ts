@@ -1,6 +1,7 @@
-import type { DocMeta, PageData, Stroke, Tool, InkTool, TextBox } from './types';
+import type { DocMeta, PageData, Stroke, Tool, InkTool, TextBox, PageImage, Clip } from './types';
+import { prepareImage, imageUrl, placeImage, dataUrlToBlob } from './pageImages';
 import { A4, uid } from './types';
-import { getPages, putDoc, putPages, deletePages, deleteFile, listClips, putClip } from './db';
+import { getPages, putDoc, putPages, deletePages, deleteFile, listClips, putClip, putFile } from './db';
 import { PagesView } from './pagesView';
 import { moveItem, duplicatePage, remapClips, fileUnused } from './pageOps';
 import { drawStrokes, drawTemplate, drawPenSegments, drawHighlighterPath, inkColorForPaper, drawStroke } from './ink';
@@ -28,11 +29,13 @@ interface Layout { x: number; y: number; w: number; h: number }
 interface PageView {
   el: HTMLDivElement;
   bg: HTMLCanvasElement;
+  /** pictures placed on the page, between the background and the ink */
+  imgs: HTMLDivElement;
   ink: HTMLCanvasElement;
   scale: number;
   bgJob: { cancelled: boolean };
 }
-interface HistoryEntry { pageId: string; before: Stroke[]; after: Stroke[]; tBefore?: TextBox[]; tAfter?: TextBox[] }
+interface HistoryEntry { pageId: string; before: Stroke[]; after: Stroke[]; tBefore?: TextBox[]; tAfter?: TextBox[]; iBefore?: PageImage[]; iAfter?: PageImage[] }
 
 type Mode =
   | { kind: 'idle' }
@@ -123,6 +126,10 @@ export class Editor {
 
   /** the editor the user touched last: with two documents side by side, only it gets keyboard shortcuts */
   static active: Editor | null = null;
+  /** QalamNote panel open in this editor */
+  private notesOpen = false;
+  /** every open editor (two in split view) */
+  static open = new Set<Editor>();
 
   constructor(
     private meta: DocMeta,
@@ -131,7 +138,9 @@ export class Editor {
     private opts: { onSplit?: () => void; side?: boolean } = {},
   ) {
     this.root = h('div', { class: `editor ${opts.side ? 'side-pane' : ''}` });
+    this.notesOpen = !opts.side && settings.notesPanel;
     Editor.active ??= this;
+    Editor.open.add(this);
     this.root.addEventListener('pointerdown', () => { Editor.active = this; }, { capture: true });
   }
 
@@ -212,7 +221,7 @@ export class Editor {
     this.toggles.palm = btn(icons.palm, t('palmRejection'), () => this.togglePalm(), 'toggle');
     this.toggles.spread = btn(icons.columns, t('spread'), () => this.toggleSpread(), 'toggle');
     this.toggles.eye = btn(icons.moon, t('eyeCare'), () => this.toggleEyeCare(), 'toggle');
-    this.toggles.notes = labelled(btn(icons.notebook, t('notes'), () => this.toggleNotes(!settings.notesPanel), 'toggle notes-toggle'), 'QalamNote');
+    this.toggles.notes = labelled(btn(icons.notebook, t('notes'), () => this.toggleNotes(!this.notesOpen), 'toggle notes-toggle'), 'QalamNote');
     const backBtn = btn(icons.back, t('back'), () => this.close(), 'back-btn');
     this.toolbar = h('header', { class: 'topbar' },
       backBtn,
@@ -238,6 +247,7 @@ export class Editor {
       h('div', { class: 'tool-group' },
         toolBtn('pen'), toolBtn('highlighter'), toolBtn('shape'), toolBtn('laser'),
         toolBtn('eraser'), toolBtn('lasso'), toolBtn('clip'), toolBtn('text'),
+        btn(icons.image, t('insertImage'), () => this.pickImage(), 'img-btn edit-only'),
       ),
       h('i', { class: 'sep' }), this.colorDot,
       h('i', { class: 'sep' }), rulerBtn, this.recBtn,
@@ -276,6 +286,7 @@ export class Editor {
       meta: this.meta,
       jump: (page, rect) => this.jumpTo(page, rect),
       openDoc: (docId, page) => void this.openOther(docId, page),
+      insertClip: (c) => this.sendClip(c),
       close: () => this.toggleNotes(false),
     });
 
@@ -283,7 +294,7 @@ export class Editor {
     this.setTool('pen');
     this.setReading(this.meta.reading ?? false, true);
     this.applyToggles();
-    if (settings.notesPanel) void this.panel.refresh();
+    if (this.notesOpen) void this.panel.refresh();
     // keep the keyboard open while changing text size/colour
     for (const type of ['pointerdown', 'mousedown'])
       this.optionsBar.addEventListener(type, (e) => { if (this.editing) e.preventDefault(); });
@@ -334,9 +345,9 @@ export class Editor {
     this.toggles.spread.classList.toggle('active', settings.spread === 'dual');
     this.toggles.spread.innerHTML = settings.spread === 'dual' ? icons.columns : icons.single;
     this.toggles.eye.classList.toggle('active', settings.eyeCare);
-    this.toggles.notes.classList.toggle('active', settings.notesPanel);
+    this.toggles.notes.classList.toggle('active', this.notesOpen);
     this.root.classList.toggle('eye-care', settings.eyeCare);
-    this.root.classList.toggle('with-notes', settings.notesPanel);
+    this.root.classList.toggle('with-notes', this.notesOpen);
     this.hud.el.hidden = !settings.showHud;
   }
 
@@ -366,8 +377,12 @@ export class Editor {
   }
 
   private toggleNotes(on: boolean) {
-    settings.notesPanel = on;
-    saveSettings();
+    this.notesOpen = on;
+    // the panel choice is remembered for the main document only; the side one starts closed
+    if (!this.opts.side) {
+      settings.notesPanel = on;
+      saveSettings();
+    }
     this.applyToggles();
     if (on) void this.panel.refresh();
     requestAnimationFrame(() => this.resize());
@@ -391,7 +406,7 @@ export class Editor {
       const res = await this.recorder.stop();
       if (!res) return;
       const clip = await saveVoiceMemo(this.meta, this.currentPage(), res);
-      if (!settings.notesPanel) this.toggleNotes(true);
+      if (!this.notesOpen) this.toggleNotes(true);
       void this.panel.refresh(clip.id);
       toast(`${t('voiceMemo')} · ${fmtTime(res.duration)}`);
       return;
@@ -414,6 +429,8 @@ export class Editor {
   private setTool(tool: Tool) {
     this.finishEditing();
     this.tool = tool;
+    this.root.dataset.tool = tool;
+    if (tool !== 'lasso') this.selectImage(null);
     if (tool !== 'lasso') this.clearSelection();
     for (const b of this.dock.querySelectorAll<HTMLButtonElement>('[data-tool]'))
       b.classList.toggle('active', b.dataset.tool === tool);
@@ -615,6 +632,8 @@ export class Editor {
   private applyCamera() {
     const { s, tx, ty } = this.cam;
     this.world.style.transform = `translate3d(${tx}px,${ty}px,0) scale(${s})`;
+    // handles on a selected picture keep their size on screen at any zoom
+    this.world.style.setProperty('--inv', String(1 / s));
     this.ruler.setScale(s);
     this.scheduleUpdate();
     clearTimeout(this.rerenderTimer);
@@ -691,12 +710,15 @@ export class Editor {
     const kind = pg.bg.kind === 'template' ? (pg.bg.paper === 'dark' ? 'paper-dark' : 'paper') : pg.bg.kind;
     const el = h('div', { class: `page ${kind}`, style: `left:${l.x}px;top:${l.y}px;width:${l.w}px;height:${l.h}px` });
     const bg = h('canvas', { class: 'bg' });
+    const imgs = h('div', { class: 'imgs' });
     const ink = h('canvas', { class: 'ink' });
-    el.append(bg, ink);
+    el.append(bg, imgs, ink);
     this.world.append(el);
-    const v: PageView = { el, bg, ink, scale: 0, bgJob: { cancelled: false } };
+    const v: PageView = { el, bg, imgs, ink, scale: 0, bgJob: { cancelled: false } };
     this.views.set(i, v);
+    imgs.addEventListener('pointerdown', (e) => this.onImageDown(e, i));
     this.renderPage(i);
+    this.renderImages(i);
   }
 
   private rerenderForScale() {
@@ -897,6 +919,7 @@ export class Editor {
   }
 
   private startTool(e: PointerEvent) {
+    this.selectImage(null);
     const tool = this.effectiveTool(e);
     const [wx, wy] = this.screenToWorld(e.clientX, e.clientY);
     const page = this.pageAt(wx, wy);
@@ -1321,7 +1344,7 @@ export class Editor {
 
   private afterClip(id: string, page: number, rect?: [number, number, number, number]) {
     if (rect) this.flashRect(page, rect);
-    if (!settings.notesPanel) this.toggleNotes(true);
+    if (!this.notesOpen) this.toggleNotes(true);
     void this.panel.refresh(id);
     toast(`${t('clipped')} ${page + 1}`);
   }
@@ -1850,6 +1873,12 @@ export class Editor {
     this.pages[i].strokes = e[which];
     const texts = which === 'before' ? e.tBefore : e.tAfter;
     if (texts) this.pages[i].texts = texts;
+    const imgs = which === 'before' ? e.iBefore : e.iAfter;
+    if (imgs) {
+      this.pages[i].images = imgs;
+      this.selectImage(null);
+      this.renderImages(i);
+    }
     to.push(e);
     this.clearSelection();
     this.renderInk(i);
@@ -1890,6 +1919,170 @@ export class Editor {
     void this.setPages(next, cur + 1, page);
   }
 
+  // ---------------------------------------------------------------- pictures on pages
+
+  private imgSel: { page: number; id: string } | null = null;
+
+  private renderImages(i: number) {
+    const v = this.views.get(i);
+    if (!v) return;
+    v.imgs.replaceChildren();
+    for (const im of this.pages[i].images ?? []) {
+      const el = h('img', { class: 'pimg', alt: '', draggable: 'false', 'data-id': im.id, style: `left:${im.x}px;top:${im.y}px;width:${im.w}px;height:${im.h}px` });
+      void imageUrl(im.fileId, im.mime).then((u) => { el.src = u; }).catch(() => el.classList.add('missing'));
+      v.imgs.append(el);
+    }
+    if (this.imgSel?.page === i) this.showImageFrame();
+  }
+
+  /** Select tool: tap a picture to select it; drag it, drag the corner to resize, or delete it. */
+  private onImageDown(e: PointerEvent, i: number) {
+    if (this.tool !== 'lasso' || this.reading) return;
+    const target = e.target as HTMLElement;
+    const id = target.closest<HTMLElement>('[data-id]')?.dataset.id;
+    const act = target.closest<HTMLElement>('[data-act]')?.dataset.act;
+    if (!id) return;
+    e.stopPropagation();
+    e.preventDefault();
+    this.clearSelection();
+    const page = this.pages[i];
+    const im = page.images?.find((x) => x.id === id);
+    if (!im) return;
+    if (act === 'delete') return this.changeImages(i, (list) => list.filter((x) => x.id !== id), true);
+    this.selectImage({ page: i, id });
+    const el = e.currentTarget as HTMLElement;
+    el.setPointerCapture(e.pointerId);
+    const start = { x: e.clientX, y: e.clientY, im: { ...im } };
+    const before = page.images!.map((x) => ({ ...x }));
+    let moved = false;
+    const move = (ev: PointerEvent) => {
+      const dx = (ev.clientX - start.x) / this.cam.s, dy = (ev.clientY - start.y) / this.cam.s;
+      if (!moved && Math.hypot(dx, dy) * this.cam.s < 3) return;
+      moved = true;
+      if (act === 'resize') {
+        const k = start.im.h / start.im.w;
+        const w = Math.max(24, Math.min(page.w * 1.5, start.im.w + dx));
+        im.w = w;
+        im.h = w * k;
+      } else {
+        im.x = Math.max(-im.w + 20, Math.min(page.w - 20, start.im.x + dx));
+        im.y = Math.max(-im.h + 20, Math.min(page.h - 20, start.im.y + dy));
+      }
+      const img = this.views.get(i)?.imgs.querySelector<HTMLElement>(`img[data-id="${id}"]`);
+      if (img) Object.assign(img.style, { left: `${im.x}px`, top: `${im.y}px`, width: `${im.w}px`, height: `${im.h}px` });
+      this.showImageFrame();
+    };
+    const up = () => {
+      el.removeEventListener('pointermove', move);
+      el.removeEventListener('pointerup', up);
+      el.removeEventListener('pointercancel', up);
+      if (!moved) return;
+      this.pushHistory({ pageId: page.id, before: page.strokes, after: page.strokes, iBefore: before, iAfter: page.images!.map((x) => ({ ...x })) });
+      this.markDirty(page.id);
+    };
+    el.addEventListener('pointermove', move);
+    el.addEventListener('pointerup', up);
+    el.addEventListener('pointercancel', up);
+  }
+
+  private selectImage(sel: { page: number; id: string } | null) {
+    if (!sel && !this.imgSel) return;
+    this.imgSel = sel;
+    for (const v of this.views.values()) v.imgs.querySelector('.img-frame')?.remove();
+    if (sel) this.showImageFrame();
+  }
+
+  private showImageFrame() {
+    const sel = this.imgSel;
+    if (!sel) return;
+    const v = this.views.get(sel.page);
+    const im = this.pages[sel.page]?.images?.find((x) => x.id === sel.id);
+    if (!v || !im) return;
+    let frame = v.imgs.querySelector<HTMLElement>('.img-frame');
+    if (!frame) {
+      const del = h('button', { class: 'img-act', 'data-act': 'delete', 'data-id': im.id, title: t('delete'), 'aria-label': t('delete') });
+      del.innerHTML = icons.trash;
+      frame = h('div', { class: 'img-frame', 'data-id': im.id },
+        h('div', { class: 'img-bar' }, del),
+        h('div', { class: 'img-resize', 'data-act': 'resize', 'data-id': im.id, 'aria-label': t('resize') }));
+      v.imgs.append(frame);
+    }
+    Object.assign(frame.style, { left: `${im.x}px`, top: `${im.y}px`, width: `${im.w}px`, height: `${im.h}px` });
+  }
+
+  /** Applies a change to a page's pictures with undo; `drop` forgets the selection. */
+  private changeImages(i: number, fn: (list: PageImage[]) => PageImage[], drop = false) {
+    const page = this.pages[i];
+    const before = (page.images ?? []).map((x) => ({ ...x }));
+    page.images = fn(before.map((x) => ({ ...x })));
+    this.pushHistory({ pageId: page.id, before: page.strokes, after: page.strokes, iBefore: before, iAfter: page.images.map((x) => ({ ...x })) });
+    if (drop) this.selectImage(null);
+    this.renderImages(i);
+    this.markDirty(page.id);
+  }
+
+  private pickImage() {
+    const input = h('input', { type: 'file', accept: 'image/*', multiple: true, hidden: true });
+    input.addEventListener('change', async () => {
+      const files = [...(input.files ?? [])];
+      input.remove();
+      for (const f of files) {
+        try {
+          await this.insertImage(f);
+        } catch (err) {
+          console.error(err);
+          toast(`${t('fileError')}: ${f.name}`);
+        }
+      }
+    });
+    document.body.append(input);
+    input.click();
+  }
+
+  /** A clip goes into the document beside this one (split view), or into this one when it is alone. */
+  private async sendClip(c: Clip) {
+    const other = [...Editor.open].find((e) => e !== this && e.root.isConnected);
+    const target = other ?? this;
+    await target.insertClipImage(c);
+    toast(`${t('clipInserted')} «${target.meta.title}» · ${t('page')} ${target.currentPage() + 1}`);
+  }
+
+  /** The clip's picture, with a small source line under it (document · page). */
+  async insertClipImage(c: Clip) {
+    if (!c.image) return;
+    const { page: i, im } = await this.insertImage(await dataUrlToBlob(c.image));
+    const p = this.pages[i];
+    const before = p.texts ?? [];
+    const caption: TextBox = {
+      id: uid(), x: im.x, y: Math.min(p.h - 16, im.y + im.h + 4), w: Math.max(80, im.w),
+      text: `${c.docTitle} · ${t('page')} ${c.page + 1}`, size: 9, color: '#0891b2',
+    };
+    p.texts = [...before, caption];
+    this.pushHistory({ pageId: p.id, before: p.strokes, after: p.strokes, tBefore: before, tAfter: p.texts });
+    this.renderInk(i);
+    this.markDirty(p.id);
+  }
+
+  /** Puts a picture on the page in view, centred where you are looking. */
+  async insertImage(src: Blob, at?: { page: number }): Promise<{ page: number; im: PageImage }> {
+    const prep = await prepareImage(src);
+    const fileId = uid();
+    await putFile(fileId, prep.bytes.slice().buffer);
+    this.meta.fileIds = [...(this.meta.fileIds ?? []), fileId];
+    const i = at?.page ?? this.currentPage();
+    const page = this.pages[i];
+    const l = this.layout[i];
+    const [wx, wy] = this.screenToWorld(this.viewport.getBoundingClientRect().left + this.vw / 2, this.viewport.getBoundingClientRect().top + this.vh / 2);
+    const cx = l ? wx - l.x : page.w / 2, cy = l ? wy - l.y : page.h / 2;
+    const r = placeImage(prep.w, prep.h, page, cx, cy);
+    const im: PageImage = { id: uid(), fileId, mime: prep.mime, ...r };
+    this.changeImages(i, (list) => [...list, im]);
+    if (this.reading) this.setReading(false);
+    this.setTool('lasso');
+    this.selectImage({ page: i, id: im.id });
+    return { page: i, im };
+  }
+
   private async deleteCurrentPage() {
     if (this.pages.length <= 1) return;
     if (!confirm(t('confirmDeletePage'))) return;
@@ -1911,9 +2104,10 @@ export class Editor {
     this.applyCamera();
     this.metaDirty = true;
     await deletePages([removed.id]);
-    // a duplicated picture page shares its picture: only delete it when no page shows it any more
-    if (removed.bg.kind === 'image' && fileUnused(this.pages, removed.bg.fileId)) {
-      const fid = removed.bg.fileId;
+    // a duplicated page shares its pictures: only delete one when no page shows it any more
+    const fids = [...(removed.bg.kind === 'image' ? [removed.bg.fileId] : []), ...(removed.images ?? []).map((im) => im.fileId)];
+    for (const fid of new Set(fids)) {
+      if (!fileUnused(this.pages, fid)) continue;
       this.meta.fileIds = (this.meta.fileIds ?? []).filter((f) => f !== fid);
       await deleteFile(fid);
     }
@@ -1925,7 +2119,7 @@ export class Editor {
   private async fixClips(oldIds: string[]) {
     const changed = remapClips(await listClips(this.meta.id), oldIds, this.meta.pageIds);
     for (const c of changed) await putClip(c);
-    if (changed.length && settings.notesPanel) void this.panel.refresh();
+    if (changed.length && this.notesOpen) void this.panel.refresh();
   }
 
   /** Applies a new page order (after a move, duplicate or insert) and shows page `focus`. */
@@ -2084,6 +2278,7 @@ export class Editor {
     if (this.closed) return;
     this.closed = true;
     if (Editor.active === this) Editor.active = null;
+    Editor.open.delete(this);
     this.finishEditing();
     this.pagesView?.close();
     if (this.recorder.recording) await this.toggleRecording();

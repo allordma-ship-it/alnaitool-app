@@ -284,6 +284,16 @@ const dict = {
   sort_created: { ar: 'تاريخ الإنشاء', de: 'Erstellt', en: 'Date created' },
   sort_name: { ar: 'الاسم', de: 'Name', en: 'Name' },
   sort_color: { ar: 'اللون', de: 'Farbe', en: 'Colour' },
+  insertImage: { ar: 'إدراج صورة', de: 'Bild einfügen', en: 'Insert picture' },
+  bringToFront: { ar: 'إلى الأمام', de: 'Nach vorne', en: 'Bring to front' },
+  resize: { ar: 'تغيير الحجم', de: 'Größe ändern', en: 'Resize' },
+  imageHint: {
+    ar: 'أداة التحديد: اضغط على الصورة لتحريكها، والزاوية لتغيير حجمها',
+    de: 'Auswahlwerkzeug: Bild antippen zum Verschieben, Ecke ziehen für die Größe',
+    en: 'Select tool: tap a picture to move it, drag the corner to resize',
+  },
+  insertClip: { ar: 'إدراج في الدفتر', de: 'Ins Notizbuch einfügen', en: 'Insert into notebook' },
+  clipInserted: { ar: 'أُدرج في', de: 'Eingefügt in', en: 'Inserted into' },
 } as const;
 
 export type Key = keyof typeof dict;

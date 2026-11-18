@@ -608,3 +608,36 @@ details[open] > summary .pv-caret::before { transform: rotate(90deg); }
 .color-row { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; padding: 4px 0; }
 .color-swatch { width: 44px !important; height: 44px !important; padding: 0 !important; border-radius: 50% !important; background: var(--label) !important; border: 3px solid transparent !important; }
 .color-swatch.active { border-color: var(--text) !important; }
+
+/* ---------------------------------------------------------------- pictures on pages */
+.page .imgs { position: absolute; inset: 0; pointer-events: none; }
+.pimg { position: absolute; display: block; object-fit: fill; user-select: none; -webkit-user-drag: none; }
+.pimg.missing { background: repeating-linear-gradient(45deg, #e2e8f0 0 8px, #f8fafc 8px 16px); }
+.eye-care .pimg { filter: invert(1) hue-rotate(180deg); }
+/* with the select tool, pictures take the touch; with any other tool the pen writes over them */
+.editor[data-tool='lasso']:not(.reading) .page .imgs > * { pointer-events: auto; touch-action: none; }
+/* the ink canvas lies on top: let the touch through to the pictures (strokes are hit-tested from the viewport) */
+.editor[data-tool='lasso']:not(.reading) .page canvas.ink { pointer-events: none; }
+.img-frame { position: absolute; outline: calc(2px * var(--inv, 1)) solid var(--accent); cursor: move; }
+.img-resize {
+  position: absolute; right: calc(-14px * var(--inv, 1)); bottom: calc(-14px * var(--inv, 1));
+  width: calc(28px * var(--inv, 1)); height: calc(28px * var(--inv, 1)); border-radius: 50%;
+  background: var(--accent); border: calc(3px * var(--inv, 1)) solid #fff; cursor: nwse-resize; touch-action: none;
+}
+.img-bar {
+  position: absolute; bottom: 100%; inset-inline-end: 0; display: flex; gap: calc(6px * var(--inv, 1));
+  transform-origin: bottom right; padding-bottom: calc(8px * var(--inv, 1));
+}
+.img-act {
+  width: calc(36px * var(--inv, 1)); height: calc(36px * var(--inv, 1)); display: grid; place-items: center; padding: 0;
+  border: 0; border-radius: calc(10px * var(--inv, 1)); background: var(--surface); color: var(--text);
+  box-shadow: 0 4px 14px rgb(0 0 0 / .35);
+}
+.img-act[data-act='delete'] { color: var(--danger); }
+.img-act svg { width: calc(20px * var(--inv, 1)); height: calc(20px * var(--inv, 1)); pointer-events: none; }
+.np-insert {
+  display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; height: 36px; margin-top: 8px;
+  border: 1px dashed rgb(6 182 212 / .45); border-radius: 10px; background: var(--accent-soft); color: var(--accent-text); font-weight: 600; font-size: 13px;
+}
+.np-insert svg { width: 18px; height: 18px; }
+.np-insert:disabled { opacity: .5; }

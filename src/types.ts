@@ -32,6 +32,17 @@ export type PageBackground =
   | { kind: 'pdf'; pdfPage: number }
   | { kind: 'image'; fileId: string; mime: string };
 
+/** A picture placed on a page (under the ink, so you can write on it). Page coordinates, like strokes. */
+export interface PageImage {
+  id: string;
+  fileId: string;
+  mime: string;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
 export interface PageData {
   id: string;
   w: number;
@@ -39,6 +50,7 @@ export interface PageData {
   bg: PageBackground;
   strokes: Stroke[];
   texts?: TextBox[];
+  images?: PageImage[];
 }
 
 export interface DocMeta {

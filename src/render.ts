@@ -78,8 +78,20 @@ export async function renderPageToCanvas(meta: DocMeta, p: PageData, scale: numb
     drawTemplate(ctx, p.w, p.h, p.bg.template, p.bg.paper, p.bg.rtl);
   }
   ctx.setTransform(scale, 0, 0, scale, 0, 0);
+  await drawPageImages(ctx, p);
   drawPageContent(ctx, p);
   return c;
+}
+
+/** Pictures placed on the page, in page coordinates (the context is already scaled). */
+export async function drawPageImages(ctx: CanvasRenderingContext2D, p: PageData) {
+  for (const im of p.images ?? []) {
+    try {
+      ctx.drawImage(await imageBitmapFor(im.fileId, im.mime), im.x, im.y, im.w, im.h);
+    } catch {
+      /* a missing picture leaves a gap rather than breaking the page */
+    }
+  }
 }
 
 export function canvasToBytes(c: HTMLCanvasElement, type = 'image/png', quality?: number): Promise<Uint8Array> {

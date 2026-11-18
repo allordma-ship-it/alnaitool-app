@@ -43,3 +43,24 @@ describe('page operations', () => {
     expect(fileUnused([], 'f')).toBe(true);
   });
 });
+
+import { placeImage } from '../src/pageImages';
+
+describe('placing a picture', () => {
+  const page = { w: 595, h: 842 };
+  it('is at most 60 % of the page wide, keeps its shape and stays on the page', () => {
+    const r = placeImage(4000, 3000, page, 300, 400);
+    expect(r.w).toBeCloseTo(357, 0);
+    expect(r.h / r.w).toBeCloseTo(0.75, 3);
+    expect(r.x).toBeGreaterThanOrEqual(20);
+    expect(r.x + r.w).toBeLessThanOrEqual(575);
+  });
+  it('shrinks a very tall picture to fit the page height', () => {
+    const r = placeImage(1000, 10000, page, 300, 400);
+    expect(r.h).toBeLessThanOrEqual(802);
+    expect(r.y).toBeGreaterThanOrEqual(20);
+  });
+  it('small pictures are not blown up past half their pixel size', () => {
+    expect(placeImage(200, 100, page, 300, 400).w).toBe(100);
+  });
+});

@@ -16,6 +16,7 @@ export function duplicatePage(p: PageData): PageData {
   copy.id = uid();
   copy.strokes = copy.strokes.map((s) => ({ ...s, id: uid() }));
   if (copy.texts) copy.texts = copy.texts.map((tb) => ({ ...tb, id: uid() }));
+  if (copy.images) copy.images = copy.images.map((im) => ({ ...im, id: uid() }));
   return copy;
 }
 
@@ -45,5 +46,5 @@ export function remapClips(clips: Clip[], oldIds: string[], newIds: string[]): C
 
 /** True if no other page still shows this stored picture (so it may be deleted). */
 export function fileUnused(pages: PageData[], fileId: string): boolean {
-  return !pages.some((p) => p.bg.kind === 'image' && p.bg.fileId === fileId);
+  return !pages.some((p) => (p.bg.kind === 'image' && p.bg.fileId === fileId) || (p.images ?? []).some((im) => im.fileId === fileId));
 }
