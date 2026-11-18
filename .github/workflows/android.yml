@@ -70,19 +70,19 @@ jobs:
           chmod +x gradlew
           ./gradlew --no-daemon assembleRelease
           rm -f "$RUNNER_TEMP/release.jks"
-          cp app/build/outputs/apk/release/app-release.apk "$GITHUB_WORKSPACE/AlnaiNotes-1.0.${{ github.run_number }}.apk"
+          cp app/build/outputs/apk/release/app-release.apk "$GITHUB_WORKSPACE/Notiva-1.0.${{ github.run_number }}.apk"
       - uses: actions/upload-artifact@v4
         with:
-          name: AlnaiNotes-apk
-          path: AlnaiNotes-*.apk
+          name: Notiva-apk
+          path: Notiva-*.apk
       - name: Publish as GitHub release
         if: github.ref_name != 'signing-secrets'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           TAG="alnai-notes-v1.0.${{ github.run_number }}"
-          gh release create "$TAG" AlnaiNotes-*.apk \
+          gh release create "$TAG" Notiva-*.apk \
             --target "${{ github.sha }}" \
-            --title "Alnai Notes 1.0.${{ github.run_number }}" \
+            --title "Notiva 1.0.${{ github.run_number }}" \
             --notes "APK für Android-Tablets (getestet für Lenovo Idea Tab Pro + Pen Plus). Herunterladen, öffnen, Installation aus unbekannten Quellen erlauben." \
             --latest

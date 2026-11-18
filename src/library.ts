@@ -65,7 +65,7 @@ export class Library {
     settingsBtn.addEventListener('click', () => openSettings(() => {}));
 
     const mark = h('div', { class: 'brand-mark big', 'aria-hidden': 'true' });
-    mark.innerHTML = icons.pen;
+    mark.innerHTML = icons.logo;
     this.root.append(
       h('header', { class: 'lib-head' },
         h('div', { class: 'brand' }, mark, h('div', {}, h('h1', {}, t('appName')), h('p', { class: 'tagline' }, t('tagline')))),

@@ -18,6 +18,8 @@ export const icons = {
   lock: s('<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>'),
   checklist: s('<rect x="3" y="4" width="6" height="6" rx="1.5"/><path d="M4.5 7l1.2 1.2L8 5.8"/><rect x="3" y="14" width="6" height="6" rx="1.5"/><path d="M12 7h9M12 17h9"/>'),
   bell: s('<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/>'),
+  /** the Notiva mark: an N whose right stroke rises into a pen nib, and an ink dot */
+  logo: `<svg viewBox="22 22 64 64" width="26" height="26" aria-hidden="true"><path d="M37 74 V40 L66 72 V45" fill="none" stroke="#fff" stroke-width="9.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M60.2 50 L58.6 41.5 Q58.4 39.6 59.6 38.2 L66 27.5 L72.4 38.2 Q73.6 39.6 73.4 41.5 L71.8 50 Z" fill="#fff"/><path d="M66 30.5 V39.4" stroke="#1e3a8a" stroke-width="1.6" stroke-linecap="round"/><circle cx="66" cy="41.4" r="2" fill="#1e3a8a"/><circle cx="75.5" cy="72.5" r="4.2" fill="#a5f3fc"/></svg>`,
   folder: s('<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>'),
   trash: s('<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>'),
   share: s('<path d="M12 3v12M7 8l5-5 5 5"/><path d="M5 14v6h14v-6"/>'),

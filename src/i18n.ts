@@ -1,7 +1,7 @@
 import { settings } from './settings';
 
 const dict = {
-  appName: { ar: 'Alnai Notes', de: 'Alnai Notes', en: 'Alnai Notes' },
+  appName: { ar: 'Notiva', de: 'Notiva', en: 'Notiva' },
   tagline: {
     ar: 'دفتر وقارئ PDF مُعاير لقلم Lenovo Tab Pen Plus',
     de: 'Notizbuch & PDF-Reader, abgestimmt auf den Lenovo Tab Pen Plus',
@@ -143,11 +143,11 @@ const dict = {
   laserHint: { ar: 'للشرح والعرض: يختفي الأثر تلقائياً ولا يُحفظ', de: 'Zum Zeigen: Spur verblasst und wird nicht gespeichert', en: 'For presenting: the trail fades and is not saved' },
   clip: { ar: 'اقتطاع إلى الدفتر', de: 'In Notizbuch ausschneiden', en: 'Clip to notebook' },
   clipHint: {
-    ar: 'خطّ تحت جملة لاقتطاع فقرتها كاملة، أو ارسم إطاراً حول أي جزء — يُحفظ في QalamNote مع رابط للصفحة',
-    de: 'Satz unterstreichen = ganzen Absatz ausschneiden, oder einen Bereich umrahmen – landet in QalamNote mit Link zur Seite',
-    en: 'Underline a sentence to clip its whole paragraph, or frame any area – saved to QalamNote with a link back',
+    ar: 'خطّ تحت جملة لاقتطاع فقرتها كاملة، أو ارسم إطاراً حول أي جزء — يُحفظ في Notiva مع رابط للصفحة',
+    de: 'Satz unterstreichen = ganzen Absatz ausschneiden, oder einen Bereich umrahmen – landet in Notiva mit Link zur Seite',
+    en: 'Underline a sentence to clip its whole paragraph, or frame any area – saved to Notiva with a link back',
   },
-  clipped: { ar: '🔗 تم الاقتطاع إلى QalamNote — صفحة', de: '🔗 In QalamNote ausgeschnitten — Seite', en: '🔗 Clipped to QalamNote — page' },
+  clipped: { ar: '🔗 تم الاقتطاع إلى Notiva — صفحة', de: '🔗 In Notiva ausgeschnitten — Seite', en: '🔗 Clipped to Notiva — page' },
   ruler: { ar: 'المسطرة', de: 'Lineal', en: 'Ruler' },
   rulerHint: {
     ar: 'اسحب المسطرة بإصبع، وأدرها بإصبعين. ارسم بالقلم على حافتها لخط مستقيم',
@@ -158,7 +158,7 @@ const dict = {
   stopRecording: { ar: 'إيقاف التسجيل', de: 'Aufnahme beenden', en: 'Stop recording' },
   micDenied: { ar: 'لا يمكن الوصول للميكروفون. اسمح بالإذن من إعدادات التطبيق.', de: 'Kein Zugriff aufs Mikrofon. Bitte in den App-Einstellungen erlauben.', en: 'No microphone access. Please allow it in the app settings.' },
   voiceMemo: { ar: 'ملاحظة صوتية', de: 'Sprachnotiz', en: 'Voice memo' },
-  notes: { ar: 'دفتر QalamNote', de: 'QalamNote', en: 'QalamNote' },
+  notes: { ar: 'دفتر Notiva', de: 'Notiva-Notizbuch', en: 'Notiva notebook' },
   notesEmpty: {
     ar: 'لا توجد اقتطاعات بعد. اختر أداة الاقتطاع وخطّ تحت جملة في الصفحة.',
     de: 'Noch nichts ausgeschnitten. Ausschneide-Werkzeug wählen und einen Satz unterstreichen.',
@@ -230,7 +230,7 @@ const dict = {
     en: 'Add this backup to the library? Items that already exist are replaced by the version in the file.',
   },
   restoreDone: { ar: 'تمت الاستعادة', de: 'Wiederhergestellt', en: 'Restored' },
-  restoreError: { ar: 'هذا الملف ليس نسخة احتياطية من Alnai Notes أو أنه ناقص', de: 'Diese Datei ist keine (vollständige) Alnai-Notes-Sicherung', en: 'This file is not a complete Alnai Notes backup' },
+  restoreError: { ar: 'هذا الملف ليس نسخة احتياطية من Notiva أو أنه ناقص', de: 'Diese Datei ist keine (vollständige) Notiva-Sicherung', en: 'This file is not a complete Notiva backup' },
   lastBackup: { ar: 'آخر نسخة احتياطية', de: 'Letzte Sicherung', en: 'Last backup' },
   neverBackedUp: { ar: 'لا توجد نسخة احتياطية بعد', de: 'Noch keine Sicherung', en: 'No backup yet' },
   foundInContent: { ar: 'داخل المستندات', de: 'Im Inhalt gefunden', en: 'Found inside documents' },

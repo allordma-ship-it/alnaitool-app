@@ -1,6 +1,6 @@
 {
   "appId": "app.alnai.notes",
-  "appName": "Alnai Notes",
+  "appName": "Notiva",
   "webDir": "dist",
   "android": {
     "allowMixedContent": false,

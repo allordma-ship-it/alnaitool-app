@@ -1,4 +1,4 @@
-# Alnai Notes
+# Notiva
 
 Handschriftliche Notizen und PDF-Annotation als offline-fähige Web-App (PWA) –
 optimiert für das **Lenovo Idea Tab Pro mit Lenovo Tab Pen Plus**.
@@ -21,7 +21,7 @@ optimiert für das **Lenovo Idea Tab Pro mit Lenovo Tab Pen Plus**.
 ## Studio-Funktionen
 
 - **Design**: dunkles Navy-Design mit Cyan-Akzenten (helles Design in den Einstellungen), schwebende Werkzeugleiste, Live-Anzeige von Druck/Neigung des Pen Plus
-- **QalamNote** (Seitenleiste): Ausschneide-Werkzeug – einen Satz unterstreichen schneidet den ganzen Absatz aus (Bild + Text aus dem PDF), oder einen Bereich umrahmen; eigene Notiz/Lernfrage pro Ausschnitt; Sprung zurück zur Quelle (auch dokumentübergreifend)
+- **Notiva-Notizbuch** (Seitenleiste): Ausschneide-Werkzeug – einen Satz unterstreichen schneidet den ganzen Absatz aus (Bild + Text aus dem PDF), oder einen Bereich umrahmen; eigene Notiz/Lernfrage pro Ausschnitt; Sprung zurück zur Quelle (auch dokumentübergreifend)
 - **Lernkarten** aus den Ausschnitten (Frage = deine Notiz, Rückseite = Ausschnitt), **Zusammenfassung als PDF**
 - **Sprachnotizen** (Mikrofon) mit Link zur aktuellen Seite
 - **Intelligente Formen**: Linie (rastet bei 0/45/90° ein), Rechteck, Kreis/Ellipse, Dreieck, Vieleck
@@ -32,7 +32,7 @@ optimiert für das **Lenovo Idea Tab Pro mit Lenovo Tab Pen Plus**.
 
 ## Organisation, Sicherheit, Lernen
 
-- **Sicherung**: eine `.alnai`-Datei mit allem (Notizbücher, PDFs, Ausschnitte, Sprachnotizen, Vorlagen) über das Teilen-Menü in Drive o. Ä.; Wiederherstellen fügt hinzu und löscht nichts
+- **Sicherung**: eine `.notiva`-Datei (ältere `.alnai`-Sicherungen lassen sich weiter wiederherstellen) mit allem (Notizbücher, PDFs, Ausschnitte, Sprachnotizen, Vorlagen) über das Teilen-Menü in Drive o. Ä.; Wiederherstellen fügt hinzu und löscht nichts
 - **Bibliothek**: Ordner, oben anheften, Farbmarken, Schlagwörter (Filter), Sortierung; **Volltextsuche** in PDFs und Ausschnitten (Arabisch ohne Taschkil)
 - **Seitenübersicht**: Miniaturen, ziehen zum Umsortieren, duplizieren, einfügen, löschen; **Inhaltsverzeichnis** des PDFs, **Lesezeichen**; **Links im PDF** (Verweise springen, „Zurück zu Seite N“)
 - **Geteilte Ansicht**: zweites Dokument daneben; Ausschnitte per „Ins Notizbuch einfügen“ in das Notizbuch daneben
@@ -89,7 +89,7 @@ Einmalig nötig: Repository → Settings → Pages → Source: **GitHub Actions*
 ```
 src/
   editor.ts          Seitenansicht, Kamera (Zoom/Pan), Stifteingabe, Werkzeuge, Undo
-  clips.ts           QalamNote: Ausschnitte, Seitenleiste, Lernkarten, Sprachnotizen, Zusammenfassung
+  clips.ts           Notiva-Notizbuch: Ausschnitte, Seitenleiste, Lernkarten, Sprachnotizen, Zusammenfassung
   ruler.ts           Lineal (verschieben, drehen, Kanten-Einrasten)
   ink.ts             Rendering der Striche und Seitenvorlagen
   geometry.ts        Treffertests, präzises Radieren, Lasso

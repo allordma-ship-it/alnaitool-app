@@ -28,7 +28,7 @@ export async function createBackup() {
   toast(t('preparing'));
   const data = await dumpAll();
   const parts = encodeBackup(data);
-  const name = `AlnaiNotes-Backup-${stamp()}.alnai`;
+  const name = `Notiva-Backup-${stamp()}.notiva`;
   if (Capacitor.isNativePlatform()) {
     const { Filesystem, Directory } = await import('@capacitor/filesystem');
     const { Share } = await import('@capacitor/share');

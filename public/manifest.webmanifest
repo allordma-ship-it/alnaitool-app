@@ -1,6 +1,6 @@
 {
-  "name": "Alnai Notes",
-  "short_name": "Alnai Notes",
+  "name": "Notiva",
+  "short_name": "Notiva",
   "description": "Handwritten notes and PDF annotation for tablets with an active pen.",
   "start_url": "./",
   "scope": "./",

@@ -1,4 +1,4 @@
-/* Alnai Notes — deep-navy workspace with cyan ink accents */
+/* Notiva — deep-navy workspace with cyan ink accents */
 :root,
 :root[data-theme='dark'] {
   --bg: #070b14;
@@ -316,7 +316,7 @@ button:disabled { opacity: .45; cursor: default; }
 }
 .text-edit.bubble-edit { background: #fff6bf; outline: 1px solid #d9a400; outline-offset: 7px; border-radius: 2px; }
 
-/* ---------------------------------------------------------------- QalamNote panel */
+/* ---------------------------------------------------------------- Notiva notebook panel (clips) */
 .notes-panel {
   display: none; flex-direction: column; width: 380px; flex: none; min-height: 0;
   background: var(--bg-2); border-inline-start: 1px solid var(--line);

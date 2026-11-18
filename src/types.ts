@@ -133,7 +133,7 @@ export interface TextIndex {
 }
 
 /**
- * An entry in the QalamNote study notebook: a clipped region of a page (picture + any text found
+ * An entry in the Notiva study notebook: a clipped region of a page (picture + any text found
  * there) or a voice memo, always linked back to its source page.
  */
 export interface Clip {

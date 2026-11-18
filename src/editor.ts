@@ -129,7 +129,7 @@ export class Editor {
 
   /** the editor the user touched last: with two documents side by side, only it gets keyboard shortcuts */
   static active: Editor | null = null;
-  /** QalamNote panel open in this editor */
+  /** Notiva notebook panel open in this editor */
   private notesOpen = false;
   /** every open editor (two in split view) */
   static open = new Set<Editor>();
@@ -203,7 +203,7 @@ export class Editor {
 
     // ---- header
     const mark = h('div', { class: 'brand-mark', 'aria-hidden': 'true' });
-    mark.innerHTML = icons.pen;
+    mark.innerHTML = icons.logo;
     this.docSub = h('div', { class: 'doc-sub' });
     const hudBar = h('i');
     this.hud = {
@@ -224,7 +224,7 @@ export class Editor {
     this.toggles.palm = btn(icons.palm, t('palmRejection'), () => this.togglePalm(), 'toggle');
     this.toggles.spread = btn(icons.columns, t('spread'), () => this.toggleSpread(), 'toggle');
     this.toggles.eye = btn(icons.moon, t('eyeCare'), () => this.toggleEyeCare(), 'toggle');
-    this.toggles.notes = labelled(btn(icons.notebook, t('notes'), () => this.toggleNotes(!this.notesOpen), 'toggle notes-toggle'), 'QalamNote');
+    this.toggles.notes = labelled(btn(icons.notebook, t('notes'), () => this.toggleNotes(!this.notesOpen), 'toggle notes-toggle'), 'Notiva');
     const backBtn = btn(icons.back, t('back'), () => this.close(), 'back-btn');
     this.toolbar = h('header', { class: 'topbar' },
       backBtn,
