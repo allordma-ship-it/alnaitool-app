@@ -183,6 +183,7 @@ export function openSettings(onChange: () => void) {
     h('h3', {}, t('lockSection')),
     lockSection(),
     h('p', { class: 'hint' }, t('storageWarn')),
+    h('p', { class: 'hint app-version', dir: 'ltr' }, `Alnai Notes ${import.meta.env.VITE_APP_VERSION ?? 'dev'}`),
     h('div', { class: 'actions' }, h('button', { value: 'ok', class: 'primary' }, 'OK')),
   );
   modal(body, 'settings-modal');
