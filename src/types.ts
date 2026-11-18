@@ -79,6 +79,8 @@ export interface DocMeta {
   color?: DocColor;
   /** free tags, e.g. "Asthma", "Exam" */
   tags?: string[];
+  /** needs fingerprint or PIN to open */
+  locked?: boolean;
 }
 
 export const DOC_COLORS = ['red', 'orange', 'yellow', 'green', 'blue', 'purple'] as const;
@@ -88,6 +90,8 @@ export interface Folder {
   id: string;
   name: string;
   createdAt: number;
+  /** every document inside needs fingerprint or PIN */
+  locked?: boolean;
 }
 
 /** Searchable text of a PDF document, extracted once and kept so library search is instant. */

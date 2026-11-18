@@ -2,6 +2,7 @@ import { PDFDocument } from 'pdf-lib';
 import type { Clip, DocMeta, PageData } from './types';
 import { uid, A4 } from './types';
 import { listClips, putClip, deleteClip, putFile, getFile } from './db';
+import { hiddenDocIds } from './lock';
 import { pdfTextLines, pdfTextIn, paragraphAt, joinLines } from './pdf';
 import { renderPageToCanvas, canvasToBytes } from './render';
 import { drawTextBox, textHeight } from './text';
@@ -200,7 +201,9 @@ export class NotesPanel {
   }
 
   async refresh(highlight?: string) {
-    this.clips = await listClips(this.scope === 'doc' ? this.host.meta.id : undefined);
+    const hidden = this.scope === 'all' ? await hiddenDocIds() : new Set<string>();
+    // clips from locked documents that are not open stay out of "All documents" (and its flashcards)
+    this.clips = (await listClips(this.scope === 'doc' ? this.host.meta.id : undefined)).filter((c) => !hidden.has(c.docId));
     for (const u of this.urls) URL.revokeObjectURL(u);
     this.urls = [];
     this.count.textContent = `${this.clips.length} ${t('clipsCount')}`;

@@ -3,6 +3,7 @@ import { t, applyLang, applyTheme, type Key } from './i18n';
 import { h, modal } from './ui';
 import { drawPenSegments } from './ink';
 import { createBackup, restoreBackup, lastBackup } from './backup';
+import { lockEnabled, bioEnabled, setBio, changePin, turnOffLock, biometricAvailable } from './lock';
 
 function select<T extends string>(label: Key, value: T, options: [T, string][], onChange: (v: T) => void) {
   const sel = h('select');
@@ -88,6 +89,31 @@ function penTester() {
   return h('div', { class: 'pen-test-wrap' }, h('h3', {}, t('penTest')), h('p', { class: 'hint' }, t('penTestHint')), canvas, out);
 }
 
+function lockSection() {
+  const box = h('div', { class: 'backup' });
+  const render = async () => {
+    box.replaceChildren(h('p', { class: 'hint' }, t('lockHint')));
+    if (!lockEnabled()) {
+      box.append(h('p', { class: 'hint' }, t('lockIsOff')));
+      return;
+    }
+    if (await biometricAvailable()) {
+      const cb = h('input', { type: 'checkbox', checked: bioEnabled() });
+      cb.addEventListener('change', async () => {
+        if (!(await setBio(cb.checked))) cb.checked = bioEnabled();
+      });
+      box.append(h('label', { class: 'row' }, h('span', {}, t('useBio')), cb));
+    }
+    const change = h('button', { type: 'button' }, t('changePin'));
+    change.addEventListener('click', () => void changePin());
+    const off = h('button', { type: 'button', class: 'danger-text' }, t('lockOff'));
+    off.addEventListener('click', async () => { if (await turnOffLock()) void render(); });
+    box.append(h('div', { class: 'actions start' }, change, off));
+  };
+  void render();
+  return box;
+}
+
 function backupSection() {
   const last = lastBackup();
   const status = h('p', { class: 'hint' },
@@ -154,6 +180,8 @@ export function openSettings(onChange: () => void) {
     toggle('spread', settings.spread === 'dual', (v) => { settings.spread = v ? 'dual' : 'single'; changed(); }),
     h('h3', {}, t('backup')),
     backupSection(),
+    h('h3', {}, t('lockSection')),
+    lockSection(),
     h('p', { class: 'hint' }, t('storageWarn')),
     h('div', { class: 'actions' }, h('button', { value: 'ok', class: 'primary' }, 'OK')),
   );

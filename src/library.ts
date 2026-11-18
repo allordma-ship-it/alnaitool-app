@@ -1,6 +1,7 @@
 import { listDocs, putDoc, putPages, deleteDoc, getPages, listClips, listFolders, putFolder, deleteFolder } from './db';
 import { searchContent, indexDoc, unindexed, type Hit } from './search';
 import { createBackup, lastBackup } from './backup';
+import { setLockedFolders, isLocked, isHidden, folderHidden, ensureFolderUnlocked, toggleDocLock, toggleFolderLock, lockEnabled } from './lock';
 import { A4, uid, DOC_COLORS, type DocMeta, type PageData, type Template, type PaperColor, type Folder, type DocColor } from './types';
 import { sortDocs, allTags, cleanTags, SORT_MODES, type SortMode } from './libraryOrder';
 import { importFiles } from './importFiles';
@@ -90,6 +91,7 @@ export class Library {
     const all = await listDocs();
     const clips = await listClips();
     this.folders = await listFolders();
+    setLockedFolders(this.folders);
     if (this.folderId && !this.folders.some((f) => f.id === this.folderId)) this.setFolder(null);
     // a search looks through every folder; otherwise show the open folder only
     // a search looks through every folder (titles and tags); otherwise the open folder and tag
@@ -122,7 +124,8 @@ export class Library {
     if (!this.query && !this.folderId && all[0]) {
       const d = all[0];
       const img = h('div', { class: 'hero-thumb' });
-      if (d.thumb) img.append(h('img', { src: d.thumb, alt: '' }));
+      if (isHidden(d)) img.innerHTML = icons.lock;
+      else if (d.thumb) img.append(h('img', { src: d.thumb, alt: '' }));
       const open = h('button', { class: 'btn primary' }, t('continueReading'));
       this.hero.append(img, h('div', { class: 'hero-body' },
         h('span', { class: `badge ${d.kind}` }, t(d.kind === 'pdf' ? 'kindPdf' : d.kind === 'images' ? 'kindImages' : 'kindNotebook')),
@@ -141,8 +144,10 @@ export class Library {
       return;
     }
     for (const d of docs) {
-      const thumb = h('div', { class: 'thumb' });
-      if (d.thumb) thumb.append(h('img', { src: d.thumb, alt: '' }));
+      const thumb = h('div', { class: `thumb ${isHidden(d) ? 'locked' : ''}` });
+      // a locked document shows no preview until it is opened with fingerprint or PIN
+      if (isHidden(d)) thumb.innerHTML = icons.lock;
+      else if (d.thumb) thumb.append(h('img', { src: d.thumb, alt: '' }));
       else thumb.innerHTML = d.kind === 'pdf' ? icons.file : d.kind === 'images' ? icons.image : icons.pen;
       const more = h('button', { class: 'icon-btn more', 'aria-label': '…' });
       more.innerHTML = icons.more;
@@ -153,6 +158,7 @@ export class Library {
         thumb,
         h('span', { class: `badge ${d.kind}` }, t(d.kind === 'pdf' ? 'kindPdf' : d.kind === 'images' ? 'kindImages' : 'kindNotebook')),
         d.pinned ? pin : '',
+        isLocked(d) ? h('span', { class: 'card-lock', title: t('locked'), 'aria-label': t('locked') }) : '',
         h('div', { class: 'card-meta' },
           h('div', { class: 'card-title' }, d.color ? h('i', { class: `cdot c-${d.color}`, 'aria-hidden': 'true' }) : '', d.title),
           h('div', { class: 'card-sub' }, `${d.pageIds.length} ${t('pages')} · ${new Date(d.updatedAt).toLocaleDateString(document.documentElement.lang)}`),
@@ -174,6 +180,7 @@ export class Library {
       h('button', { value: 'pin' }, d.pinned ? t('unpin') : t('pin')),
       h('button', { value: 'color' }, t('colorLabel')),
       h('button', { value: 'tags' }, t('tags')),
+      h('button', { value: 'lock' }, d.locked && lockEnabled() ? t('unlockDoc') : t('lockDoc')),
       h('button', { value: 'move' }, t('moveToFolder')),
       h('button', { value: 'delete', class: 'danger' }, t('delete')),
       h('button', { value: 'cancel' }, t('cancel')),
@@ -198,6 +205,8 @@ export class Library {
         await this.colorDialog(d);
       } else if (v === 'tags') {
         await this.tagsDialog(d);
+      } else if (v === 'lock') {
+        await toggleDocLock(d);
       } else if (v === 'move') {
         await this.moveDialog(d);
       } else if (v === 'delete' && confirm(t('confirmDelete'))) {
@@ -357,12 +366,19 @@ export class Library {
     this.folderBar.replaceChildren();
     const chip = (label: string, id: string | null, count: number) => {
       const b = h('button', { type: 'button', class: `folder-chip ${this.folderId === id ? 'active' : ''}`, 'aria-pressed': String(this.folderId === id) });
-      if (id) { b.innerHTML = icons.folder; }
+      if (id) {
+        const f = this.folders.find((x) => x.id === id);
+        b.innerHTML = f?.locked && lockEnabled() ? icons.lock : icons.folder;
+      }
       b.append(h('span', {}, label), h('small', {}, String(count)));
       b.addEventListener('click', () => {
-        if (id && this.folderId === id) { this.folderMenu(this.folders.find((f) => f.id === id)!); return; }
-        this.setFolder(id);
-        void this.refresh();
+        const f = id ? this.folders.find((x) => x.id === id) : undefined;
+        if (f && this.folderId === id) { this.folderMenu(f); return; }
+        void (async () => {
+          if (f && folderHidden(f) && !(await ensureFolderUnlocked(f))) return;
+          this.setFolder(id);
+          await this.refresh();
+        })();
       });
       return b;
     };
@@ -387,6 +403,7 @@ export class Library {
     const form = h('form', { method: 'dialog', class: 'menu' },
       h('h2', {}, f.name),
       h('button', { value: 'rename' }, t('renameFolder')),
+      h('button', { value: 'lock' }, f.locked && lockEnabled() ? t('unlockFolder') : t('lockFolder')),
       h('button', { value: 'delete', class: 'danger' }, t('deleteFolder')),
       h('button', { value: 'cancel' }, t('cancel')),
     );
@@ -394,6 +411,8 @@ export class Library {
       if (v === 'rename') {
         const name = prompt(t('folderName'), f.name)?.trim();
         if (name) await putFolder({ ...f, name });
+      } else if (v === 'lock') {
+        await toggleFolderLock(f);
       } else if (v === 'delete' && confirm(t('confirmDeleteFolder'))) {
         await deleteFolder(f.id);
         this.setFolder(null);
@@ -432,7 +451,8 @@ export class Library {
       this.results.replaceChildren(h('p', { class: 'hint' }, `${t('indexing')} ${i + 1} / ${todo.length} · ${todo[i].title}`));
       await indexDoc(todo[i]).catch((e) => console.warn('index', todo[i].title, e));
     }
-    const hits = await searchContent(q, all);
+    // the text of locked documents stays hidden from search until they are opened
+    const hits = await searchContent(q, all.filter((d) => !isHidden(d)));
     if (seq !== this.searchSeq) return;
     this.renderHits(hits);
   }

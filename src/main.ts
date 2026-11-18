@@ -8,6 +8,7 @@ import { settings } from './settings';
 import { icons } from './icons';
 import { h, modal } from './ui';
 import { Capacitor } from '@capacitor/core';
+import { ensureUnlocked } from './lock';
 
 applyLang();
 applyTheme();
@@ -23,7 +24,7 @@ let side: Editor | null = null;
 let splitRoot: HTMLElement | null = null;
 
 function showLibrary() {
-  library = new Library(openDoc);
+  library = new Library((d) => void openDoc(d));
   app.replaceChildren(library.root);
   void library.mount();
 }
@@ -32,10 +33,12 @@ async function openDocAt(docId: string, page: number) {
   const doc = await getDoc(docId);
   if (!doc) return;
   doc.lastPage = page;
-  openDoc(doc);
+  void openDoc(doc);
 }
 
-function openDoc(doc: DocMeta) {
+/** Every way of opening a document passes here, so a locked one always asks for fingerprint or PIN. */
+async function openDoc(doc: DocMeta) {
+  if (!(await ensureUnlocked(doc))) return;
   // Android back gesture closes the document instead of leaving the app.
   const onPop = () => void ed.close();
   const ed = new Editor(doc, async () => {
@@ -64,6 +67,7 @@ function splitShare(): number {
 /** Opens `doc` beside the open document (or replaces the one already beside it). */
 async function openSide(doc: DocMeta) {
   if (!editor) return;
+  if (!(await ensureUnlocked(doc))) return;
   if (side) await side.close();
   const ed = new Editor(doc, () => closeSide(ed), undefined, { side: true });
   if (!splitRoot) {
