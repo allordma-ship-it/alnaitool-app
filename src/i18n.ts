@@ -349,6 +349,8 @@ const dict = {
   saveAsTemplate: { ar: 'حفظ كقالب', de: 'Als Vorlage speichern', en: 'Save as template' },
   templateFromFile: { ar: 'من ملف', de: 'Aus Datei', en: 'From file' },
   deleteTemplate: { ar: 'حذف القالب', de: 'Vorlage löschen', en: 'Delete template' },
+  tabs: { ar: 'الملفات المفتوحة', de: 'Offene Dokumente', en: 'Open documents' },
+  closeTab: { ar: 'إغلاق التبويب', de: 'Tab schließen', en: 'Close tab' },
 } as const;
 
 export type Key = keyof typeof dict;

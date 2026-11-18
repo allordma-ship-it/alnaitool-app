@@ -37,9 +37,83 @@ async function openDocAt(docId: string, page: number) {
   void openDoc(doc);
 }
 
+// ---------------------------------------------------------------- tabs
+
+const TABS_KEY = 'alnai-tabs';
+const MAX_TABS = 8;
+let tabs: string[] = (() => {
+  try { return (JSON.parse(localStorage.getItem(TABS_KEY) ?? '[]') as string[]).filter((x) => typeof x === 'string'); } catch { return []; }
+})();
+function saveTabs() {
+  try { localStorage.setItem(TABS_KEY, JSON.stringify(tabs)); } catch { /* private mode */ }
+}
+function addTab(id: string) {
+  if (!tabs.includes(id)) tabs.push(id);
+  while (tabs.length > MAX_TABS) tabs.splice(tabs.findIndex((x) => x !== id), 1);
+  saveTabs();
+}
+
+const shell = h('div', { class: 'doc-shell' });
+const tabbar = h('nav', { class: 'tabbar', 'aria-label': t('tabs') });
+const content = h('div', { class: 'doc-content' });
+shell.append(tabbar, content);
+
+/** Puts a document view (one editor, or the split view) on screen, under the tab strip. */
+function showContent(node: HTMLElement) {
+  content.replaceChildren(node);
+  if (shell.parentElement !== app) app.replaceChildren(shell);
+  void renderTabs();
+}
+
+async function renderTabs() {
+  const metas = (await Promise.all(tabs.map((id) => getDoc(id)))).filter((d): d is DocMeta => !!d);
+  if (metas.length !== tabs.length) { tabs = metas.map((d) => d.id); saveTabs(); }
+  tabbar.replaceChildren();
+  tabbar.hidden = metas.length < 2;
+  const active = editor?.docId;
+  for (const d of metas) {
+    const on = d.id === active;
+    const close = h('span', { class: 'tab-x', role: 'button', 'aria-label': t('closeTab'), title: t('closeTab') }, '×');
+    const tab = h('button', { type: 'button', class: `tab ${on ? 'active' : ''}`, 'aria-current': on ? 'page' : undefined, title: d.title },
+      h('span', { class: 'tab-title', dir: 'auto' }, d.title), close);
+    tab.addEventListener('click', (e) => {
+      if ((e.target as HTMLElement).closest('.tab-x')) return void closeTab(d.id);
+      if (!on) void openDoc(d);
+    });
+    tabbar.append(tab);
+  }
+  tabbar.querySelector('.tab.active')?.scrollIntoView({ inline: 'nearest', block: 'nearest' });
+}
+
+async function closeTab(id: string) {
+  const i = tabs.indexOf(id);
+  if (i < 0) return;
+  tabs.splice(i, 1);
+  saveTabs();
+  if (editor?.docId !== id) return void renderTabs();
+  // closing the open document: show its neighbour, or the library when it was the last one
+  const next = tabs[Math.min(i, tabs.length - 1)];
+  const doc = next ? await getDoc(next) : undefined;
+  if (doc) await openDoc(doc);
+  else await editor.close();
+}
+
+/** true while one document is being swapped for another (no trip through the library) */
+let switching = false;
+
 /** Every way of opening a document passes here, so a locked one always asks for fingerprint or PIN. */
 async function openDoc(doc: DocMeta) {
+  // already open: just go to the page asked for
+  if (editor && editor.docId === doc.id) {
+    if (doc.lastPage != null) editor.jumpTo(doc.lastPage);
+    return;
+  }
   if (!(await ensureUnlocked(doc))) return;
+  const wasOpen = !!editor;
+  if (editor) {
+    switching = true;
+    try { await editor.close(); } finally { switching = false; }
+  }
   // Android back gesture closes the document instead of leaving the app.
   const onPop = () => void ed.close();
   const ed = new Editor(doc, async () => {
@@ -48,13 +122,16 @@ async function openDoc(doc: DocMeta) {
     if (side) await side.close();
     side = null;
     splitRoot = null;
+    if (switching) return;
     if (history.state?.doc) history.back();
     showLibrary();
   }, (docId, page) => void openDocAt(docId, page), { onSplit: () => void pickSplit(doc) });
-  app.replaceChildren(ed.root);
-  history.pushState({ doc: doc.id }, '', '');
-  window.addEventListener('popstate', onPop);
   editor = ed;
+  addTab(doc.id);
+  showContent(ed.root);
+  if (wasOpen) history.replaceState({ doc: doc.id }, '', '');
+  else history.pushState({ doc: doc.id }, '', '');
+  window.addEventListener('popstate', onPop);
   void ed.open();
 }
 
@@ -76,7 +153,7 @@ async function openSide(doc: DocMeta) {
     splitRoot = h('div', { class: 'split-root' }, editor.root, divider);
     splitRoot.style.setProperty('--side', String(splitShare()));
     dragDivider(divider, splitRoot);
-    app.replaceChildren(splitRoot);
+    showContent(splitRoot);
   }
   splitRoot.append(ed.root);
   side = ed;
@@ -88,7 +165,7 @@ function closeSide(ed: Editor) {
   if (side !== ed) return;
   side = null;
   if (splitRoot && editor) {
-    app.replaceChildren(editor.root);
+    showContent(editor.root);
     splitRoot = null;
   }
 }

@@ -30,6 +30,17 @@ optimiert für das **Lenovo Idea Tab Pro mit Lenovo Tab Pen Plus**.
 - **Augenschonender Dunkelmodus** für PDFs/Bilder, **Doppelseiten-Ansicht**, Zoom- und Seitennavigation
 - Textmarker wird bei geneigtem Stift breiter (Keilspitze), einstellbare **Druckkurve**
 
+## Organisation, Sicherheit, Lernen
+
+- **Sicherung**: eine `.alnai`-Datei mit allem (Notizbücher, PDFs, Ausschnitte, Sprachnotizen, Vorlagen) über das Teilen-Menü in Drive o. Ä.; Wiederherstellen fügt hinzu und löscht nichts
+- **Bibliothek**: Ordner, oben anheften, Farbmarken, Schlagwörter (Filter), Sortierung; **Volltextsuche** in PDFs und Ausschnitten (Arabisch ohne Taschkil)
+- **Seitenübersicht**: Miniaturen, ziehen zum Umsortieren, duplizieren, einfügen, löschen; **Inhaltsverzeichnis** des PDFs, **Lesezeichen**; **Links im PDF** (Verweise springen, „Zurück zu Seite N“)
+- **Geteilte Ansicht**: zweites Dokument daneben; Ausschnitte per „Ins Notizbuch einfügen“ in das Notizbuch daneben
+- **Tabs**: zuletzt geöffnete Dokumente oben, direkt wechseln (max. 8)
+- **Bilder auf Seiten** (unter der Tinte, verschieben/skalieren mit dem Auswahlwerkzeug), **eigene Vorlagen** (aus einer Seite, einem Bild oder der ersten PDF-Seite)
+- **Checklisten** im Textwerkzeug (`[ ]` / `[x]`, mit dem Stift abhaken), **Erinnerungen** (einmal/täglich/wöchentlich, öffnen die Seite)
+- **Sperre** (optional) für Dokumente und Ordner per Fingerabdruck oder PIN; verschlüsselt keine Dateien
+
 ## Stift-Unterstützung (Pen Plus)
 
 | Funktion | Umsetzung |
