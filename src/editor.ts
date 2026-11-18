@@ -6,7 +6,7 @@ import { PagesView } from './pagesView';
 import { moveItem, duplicatePage, remapClips, fileUnused } from './pageOps';
 import { drawStrokes, drawTemplate, drawPenSegments, drawHighlighterPath, inkColorForPaper, drawStroke } from './ink';
 import { drawPageContent, displayStroke, imageBitmapFor, clearImageCache, renderPageToCanvas } from './render';
-import { drawTextBox, textBoxHit, fontOf, LINE_HEIGHT, isRtl, drawBubble, boxHeight, BUBBLE_PAD } from './text';
+import { drawTextBox, textBoxHit, fontOf, LINE_HEIGHT, isRtl, drawBubble, boxHeight, BUBBLE_PAD, checkboxAt, toggleCheck, toggleItem, CHECK_RE } from './text';
 import { openShareDialog } from './share';
 import { convertHandwriting } from './handwriting';
 import { makeStroke, strokeHit, eraseFromStroke, lassoSelects, translateStroke, unionBBox, straightenStroke, recognizeShape } from './geometry';
@@ -505,7 +505,12 @@ export class Editor {
         b.addEventListener('click', () => { settings.textSize = sz; saveSettings(); this.restyleEditing(); this.renderOptions(); });
         sizes.append(b);
       }
-      bar.append(swatches, sizes);
+      const check = h('button', { class: 'icon-btn', title: t('checklist'), 'aria-label': t('checklist') });
+      check.innerHTML = icons.checklist;
+      // keep the keyboard and the text box when pressed while typing
+      check.addEventListener('pointerdown', (e) => e.preventDefault());
+      check.addEventListener('click', () => this.checklistButton());
+      bar.append(swatches, sizes, check);
       if (this.editing) {
         const del = h('button', { class: 'icon-btn danger', title: t('deleteText'), 'aria-label': t('deleteText') });
         del.innerHTML = icons.trash;
@@ -927,6 +932,8 @@ export class Editor {
     this.viewport.setPointerCapture(e.pointerId);
     const [x, y] = this.local(e, page);
     this.lastProcessedTs.set(e.pointerId, e.timeStamp);
+    // a tap on a checklist box ticks it, with the pen or the text tool
+    if ((tool === 'pen' || tool === 'highlighter' || tool === 'text') && this.tapCheckbox(page, x, y)) return;
 
     if (tool === 'pen' || tool === 'highlighter' || tool === 'shape') {
       this.clearSelection();
@@ -1557,6 +1564,44 @@ export class Editor {
   }
 
   // ---------------------------------------------------------------- typed text
+  private tapCheckbox(page: number, x: number, y: number): boolean {
+    const texts = this.pages[page].texts ?? [];
+    for (let k = texts.length - 1; k >= 0; k--) {
+      const para = checkboxAt(texts[k], x, y, 5 / this.cam.s);
+      if (para == null) continue;
+      const tb = texts[k];
+      this.commitTexts(page, texts.map((b) => (b.id === tb.id ? { ...b, text: toggleCheck(b.text, para) } : b)));
+      return true;
+    }
+    return false;
+  }
+
+  /** Checklist button: while typing, the current line becomes (or stops being) an item; otherwise a new list starts. */
+  private checklistButton() {
+    const ed = this.editing;
+    if (ed) {
+      const ta = ed.el;
+      const before = ta.value.slice(0, ta.selectionStart);
+      const para = before.split('\n').length - 1;
+      const old = ta.value;
+      ta.value = toggleItem(old, para);
+      const caret = Math.max(0, before.length + (ta.value.length - old.length));
+      ta.setSelectionRange(caret, caret);
+      ta.dispatchEvent(new Event('input'));
+      ta.focus();
+      return;
+    }
+    const i = this.currentPage();
+    const l = this.layout[i];
+    const vr = this.viewport.getBoundingClientRect();
+    const [wx, wy] = this.screenToWorld(vr.left + this.vw / 2, vr.top + this.vh * 0.35);
+    const p = this.pages[i];
+    const x = l ? Math.max(20, Math.min(p.w - 20, wx - l.x)) : p.w / 2;
+    const y = l ? Math.max(20, Math.min(p.h - 40, wy - l.y)) : p.h / 3;
+    const tb = { ...this.newTextBox(i, x, y), text: '[ ] ' };
+    this.editText(i, tb, true);
+  }
+
   private newTextBox(page: number, x: number, y: number): TextBox {
     const p = this.pages[page];
     const size = settings.textSize;
@@ -1578,7 +1623,10 @@ export class Editor {
       this.growEditing();
     });
     ta.addEventListener('blur', () => this.finishEditing());
-    ta.addEventListener('keydown', (e) => { if (e.key === 'Escape') ta.blur(); });
+    ta.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') ta.blur();
+      else if (e.key === 'Enter' && !e.shiftKey) this.continueChecklist(e, ta);
+    });
     v.el.append(ta);
     this.editing = { page, tb, orig: isNew ? null : tb, el: ta };
     if (tb.bubble) {
@@ -1594,6 +1642,22 @@ export class Editor {
     ta.focus({ preventScroll: true });
     ta.setSelectionRange(ta.value.length, ta.value.length);
     this.growEditing();
+  }
+
+  /** Enter after a checklist item starts the next item; Enter on an empty item ends the list. */
+  private continueChecklist(e: KeyboardEvent, ta: HTMLTextAreaElement) {
+    const at = ta.selectionStart;
+    const lineStart = ta.value.lastIndexOf('\n', at - 1) + 1;
+    const line = ta.value.slice(lineStart, at);
+    const m = CHECK_RE.exec(line);
+    if (!m || at !== ta.selectionEnd) return;
+    e.preventDefault();
+    if (!line.slice(m[0].length).trim()) {
+      ta.setRangeText('', lineStart, at, 'end');
+    } else {
+      ta.setRangeText('\n[ ] ', at, at, 'end');
+    }
+    ta.dispatchEvent(new Event('input'));
   }
 
   private growEditing() {

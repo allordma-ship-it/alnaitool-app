@@ -326,6 +326,7 @@ const dict = {
   changePin: { ar: 'تغيير الرمز', de: 'PIN ändern', en: 'Change PIN' },
   lockOff: { ar: 'إيقاف القفل وإزالة كل الأقفال', de: 'Sperre ausschalten (alle Sperren entfernen)', en: 'Turn off lock (remove all locks)' },
   lockIsOff: { ar: 'القفل غير مفعّل', de: 'Sperre ist aus', en: 'Lock is off' },
+  checklist: { ar: 'قائمة مهام', de: 'Checkliste', en: 'Checklist' },
 } as const;
 
 export type Key = keyof typeof dict;

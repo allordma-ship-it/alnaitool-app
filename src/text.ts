@@ -26,16 +26,45 @@ function measure(text: string, size: number, bold: boolean): number {
   return mctx.measureText(text).width;
 }
 
-export interface Line { text: string; rtl: boolean }
+export interface Line {
+  text: string;
+  rtl: boolean;
+  /** paragraph this line belongs to */
+  para?: number;
+  /** checklist item: room left for the box, and whether the item is done */
+  indent?: number;
+  done?: boolean;
+  /** first line of a checklist item: draw the box here */
+  box?: boolean;
+}
+
+/** "[ ] milk" / "[x] milk": a checklist item. The marker is plain text, so exports and copies stay readable. */
+export const CHECK_RE = /^\[( |x|X)\][ \t]?/;
+export const checkIndent = (size: number) => size * 1.5;
 
 /** Greedy word wrap; every paragraph keeps its own direction. */
 export function wrapText(text: string, size: number, maxW: number, bold = false): Line[] {
   const out: Line[] = [];
-  for (const para of text.split('\n')) {
+  text.split('\n').forEach((raw, pi) => {
+    const m = CHECK_RE.exec(raw);
+    const para = m ? raw.slice(m[0].length) : raw;
+    const item = m ? { indent: checkIndent(size), done: m[1] !== ' ' } : null;
+    const start = out.length;
+    wrapPara(out, para, size, item ? maxW - item.indent : maxW, bold);
+    for (let i = start; i < out.length; i++) {
+      out[i].para = pi;
+      if (item) Object.assign(out[i], item, { box: i === start });
+    }
+  });
+  return out;
+}
+
+function wrapPara(out: Line[], para: string, size: number, maxW: number, bold: boolean) {
+  {
     const rtl = isRtl(para);
     if (!para.trim()) {
       out.push({ text: '', rtl });
-      continue;
+      return;
     }
     let line = '';
     for (const word of para.split(/(\s+)/)) {
@@ -57,7 +86,6 @@ export function wrapText(text: string, size: number, maxW: number, bold = false)
     }
     out.push({ text: line.trimEnd(), rtl });
   }
-  return out;
 }
 
 export function textHeight(tb: TextBox): number {
@@ -72,11 +100,77 @@ export function drawTextBox(ctx: CanvasRenderingContext2D, tb: TextBox, color = 
   ctx.fillStyle = color;
   ctx.textBaseline = 'middle';
   lines.forEach((l, i) => {
+    const ind = l.indent ?? 0;
+    const cy = tb.y + lh * (i + 0.5);
+    ctx.globalAlpha = l.done ? 0.5 : 1;
+    if (l.box) drawCheckbox(ctx, l.rtl ? tb.x + tb.w - tb.size : tb.x, cy - tb.size / 2, tb.size, !!l.done, color);
     ctx.direction = l.rtl ? 'rtl' : 'ltr';
     ctx.textAlign = l.rtl ? 'right' : 'left';
-    ctx.fillText(l.text, l.rtl ? tb.x + tb.w : tb.x, tb.y + lh * (i + 0.5));
+    const tx = l.rtl ? tb.x + tb.w - ind : tb.x + ind;
+    ctx.fillText(l.text, tx, cy);
+    if (l.done && l.text) {
+      // a done item is struck through
+      const w = ctx.measureText(l.text).width;
+      ctx.fillRect(l.rtl ? tx - w : tx, cy - tb.size * 0.02, w, Math.max(1, tb.size * 0.07));
+    }
   });
   ctx.restore();
+}
+
+function drawCheckbox(ctx: CanvasRenderingContext2D, x: number, y: number, s: number, on: boolean, color: string) {
+  const r = s * 0.18, p = s * 0.08;
+  ctx.save();
+  ctx.globalAlpha = 1;
+  ctx.lineWidth = Math.max(1, s * 0.09);
+  ctx.strokeStyle = on ? '#0891b2' : color;
+  ctx.beginPath();
+  ctx.roundRect(x + p, y + p, s - 2 * p, s - 2 * p, r);
+  if (on) {
+    ctx.fillStyle = '#0891b2';
+    ctx.fill();
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = Math.max(1.2, s * 0.12);
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.beginPath();
+    ctx.moveTo(x + s * 0.28, y + s * 0.52);
+    ctx.lineTo(x + s * 0.44, y + s * 0.68);
+    ctx.lineTo(x + s * 0.74, y + s * 0.34);
+  }
+  ctx.stroke();
+  ctx.restore();
+}
+
+/** The checklist item whose box is at (x, y), as its paragraph index; null if none. Generous for a fingertip. */
+export function checkboxAt(tb: TextBox, x: number, y: number, slop = 6): number | null {
+  const lines = wrapText(tb.text, tb.size, tb.w, tb.bold);
+  const lh = tb.size * LINE_HEIGHT;
+  for (let i = 0; i < lines.length; i++) {
+    const l = lines[i];
+    if (!l.box) continue;
+    const bx = l.rtl ? tb.x + tb.w - tb.size : tb.x;
+    const by = tb.y + lh * (i + 0.5) - tb.size / 2;
+    if (x >= bx - slop && x <= bx + tb.size + slop && y >= by - slop && y <= by + tb.size + slop) return l.para ?? null;
+  }
+  return null;
+}
+
+/** Ticks or unticks the checklist item in paragraph `para`. */
+export function toggleCheck(text: string, para: number): string {
+  const paras = text.split('\n');
+  const m = CHECK_RE.exec(paras[para] ?? '');
+  if (!m) return text;
+  paras[para] = (m[1] === ' ' ? '[x] ' : '[ ] ') + paras[para].slice(m[0].length);
+  return paras.join('\n');
+}
+
+/** Turns the paragraph at `para` into a checklist item, or back into plain text. */
+export function toggleItem(text: string, para: number): string {
+  const paras = text.split('\n');
+  const p = paras[para] ?? '';
+  const m = CHECK_RE.exec(p);
+  paras[para] = m ? p.slice(m[0].length) : `[ ] ${p}`;
+  return paras.join('\n');
 }
 
 export const BUBBLE_PAD = 7;
