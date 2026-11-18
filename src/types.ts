@@ -61,7 +61,16 @@ export interface DocMeta {
   folderId?: string;
   /** bookmarked pages, by page id (survives reordering) */
   bookmarks?: string[];
+  /** pinned documents stay at the top of the library */
+  pinned?: boolean;
+  /** colour label */
+  color?: DocColor;
+  /** free tags, e.g. "Asthma", "Exam" */
+  tags?: string[];
 }
+
+export const DOC_COLORS = ['red', 'orange', 'yellow', 'green', 'blue', 'purple'] as const;
+export type DocColor = (typeof DOC_COLORS)[number];
 
 export interface Folder {
   id: string;

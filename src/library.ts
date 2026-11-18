@@ -1,7 +1,8 @@
 import { listDocs, putDoc, putPages, deleteDoc, getPages, listClips, listFolders, putFolder, deleteFolder } from './db';
 import { searchContent, indexDoc, unindexed, type Hit } from './search';
 import { createBackup, lastBackup } from './backup';
-import { A4, uid, type DocMeta, type PageData, type Template, type PaperColor, type Folder } from './types';
+import { A4, uid, DOC_COLORS, type DocMeta, type PageData, type Template, type PaperColor, type Folder, type DocColor } from './types';
+import { sortDocs, allTags, cleanTags, SORT_MODES, type SortMode } from './libraryOrder';
 import { importFiles } from './importFiles';
 import { convertDoc, shareFiles } from './share';
 import { settings } from './settings';
@@ -20,6 +21,9 @@ export class Library {
   private folderBar = h('nav', { class: 'folders', 'aria-label': t('folders') });
   private results = h('section', { class: 'results' });
   private folderId: string | null = readFolder();
+  private tagFilter: string | null = readPref(TAG_KEY) || null;
+  private sortMode: SortMode = (SORT_MODES as string[]).includes(readPref(SORT_KEY)) ? (readPref(SORT_KEY) as SortMode) : 'edited';
+  private tools = h('div', { class: 'lib-tools' });
   private folders: Folder[] = [];
   private searchTimer = 0;
   private searchSeq = 0;
@@ -69,6 +73,7 @@ export class Library {
       this.stats,
       this.hero,
       this.folderBar,
+      this.tools,
       this.grid,
       this.results,
     );
@@ -87,9 +92,14 @@ export class Library {
     this.folders = await listFolders();
     if (this.folderId && !this.folders.some((f) => f.id === this.folderId)) this.setFolder(null);
     // a search looks through every folder; otherwise show the open folder only
-    const docs = all.filter((d) => this.query
-      ? d.title.toLowerCase().includes(this.query)
-      : !this.folderId || d.folderId === this.folderId);
+    // a search looks through every folder (titles and tags); otherwise the open folder and tag
+    const tags = allTags(all, document.documentElement.lang);
+    if (this.tagFilter && !tags.includes(this.tagFilter)) this.setTag(null);
+    const docs = sortDocs(all.filter((d) => this.query
+      ? d.title.toLowerCase().includes(this.query) || (d.tags ?? []).some((tg) => tg.toLowerCase().includes(this.query))
+      : (!this.folderId || d.folderId === this.folderId) && (!this.tagFilter || (d.tags ?? []).includes(this.tagFilter))),
+    this.sortMode, document.documentElement.lang);
+    this.renderTools(tags);
     if (!this.query) this.results.replaceChildren();
     this.renderFolders(all);
     this.grid.replaceChildren();
@@ -137,12 +147,16 @@ export class Library {
       const more = h('button', { class: 'icon-btn more', 'aria-label': '…' });
       more.innerHTML = icons.more;
       more.addEventListener('click', (e) => { e.stopPropagation(); this.docMenu(d); });
-      const card = h('div', { class: 'card', tabindex: 0, role: 'button' },
+      const pin = h('span', { class: 'card-pin', title: t('pinned'), 'aria-label': t('pinned') });
+      pin.innerHTML = icons.pin;
+      const card = h('div', { class: `card ${d.color ? `c-${d.color}` : ''}`, tabindex: 0, role: 'button' },
         thumb,
         h('span', { class: `badge ${d.kind}` }, t(d.kind === 'pdf' ? 'kindPdf' : d.kind === 'images' ? 'kindImages' : 'kindNotebook')),
+        d.pinned ? pin : '',
         h('div', { class: 'card-meta' },
-          h('div', { class: 'card-title' }, d.title),
+          h('div', { class: 'card-title' }, d.color ? h('i', { class: `cdot c-${d.color}`, 'aria-hidden': 'true' }) : '', d.title),
           h('div', { class: 'card-sub' }, `${d.pageIds.length} ${t('pages')} · ${new Date(d.updatedAt).toLocaleDateString(document.documentElement.lang)}`),
+          d.tags?.length ? h('div', { class: 'card-tags' }, ...d.tags.map((tg) => h('span', { dir: 'auto' }, `#${tg}`))) : '',
         ),
         more,
       );
@@ -157,6 +171,9 @@ export class Library {
       h('h2', {}, d.title),
       h('button', { value: 'share' }, t('share')),
       h('button', { value: 'rename' }, t('rename')),
+      h('button', { value: 'pin' }, d.pinned ? t('unpin') : t('pin')),
+      h('button', { value: 'color' }, t('colorLabel')),
+      h('button', { value: 'tags' }, t('tags')),
       h('button', { value: 'move' }, t('moveToFolder')),
       h('button', { value: 'delete', class: 'danger' }, t('delete')),
       h('button', { value: 'cancel' }, t('cancel')),
@@ -173,6 +190,14 @@ export class Library {
       } else if (v === 'rename') {
         const name = prompt(t('title'), d.title)?.trim();
         if (name) { d.title = name; await putDoc(d); }
+      } else if (v === 'pin') {
+        d.pinned = !d.pinned;
+        if (!d.pinned) delete d.pinned;
+        await putDoc(d);
+      } else if (v === 'color') {
+        await this.colorDialog(d);
+      } else if (v === 'tags') {
+        await this.tagsDialog(d);
       } else if (v === 'move') {
         await this.moveDialog(d);
       } else if (v === 'delete' && confirm(t('confirmDelete'))) {
@@ -249,6 +274,77 @@ export class Library {
     if (unsupported.length) toast(`${t('unsupported')}`);
     else if (failed.length) toast(`${t('fileError')}: ${failed.join(', ')}`);
     else if (docs.length === 1) this.openDoc(docs[0]);
+  }
+
+  private setTag(tag: string | null) {
+    this.tagFilter = tag;
+    writePref(TAG_KEY, tag ?? '');
+  }
+
+  /** Tag filter chips and the sort order, under the folders. */
+  private renderTools(tags: string[]) {
+    this.tools.hidden = !!this.query;
+    this.tools.replaceChildren();
+    const chips = h('div', { class: 'tag-chips' });
+    for (const tg of tags) {
+      const on = this.tagFilter === tg;
+      const b = h('button', { type: 'button', class: `tag-chip ${on ? 'active' : ''}`, 'aria-pressed': String(on), dir: 'auto' }, `#${tg}`);
+      b.addEventListener('click', () => { this.setTag(on ? null : tg); void this.refresh(); });
+      chips.append(b);
+    }
+    const sel = h('select', { class: 'sort-select', 'aria-label': t('sortBy') });
+    for (const m of SORT_MODES) sel.append(h('option', { value: m, selected: m === this.sortMode }, t(`sort_${m}`)));
+    sel.addEventListener('change', () => {
+      this.sortMode = sel.value as SortMode;
+      writePref(SORT_KEY, this.sortMode);
+      void this.refresh();
+    });
+    this.tools.append(chips, h('label', { class: 'sort' }, h('span', {}, t('sortBy')), sel));
+  }
+
+  private async colorDialog(d: DocMeta) {
+    const form = h('form', { method: 'dialog', class: 'menu' }, h('h2', {}, t('colorLabel')));
+    const row = h('div', { class: 'color-row' });
+    for (const c of DOC_COLORS) {
+      row.append(h('button', { value: c, class: `color-swatch c-${c} ${d.color === c ? 'active' : ''}`, 'aria-label': t(`color_${c}`), title: t(`color_${c}`) }));
+    }
+    form.append(row, h('button', { value: 'none' }, t('noColor')), h('button', { value: 'cancel' }, t('cancel')));
+    const v = await modal(form).closed;
+    if (!v || v === 'cancel') return;
+    if (v === 'none') delete d.color;
+    else d.color = v as DocColor;
+    await putDoc(d);
+  }
+
+  /** Tick existing tags or type new ones (separated by commas). */
+  private async tagsDialog(d: DocMeta) {
+    const chosen = new Set(d.tags ?? []);
+    const existing = allTags(await listDocs(), document.documentElement.lang);
+    const row = h('div', { class: 'tag-chips wrap' });
+    for (const tg of existing) {
+      const b = h('button', { type: 'button', class: `tag-chip ${chosen.has(tg) ? 'active' : ''}`, dir: 'auto' }, `#${tg}`);
+      b.addEventListener('click', () => {
+        if (chosen.has(tg)) chosen.delete(tg);
+        else chosen.add(tg);
+        b.classList.toggle('active', chosen.has(tg));
+      });
+      row.append(b);
+    }
+    const input = h('input', { type: 'text', class: 'text', placeholder: t('newTagsHint'), dir: 'auto' });
+    const form = h('form', { method: 'dialog', class: 'new-nb' },
+      h('h2', {}, t('tags')),
+      existing.length ? row : '',
+      h('label', { class: 'row col' }, h('span', {}, t('newTags')), input),
+      h('div', { class: 'actions' },
+        h('button', { value: 'cancel', type: 'submit' }, t('cancel')),
+        h('button', { value: 'save', type: 'submit', class: 'primary' }, t('save')),
+      ),
+    );
+    if ((await modal(form).closed) !== 'save') return;
+    const tags = cleanTags([...chosen, ...input.value.split(/[,،;]/)]);
+    if (tags.length) d.tags = tags;
+    else delete d.tags;
+    await putDoc(d);
   }
 
   private setFolder(id: string | null) {
@@ -366,6 +462,14 @@ export class Library {
 }
 
 const FOLDER_KEY = 'alnai-folder';
+const TAG_KEY = 'alnai-tag';
+const SORT_KEY = 'alnai-sort';
+function readPref(k: string): string {
+  try { return localStorage.getItem(k) ?? ''; } catch { return ''; }
+}
+function writePref(k: string, v: string) {
+  try { localStorage.setItem(k, v); } catch { /* private mode */ }
+}
 function readFolder(): string | null {
   try { return localStorage.getItem(FOLDER_KEY) || null; } catch { return null; }
 }
