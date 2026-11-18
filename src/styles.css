@@ -788,3 +788,10 @@ details[open] > summary .pv-caret::before { transform: rotate(90deg); }
 .scan-big svg { width: 40px; height: 40px; color: var(--accent-text); }
 .scan-big.primary { background: var(--grad); border-color: transparent; color: #fff; }
 .scan-big.primary svg { color: #fff; }
+.scan-quad path { fill: rgb(6 182 212 / .16); stroke: #22d3ee; stroke-width: 2.5; stroke-linejoin: round; }
+.scan-quad .spine { stroke: #fbbf24; stroke-width: 2; stroke-dasharray: 6 5; }
+.scan-handle.mid { width: 28px; height: 28px; margin: -14px 0 0 -14px; border-color: #fbbf24; background: rgb(251 191 36 / .3); }
+.scan-handle.mid::after { inset: 9px; background: #f59e0b; }
+.scan-book { display: flex; align-items: center; gap: 6px; height: 38px; padding: 0 12px; border-radius: 10px; border: 1px solid var(--line-2); background: transparent; color: var(--muted); font-weight: 600; }
+.scan-book svg { width: 18px; height: 18px; }
+.scan-book.active { background: var(--accent-soft); color: var(--accent-text); border-color: rgb(6 182 212 / .45); }

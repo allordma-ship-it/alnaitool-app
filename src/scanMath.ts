@@ -197,3 +197,87 @@ export function colorFilter(px: Uint8ClampedArray, w: number, h: number) {
     }
   }
 }
+
+// ---------------------------------------------------------------- curved book pages
+
+/** Quadratic curve from a to b that passes through m at its middle (t = 0.5). */
+export function curveThrough(a: Pt, m: Pt, b: Pt, t: number): Pt {
+  // control point so that B(0.5) = m
+  const c: Pt = [2 * m[0] - (a[0] + b[0]) / 2, 2 * m[1] - (a[1] + b[1]) / 2];
+  const u = 1 - t;
+  return [u * u * a[0] + 2 * u * t * c[0] + t * t * b[0], u * u * a[1] + 2 * u * t * c[1] + t * t * b[1]];
+}
+
+export const midOf = (a: Pt, b: Pt): Pt => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+
+/** How far the middle handles are from the straight edges: 0 means a flat page. */
+export function bend(q: Quad, top: Pt, bottom: Pt): number {
+  const d = (p: Pt, a: Pt, b: Pt) => Math.hypot(p[0] - (a[0] + b[0]) / 2, p[1] - (a[1] + b[1]) / 2);
+  return Math.max(d(top, q[0], q[1]), d(bottom, q[3], q[2]));
+}
+
+/**
+ * Straightens a curved page: the top and bottom edges follow curves through `top` and `bottom`, the sides are
+ * straight. Each output column runs from the top curve to the bottom curve.
+ */
+export function curveWarp(src: Uint8ClampedArray, sw: number, sh: number, q: Quad, top: Pt, bottom: Pt, w: number, h: number): Uint8ClampedArray<ArrayBuffer> {
+  const out = new Uint8ClampedArray(w * h * 4);
+  for (let x = 0; x < w; x++) {
+    const t = (x + 0.5) / w;
+    const a = curveThrough(q[0], top, q[1], t), b = curveThrough(q[3], bottom, q[2], t);
+    for (let y = 0; y < h; y++) {
+      const v = (y + 0.5) / h;
+      const u0 = a[0] + (b[0] - a[0]) * v, v0 = a[1] + (b[1] - a[1]) * v;
+      const fx = Math.min(sw - 1.001, Math.max(0, u0 - 0.5)), fy = Math.min(sh - 1.001, Math.max(0, v0 - 0.5));
+      const x0 = fx | 0, y0 = fy | 0, ax = fx - x0, ay = fy - y0;
+      const i00 = (y0 * sw + x0) * 4, i10 = i00 + 4, i01 = i00 + sw * 4, i11 = i01 + 4;
+      const o = (y * w + x) * 4;
+      for (let c = 0; c < 3; c++) {
+        const tp = src[i00 + c] * (1 - ax) + src[i10 + c] * ax;
+        const bt = src[i01 + c] * (1 - ax) + src[i11 + c] * ax;
+        out[o + c] = tp * (1 - ay) + bt * ay;
+      }
+      out[o + 3] = 255;
+    }
+  }
+  return out;
+}
+
+/** Length of a curved edge (for the output size). */
+export function curveLength(a: Pt, m: Pt, b: Pt, steps = 24): number {
+  let len = 0, prev = a;
+  for (let i = 1; i <= steps; i++) {
+    const p = curveThrough(a, m, b, i / steps);
+    len += Math.hypot(p[0] - prev[0], p[1] - prev[1]);
+    prev = p;
+  }
+  return len;
+}
+
+/**
+ * Where the page's top and bottom edges really are half way across: the first and last bright pixel in the
+ * column between the corners (for a bent book page these sit off the straight line).
+ */
+export function detectEdgeMids(gray: Uint8Array | Uint8ClampedArray, w: number, h: number, q: Quad): { top: Pt; bottom: Pt } {
+  const t = otsu(gray);
+  const top = midOf(q[0], q[1]), bottom = midOf(q[3], q[2]);
+  const x = Math.max(0, Math.min(w - 1, Math.round((top[0] + bottom[0]) / 2)));
+  const y0 = Math.max(0, Math.floor(Math.min(top[1], bottom[1]) - h * 0.15));
+  const y1 = Math.min(h - 1, Math.ceil(Math.max(top[1], bottom[1]) + h * 0.15));
+  // a few neighbouring columns, so one dark letter does not fool it
+  const bright = (y: number) => {
+    let n = 0;
+    for (let dx = -2; dx <= 2; dx++) { const xx = Math.max(0, Math.min(w - 1, x + dx)); if (gray[y * w + xx] > t) n++; }
+    return n >= 3;
+  };
+  let ty = -1, by = -1;
+  for (let y = y0; y <= y1; y++) if (bright(y)) { ty = y; break; }
+  for (let y = y1; y >= y0; y--) if (bright(y)) { by = y + 1; break; }
+  return { top: ty >= 0 ? [x, ty] : top, bottom: by >= 0 ? [x, by] : bottom };
+}
+
+/** An open book in one photo: the left and right halves of the straightened image. */
+export function splitHalves(w: number): [{ x: number; w: number }, { x: number; w: number }] {
+  const half = Math.floor(w / 2);
+  return [{ x: 0, w: half }, { x: half, w: w - half }];
+}

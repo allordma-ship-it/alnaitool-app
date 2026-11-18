@@ -382,6 +382,9 @@ const dict = {
   scanDelete: { ar: 'حذف الصفحة', de: 'Seite entfernen', en: 'Remove page' },
   scanCorner: { ar: 'زاوية', de: 'Ecke', en: 'Corner' },
   scanDiscard: { ar: 'إغلاق المسح؟ الصفحات غير المحفوظة ستُحذف.', de: 'Scan schließen? Nicht gespeicherte Seiten gehen verloren.', en: 'Close the scan? Unsaved pages are lost.' },
+  scanBook: { ar: 'كتاب مفتوح', de: 'Offenes Buch', en: 'Open book' },
+  scanBookHint: { ar: 'الصورة فيها صفحتان: تُقسم عند منتصفها (الكعب) إلى صفحتين', de: 'Das Foto zeigt zwei Seiten: es wird in der Mitte (am Buchrücken) geteilt', en: 'The photo shows two pages: it is split in the middle (at the spine)' },
+  scanEdgeMid: { ar: 'منتصف الحافة (لانحناء الصفحة)', de: 'Kantenmitte (für gewölbte Seiten)', en: 'Edge middle (for curved pages)' },
 } as const;
 
 export type Key = keyof typeof dict;

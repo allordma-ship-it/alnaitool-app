@@ -70,3 +70,51 @@ describe('scanner maths', () => {
     expect(px[(30 * w + 31) * 4]).toBeLessThan(40); // ink
   });
 });
+
+import { curveThrough, curveWarp, bend, detectEdgeMids, splitHalves, curveLength } from '../src/scanMath';
+
+describe('curved book pages', () => {
+  it('the edge curve passes through its middle handle', () => {
+    const p = curveThrough([0, 0], [50, -20], [100, 0], 0.5);
+    expect(p[0]).toBeCloseTo(50, 6);
+    expect(p[1]).toBeCloseTo(-20, 6);
+    expect(curveThrough([0, 0], [50, -20], [100, 0], 0)).toEqual([0, 0]);
+  });
+
+  it('a straight page has no bend; a flat curve warp equals the plain stretch', () => {
+    const q: Quad = [[0, 0], [8, 0], [8, 8], [0, 8]];
+    expect(bend(q, [4, 0], [4, 8])).toBe(0);
+    const sw = 8, sh = 8, src = new Uint8ClampedArray(64 * 4);
+    for (let i = 0; i < 64; i++) { src[i * 4] = i * 3; src[i * 4 + 3] = 255; }
+    const out = curveWarp(src, sw, sh, q, [4, 0], [4, 8], 8, 8);
+    expect(out[(5 * 8 + 6) * 4]).toBe(src[(5 * 8 + 6) * 4]);
+  });
+
+  it('a bent top edge is followed: the curved line comes out straight', () => {
+    // a dark line along a curve y = 10 + 0.002 (x - 50)^2 … sagging in the middle like a book page
+    const sw = 100, sh = 60, src = new Uint8ClampedArray(sw * sh * 4).fill(255);
+    const curveY = (x: number) => 15 - 0.004 * (x - 50) ** 2 + 10;
+    for (let x = 0; x < sw; x++) { const y = Math.round(curveY(x)); const i = (y * sw + x) * 4; src[i] = src[i + 1] = src[i + 2] = 0; }
+    const q: Quad = [[0, curveY(0) - 5], [99, curveY(99) - 5], [99, 59], [0, 59]];
+    const out = curveWarp(src, sw, sh, q, [50, curveY(50) - 5], [50, 59], 100, 50);
+    // after straightening, the dark line sits at one height across the page
+    const rowOf = (x: number) => { let best = 0, v = 999; for (let y = 0; y < 50; y++) { const c = out[(y * 100 + x) * 4]; if (c < v) { v = c; best = y; } } return best; };
+    expect(Math.abs(rowOf(10) - rowOf(50))).toBeLessThanOrEqual(1);
+    expect(Math.abs(rowOf(90) - rowOf(50))).toBeLessThanOrEqual(1);
+  });
+
+  it('finds the real middle of a sagging top edge', () => {
+    const w = 80, h = 100, g = new Uint8Array(w * h).fill(30);
+    for (let x = 10; x < 70; x++) { const top = 10 + Math.round(0.01 * (x - 40) ** 2 * -1 + 9); for (let y = top; y < 90; y++) g[y * w + x] = 230; }
+    const q: Quad = [[10, 10], [70, 10], [70, 90], [10, 90]];
+    const { top, bottom } = detectEdgeMids(g, w, h, q);
+    expect(top[1]).toBeGreaterThan(15); // sags below the straight line between the corners
+    expect(Math.abs(bottom[1] - 90)).toBeLessThanOrEqual(1);
+  });
+
+  it('splits an open book in two and measures curved edges', () => {
+    expect(splitHalves(101)).toEqual([{ x: 0, w: 50 }, { x: 50, w: 51 }]);
+    expect(curveLength([0, 0], [50, 0], [100, 0])).toBeCloseTo(100, 6);
+    expect(curveLength([0, 0], [50, 20], [100, 0])).toBeGreaterThan(100);
+  });
+});
