@@ -173,3 +173,45 @@ export function paragraphAt(lines: TextLine[], sx0: number, sx1: number, sy: num
   while (hi < lines.length - 1 && same(lines[hi + 1], lines[hi]) && lines[hi + 1].y0 - lines[hi].y1 < lines[hi].h * 0.75) hi++;
   return lines.slice(lo, hi + 1);
 }
+
+export interface OutlineItem {
+  title: string;
+  /** PDF page number (1-based), null if the entry points nowhere */
+  pdfPage: number | null;
+  /** where on that page the entry starts, in our page coordinates (top = 0), if the PDF says */
+  y: number | null;
+  items: OutlineItem[];
+}
+
+/** The PDF's own table of contents (bookmarks panel in other readers), with every entry resolved to a page. */
+export async function pdfOutline(docId: string): Promise<OutlineItem[]> {
+  const doc = await pdfForDoc(docId);
+  const raw = await doc.getOutline();
+  if (!raw?.length) return [];
+  let budget = 3000; // very large outlines: stop resolving after this many entries
+  type Raw = (typeof raw)[number];
+  const resolve = async (it: Raw, depth: number): Promise<OutlineItem> => {
+    let pdfPage: number | null = null, y: number | null = null;
+    if (budget-- > 0) {
+      try {
+        const dest = typeof it.dest === 'string' ? await doc.getDestination(it.dest) : it.dest;
+        if (Array.isArray(dest) && dest[0] != null) {
+          const ref = dest[0];
+          const idx = typeof ref === 'number' ? ref : await doc.getPageIndex(ref);
+          pdfPage = idx + 1;
+          const kind = (dest[1] as { name?: string } | undefined)?.name;
+          const top = kind === 'XYZ' ? dest[3] : kind === 'FitH' || kind === 'FitBH' ? dest[2] : null;
+          if (typeof top === 'number') {
+            const vp = (await doc.getPage(pdfPage)).getViewport({ scale: 1 });
+            y = Math.max(0, vp.convertToViewportPoint(0, top)[1]);
+          }
+        }
+      } catch {
+        /* broken destination: show the entry without a target */
+      }
+    }
+    const kids = depth < 6 ? await Promise.all((it.items ?? []).map((k) => resolve(k, depth + 1))) : [];
+    return { title: (it.title || '—').trim(), pdfPage, y, items: kids };
+  };
+  return Promise.all(raw.map((it) => resolve(it, 0)));
+}

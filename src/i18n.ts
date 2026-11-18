@@ -238,6 +238,24 @@ const dict = {
   noResults: { ar: 'لا توجد نتائج', de: 'Keine Treffer', en: 'No results' },
   inClip: { ar: 'اقتطاع', de: 'Ausschnitt', en: 'Clip' },
   hits: { ar: 'نتائج', de: 'Treffer', en: 'hits' },
+  pagesTitle: { ar: 'الصفحات', de: 'Seiten', en: 'Pages' },
+  contents: { ar: 'الفهرس', de: 'Inhalt', en: 'Contents' },
+  bookmarks: { ar: 'الإشارات المرجعية', de: 'Lesezeichen', en: 'Bookmarks' },
+  bookmark: { ar: 'إشارة مرجعية', de: 'Lesezeichen', en: 'Bookmark' },
+  bookmarkAdded: { ar: 'أُضيفت إشارة مرجعية للصفحة', de: 'Lesezeichen gesetzt: Seite', en: 'Bookmarked page' },
+  bookmarkRemoved: { ar: 'أُزيلت الإشارة المرجعية من الصفحة', de: 'Lesezeichen entfernt: Seite', en: 'Bookmark removed: page' },
+  noBookmarks: {
+    ar: 'لا توجد إشارات مرجعية بعد. اضغط على رمز الإشارة في الشريط السفلي لتعليم الصفحة الحالية.',
+    de: 'Noch keine Lesezeichen. Tippe unten auf das Lesezeichen-Symbol, um die aktuelle Seite zu markieren.',
+    en: 'No bookmarks yet. Tap the bookmark icon in the bottom bar to mark the current page.',
+  },
+  noOutline: { ar: 'هذا الملف لا يحتوي على فهرس', de: 'Dieses PDF hat kein Inhaltsverzeichnis', en: 'This PDF has no table of contents' },
+  duplicatePage: { ar: 'نسخ الصفحة', de: 'Seite duplizieren', en: 'Duplicate page' },
+  insertPage: { ar: 'إدراج صفحة فارغة بعدها', de: 'Leere Seite danach einfügen', en: 'Insert blank page after' },
+  dragToReorder: { ar: 'اسحب لتغيير الترتيب', de: 'Ziehen zum Verschieben', en: 'Drag to reorder' },
+  moveToStart: { ar: 'نقل إلى البداية', de: 'An den Anfang', en: 'Move to start' },
+  moveToEnd: { ar: 'نقل إلى النهاية', de: 'Ans Ende', en: 'Move to end' },
+  close: { ar: 'إغلاق', de: 'Schließen', en: 'Close' },
 } as const;
 
 export type Key = keyof typeof dict;

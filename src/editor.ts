@@ -1,6 +1,8 @@
 import type { DocMeta, PageData, Stroke, Tool, InkTool, TextBox } from './types';
 import { A4, uid } from './types';
-import { getPages, putDoc, putPages, deletePages, deleteFile } from './db';
+import { getPages, putDoc, putPages, deletePages, deleteFile, listClips, putClip } from './db';
+import { PagesView } from './pagesView';
+import { moveItem, duplicatePage, remapClips, fileUnused } from './pageOps';
 import { drawStrokes, drawTemplate, drawPenSegments, drawHighlighterPath, inkColorForPaper, drawStroke } from './ink';
 import { drawPageContent, displayStroke, imageBitmapFor, clearImageCache, renderPageToCanvas } from './render';
 import { drawTextBox, textBoxHit, fontOf, LINE_HEIGHT, isRtl, drawBubble, boxHeight, BUBBLE_PAD } from './text';
@@ -11,7 +13,7 @@ import { Ruler, type Edge } from './ruler';
 import { NotesPanel, VoiceRecorder, clipFromStroke, clipFromRect, saveVoiceMemo, fmtTime } from './clips';
 import { findFreeSpot } from './freeSpace';
 import { settings, saveSettings, type ButtonAction } from './settings';
-import { pdfForDoc, renderPdfPage, closePdf } from './pdf';
+import { pdfForDoc, renderPdfPage, closePdf, pdfOutline, type OutlineItem } from './pdf';
 import { openSettings } from './settingsDialog';
 import { icons } from './icons';
 import { t } from './i18n';
@@ -105,6 +107,8 @@ export class Editor {
   private fling = 0;
 
   private undoStack: HistoryEntry[] = [];
+  private markBtn!: HTMLButtonElement;
+  private pagesView: PagesView | null = null;
   private redoStack: HistoryEntry[] = [];
   private selection: { page: number; ids: Set<string> } | null = null;
 
@@ -226,8 +230,9 @@ export class Editor {
       h('i', { class: 'sep' }), rulerBtn, this.recBtn,
       h('i', { class: 'sep' }), btn(icons.undo, t('undo'), () => this.undo()), btn(icons.redo, t('redo'), () => this.redo()),
     );
-    this.pageLabel = h('button', { class: 'page-label', title: t('fitWidth'), dir: 'ltr' });
-    this.pageLabel.addEventListener('click', () => this.fitWidth());
+    this.pageLabel = h('button', { class: 'page-label', title: t('pagesTitle'), dir: 'ltr' });
+    this.pageLabel.addEventListener('click', () => this.openPages());
+    this.markBtn = btn(icons.bookmark, t('bookmark'), () => this.toggleBookmark(this.currentPage()), 'mark-btn');
     const nav = h('div', { class: 'nav-pill' },
       btn(icons.prev, t('prevPage'), () => this.goPage(-1), 'flip-rtl'),
       this.pageLabel,
@@ -236,6 +241,9 @@ export class Editor {
       btn(icons.zoomOut, t('zoomOut'), () => this.zoomBy(1 / 1.25)),
       btn(icons.zoomIn, t('zoomIn'), () => this.zoomBy(1.25)),
       btn(icons.fit, t('fitScreen'), () => this.toggleFit()),
+      h('i', { class: 'sep' }),
+      this.markBtn,
+      btn(icons.pages, t('pagesTitle'), () => this.openPages()),
       h('i', { class: 'sep edit-only' }),
       btn(icons.plus, t('addPage'), () => this.addPage(), 'edit-only'),
       btn(icons.trash, t('deletePage'), () => this.deleteCurrentPage(), 'edit-only'),
@@ -645,6 +653,7 @@ export class Editor {
     for (const i of keep) if (!this.views.has(i)) this.mount(i);
     const cur = this.currentPage();
     this.pageLabel.textContent = `${cur + 1} / ${this.pages.length}`;
+    this.updateMarkBtn(cur);
     const kind = t(this.meta.kind === 'pdf' ? 'kindPdf' : this.meta.kind === 'images' ? 'kindImages' : 'kindNotebook');
     this.docSub.textContent = `${kind} · ${t('page')} ${cur + 1} / ${this.pages.length}`;
     if (this.meta.lastPage !== cur) {
@@ -1858,43 +1867,136 @@ export class Editor {
   // ---------------------------------------------------------------- pages
   private addPage() {
     const cur = this.currentPage();
-    const ref = this.pages[cur];
-    const page: PageData = {
-      id: uid(),
-      w: ref?.bg.kind === 'template' ? ref.w : A4.w,
-      h: ref?.bg.kind === 'template' ? ref.h : A4.h,
-      bg: { kind: 'template', template: this.meta.template, paper: this.meta.paper, rtl: settings.lang === 'ar' },
-      strokes: [],
-    };
-    this.pages.splice(cur + 1, 0, page);
-    this.meta.pageIds = this.pages.map((p) => p.id);
-    this.relayout();
-    this.cam.ty = 12 - this.layout[cur + 1].y * this.cam.s;
-    this.clampCamera();
-    this.applyCamera();
-    this.markDirty(page.id);
+    const page = this.blankPageLike(this.pages[cur]);
+    const next = this.pages.slice();
+    next.splice(cur + 1, 0, page);
+    void this.setPages(next, cur + 1, page);
   }
 
   private async deleteCurrentPage() {
     if (this.pages.length <= 1) return;
     if (!confirm(t('confirmDeletePage'))) return;
-    const cur = this.currentPage();
-    const [removed] = this.pages.splice(cur, 1);
+    await this.deletePageAt(this.currentPage());
+  }
+
+  private async deletePageAt(i: number) {
+    if (this.pages.length <= 1 || !this.pages[i]) return;
+    const oldIds = this.meta.pageIds.slice();
+    const [removed] = this.pages.splice(i, 1);
     this.meta.pageIds = this.pages.map((p) => p.id);
+    this.meta.bookmarks = this.meta.bookmarks?.filter((id) => id !== removed.id);
     this.undoStack = this.undoStack.filter((e) => e.pageId !== removed.id);
     this.redoStack = this.redoStack.filter((e) => e.pageId !== removed.id);
+    this.dirty.delete(removed.id);
     this.clearSelection();
     this.relayout();
     this.clampCamera();
     this.applyCamera();
     this.metaDirty = true;
     await deletePages([removed.id]);
-    if (removed.bg.kind === 'image') {
+    // a duplicated picture page shares its picture: only delete it when no page shows it any more
+    if (removed.bg.kind === 'image' && fileUnused(this.pages, removed.bg.fileId)) {
       const fid = removed.bg.fileId;
       this.meta.fileIds = (this.meta.fileIds ?? []).filter((f) => f !== fid);
       await deleteFile(fid);
     }
     await this.flush();
+    await this.fixClips(oldIds);
+  }
+
+  /** Clips point at pages by number: correct them after pages were moved, inserted or deleted. */
+  private async fixClips(oldIds: string[]) {
+    const changed = remapClips(await listClips(this.meta.id), oldIds, this.meta.pageIds);
+    for (const c of changed) await putClip(c);
+    if (changed.length && settings.notesPanel) void this.panel.refresh();
+  }
+
+  /** Applies a new page order (after a move, duplicate or insert) and shows page `focus`. */
+  private async setPages(pages: PageData[], focus: number, newPage?: PageData) {
+    const oldIds = this.meta.pageIds.slice();
+    this.pages = pages;
+    this.meta.pageIds = pages.map((p) => p.id);
+    this.clearSelection();
+    this.relayout();
+    this.scrollToPage(Math.max(0, Math.min(pages.length - 1, focus)));
+    if (newPage) this.dirty.add(newPage.id);
+    this.metaDirty = true;
+    await this.flush();
+    await this.fixClips(oldIds);
+  }
+
+  private blankPageLike(ref?: PageData): PageData {
+    return {
+      id: uid(),
+      w: ref?.bg.kind === 'template' ? ref.w : A4.w,
+      h: ref?.bg.kind === 'template' ? ref.h : A4.h,
+      bg: { kind: 'template', template: this.meta.template, paper: this.meta.paper, rtl: settings.lang === 'ar' },
+      strokes: [],
+    };
+  }
+
+  private toggleBookmark(i: number) {
+    const p = this.pages[i];
+    if (!p) return;
+    const set = new Set(this.meta.bookmarks ?? []);
+    if (set.has(p.id)) set.delete(p.id);
+    else set.add(p.id);
+    this.meta.bookmarks = this.meta.pageIds.filter((id) => set.has(id));
+    this.metaDirty = true;
+    void this.flush();
+    this.updateMarkBtn(this.currentPage());
+    toast(set.has(p.id) ? `${t('bookmarkAdded')} ${i + 1}` : `${t('bookmarkRemoved')} ${i + 1}`);
+  }
+
+  private updateMarkBtn(cur: number) {
+    if (!this.markBtn) return;
+    const on = !!this.pages[cur] && (this.meta.bookmarks ?? []).includes(this.pages[cur].id);
+    if (this.markBtn.classList.contains('active') === on && this.markBtn.innerHTML) return;
+    this.markBtn.classList.toggle('active', on);
+    this.markBtn.setAttribute('aria-pressed', String(on));
+    this.markBtn.innerHTML = on ? icons.bookmarkFill : icons.bookmark;
+  }
+
+  private openPages() {
+    if (this.pagesView) return;
+    this.finishEditing();
+    void this.flush();
+    this.pagesView = new PagesView({
+      meta: this.meta,
+      pages: () => this.pages,
+      current: () => this.currentPage(),
+      go: (i) => this.scrollToPage(i),
+      outline: () => pdfOutline(this.meta.id),
+      goOutline: (it) => this.goOutline(it),
+      move: (from, to) => this.setPages(moveItem(this.pages, from, to), to),
+      duplicate: async (i) => {
+        const copy = duplicatePage(this.pages[i]);
+        const next = this.pages.slice();
+        next.splice(i + 1, 0, copy);
+        await this.setPages(next, i + 1, copy);
+      },
+      insertAfter: async (i) => {
+        const page = this.blankPageLike(this.pages[i]);
+        const next = this.pages.slice();
+        next.splice(i + 1, 0, page);
+        await this.setPages(next, i + 1, page);
+      },
+      remove: (i) => this.deletePageAt(i),
+      toggleBookmark: (i) => this.toggleBookmark(i),
+    }, () => { this.pagesView = null; });
+    this.pagesView.open();
+  }
+
+  /** Table of contents entry: the page, and the heading's height on it when the PDF says. */
+  private goOutline(it: OutlineItem) {
+    const i = this.pages.findIndex((p) => p.bg.kind === 'pdf' && p.bg.pdfPage === it.pdfPage);
+    if (i < 0) return;
+    const l = this.layout[i];
+    if (it.y != null && l) {
+      this.cam.ty = 12 - (l.y + Math.max(0, it.y - 14)) * this.cam.s;
+      this.clampCamera();
+      this.applyCamera();
+    } else this.scrollToPage(i);
   }
 
   private async share() {
@@ -1964,6 +2066,7 @@ export class Editor {
     if (this.closed) return;
     this.closed = true;
     this.finishEditing();
+    this.pagesView?.close();
     if (this.recorder.recording) await this.toggleRecording();
     cancelAnimationFrame(this.laserLoop);
     this.panel.dispose();

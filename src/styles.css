@@ -487,3 +487,66 @@ input[type='range'] { accent-color: var(--accent); }
 .backup .hint { margin: 0; }
 .actions.start { justify-content: flex-start; }
 .menu-item.active { border-color: var(--accent); color: var(--accent-text); }
+
+/* ---------------------------------------------------------------- pages overview, contents, bookmarks */
+.pages-view {
+  position: fixed; inset: 0; width: 100%; height: 100%; max-width: none; max-height: none; margin: 0; padding: 0;
+  border: 0; display: flex; flex-direction: column; background: var(--bg); color: var(--text);
+}
+.pages-view:not([open]) { display: none; }
+.pages-view::backdrop { background: var(--bg); }
+.pv-head {
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  padding: calc(10px + var(--sat)) calc(16px + var(--sar)) 10px calc(16px + var(--sal));
+  border-bottom: 1px solid var(--line); background: var(--surface);
+}
+.pv-head h2 { margin: 0; font-size: 17px; max-width: 40vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pv-head .spacer { flex: 1; }
+.pv-body { flex: 1; overflow: auto; padding: 18px calc(16px + var(--sar)) calc(24px + var(--sab)) calc(16px + var(--sal)); }
+.pv-grid { display: grid; gap: 18px; grid-template-columns: repeat(auto-fill, minmax(132px, 1fr)); }
+.pv-cell { display: flex; flex-direction: column; gap: 6px; border-radius: 12px; padding: 6px; position: relative; }
+.pv-cell.current { background: var(--accent-soft); box-shadow: inset 0 0 0 2px var(--accent); }
+.pv-cell.dragging { opacity: .35; }
+.pv-cell.drop-before::before, .pv-cell.drop-after::after {
+  content: ''; position: absolute; top: 6px; bottom: 6px; width: 4px; border-radius: 2px; background: var(--accent);
+}
+.pv-cell.drop-before::before { inset-inline-start: -11px; }
+.pv-cell.drop-after::after { inset-inline-end: -11px; }
+.pv-img {
+  width: 100%; border-radius: 6px; overflow: hidden; background: #fff; cursor: pointer;
+  box-shadow: 0 0 0 1px var(--line-2), 0 6px 18px rgb(0 0 0 / .25);
+}
+.pv-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pv-foot { display: flex; align-items: center; justify-content: space-between; gap: 2px; min-height: 36px; }
+.pv-foot .icon-btn { width: 36px; height: 36px; }
+.pv-foot svg { width: 19px; height: 19px; }
+.pv-num { flex: 1; text-align: center; font-weight: 650; font-size: 13.5px; color: var(--muted); }
+.pv-cell.current .pv-num { color: var(--accent-text); }
+.pv-grip { cursor: grab; touch-action: none; color: var(--faint); }
+.pv-star.on, .mark-btn.active { color: #f59e0b; }
+.pv-ghost {
+  position: fixed; left: 0; top: 0; z-index: 9999; pointer-events: none; opacity: .92;
+  border-radius: 12px; background: var(--surface); box-shadow: 0 20px 50px rgb(0 0 0 / .5);
+}
+.pv-empty { display: grid; place-items: center; gap: 10px; padding: 80px 20px; color: var(--muted); text-align: center; }
+.pv-empty svg { width: 42px; height: 42px; color: var(--accent); opacity: .7; }
+.pv-pad { max-width: 760px; margin: 0 auto; }
+.pv-toc { list-style: none; margin: 0; padding: 0; }
+.pv-toc .pv-toc { padding-inline-start: 18px; }
+.pv-toc-row {
+  display: flex; align-items: baseline; gap: 12px; width: 100%; padding: 10px 12px; text-align: start;
+  border: 0; border-radius: 10px; background: transparent; color: var(--text); font-size: 15px;
+}
+.pv-toc-row:hover:not(:disabled) { background: var(--surface-2); }
+.pv-toc-row:disabled { color: var(--faint); }
+.pv-toc.depth-0 > li > .pv-toc-row { font-weight: 650; }
+.pv-toc-title { flex: 1; }
+.pv-toc-page { color: var(--muted); font-variant-numeric: tabular-nums; font-size: 13px; }
+.pv-toc details > summary { display: flex; align-items: center; list-style: none; cursor: pointer; }
+.pv-toc details > summary::-webkit-details-marker { display: none; }
+.pv-caret { flex: none; width: 22px; height: 22px; display: grid; place-items: center; color: var(--muted); }
+.pv-caret::before { content: '▸'; transition: transform .15s; }
+[dir='rtl'] .pv-caret::before { content: '◂'; }
+details[open] > summary .pv-caret::before { transform: rotate(90deg); }
+[dir='rtl'] details[open] > summary .pv-caret::before { transform: rotate(-90deg); }
+.pv-toc details > summary .pv-toc-row { padding-inline-start: 4px; }

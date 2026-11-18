@@ -82,7 +82,7 @@ export async function clipFromRect(meta: DocMeta, pages: PageData[], index: numb
   const rect = clampRect(r, page);
   if (!text && page.bg.kind === 'pdf') text = await pdfTextIn(meta.id, page.bg.pdfPage, rect).catch(() => '');
   const clip: Clip = {
-    id: uid(), kind: 'clip', docId: meta.id, docTitle: meta.title, page: index, rect,
+    id: uid(), kind: 'clip', docId: meta.id, docTitle: meta.title, page: index, pageId: page.id, rect,
     image: await snapshot(meta, page, rect), text, note: '', createdAt: Date.now(),
   };
   await putClip(clip);
@@ -128,7 +128,7 @@ export async function saveVoiceMemo(meta: DocMeta, page: number, rec: { data: Ar
   const audioId = uid();
   await putFile(audioId, rec.data);
   const clip: Clip = {
-    id: uid(), kind: 'audio', docId: meta.id, docTitle: meta.title, page, note: '',
+    id: uid(), kind: 'audio', docId: meta.id, docTitle: meta.title, page, pageId: meta.pageIds[page], note: '',
     audioId, audioMime: rec.mime, duration: rec.duration, createdAt: Date.now(),
   };
   await putClip(clip);

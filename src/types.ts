@@ -59,6 +59,8 @@ export interface DocMeta {
   reading?: boolean;
   /** folder in the library; none = top level */
   folderId?: string;
+  /** bookmarked pages, by page id (survives reordering) */
+  bookmarks?: string[];
 }
 
 export interface Folder {
@@ -88,6 +90,8 @@ export interface Clip {
   docTitle: string;
   /** index into the document's pages */
   page: number;
+  /** id of that page, so the index can be corrected when pages are moved or deleted */
+  pageId?: string;
   /** region in page coordinates [x0, y0, x1, y1] */
   rect?: [number, number, number, number];
   /** JPEG data URL of the clipped region */
