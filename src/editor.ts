@@ -3,6 +3,7 @@ import { prepareImage, imageUrl, placeImage, dataUrlToBlob } from './pageImages'
 import { A4, uid } from './types';
 import { getPages, putDoc, putPages, deletePages, deleteFile, listClips, putClip, putFile } from './db';
 import { PagesView } from './pagesView';
+import { reminderDialog } from './reminders';
 import { moveItem, duplicatePage, remapClips, fileUnused } from './pageOps';
 import { drawStrokes, drawTemplate, drawPenSegments, drawHighlighterPath, inkColorForPaper, drawStroke } from './ink';
 import { drawPageContent, displayStroke, imageBitmapFor, clearImageCache, renderPageToCanvas } from './render';
@@ -233,6 +234,7 @@ export class Editor {
       h('div', { class: 'toggle-group' }, this.toggles.palm, this.toggles.spread, this.toggles.eye),
       this.toggles.notes,
       ...(this.opts.onSplit ? [btn(icons.split, t('splitView'), () => this.opts.onSplit!(), 'split-btn')] : []),
+      btn(icons.bell, t('reminders'), () => { void this.flush().then(() => reminderDialog(this.meta, this.currentPage())); }),
       btn(icons.share, t('share'), () => this.share()),
       btn(icons.settings, t('settings'), () => openSettings(() => this.onSettingsChanged())),
     );

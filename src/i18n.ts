@@ -327,6 +327,21 @@ const dict = {
   lockOff: { ar: 'إيقاف القفل وإزالة كل الأقفال', de: 'Sperre ausschalten (alle Sperren entfernen)', en: 'Turn off lock (remove all locks)' },
   lockIsOff: { ar: 'القفل غير مفعّل', de: 'Sperre ist aus', en: 'Lock is off' },
   checklist: { ar: 'قائمة مهام', de: 'Checkliste', en: 'Checklist' },
+  reminders: { ar: 'تذكير', de: 'Erinnerungen', en: 'Reminders' },
+  newReminder: { ar: 'تذكير جديد', de: 'Neue Erinnerung', en: 'New reminder' },
+  addReminder: { ar: 'إضافة تذكير', de: 'Erinnerung hinzufügen', en: 'Add reminder' },
+  noReminders: { ar: 'لا توجد تذكيرات لهذا الملف', de: 'Keine Erinnerungen für dieses Dokument', en: 'No reminders for this document' },
+  reminderWhen: { ar: 'الموعد', de: 'Wann', en: 'When' },
+  reminderRepeat: { ar: 'التكرار', de: 'Wiederholen', en: 'Repeat' },
+  repeatNone: { ar: 'مرة واحدة', de: 'Einmal', en: 'Once' },
+  repeatDaily: { ar: 'يوميًا', de: 'Täglich', en: 'Daily' },
+  repeatWeekly: { ar: 'أسبوعيًا', de: 'Wöchentlich', en: 'Weekly' },
+  reminderNote: { ar: 'ملاحظة', de: 'Notiz', en: 'Note' },
+  reminderNoteHint: { ar: 'مثلاً: راجع الفصل 3', de: 'z. B. Kapitel 3 wiederholen', en: 'e.g. Review chapter 3' },
+  reminderSet: { ar: 'سيصلك تذكير', de: 'Erinnerung am', en: 'Reminder on' },
+  reminderPast: { ar: 'اختر وقتًا في المستقبل', de: 'Bitte eine Zeit in der Zukunft wählen', en: 'Choose a time in the future' },
+  reminderNoPermission: { ar: 'اسمح للتطبيق بالإشعارات من إعدادات Android', de: 'Benachrichtigungen in den Android-Einstellungen erlauben', en: 'Allow notifications in Android settings' },
+  reminderNativeOnly: { ar: 'التذكيرات تعمل في تطبيق Android فقط', de: 'Erinnerungen gibt es nur in der Android-App', en: 'Reminders work in the Android app only' },
 } as const;
 
 export type Key = keyof typeof dict;

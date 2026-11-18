@@ -9,6 +9,7 @@ import { icons } from './icons';
 import { h, modal } from './ui';
 import { Capacitor } from '@capacitor/core';
 import { ensureUnlocked } from './lock';
+import { reconcileReminders, onReminderTap } from './reminders';
 
 applyLang();
 applyTheme();
@@ -171,6 +172,9 @@ if (Capacitor.isNativePlatform()) {
 }
 
 showLibrary();
+// reminders: tapping one opens its page; after a reinstall or restore they are scheduled again
+void onReminderTap((docId, page) => void openDocAt(docId, page));
+void reconcileReminders();
 
 // The Android app ships its files inside the APK, so only the web version needs a service worker.
 if ('serviceWorker' in navigator && import.meta.env.PROD && !Capacitor.isNativePlatform()) {

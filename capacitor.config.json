@@ -11,6 +11,10 @@
     "SystemBars": {
       "insetsHandling": "css",
       "initialViewportFitValueHint": "cover"
+    },
+    "LocalNotifications": {
+      "smallIcon": "ic_stat_alnai",
+      "iconColor": "#06b6d4"
     }
   }
 }

@@ -1,6 +1,8 @@
 import { listDocs, putDoc, putPages, deleteDoc, getPages, listClips, listFolders, putFolder, deleteFolder } from './db';
 import { searchContent, indexDoc, unindexed, type Hit } from './search';
 import { createBackup, lastBackup } from './backup';
+import { reminderDialog, cancelDocReminders } from './reminders';
+import { activeReminders } from './reminderTime';
 import { setLockedFolders, isLocked, isHidden, folderHidden, ensureFolderUnlocked, toggleDocLock, toggleFolderLock, lockEnabled } from './lock';
 import { A4, uid, DOC_COLORS, type DocMeta, type PageData, type Template, type PaperColor, type Folder, type DocColor } from './types';
 import { sortDocs, allTags, cleanTags, SORT_MODES, type SortMode } from './libraryOrder';
@@ -159,6 +161,7 @@ export class Library {
         h('span', { class: `badge ${d.kind}` }, t(d.kind === 'pdf' ? 'kindPdf' : d.kind === 'images' ? 'kindImages' : 'kindNotebook')),
         d.pinned ? pin : '',
         isLocked(d) ? h('span', { class: 'card-lock', title: t('locked'), 'aria-label': t('locked') }) : '',
+        activeReminders(d.reminders).length ? h('span', { class: 'card-bell', title: t('reminders'), 'aria-label': t('reminders') }) : '',
         h('div', { class: 'card-meta' },
           h('div', { class: 'card-title' }, d.color ? h('i', { class: `cdot c-${d.color}`, 'aria-hidden': 'true' }) : '', d.title),
           h('div', { class: 'card-sub' }, `${d.pageIds.length} ${t('pages')} · ${new Date(d.updatedAt).toLocaleDateString(document.documentElement.lang)}`),
@@ -180,6 +183,7 @@ export class Library {
       h('button', { value: 'pin' }, d.pinned ? t('unpin') : t('pin')),
       h('button', { value: 'color' }, t('colorLabel')),
       h('button', { value: 'tags' }, t('tags')),
+      h('button', { value: 'remind' }, t('reminders')),
       h('button', { value: 'lock' }, d.locked && lockEnabled() ? t('unlockDoc') : t('lockDoc')),
       h('button', { value: 'move' }, t('moveToFolder')),
       h('button', { value: 'delete', class: 'danger' }, t('delete')),
@@ -205,11 +209,14 @@ export class Library {
         await this.colorDialog(d);
       } else if (v === 'tags') {
         await this.tagsDialog(d);
+      } else if (v === 'remind') {
+        await reminderDialog(d, d.lastPage ?? 0);
       } else if (v === 'lock') {
         await toggleDocLock(d);
       } else if (v === 'move') {
         await this.moveDialog(d);
       } else if (v === 'delete' && confirm(t('confirmDelete'))) {
+        await cancelDocReminders(d);
         await deleteDoc(d);
       }
       await this.refresh();

@@ -657,3 +657,16 @@ details[open] > summary .pv-caret::before { transform: rotate(90deg); }
 .pin-input { font-size: 24px; letter-spacing: .4em; text-align: center; height: 52px !important; }
 .pin-err { margin: 0; min-height: 1.2em; color: var(--danger); font-size: 13.5px; }
 .danger-text { color: var(--danger); }
+
+/* ---------------------------------------------------------------- reminders */
+.card-bell {
+  position: absolute; top: 80px; inset-inline-start: 8px; width: 26px; height: 26px; border-radius: 50%;
+  background: rgb(5 8 17 / .65) center / 15px no-repeat
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fbbf24' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9'/%3E%3Cpath d='M10.3 21a1.9 1.9 0 0 0 3.4 0'/%3E%3C/svg%3E");
+}
+.card-bell:only-of-type, .card:not(:has(.card-lock)) .card-bell { top: 44px; }
+.rem-dlg { width: min(460px, calc(100vw - 32px)); }
+.rem-list { display: flex; flex-direction: column; gap: 6px; }
+.rem-item { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 12px; border-radius: 10px; background: var(--surface-2); }
+.rem-item b { display: block; font-size: 14px; }
+.rem-item small { color: var(--muted); }

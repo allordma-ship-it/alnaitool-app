@@ -81,6 +81,18 @@ export interface DocMeta {
   tags?: string[];
   /** needs fingerprint or PIN to open */
   locked?: boolean;
+  /** notifications that open this document at a page */
+  reminders?: Reminder[];
+}
+
+export interface Reminder {
+  /** notification id (31-bit, as Android wants) */
+  id: number;
+  /** first (or only) time, ms */
+  at: number;
+  page: number;
+  note: string;
+  repeat: 'none' | 'daily' | 'weekly';
 }
 
 export const DOC_COLORS = ['red', 'orange', 'yellow', 'green', 'blue', 'purple'] as const;
