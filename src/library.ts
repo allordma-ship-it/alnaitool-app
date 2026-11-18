@@ -3,6 +3,10 @@ import { searchContent, indexDoc, unindexed, type Hit } from './search';
 import { createBackup, lastBackup } from './backup';
 import { reminderDialog, cancelDocReminders } from './reminders';
 import { activeReminders } from './reminderTime';
+import { templateFromFile, templateRef, pageFromTemplate } from './templates';
+import { imageUrl } from './pageImages';
+import { listTemplates, deleteTemplate } from './db';
+import type { CustomTemplate } from './types';
 import { setLockedFolders, isLocked, isHidden, folderHidden, ensureFolderUnlocked, toggleDocLock, toggleFolderLock, lockEnabled } from './lock';
 import { A4, uid, DOC_COLORS, type DocMeta, type PageData, type Template, type PaperColor, type Folder, type DocColor } from './types';
 import { sortDocs, allTags, cleanTags, SORT_MODES, type SortMode } from './libraryOrder';
@@ -67,7 +71,7 @@ export class Library {
         h('div', { class: 'brand' }, mark, h('div', {}, h('h1', {}, t('appName')), h('p', { class: 'tagline' }, t('tagline')))),
         h('div', { class: 'lib-actions' },
           search,
-          btn(icons.plus, t('newNotebook'), () => this.newNotebookDialog(), 'primary'),
+          btn(icons.plus, t('newNotebook'), () => void this.newNotebookDialog(), 'primary'),
           btn(icons.file, t('importFile'), () => fileInput.click()),
           settingsBtn,
         ),
@@ -223,9 +227,11 @@ export class Library {
     });
   }
 
-  private newNotebookDialog() {
+  private async newNotebookDialog() {
     let template: Template = 'lined';
     let paper: PaperColor = 'white';
+    let custom: CustomTemplate | null = null;
+    let customs = await listTemplates();
     const preview = (tp: Template, pp: PaperColor) => {
       const c = h('canvas', { width: 90, height: 127 });
       const ctx = c.getContext('2d')!;
@@ -237,10 +243,48 @@ export class Library {
     const renderTpls = () => {
       tplRow.replaceChildren();
       for (const tp of ['blank', 'lined', 'grid', 'dots', 'cornell'] as Template[]) {
-        const b = h('button', { type: 'button', class: `tpl ${tp === template ? 'active' : ''}` }, preview(tp, paper), h('span', {}, t(tp)));
-        b.addEventListener('click', () => { template = tp; renderTpls(); });
+        const b = h('button', { type: 'button', class: `tpl ${!custom && tp === template ? 'active' : ''}` }, preview(tp, paper), h('span', {}, t(tp)));
+        b.addEventListener('click', () => { template = tp; custom = null; renderTpls(); });
         tplRow.append(b);
       }
+      // your own templates: a page, a picture or a PDF page
+      for (const ct of customs) {
+        const img = h('img', { alt: '', class: 'tpl-img' });
+        void imageUrl(ct.fileId, ct.mime).then((u) => { img.src = u; }).catch(() => {});
+        const del = h('span', { class: 'tpl-del', role: 'button', 'aria-label': t('delete'), title: t('delete') }, '×');
+        del.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          if (!confirm(`${t('deleteTemplate')}: ${ct.name}?`)) return;
+          await deleteTemplate(ct.id);
+          customs = customs.filter((x) => x.id !== ct.id);
+          if (custom?.id === ct.id) custom = null;
+          renderTpls();
+        });
+        const b = h('button', { type: 'button', class: `tpl custom ${custom?.id === ct.id ? 'active' : ''}` },
+          h('div', { class: 'tpl-frame' }, img), h('span', {}, ct.name), del);
+        b.addEventListener('click', () => { custom = ct; renderTpls(); });
+        tplRow.append(b);
+      }
+      const add = h('button', { type: 'button', class: 'tpl add' }, h('div', { class: 'tpl-frame plus' }, '+'), h('span', {}, t('templateFromFile')));
+      add.addEventListener('click', () => {
+        const input = h('input', { type: 'file', accept: 'image/*,application/pdf,.pdf', hidden: true });
+        input.addEventListener('change', async () => {
+          const f = input.files?.[0];
+          input.remove();
+          if (!f) return;
+          try {
+            custom = await templateFromFile(f);
+            customs = [custom, ...customs];
+            renderTpls();
+          } catch (err) {
+            console.error(err);
+            toast(`${t('fileError')}: ${f.name}`);
+          }
+        });
+        document.body.append(input);
+        input.click();
+      });
+      tplRow.append(add);
     };
     const paperRow = h('div', { class: 'seg' });
     const renderPaper = () => {
@@ -266,11 +310,13 @@ export class Library {
     );
     modal(form).closed.then(async (v) => {
       if (v !== 'create') return;
-      const page: PageData = { id: uid(), w: A4.w, h: A4.h, bg: { kind: 'template', template, paper, rtl: settings.lang === 'ar' }, strokes: [] };
+      const ref = custom ? templateRef(custom) : null;
+      const page: PageData = ref ? pageFromTemplate(ref) : { id: uid(), w: A4.w, h: A4.h, bg: { kind: 'template', template, paper, rtl: settings.lang === 'ar' }, strokes: [] };
       const now = Date.now();
       const doc: DocMeta = {
         id: uid(), title: title.value.trim() || t('untitled'), kind: 'notebook',
         createdAt: now, updatedAt: now, pageIds: [page.id], template, paper,
+        ...(ref ? { customTemplate: ref } : {}),
         ...(this.folderId ? { folderId: this.folderId } : {}),
       };
       await putPages([page]);

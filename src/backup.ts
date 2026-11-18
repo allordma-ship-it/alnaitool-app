@@ -2,7 +2,7 @@ import { Capacitor } from '@capacitor/core';
 import { dumpAll, restoreAll } from './db';
 import { encodeBackup, decodeBackup, chunks, BackupError } from './backupFormat';
 import { toBase64 } from './share';
-import type { DocMeta, PageData, Clip, Folder } from './types';
+import type { DocMeta, PageData, Clip, Folder, CustomTemplate } from './types';
 import { t } from './i18n';
 import { toast } from './ui';
 
@@ -71,7 +71,8 @@ export async function restoreBackup(file: File): Promise<boolean> {
   if (!confirm(`${t('restoreConfirm')}\n\n${when}\n${b.docs.length} ${t('documents')} · ${b.clips.length} ${t('clipsCount')}`)) return false;
   toast(t('loading'));
   await restoreAll({
-    docs: b.docs as DocMeta[], pages: b.pages as PageData[], clips: b.clips as Clip[], folders: b.folders as Folder[], files: b.files,
+    docs: b.docs as DocMeta[], pages: b.pages as PageData[], clips: b.clips as Clip[], folders: b.folders as Folder[],
+    templates: (b.templates ?? []) as CustomTemplate[], files: b.files,
   });
   toast(t('restoreDone'));
   return true;

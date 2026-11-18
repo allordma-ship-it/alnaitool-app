@@ -1,10 +1,10 @@
 import { openDB, type IDBPDatabase } from 'idb';
-import type { DocMeta, PageData, Clip, Folder, TextIndex } from './types';
+import type { DocMeta, PageData, Clip, Folder, TextIndex, CustomTemplate } from './types';
 
 let dbp: Promise<IDBPDatabase> | null = null;
 
 function db() {
-  dbp ??= openDB('alnai-notes', 3, {
+  dbp ??= openDB('alnai-notes', 4, {
     upgrade(d, oldVersion) {
       if (oldVersion < 1) {
         d.createObjectStore('docs', { keyPath: 'id' });
@@ -16,6 +16,7 @@ function db() {
         d.createObjectStore('folders', { keyPath: 'id' });
         d.createObjectStore('text', { keyPath: 'docId' });
       }
+      if (oldVersion < 4) d.createObjectStore('templates', { keyPath: 'id' });
     },
   });
   return dbp;
@@ -119,29 +120,43 @@ export async function putTextIndex(ix: TextIndex) {
 /** Everything the user made, for a backup. The search index is left out: it is rebuilt from the PDFs. */
 export async function dumpAll() {
   const d = await db();
-  const tx = d.transaction(['docs', 'pages', 'files', 'clips', 'folders']);
+  const tx = d.transaction(['docs', 'pages', 'files', 'clips', 'folders', 'templates']);
   const files = tx.objectStore('files');
-  const [docs, pages, clips, folders, fileKeys, fileVals] = await Promise.all([
+  const [docs, pages, clips, folders, templates, fileKeys, fileVals] = await Promise.all([
     tx.objectStore('docs').getAll(), tx.objectStore('pages').getAll(), tx.objectStore('clips').getAll(),
-    tx.objectStore('folders').getAll(), files.getAllKeys(), files.getAll(),
+    tx.objectStore('folders').getAll(), tx.objectStore('templates').getAll(), files.getAllKeys(), files.getAll(),
   ]);
   await tx.done;
   return {
     docs: docs as DocMeta[], pages: pages as PageData[], clips: clips as Clip[], folders: folders as Folder[],
+    templates: templates as CustomTemplate[],
     files: fileKeys.map((k, i) => ({ id: String(k), bytes: new Uint8Array(fileVals[i] as ArrayBuffer) })),
   };
 }
 
 /** Adds a backup to the library. Items with the same id are replaced; nothing else is touched. */
-export async function restoreAll(b: { docs: DocMeta[]; pages: PageData[]; clips: Clip[]; folders: Folder[]; files: { id: string; bytes: Uint8Array }[] }) {
+export async function restoreAll(b: { docs: DocMeta[]; pages: PageData[]; clips: Clip[]; folders: Folder[]; templates?: CustomTemplate[]; files: { id: string; bytes: Uint8Array }[] }) {
   const d = await db();
-  const tx = d.transaction(['docs', 'pages', 'files', 'clips', 'folders'], 'readwrite');
+  const tx = d.transaction(['docs', 'pages', 'files', 'clips', 'folders', 'templates'], 'readwrite');
   await Promise.all([
     ...b.folders.map((x) => tx.objectStore('folders').put(x)),
+    ...(b.templates ?? []).map((x) => tx.objectStore('templates').put(x)),
     ...b.pages.map((x) => tx.objectStore('pages').put(x)),
     ...b.clips.map((x) => tx.objectStore('clips').put(x)),
     ...b.files.map((f) => tx.objectStore('files').put(f.bytes.slice().buffer, f.id)),
     ...b.docs.map((x) => tx.objectStore('docs').put(x)),
     tx.done,
   ]);
+}
+
+export async function listTemplates(): Promise<CustomTemplate[]> {
+  const all = (await (await db()).getAll('templates')) as CustomTemplate[];
+  return all.sort((a, b) => b.createdAt - a.createdAt);
+}
+export async function putTemplate(tp: CustomTemplate) {
+  await (await db()).put('templates', tp);
+}
+/** Forgets a template. Its picture stays: pages made from it still show it. */
+export async function deleteTemplate(id: string) {
+  await (await db()).delete('templates', id);
 }

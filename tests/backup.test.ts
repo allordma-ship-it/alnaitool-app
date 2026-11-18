@@ -14,6 +14,7 @@ describe('backup format', () => {
     pages: [{ id: 'p1', strokes: [{ pts: [1, 2, 0.5] }] }],
     clips: [{ id: 'c1', note: 'Frage?' }],
     folders: [{ id: 'f1', name: 'Pneumologie' }],
+    templates: [{ id: 'tpl_1', name: 'Planner', fileId: 'tpl_1' }],
     files: [{ id: 'd1', bytes: new Uint8Array([37, 80, 68, 70]) }, { id: 'a1', bytes: new Uint8Array(70_000).fill(7) }],
   };
 
@@ -24,9 +25,15 @@ describe('backup format', () => {
     expect(b.pages).toEqual(content.pages);
     expect(b.clips).toEqual(content.clips);
     expect(b.folders).toEqual(content.folders);
+    expect(b.templates).toEqual(content.templates);
     expect(b.files.map((f) => f.id)).toEqual(['d1', 'a1']);
     expect([...b.files[0].bytes]).toEqual([37, 80, 68, 70]);
     expect(b.files[1].bytes.byteLength).toBe(70_000);
+  });
+
+  it('reads older backups without templates', () => {
+    const old = decodeBackup(join(encodeBackup({ ...content, templates: undefined })));
+    expect(old.templates).toEqual([]);
   });
 
   it('rejects other files and cut-off backups', () => {

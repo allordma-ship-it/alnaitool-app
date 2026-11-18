@@ -83,7 +83,23 @@ export interface DocMeta {
   locked?: boolean;
   /** notifications that open this document at a page */
   reminders?: Reminder[];
+  /** new pages use this picture as their paper instead of a built-in template */
+  customTemplate?: PageTemplateRef;
 }
+
+/** A page look made by the user (from a page, a picture or a PDF page). Its file id starts with "tpl_". */
+export interface CustomTemplate {
+  id: string;
+  name: string;
+  fileId: string;
+  mime: string;
+  /** page size in points (A4 width, height from the picture's shape) */
+  w: number;
+  h: number;
+  createdAt: number;
+}
+
+export type PageTemplateRef = Pick<CustomTemplate, 'fileId' | 'mime' | 'w' | 'h' | 'name'>;
 
 export interface Reminder {
   /** notification id (31-bit, as Android wants) */

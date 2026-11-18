@@ -344,6 +344,11 @@ const dict = {
   reminderNativeOnly: { ar: 'التذكيرات تعمل في تطبيق Android فقط', de: 'Erinnerungen gibt es nur in der Android-App', en: 'Reminders work in the Android app only' },
   openLink: { ar: 'فتح هذا الرابط في المتصفح؟', de: 'Diesen Link im Browser öffnen?', en: 'Open this link in the browser?' },
   backToPage: { ar: 'رجوع إلى الصفحة', de: 'Zurück zu Seite', en: 'Back to page' },
+  templateName: { ar: 'اسم القالب', de: 'Name der Vorlage', en: 'Template name' },
+  templateSaved: { ar: 'حُفظ القالب. ستجده عند إنشاء دفتر جديد', de: 'Vorlage gespeichert – sie steht beim neuen Notizbuch bereit', en: 'Template saved – find it when you create a notebook' },
+  saveAsTemplate: { ar: 'حفظ كقالب', de: 'Als Vorlage speichern', en: 'Save as template' },
+  templateFromFile: { ar: 'من ملف', de: 'Aus Datei', en: 'From file' },
+  deleteTemplate: { ar: 'حذف القالب', de: 'Vorlage löschen', en: 'Delete template' },
 } as const;
 
 export type Key = keyof typeof dict;

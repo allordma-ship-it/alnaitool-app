@@ -17,6 +17,7 @@ export interface PagesHost {
   insertAfter(i: number): Promise<void>;
   remove(i: number): Promise<void>;
   toggleBookmark(i: number): void;
+  saveTemplate(i: number): Promise<void>;
 }
 
 type Tab = 'pages' | 'contents' | 'bookmarks';
@@ -219,6 +220,7 @@ export class PagesView {
       h('h2', {}, `${t('page')} ${i + 1}`),
       item(icons.copy, t('duplicatePage'), 'dup'),
       item(icons.plus, t('insertPage'), 'insert'),
+      item(icons.pages, t('saveAsTemplate'), 'template'),
       ...(i > 0 ? [item(icons.prev, t('moveToStart'), 'first', 'flip-rtl')] : []),
       ...(i < this.host.pages().length - 1 ? [item(icons.next, t('moveToEnd'), 'last', 'flip-rtl')] : []),
       ...(many ? [item(icons.trash, t('deletePage'), 'delete', 'danger')] : []),
@@ -227,6 +229,7 @@ export class PagesView {
     void modal(form).closed.then(async (v) => {
       if (v === 'dup') await this.host.duplicate(i);
       else if (v === 'insert') await this.host.insertAfter(i);
+      else if (v === 'template') { await this.host.saveTemplate(i); return; }
       else if (v === 'first') await this.host.move(i, 0);
       else if (v === 'last') await this.host.move(i, this.host.pages().length - 1);
       else if (v === 'delete') {

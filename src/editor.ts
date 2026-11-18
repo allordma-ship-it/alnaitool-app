@@ -4,6 +4,7 @@ import { A4, uid } from './types';
 import { getPages, putDoc, putPages, deletePages, deleteFile, listClips, putClip, putFile } from './db';
 import { PagesView } from './pagesView';
 import { reminderDialog } from './reminders';
+import { isTemplateFile, pageFromTemplate, templateFromPage } from './templates';
 import { moveItem, duplicatePage, remapClips, fileUnused } from './pageOps';
 import { drawStrokes, drawTemplate, drawPenSegments, drawHighlighterPath, inkColorForPaper, drawStroke } from './ink';
 import { drawPageContent, displayStroke, imageBitmapFor, clearImageCache, renderPageToCanvas } from './render';
@@ -2245,7 +2246,7 @@ export class Editor {
     // a duplicated page shares its pictures: only delete one when no page shows it any more
     const fids = [...(removed.bg.kind === 'image' ? [removed.bg.fileId] : []), ...(removed.images ?? []).map((im) => im.fileId)];
     for (const fid of new Set(fids)) {
-      if (!fileUnused(this.pages, fid)) continue;
+      if (!fileUnused(this.pages, fid) || isTemplateFile(fid)) continue;
       this.meta.fileIds = (this.meta.fileIds ?? []).filter((f) => f !== fid);
       await deleteFile(fid);
     }
@@ -2275,6 +2276,7 @@ export class Editor {
   }
 
   private blankPageLike(ref?: PageData): PageData {
+    if (this.meta.customTemplate) return pageFromTemplate(this.meta.customTemplate);
     return {
       id: uid(),
       w: ref?.bg.kind === 'template' ? ref.w : A4.w,
@@ -2331,6 +2333,12 @@ export class Editor {
         await this.setPages(next, i + 1, page);
       },
       remove: (i) => this.deletePageAt(i),
+      saveTemplate: async (i) => {
+        const name = prompt(t('templateName'), `${this.meta.title} · ${i + 1}`)?.trim();
+        if (!name) return;
+        await templateFromPage(this.meta, this.pages[i], name);
+        toast(t('templateSaved'));
+      },
       toggleBookmark: (i) => this.toggleBookmark(i),
     }, () => { this.pagesView = null; });
     this.pagesView.open();

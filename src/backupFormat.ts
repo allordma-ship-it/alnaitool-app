@@ -13,6 +13,8 @@ export interface BackupContent<D = unknown, P = unknown, C = unknown, F = unknow
   pages: P[];
   clips: C[];
   folders: F[];
+  /** custom page templates (older backups have none) */
+  templates?: unknown[];
   files: { id: string; bytes: Uint8Array }[];
 }
 
@@ -25,7 +27,7 @@ export interface Backup<D = unknown, P = unknown, C = unknown, F = unknown> exte
 export function encodeBackup(b: BackupContent, createdAt = Date.now()): Uint8Array[] {
   const header = {
     version: 1, createdAt,
-    docs: b.docs, pages: b.pages, clips: b.clips, folders: b.folders,
+    docs: b.docs, pages: b.pages, clips: b.clips, folders: b.folders, templates: b.templates ?? [],
     files: b.files.map((f) => ({ id: f.id, len: f.bytes.byteLength })),
   };
   const json = new TextEncoder().encode(JSON.stringify(header));
@@ -53,7 +55,8 @@ export function decodeBackup(buf: ArrayBuffer): Backup {
   });
   return {
     version: 1, createdAt: header.createdAt,
-    docs: header.docs ?? [], pages: header.pages ?? [], clips: header.clips ?? [], folders: header.folders ?? [], files,
+    docs: header.docs ?? [], pages: header.pages ?? [], clips: header.clips ?? [], folders: header.folders ?? [],
+    templates: header.templates ?? [], files,
   };
 }
 
