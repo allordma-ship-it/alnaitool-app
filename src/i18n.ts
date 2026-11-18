@@ -256,6 +256,14 @@ const dict = {
   moveToStart: { ar: 'نقل إلى البداية', de: 'An den Anfang', en: 'Move to start' },
   moveToEnd: { ar: 'نقل إلى النهاية', de: 'Ans Ende', en: 'Move to end' },
   close: { ar: 'إغلاق', de: 'Schließen', en: 'Close' },
+  splitView: { ar: 'شاشة مقسومة', de: 'Geteilte Ansicht', en: 'Split view' },
+  splitHint: {
+    ar: 'افتح دفترًا أو ملفًا آخر بجانب هذا المستند. اسحب الفاصل لتغيير العرض، وزر الرجوع في الجهة الثانية يغلقها.',
+    de: 'Ein Notizbuch oder anderes Dokument neben diesem öffnen. Den Trenner ziehen, um die Breite zu ändern; „Zurück“ auf der zweiten Seite schließt sie.',
+    en: 'Open a notebook or another document beside this one. Drag the divider to resize; Back on the second side closes it.',
+  },
+  newNotesFor: { ar: 'دفتر ملاحظات جديد لهذا المستند', de: 'Neues Notizbuch für dieses Dokument', en: 'New notebook for this document' },
+  notesTitle: { ar: 'ملاحظات', de: 'Notizen', en: 'Notes' },
 } as const;
 
 export type Key = keyof typeof dict;

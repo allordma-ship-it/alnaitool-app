@@ -550,3 +550,32 @@ input[type='range'] { accent-color: var(--accent); }
 details[open] > summary .pv-caret::before { transform: rotate(90deg); }
 [dir='rtl'] details[open] > summary .pv-caret::before { transform: rotate(-90deg); }
 .pv-toc details > summary .pv-toc-row { padding-inline-start: 4px; }
+
+/* ---------------------------------------------------------------- split view: two documents side by side */
+.split-root { display: flex; height: 100%; width: 100%; }
+.split-root > .editor { flex: 1 1 0; min-width: 0; min-height: 0; }
+.split-root > .editor.side-pane { flex: 0 0 calc(var(--side, .5) * 100% - 7px); }
+.split-divider {
+  flex: none; width: 14px; position: relative; cursor: col-resize; touch-action: none;
+  background: var(--surface); border-inline: 1px solid var(--line);
+}
+.split-divider::after {
+  content: ''; position: absolute; inset: 50% auto auto 50%; width: 4px; height: 44px; border-radius: 2px;
+  transform: translate(-50%, -50%); background: var(--faint);
+}
+.split-divider:hover::after, .split-divider:focus-visible::after { background: var(--accent); }
+@media (orientation: portrait) {
+  .split-root { flex-direction: column; }
+  .split-root > .editor.side-pane { flex-basis: calc(var(--side, .5) * 100% - 7px); }
+  .split-divider { width: auto; height: 14px; cursor: row-resize; border-inline: 0; border-block: 1px solid var(--line); }
+  .split-divider::after { width: 44px; height: 4px; }
+}
+/* half a screen is narrow: keep the header to the essentials */
+.split-root .topbar .hud, .split-root .topbar .brand-mark, .split-root .topbar .labelled > span { display: none; }
+.split-root .doc-head { min-width: 0; }
+.split-pick { width: min(520px, calc(100vw - 32px)); }
+.split-list { display: flex; flex-direction: column; gap: 6px; max-height: 46vh; overflow: auto; }
+.split-item { height: auto !important; padding: 10px 14px !important; }
+.split-item span { display: flex; flex-direction: column; min-width: 0; }
+.split-item b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.split-item small { color: var(--muted); font-weight: 500; }

@@ -121,9 +121,21 @@ export class Editor {
   private disposers: (() => void)[] = [];
   private closed = false;
 
-  constructor(private meta: DocMeta, private onClose: () => void, private openDocAt?: (docId: string, page: number) => void) {
-    this.root = h('div', { class: 'editor' });
+  /** the editor the user touched last: with two documents side by side, only it gets keyboard shortcuts */
+  static active: Editor | null = null;
+
+  constructor(
+    private meta: DocMeta,
+    private onClose: () => void,
+    private openDocAt?: (docId: string, page: number) => void,
+    private opts: { onSplit?: () => void; side?: boolean } = {},
+  ) {
+    this.root = h('div', { class: `editor ${opts.side ? 'side-pane' : ''}` });
+    Editor.active ??= this;
+    this.root.addEventListener('pointerdown', () => { Editor.active = this; }, { capture: true });
   }
+
+  get docId() { return this.meta.id; }
 
   async open() {
     this.buildUI();
@@ -211,6 +223,7 @@ export class Editor {
       this.readBtn,
       h('div', { class: 'toggle-group' }, this.toggles.palm, this.toggles.spread, this.toggles.eye),
       this.toggles.notes,
+      ...(this.opts.onSplit ? [btn(icons.split, t('splitView'), () => this.opts.onSplit!(), 'split-btn')] : []),
       btn(icons.share, t('share'), () => this.share()),
       btn(icons.settings, t('settings'), () => openSettings(() => this.onSettingsChanged())),
     );
@@ -291,6 +304,10 @@ export class Editor {
     on(vp, 'contextmenu', (e: Event) => e.preventDefault());
     on(vp, 'wheel', (e: WheelEvent) => this.onWheel(e), { passive: false });
     on(window, 'resize', () => this.resize());
+    // the pane changes size without a window resize when a second document opens beside it
+    const vro = new ResizeObserver(() => { if (this.viewport.clientWidth && Math.abs(this.viewport.clientWidth - this.vw) > 1) this.resize(); });
+    vro.observe(this.viewport);
+    this.disposers.push(() => vro.disconnect());
     on(window, 'keydown', (e: KeyboardEvent) => this.onKey(e));
     on(document, 'visibilitychange', () => { if (document.hidden) void this.flush(); });
     on(window, 'pagehide', () => void this.flush());
@@ -2044,6 +2061,7 @@ export class Editor {
   }
 
   private onKey(e: KeyboardEvent) {
+    if (Editor.active && Editor.active !== this && Editor.active.root.isConnected) return;
     if ((e.target as HTMLElement)?.closest?.('input,textarea,dialog')) return;
     const mod = e.ctrlKey || e.metaKey;
     if (mod && e.key.toLowerCase() === 'z') { e.preventDefault(); e.shiftKey ? this.redo() : this.undo(); }
@@ -2065,6 +2083,7 @@ export class Editor {
   async close() {
     if (this.closed) return;
     this.closed = true;
+    if (Editor.active === this) Editor.active = null;
     this.finishEditing();
     this.pagesView?.close();
     if (this.recorder.recording) await this.toggleRecording();
