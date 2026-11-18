@@ -2,7 +2,8 @@ name: Build Android APK
 
 on:
   push:
-    branches: [main, 'ccr-*']
+    # signing-secrets: test build only (checks the signing secrets), no release
+    branches: [main, 'ccr-*', 'signing-secrets']
   workflow_dispatch:
 
 permissions:
@@ -57,6 +58,7 @@ jobs:
           name: AlnaiNotes-apk
           path: AlnaiNotes-*.apk
       - name: Publish as GitHub release
+        if: github.ref_name != 'signing-secrets'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
