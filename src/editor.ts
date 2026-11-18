@@ -125,11 +125,12 @@ export class Editor {
     this.buildUI();
     this.pages = await getPages(this.meta.pageIds);
     this.pages = this.pages.filter(Boolean);
+    // read before the first layout: it updates lastPage to the page in view (the first one)
+    const lp = this.meta.lastPage ?? 0;
     this.relayout();
     requestAnimationFrame(() => {
       this.resize();
       this.fitWidth();
-      const lp = this.meta.lastPage ?? 0;
       if (lp > 0 && this.layout[lp]) {
         this.cam.ty = 16 - this.layout[lp].y * this.cam.s;
         this.clampCamera();

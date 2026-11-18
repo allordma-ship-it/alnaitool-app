@@ -57,6 +57,24 @@ export interface DocMeta {
   fileIds?: string[];
   /** open in reading mode (no drawing) */
   reading?: boolean;
+  /** folder in the library; none = top level */
+  folderId?: string;
+}
+
+export interface Folder {
+  id: string;
+  name: string;
+  createdAt: number;
+}
+
+/** Searchable text of a PDF document, extracted once and kept so library search is instant. */
+export interface TextIndex {
+  docId: string;
+  /** text of each PDF page, by PDF page number - 1 */
+  byPdfPage: string[];
+  /** page index -> PDF page number (0 = not a PDF page), valid while `key` matches the doc's pageIds */
+  pageMap: number[];
+  key: string;
 }
 
 /**

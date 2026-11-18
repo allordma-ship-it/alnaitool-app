@@ -2,6 +2,7 @@ import { settings, saveSettings, type ButtonAction, type Lang } from './settings
 import { t, applyLang, applyTheme, type Key } from './i18n';
 import { h, modal } from './ui';
 import { drawPenSegments } from './ink';
+import { createBackup, restoreBackup, lastBackup } from './backup';
 
 function select<T extends string>(label: Key, value: T, options: [T, string][], onChange: (v: T) => void) {
   const sel = h('select');
@@ -87,6 +88,35 @@ function penTester() {
   return h('div', { class: 'pen-test-wrap' }, h('h3', {}, t('penTest')), h('p', { class: 'hint' }, t('penTestHint')), canvas, out);
 }
 
+function backupSection() {
+  const last = lastBackup();
+  const status = h('p', { class: 'hint' },
+    last ? `${t('lastBackup')}: ${new Date(last).toLocaleString(document.documentElement.lang)}` : t('neverBackedUp'));
+  const file = h('input', { type: 'file', hidden: true });
+  file.addEventListener('change', async () => {
+    const f = file.files?.[0];
+    file.value = '';
+    if (f && (await restoreBackup(f))) location.reload();
+  });
+  const make = h('button', { type: 'button', class: 'primary' }, t('createBackup'));
+  make.addEventListener('click', async () => {
+    make.disabled = true;
+    try {
+      await createBackup();
+      const now = lastBackup();
+      if (now) status.textContent = `${t('lastBackup')}: ${new Date(now).toLocaleString(document.documentElement.lang)}`;
+    } catch (e) {
+      console.error(e);
+      alert(String(e));
+    } finally {
+      make.disabled = false;
+    }
+  });
+  const restore = h('button', { type: 'button' }, t('restoreBackup'));
+  restore.addEventListener('click', () => file.click());
+  return h('div', { class: 'backup' }, h('p', { class: 'hint' }, t('backupHint')), status, h('div', { class: 'actions start' }, make, restore), file);
+}
+
 export function openSettings(onChange: () => void) {
   const actions: [ButtonAction, string][] = [
     ['eraser', t('eraser')],
@@ -122,6 +152,8 @@ export function openSettings(onChange: () => void) {
     h('h3', {}, t('appearance')),
     toggle('eyeCare', settings.eyeCare, (v) => { settings.eyeCare = v; changed(); }),
     toggle('spread', settings.spread === 'dual', (v) => { settings.spread = v ? 'dual' : 'single'; changed(); }),
+    h('h3', {}, t('backup')),
+    backupSection(),
     h('p', { class: 'hint' }, t('storageWarn')),
     h('div', { class: 'actions' }, h('button', { value: 'ok', class: 'primary' }, 'OK')),
   );

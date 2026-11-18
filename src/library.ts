@@ -1,5 +1,7 @@
-import { listDocs, putDoc, putPages, deleteDoc, getPages, listClips } from './db';
-import { A4, uid, type DocMeta, type PageData, type Template, type PaperColor } from './types';
+import { listDocs, putDoc, putPages, deleteDoc, getPages, listClips, listFolders, putFolder, deleteFolder } from './db';
+import { searchContent, indexDoc, unindexed, type Hit } from './search';
+import { createBackup, lastBackup } from './backup';
+import { A4, uid, type DocMeta, type PageData, type Template, type PaperColor, type Folder } from './types';
 import { importFiles } from './importFiles';
 import { convertDoc, shareFiles } from './share';
 import { settings } from './settings';
@@ -15,6 +17,12 @@ export class Library {
   private hero = h('section', { class: 'hero' });
   private stats = h('div', { class: 'stats' });
   private query = '';
+  private folderBar = h('nav', { class: 'folders', 'aria-label': t('folders') });
+  private results = h('section', { class: 'results' });
+  private folderId: string | null = readFolder();
+  private folders: Folder[] = [];
+  private searchTimer = 0;
+  private searchSeq = 0;
 
   constructor(private openDoc: (d: DocMeta) => void) {}
 
@@ -35,7 +43,12 @@ export class Library {
       fileInput.value = '';
     });
     const search = h('input', { type: 'search', class: 'search', placeholder: t('search') });
-    search.addEventListener('input', () => { this.query = search.value.trim().toLowerCase(); void this.refresh(); });
+    search.addEventListener('input', () => {
+      this.query = search.value.trim().toLowerCase();
+      void this.refresh();
+      clearTimeout(this.searchTimer);
+      this.searchTimer = window.setTimeout(() => void this.runContentSearch(), 350);
+    });
     const settingsBtn = h('button', { class: 'icon-btn', title: t('settings'), 'aria-label': t('settings') });
     settingsBtn.innerHTML = icons.settings;
     settingsBtn.addEventListener('click', () => openSettings(() => {}));
@@ -55,7 +68,9 @@ export class Library {
       ),
       this.stats,
       this.hero,
+      this.folderBar,
       this.grid,
+      this.results,
     );
     // drag & drop PDFs (desktop)
     this.root.addEventListener('dragover', (e) => e.preventDefault());
@@ -69,16 +84,32 @@ export class Library {
   async refresh() {
     const all = await listDocs();
     const clips = await listClips();
-    const docs = all.filter((d) => !this.query || d.title.toLowerCase().includes(this.query));
+    this.folders = await listFolders();
+    if (this.folderId && !this.folders.some((f) => f.id === this.folderId)) this.setFolder(null);
+    // a search looks through every folder; otherwise show the open folder only
+    const docs = all.filter((d) => this.query
+      ? d.title.toLowerCase().includes(this.query)
+      : !this.folderId || d.folderId === this.folderId);
+    if (!this.query) this.results.replaceChildren();
+    this.renderFolders(all);
     this.grid.replaceChildren();
+    const last = lastBackup();
+    const old = !last || Date.now() - last > 7 * 864e5;
+    const backupBtn = h('button', { class: `stat backup-stat ${old && all.length ? 'warn' : ''}`, type: 'button' },
+      last ? `${t('lastBackup')}: ${new Date(last).toLocaleDateString(document.documentElement.lang)}` : t('neverBackedUp'));
+    backupBtn.addEventListener('click', async () => {
+      try { await createBackup(); } catch (e) { console.error(e); toast(String(e)); }
+      void this.refresh();
+    });
     this.stats.replaceChildren(
       h('span', { class: 'stat' }, h('b', {}, String(all.length)), ` ${t('documents')}`),
       h('span', { class: 'stat' }, h('b', {}, String(clips.length)), ` ${t('clipsCount')}`),
+      backupBtn,
       h('span', { class: 'stat accent' }, 'Lenovo Idea Tab Pro · Pen Plus'),
     );
     this.hero.replaceChildren();
-    this.hero.hidden = !!this.query || !all.length;
-    if (!this.query && all[0]) {
+    this.hero.hidden = !!this.query || !all.length || !!this.folderId;
+    if (!this.query && !this.folderId && all[0]) {
       const d = all[0];
       const img = h('div', { class: 'hero-thumb' });
       if (d.thumb) img.append(h('img', { src: d.thumb, alt: '' }));
@@ -91,6 +122,7 @@ export class Library {
       ));
       this.hero.onclick = () => this.openDoc(d);
     }
+    if (!docs.length && this.query) return;
     if (!docs.length) {
       const empty = h('div', { class: 'empty' });
       empty.innerHTML = icons.notebook;
@@ -125,6 +157,7 @@ export class Library {
       h('h2', {}, d.title),
       h('button', { value: 'share' }, t('share')),
       h('button', { value: 'rename' }, t('rename')),
+      h('button', { value: 'move' }, t('moveToFolder')),
       h('button', { value: 'delete', class: 'danger' }, t('delete')),
       h('button', { value: 'cancel' }, t('cancel')),
     );
@@ -140,6 +173,8 @@ export class Library {
       } else if (v === 'rename') {
         const name = prompt(t('title'), d.title)?.trim();
         if (name) { d.title = name; await putDoc(d); }
+      } else if (v === 'move') {
+        await this.moveDialog(d);
       } else if (v === 'delete' && confirm(t('confirmDelete'))) {
         await deleteDoc(d);
       }
@@ -195,6 +230,7 @@ export class Library {
       const doc: DocMeta = {
         id: uid(), title: title.value.trim() || t('untitled'), kind: 'notebook',
         createdAt: now, updatedAt: now, pageIds: [page.id], template, paper,
+        ...(this.folderId ? { folderId: this.folderId } : {}),
       };
       await putPages([page]);
       await putDoc(doc);
@@ -206,9 +242,130 @@ export class Library {
     if (!files.length) return;
     toast(t('loading'));
     const { docs, failed, unsupported } = await importFiles(files);
+    if (this.folderId) for (const d of docs) { d.folderId = this.folderId; await putDoc(d); }
     await this.refresh();
+    // extract the text for search in the background, so it is ready when needed
+    void (async () => { for (const d of docs) await indexDoc(d).catch(() => null); })();
     if (unsupported.length) toast(`${t('unsupported')}`);
     else if (failed.length) toast(`${t('fileError')}: ${failed.join(', ')}`);
     else if (docs.length === 1) this.openDoc(docs[0]);
   }
+
+  private setFolder(id: string | null) {
+    this.folderId = id;
+    try { localStorage.setItem(FOLDER_KEY, id ?? ''); } catch { /* private mode */ }
+  }
+
+  private renderFolders(all: DocMeta[]) {
+    this.folderBar.hidden = !!this.query;
+    this.folderBar.replaceChildren();
+    const chip = (label: string, id: string | null, count: number) => {
+      const b = h('button', { type: 'button', class: `folder-chip ${this.folderId === id ? 'active' : ''}`, 'aria-pressed': String(this.folderId === id) });
+      if (id) { b.innerHTML = icons.folder; }
+      b.append(h('span', {}, label), h('small', {}, String(count)));
+      b.addEventListener('click', () => {
+        if (id && this.folderId === id) { this.folderMenu(this.folders.find((f) => f.id === id)!); return; }
+        this.setFolder(id);
+        void this.refresh();
+      });
+      return b;
+    };
+    this.folderBar.append(chip(t('allDocs'), null, all.length));
+    for (const f of this.folders) this.folderBar.append(chip(f.name, f.id, all.filter((d) => d.folderId === f.id).length));
+    const add = h('button', { type: 'button', class: 'folder-chip add' });
+    add.innerHTML = icons.plus;
+    add.append(h('span', {}, t('newFolder')));
+    add.addEventListener('click', async () => {
+      const name = prompt(t('folderName'))?.trim();
+      if (!name) return;
+      const f: Folder = { id: uid(), name, createdAt: Date.now() };
+      await putFolder(f);
+      this.setFolder(f.id);
+      await this.refresh();
+    });
+    this.folderBar.append(add);
+  }
+
+  /** Tapping the open folder again: rename or delete it. */
+  private folderMenu(f: Folder) {
+    const form = h('form', { method: 'dialog', class: 'menu' },
+      h('h2', {}, f.name),
+      h('button', { value: 'rename' }, t('renameFolder')),
+      h('button', { value: 'delete', class: 'danger' }, t('deleteFolder')),
+      h('button', { value: 'cancel' }, t('cancel')),
+    );
+    modal(form).closed.then(async (v) => {
+      if (v === 'rename') {
+        const name = prompt(t('folderName'), f.name)?.trim();
+        if (name) await putFolder({ ...f, name });
+      } else if (v === 'delete' && confirm(t('confirmDeleteFolder'))) {
+        await deleteFolder(f.id);
+        this.setFolder(null);
+      }
+      await this.refresh();
+    });
+  }
+
+  private async moveDialog(d: DocMeta) {
+    const form = h('form', { method: 'dialog', class: 'menu' }, h('h2', {}, t('moveToFolder')));
+    const opt = (id: string, label: string, current: boolean) => {
+      const b = h('button', { value: id, class: `menu-item ${current ? 'active' : ''}` });
+      b.innerHTML = id === '-' ? icons.file : icons.folder;
+      b.append(h('span', {}, label));
+      return b;
+    };
+    form.append(opt('-', t('noFolder'), !d.folderId));
+    for (const f of this.folders) form.append(opt(f.id, f.name, d.folderId === f.id));
+    form.append(h('button', { value: 'cancel' }, t('cancel')));
+    const v = await modal(form).closed;
+    if (!v || v === 'cancel') return;
+    if (v === '-') delete d.folderId;
+    else d.folderId = v;
+    await putDoc(d);
+  }
+
+  /** Searches inside the PDFs and the clips; prepares the text of PDFs that were never searched first. */
+  private async runContentSearch() {
+    const seq = ++this.searchSeq;
+    const q = this.query;
+    if (q.length < 2) { this.results.replaceChildren(); return; }
+    const all = await listDocs();
+    const todo = await unindexed(all);
+    for (let i = 0; i < todo.length; i++) {
+      if (seq !== this.searchSeq) return;
+      this.results.replaceChildren(h('p', { class: 'hint' }, `${t('indexing')} ${i + 1} / ${todo.length} · ${todo[i].title}`));
+      await indexDoc(todo[i]).catch((e) => console.warn('index', todo[i].title, e));
+    }
+    const hits = await searchContent(q, all);
+    if (seq !== this.searchSeq) return;
+    this.renderHits(hits);
+  }
+
+  private renderHits(hits: Hit[]) {
+    const titleHits = this.grid.querySelectorAll('.card').length;
+    this.results.replaceChildren(h('h2', {}, t('foundInContent'), h('small', {}, ` · ${hits.length}`)));
+    if (!hits.length) {
+      this.results.append(h('p', { class: 'hint' }, titleHits ? t('noResults') : `${t('noResults')} – „${this.query}“`));
+      return;
+    }
+    const list = h('div', { class: 'hit-list' });
+    for (const hit of hits) {
+      const row = h('button', { type: 'button', class: 'hit' },
+        h('div', { class: 'hit-head' },
+          h('b', {}, hit.doc.title),
+          h('span', { class: `badge ${hit.kind === 'clip' ? 'notebook' : 'pdf'}` }, hit.kind === 'clip' ? t('inClip') : `${t('page')} ${hit.page + 1}`),
+          hit.count > 1 ? h('small', {}, `${hit.count} ${t('hits')}`) : '',
+        ),
+        h('p', { class: 'hit-text', dir: 'auto' }, hit.snippet.before, h('mark', {}, hit.snippet.match), hit.snippet.after),
+      );
+      row.addEventListener('click', () => this.openDoc({ ...hit.doc, lastPage: hit.page }));
+      list.append(row);
+    }
+    this.results.append(list);
+  }
+}
+
+const FOLDER_KEY = 'alnai-folder';
+function readFolder(): string | null {
+  try { return localStorage.getItem(FOLDER_KEY) || null; } catch { return null; }
 }
