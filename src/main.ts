@@ -10,6 +10,7 @@ import { h, modal } from './ui';
 import { Capacitor } from '@capacitor/core';
 import { ensureUnlocked } from './lock';
 import { reconcileReminders, onReminderTap } from './reminders';
+import { maybeAutoBackup } from './backup';
 
 applyLang();
 applyTheme();
@@ -28,7 +29,18 @@ function showLibrary() {
   library = new Library((d) => void openDoc(d));
   app.replaceChildren(library.root);
   void library.mount();
+  autoBackupSoon();
 }
+
+// Automatic backup (Android app): only while the library is on screen, never while you write in a document.
+let autoTimer = 0;
+function autoBackupSoon() {
+  clearTimeout(autoTimer);
+  autoTimer = window.setTimeout(() => {
+    if (!editor && !document.hidden) void maybeAutoBackup().then((made) => { if (made && !editor) void library.refresh(); });
+  }, 15_000);
+}
+document.addEventListener('visibilitychange', () => { if (!document.hidden && !editor) autoBackupSoon(); });
 
 async function openDocAt(docId: string, page: number) {
   const doc = await getDoc(docId);

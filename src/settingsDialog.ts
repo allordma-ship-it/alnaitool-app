@@ -2,7 +2,9 @@ import { settings, saveSettings, type ButtonAction, type Lang } from './settings
 import { t, applyLang, applyTheme, type Key } from './i18n';
 import { h, modal } from './ui';
 import { drawPenSegments } from './ink';
-import { createBackup, restoreBackup, lastBackup } from './backup';
+import { createBackup, restoreBackup, lastBackup, lastAutoBackup, autoBackupError, maybeAutoBackup } from './backup';
+import type { AutoBackupEvery } from './backupPlan';
+import { Capacitor } from '@capacitor/core';
 import { lockEnabled, bioEnabled, setBio, changePin, turnOffLock, biometricAvailable } from './lock';
 
 function select<T extends string>(label: Key, value: T, options: [T, string][], onChange: (v: T) => void) {
@@ -140,7 +142,27 @@ function backupSection() {
   });
   const restore = h('button', { type: 'button' }, t('restoreBackup'));
   restore.addEventListener('click', () => file.click());
-  return h('div', { class: 'backup' }, h('p', { class: 'hint' }, t('backupHint')), status, h('div', { class: 'actions start' }, make, restore), file);
+  return h('div', { class: 'backup' }, h('p', { class: 'hint' }, t('backupHint')), status, h('div', { class: 'actions start' }, make, restore), file,
+    ...(Capacitor.isNativePlatform() ? [autoBackupRow()] : []));
+}
+
+/** Android app: how often a backup is written into Documents/Notiva by itself, and how the last one went. */
+function autoBackupRow() {
+  const lang = document.documentElement.lang;
+  const info = () => {
+    const last = lastAutoBackup(), err = autoBackupError();
+    return [
+      h('p', { class: 'hint' }, t('autoBackupHint')),
+      ...(last ? [h('p', { class: 'hint' }, `${t('lastAutoBackup')}: ${new Date(last.at).toLocaleString(lang)}`)] : []),
+      ...(err ? [h('p', { class: 'hint pin-err', dir: 'auto' }, `${t('autoBackupFailed')} – ${err}`)] : []),
+    ];
+  };
+  const box = h('div', {});
+  box.replaceChildren(...info());
+  const row = select<AutoBackupEvery>('autoBackup', settings.autoBackup,
+    [['weekly', t('autoWeekly')], ['daily', t('autoDaily')], ['off', t('off')]],
+    (v) => { settings.autoBackup = v; saveSettings(); void maybeAutoBackup().then(() => box.replaceChildren(...info())); });
+  return h('div', {}, row, box);
 }
 
 export function openSettings(onChange: () => void) {

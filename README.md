@@ -32,7 +32,8 @@ optimiert für das **Lenovo Idea Tab Pro mit Lenovo Tab Pen Plus**.
 
 ## Organisation, Sicherheit, Lernen
 
-- **Sicherung**: eine `.notiva`-Datei (ältere `.alnai`-Sicherungen lassen sich weiter wiederherstellen) mit allem (Notizbücher, PDFs, Ausschnitte, Sprachnotizen, Vorlagen) über das Teilen-Menü in Drive o. Ä.; Wiederherstellen fügt hinzu und löscht nichts
+- **Sicherung**: eine `.notiva`-Datei (ältere `.alnai`-Sicherungen lassen sich weiter wiederherstellen) mit allem (Notizbücher, PDFs, Ausschnitte, Sprachnotizen, Vorlagen) über das Teilen-Menü in Drive o. Ä.; Wiederherstellen fügt hinzu und löscht nichts. Sicherung und Wiederherstellung lesen eine Datei nach der anderen, auch sehr große Bibliotheken passen so in den Speicher; eine Sicherungsdatei wird vor dem Wiederherstellen geprüft
+- **Automatische Sicherung** (Android-App, Einstellungen → Sicherung; Standard: wöchentlich): legt die Sicherung selbst unter `Documents/Notiva` ab (die letzten 3), nur wenn sich etwas geändert hat und nur während die Bibliothek offen ist. Der Ordner bleibt erhalten, wenn die App deinstalliert wird. Gegen Verlust des Tablets hilft nur eine Kopie woanders (Drive, PC)
 - **Bibliothek**: Ordner, oben anheften, Farbmarken, Schlagwörter (Filter), Sortierung; **Volltextsuche** in PDFs und Ausschnitten (Arabisch ohne Taschkil)
 - **Seitenübersicht**: Miniaturen, ziehen zum Umsortieren, duplizieren, einfügen, löschen; **Inhaltsverzeichnis** des PDFs, **Lesezeichen**; **Links im PDF** (Verweise springen, „Zurück zu Seite N“)
 - **Geteilte Ansicht**: zweites Dokument daneben; Ausschnitte per „Ins Notizbuch einfügen“ in das Notizbuch daneben

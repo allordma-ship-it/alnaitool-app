@@ -117,33 +117,48 @@ export async function putTextIndex(ix: TextIndex) {
   await (await db()).put('text', ix);
 }
 
-/** Everything the user made, for a backup. The search index is left out: it is rebuilt from the PDFs. */
-export async function dumpAll() {
+/**
+ * Everything the user made except the bytes of stored files (PDFs, pictures, voice memos), for a backup.
+ * Those can be hundreds of MB, so the backup reads them one at a time with getFile(fileIds[i]).
+ * The search index is left out: it is rebuilt from the PDFs.
+ */
+export async function dumpMeta() {
   const d = await db();
   const tx = d.transaction(['docs', 'pages', 'files', 'clips', 'folders', 'templates']);
-  const files = tx.objectStore('files');
-  const [docs, pages, clips, folders, templates, fileKeys, fileVals] = await Promise.all([
+  const [docs, pages, clips, folders, templates, fileKeys] = await Promise.all([
     tx.objectStore('docs').getAll(), tx.objectStore('pages').getAll(), tx.objectStore('clips').getAll(),
-    tx.objectStore('folders').getAll(), tx.objectStore('templates').getAll(), files.getAllKeys(), files.getAll(),
+    tx.objectStore('folders').getAll(), tx.objectStore('templates').getAll(), tx.objectStore('files').getAllKeys(),
   ]);
   await tx.done;
   return {
     docs: docs as DocMeta[], pages: pages as PageData[], clips: clips as Clip[], folders: folders as Folder[],
-    templates: templates as CustomTemplate[],
-    files: fileKeys.map((k, i) => ({ id: String(k), bytes: new Uint8Array(fileVals[i] as ArrayBuffer) })),
+    templates: templates as CustomTemplate[], fileIds: fileKeys.map(String),
   };
 }
 
-/** Adds a backup to the library. Items with the same id are replaced; nothing else is touched. */
-export async function restoreAll(b: { docs: DocMeta[]; pages: PageData[]; clips: Clip[]; folders: Folder[]; templates?: CustomTemplate[]; files: { id: string; bytes: Uint8Array }[] }) {
+/** Documents, clips, folders and templates only: enough to tell whether the library changed. */
+export async function libraryOutline() {
   const d = await db();
-  const tx = d.transaction(['docs', 'pages', 'files', 'clips', 'folders', 'templates'], 'readwrite');
+  const tx = d.transaction(['docs', 'clips', 'folders', 'templates']);
+  const [docs, clips, folders, templates] = await Promise.all([
+    tx.objectStore('docs').getAll(), tx.objectStore('clips').getAll(), tx.objectStore('folders').getAll(), tx.objectStore('templates').getAll(),
+  ]);
+  await tx.done;
+  return { docs: docs as DocMeta[], clips: clips as Clip[], folders: folders as Folder[], templates: templates as CustomTemplate[] };
+}
+
+/**
+ * Adds the non-file part of a backup to the library (its files were stored first with putFile, so no document
+ * ever points at a missing file). Items with the same id are replaced; nothing else is touched.
+ */
+export async function restoreMeta(b: { docs: DocMeta[]; pages: PageData[]; clips: Clip[]; folders: Folder[]; templates?: CustomTemplate[] }) {
+  const d = await db();
+  const tx = d.transaction(['docs', 'pages', 'clips', 'folders', 'templates'], 'readwrite');
   await Promise.all([
     ...b.folders.map((x) => tx.objectStore('folders').put(x)),
     ...(b.templates ?? []).map((x) => tx.objectStore('templates').put(x)),
     ...b.pages.map((x) => tx.objectStore('pages').put(x)),
     ...b.clips.map((x) => tx.objectStore('clips').put(x)),
-    ...b.files.map((f) => tx.objectStore('files').put(f.bytes.slice().buffer, f.id)),
     ...b.docs.map((x) => tx.objectStore('docs').put(x)),
     tx.done,
   ]);

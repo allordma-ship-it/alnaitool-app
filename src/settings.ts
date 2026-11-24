@@ -1,4 +1,5 @@
 import type { InkTool } from './types';
+import type { AutoBackupEvery } from './backupPlan';
 
 export type ButtonAction = 'eraser' | 'highlighter' | 'lasso' | 'laser' | 'clip' | 'shape' | 'none';
 export type Lang = 'ar' | 'de' | 'en';
@@ -38,6 +39,8 @@ export interface Settings {
   notesPanel: boolean;
   /** leaving a changed document asks: save, don't save, cancel */
   askSave: boolean;
+  /** Android app: write a backup into Documents/Notiva by itself */
+  autoBackup: AutoBackupEvery;
 }
 
 const DEFAULTS: Settings = {
@@ -64,6 +67,7 @@ const DEFAULTS: Settings = {
   showHud: true,
   notesPanel: false,
   askSave: true,
+  autoBackup: 'weekly',
   palette: ['#0f172a', '#06b6d4', '#2563eb', '#ef4444', '#10b981', '#8b5cf6', '#f59e0b', '#ffe14d'],
 };
 
