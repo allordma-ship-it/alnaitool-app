@@ -31,6 +31,9 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
+      # keeps Gradle and the Android libraries between runs: faster, and Maven Central is asked far less
+      # (it answers "429 Too Many Requests" when asked too often). Only main writes the cache.
+      - uses: gradle/actions/setup-gradle@v4
       - run: npm ci
       - run: npm test
       - run: npm run build
@@ -80,6 +83,9 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
+      # keeps Gradle and the Android libraries between runs: faster, and Maven Central is asked far less
+      # (it answers "429 Too Many Requests" when asked too often). Only main writes the cache.
+      - uses: gradle/actions/setup-gradle@v4
       - run: npm ci
       - run: npm test
       - run: npm run build
