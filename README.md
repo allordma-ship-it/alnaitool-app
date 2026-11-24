@@ -59,11 +59,21 @@ optimiert für das **Lenovo Idea Tab Pro mit Lenovo Tab Pen Plus**.
 
 ## Android-App (APK)
 
-Jeder Push baut über `.github/workflows/android.yml` ein signiertes APK (Capacitor) und veröffentlicht es
-unter **Releases** (`alnai-notes-v1.0.<Nr>`). Auf dem Tablet herunterladen, öffnen, „Aus dieser Quelle installieren“ erlauben.
-Alle APKs sind mit demselben Schlüssel signiert – neue Versionen installieren sich als Update, die Notizen bleiben erhalten.
+`.github/workflows/android.yml`:
+
+- **Push auf `main`** → signiertes APK, veröffentlicht unter **Releases** (`alnai-notes-v1.0.<Nr>`, „Latest“).
+  `<Nr>` = Anzahl der Commits auf `main` + 100; der Build bricht ab, falls die Nummer nicht höher als die letzte Version ist.
+- **Push auf andere Branches** (`ccr-*`, `claude/**`) → nur Tests und ein Debug-APK als Artefakt des Laufs
+  (Actions → Lauf → Artifacts). Es wird nichts veröffentlicht und kein Signaturschlüssel benutzt.
+
+Auf dem Tablet das APK aus dem neuesten Release herunterladen, öffnen, „Aus dieser Quelle installieren“ erlauben.
+Alle Releases ab 1.0.14 sind mit demselben Schlüssel signiert – neue Versionen installieren sich als Update, die Notizen bleiben erhalten.
 Der Schlüssel liegt **nicht** im Repository, sondern in den GitHub-Secrets (Settings → Secrets and variables → Actions):
 `ANDROID_KEYSTORE_BASE64` (Keystore als Base64), `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD`.
+
+> **Sicherheit:** Der erste Schlüssel (Versionen 1.0.4–1.0.11, SHA-256 `5C:9B:37…`) stand früher öffentlich im Repository
+> und gilt als kompromittiert. Der Build verweigert ihn. Wer noch eine Version ≤ 1.0.11 installiert hat: Notizen sichern
+> (`.notiva`), App deinstallieren, aktuelle Version installieren, Sicherung wiederherstellen.
 
 ## Als Web-App installieren (Alternative)
 

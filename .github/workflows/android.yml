@@ -1,26 +1,77 @@
 name: Build Android APK
 
+# main            → signed release APK, published as a GitHub release ("Latest")
+# any other branch → tests + debug APK as a run artifact; nothing is published, no signing secrets are used
 on:
   push:
-    # signing-secrets: test build only (checks the signing secrets), no release
-    branches: [main, 'ccr-*', 'signing-secrets']
+    branches: [main, 'ccr-*', 'claude/**']
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: android-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  apk:
+  # ------------------------------------------------------------------ feature branches: test build only
+  debug:
+    if: github.ref != 'refs/heads/main'
     runs-on: ubuntu-latest
     env:
-      # shown in the app's settings, so you can see which version is installed
-      VITE_APP_VERSION: 1.0.${{ github.run_number }}
+      VITE_APP_VERSION: dev-${{ github.run_number }}
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+      - run: npx cap sync android
+      - name: Build debug APK
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew --no-daemon assembleDebug
+          cp app/build/outputs/apk/debug/app-debug.apk "$GITHUB_WORKSPACE/Notiva-debug-${{ github.run_number }}.apk"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Notiva-debug-apk
+          path: Notiva-debug-*.apk
+
+  # ------------------------------------------------------------------ main: signed release build (read-only token)
+  release-build:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.n }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # the version number is the number of commits on main
+      - name: Version number
+        id: version
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Commit count + 100: grows with every commit on main and does not reset when this workflow is
+          # renamed (run_number would). The +100 keeps it above the old run-number based versions (≤ 1.0.26).
+          N=$(( $(git rev-list --count HEAD) + 100 ))
+          LAST=$(gh release list --limit 100 --json tagName -q '.[].tagName' | sed -n 's/^alnai-notes-v1\.0\.//p' | sort -n | tail -1)
+          if [ "${LAST:-0}" -ge "$N" ]; then
+            echo "::error::New version 1.0.$N is not higher than the last release 1.0.$LAST - Android would refuse the update. Was main rewritten?"
+            exit 1
+          fi
+          echo "n=$N" >> "$GITHUB_OUTPUT"
+          echo "VITE_APP_VERSION=1.0.$N" >> "$GITHUB_ENV"
+          echo "Version 1.0.$N (last release 1.0.${LAST:-none})"
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -46,7 +97,6 @@ jobs:
             echo "::error::ANDROID_KEYSTORE_BASE64 is not valid base64 - copy the whole long line again."
             exit 1
           fi
-          echo "Keystore: $(wc -c < "$RUNNER_TEMP/release.jks") bytes"
       - name: Check the signing key and passwords
         env:
           PW: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
@@ -56,12 +106,18 @@ jobs:
             echo "::error::Keystore, ANDROID_KEYSTORE_PASSWORD or ANDROID_KEY_ALIAS do not match - check those secrets."
             exit 1
           fi
-          keytool -list -v -keystore "$RUNNER_TEMP/release.jks" -storepass "$PW" -alias "${ALIAS:-alnai}" | grep "SHA256:"
+          FP=$(keytool -list -v -keystore "$RUNNER_TEMP/release.jks" -storepass "$PW" -alias "${ALIAS:-alnai}" | sed -n 's/^\s*SHA256: //p')
+          echo "Signing certificate SHA256: $FP"
+          # The first key (used up to 1.0.11) was once committed to this public repository: never sign with it again.
+          if [ "$FP" = "5C:9B:37:51:F1:71:F4:86:28:CF:BD:69:62:51:07:A2:C7:0F:6E:C8:ED:D8:91:54:CB:5A:94:DC:A9:6B:CA:FA" ]; then
+            echo "::error::This is the leaked signing key from the repository history. Use the current key."
+            exit 1
+          fi
       - name: Build release APK
         working-directory: android
         env:
-          VERSION_CODE: ${{ github.run_number }}
-          VERSION_NAME: 1.0.${{ github.run_number }}
+          VERSION_CODE: ${{ steps.version.outputs.n }}
+          VERSION_NAME: 1.0.${{ steps.version.outputs.n }}
           ANDROID_KEYSTORE_FILE: ${{ runner.temp }}/release.jks
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
@@ -69,20 +125,33 @@ jobs:
         run: |
           chmod +x gradlew
           ./gradlew --no-daemon assembleRelease
-          rm -f "$RUNNER_TEMP/release.jks"
-          cp app/build/outputs/apk/release/app-release.apk "$GITHUB_WORKSPACE/Notiva-1.0.${{ github.run_number }}.apk"
+          cp app/build/outputs/apk/release/app-release.apk "$GITHUB_WORKSPACE/Notiva-1.0.${{ steps.version.outputs.n }}.apk"
+      - name: Remove the signing key
+        if: always()
+        run: rm -f "$RUNNER_TEMP/release.jks"
       - uses: actions/upload-artifact@v4
         with:
           name: Notiva-apk
           path: Notiva-*.apk
+
+  # ------------------------------------------------------------------ main: publish (only this job can write)
+  publish:
+    needs: release-build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: Notiva-apk
       - name: Publish as GitHub release
-        if: github.ref_name != 'signing-secrets'
         env:
           GH_TOKEN: ${{ github.token }}
+          N: ${{ needs.release-build.outputs.version }}
         run: |
-          TAG="alnai-notes-v1.0.${{ github.run_number }}"
-          gh release create "$TAG" Notiva-*.apk \
+          gh release create "alnai-notes-v1.0.$N" Notiva-*.apk \
+            --repo "${{ github.repository }}" \
             --target "${{ github.sha }}" \
-            --title "Notiva 1.0.${{ github.run_number }}" \
+            --title "Notiva 1.0.$N" \
             --notes "APK für Android-Tablets (getestet für Lenovo Idea Tab Pro + Pen Plus). Herunterladen, öffnen, Installation aus unbekannten Quellen erlauben." \
             --latest
