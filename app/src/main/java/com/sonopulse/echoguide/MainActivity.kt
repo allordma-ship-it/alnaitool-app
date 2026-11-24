@@ -439,7 +439,7 @@ private fun ViewCard(view: EchoView, language: AppLanguage, highlighted: Boolean
                     .background(AtlasCard)
             ) {
                 AsyncImage(
-                    model = "file:///android_asset/${view.diagramAsset ?: view.svgAsset}",
+                    model = MediaRegistry.assetUri(view.diagramAsset ?: view.svgAsset),
                     contentDescription = null,
                     contentScale = ContentScale.Fit,
                     modifier = Modifier.fillMaxSize()

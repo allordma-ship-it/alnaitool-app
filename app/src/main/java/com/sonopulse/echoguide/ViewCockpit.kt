@@ -803,7 +803,7 @@ private fun DiagramThumb(
         Box(modifier = Modifier.aspectRatio(aspectRatio, matchHeightConstraintsFirst = true)) {
             SubcomposeAsyncImage(
                 model = ImageRequest.Builder(context)
-                    .data("file:///android_asset/$assetPath")
+                    .data(MediaRegistry.assetUri(assetPath))
                     .apply { if (isSvg) decoderFactory(SvgDecoder.Factory()) }
                     .build(),
                 imageLoader = imageLoader,

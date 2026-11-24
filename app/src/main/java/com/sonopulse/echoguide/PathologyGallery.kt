@@ -109,7 +109,7 @@ fun PathologyGallery(protocol: EchoProtocol, cases: List<PathologyCase>, languag
                         }
                     } else {
                         AsyncImage(
-                            model = ImageRequest.Builder(LocalContext.current).data("file:///android_asset/${item.asset}").build(),
+                            model = ImageRequest.Builder(LocalContext.current).data(MediaRegistry.assetUri(item.asset)).build(),
                             contentDescription = item.caption.get(language),
                             contentScale = ContentScale.Fit,
                             modifier = Modifier.matchParentSize()

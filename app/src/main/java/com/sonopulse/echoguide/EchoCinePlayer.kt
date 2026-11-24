@@ -268,12 +268,17 @@ fun rememberLoopState(player: ExoPlayer, assetPath: String): LoopState {
     LaunchedEffect(assetPath) {
         state.failed = false
         state.mediaReady = false
-        val exists = withContext(Dispatchers.IO) { EchoRepository.assetExists(context, assetPath) }
+        // Licence registry mapping (identity unless a replacement is registered; see MediaRegistry).
+        val resolved = withContext(Dispatchers.IO) {
+            MediaRegistry.load(context)
+            MediaRegistry.resolve(assetPath)
+        }
+        val exists = withContext(Dispatchers.IO) { EchoRepository.assetExists(context, resolved) }
         // ExoPlayer must only be touched on its application (main) thread.
         withContext(Dispatchers.Main) {
             state.available = exists
             if (exists) {
-                player.setMediaItem(MediaItem.fromUri("asset:///$assetPath"), true)
+                player.setMediaItem(MediaItem.fromUri("asset:///$resolved"), true)
                 player.setPlaybackSpeed(state.speed)
                 player.playWhenReady = state.autoPlay
                 player.prepare()

@@ -434,6 +434,8 @@ object EchoRepository {
                 .bufferedReader(Charsets.UTF_8)
                 .use { it.readText() }
             val protocol = json.decodeFromString(EchoProtocol.serializer(), text)
+            // Media licence registry: maps asset paths to registered replacements (identity by default).
+            MediaRegistry.load(context)
             cache = protocol
             ProtocolState.Ready(protocol)
         } catch (e: Exception) {

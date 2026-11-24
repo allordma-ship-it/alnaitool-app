@@ -188,7 +188,7 @@ internal fun ValveAssessmentContent(
                     valve.examples.forEachIndexed { i, image ->
                         Column(modifier = Modifier.width(132.dp).clickable { exampleOpen = i }) {
                             AsyncImage(
-                                model = "file:///android_asset/${image.asset}",
+                                model = MediaRegistry.assetUri(image.asset),
                                 contentDescription = image.caption.get(language),
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier
@@ -417,7 +417,7 @@ private fun RealTrace(trace: SpectralTrace, modifier: Modifier = Modifier) {
     Column(modifier = modifier) {
         Box(modifier = Modifier.fillMaxWidth().aspectRatio(trace.aspect).background(Color.Black)) {
             AsyncImage(
-                model = "file:///android_asset/${trace.asset}",
+                model = MediaRegistry.assetUri(trace.asset),
                 contentDescription = null,
                 contentScale = ContentScale.FillBounds,
                 modifier = Modifier.fillMaxSize()

@@ -1,0 +1,5 @@
+{
+ "_comment": "Hand-maintained input for scripts/build_media_registry.py. 'replacements': original asset path -> substitute asset path (the app then loads the substitute). 'assets': registry entries for new, commercially licensed files (same fields as media_registry.json; licence must be verified). Both are empty today: the app uses every original file.",
+ "replacements": {},
+ "assets": []
+}

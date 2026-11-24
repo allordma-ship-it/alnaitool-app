@@ -169,7 +169,7 @@ fun ZoomableDiagram(
         ) {
             SubcomposeAsyncImage(
                 model = ImageRequest.Builder(context)
-                    .data("file:///android_asset/$svgAsset")
+                    .data(MediaRegistry.assetUri(svgAsset))
                     .apply { if (isSvg) decoderFactory(SvgDecoder.Factory()) }
                     .build(),
                 imageLoader = imageLoader,
