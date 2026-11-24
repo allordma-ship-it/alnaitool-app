@@ -68,4 +68,13 @@ class EchoCalcTest {
         assertEquals(Severity.SEVERE, EchoCalc.mvaPht(300.0).severity)
         assertEquals(Severity.MILD, EchoCalc.mvaPht(100.0).severity)
     }
+
+    @Test
+    fun arabicAndPersianDigitsAreAccepted() {
+        // Arabic-Indic (٢٫٥) and Eastern Arabic / Persian (۲٫۵) digits pass the field filter (isDigit)
+        // and are converted before parsing.
+        assertEquals("2.5", normalizeNumberInput("\u0662\u066B\u0665"))
+        assertEquals("2.5", normalizeNumberInput("\u06F2\u066B\u06F5"))
+        assertEquals(true, "\u06F2\u06F5".all { it.isDigit() })
+    }
 }

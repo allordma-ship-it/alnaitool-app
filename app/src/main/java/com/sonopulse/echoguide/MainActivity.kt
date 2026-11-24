@@ -96,6 +96,11 @@ val LocalOpenSettings = staticCompositionLocalOf<(() -> Unit)?> { null }
 @Composable
 fun EchoScopeApp(settingsViewModel: SettingsViewModel = viewModel()) {
     val ui by settingsViewModel.uiState.collectAsStateWithLifecycle()
+    if (!ui.loaded) {
+        // Settings are read off the main thread (a few ms): show the plain app background meanwhile.
+        Box(Modifier.fillMaxSize().background(EchoPalette.BgPrimary))
+        return
+    }
     val appContext = LocalContext.current
     val language = ui.settings.language ?: AppLanguage.fromSystem(appContext.resources.configuration)
     val dark = when (ui.settings.themeMode) {
@@ -110,7 +115,9 @@ fun EchoScopeApp(settingsViewModel: SettingsViewModel = viewModel()) {
             CompositionLocalProvider(LocalOpenSettings provides { settingsOpen = true }) {
                 // The clinical screens stay composed underneath, so closing settings returns to the same place.
                 Box(Modifier.fillMaxSize()) {
-                    EchoScopeScaffold(language = language)
+                    CompositionLocalProvider(LocalPlaybackSuspended provides settingsOpen) {
+                        EchoScopeScaffold(language = language)
+                    }
                     if (settingsOpen) {
                         SettingsRoute(
                             state = ui,

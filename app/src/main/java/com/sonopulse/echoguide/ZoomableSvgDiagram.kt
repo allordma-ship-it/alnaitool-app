@@ -45,7 +45,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
-import coil.ImageLoader
 import coil.compose.SubcomposeAsyncImage
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
@@ -104,12 +103,7 @@ fun ZoomableDiagram(
     val svgAsset = assetPath
     val isSvg = assetPath.endsWith(".svg", ignoreCase = true)
     val context = LocalContext.current
-    val imageLoader = remember(context) {
-        ImageLoader.Builder(context.applicationContext)
-            .components { add(SvgDecoder.Factory()) }
-            .crossfade(true)
-            .build()
-    }
+    val imageLoader = remember(context) { EchoImages.loader(context) }
 
     var scale by remember(svgAsset) { mutableFloatStateOf(1f) }
     var offset by remember(svgAsset) { mutableStateOf(Offset.Zero) }
@@ -170,6 +164,7 @@ fun ZoomableDiagram(
             SubcomposeAsyncImage(
                 model = ImageRequest.Builder(context)
                     .data(MediaRegistry.assetUri(svgAsset))
+                    .crossfade(true)
                     .apply { if (isSvg) decoderFactory(SvgDecoder.Factory()) }
                     .build(),
                 imageLoader = imageLoader,

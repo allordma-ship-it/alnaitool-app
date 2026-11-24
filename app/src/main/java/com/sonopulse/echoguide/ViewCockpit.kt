@@ -56,7 +56,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.media3.exoplayer.ExoPlayer
-import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.compose.SubcomposeAsyncImage
 import coil.decode.SvgDecoder
@@ -792,9 +791,7 @@ private fun DiagramThumb(
     labels: List<SchemaLabel> = emptyList()
 ) {
     val context = LocalContext.current
-    val imageLoader = remember(context) {
-        ImageLoader.Builder(context.applicationContext).components { add(SvgDecoder.Factory()) }.build()
-    }
+    val imageLoader = remember(context) { EchoImages.loader(context) }
     val isSvg = assetPath.endsWith(".svg", ignoreCase = true)
     Box(
         modifier = Modifier.fillMaxSize().padding(start = 4.dp, end = 4.dp, bottom = 4.dp, top = 4.dp + topInset),

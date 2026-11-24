@@ -11,10 +11,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 
 /** Result of checking the bundled offline database (protocol JSON + every referenced asset). */
@@ -34,22 +32,23 @@ sealed interface DatabaseStatus {
 
 data class SettingsUiState(
     val settings: AppSettings,
-    val database: DatabaseStatus
+    val database: DatabaseStatus,
+    /** False until the stored settings have been read (the app waits instead of guessing language / theme). */
+    val loaded: Boolean = true
 )
 
 /**
  * Settings & info: theme mode, language (instant, no restart) and the offline-database status.
- * The first settings value is read synchronously from the tiny DataStore file so the app never
+ * The stored settings are read asynchronously (no disk access on the main thread); until they
+ * arrive [SettingsUiState.loaded] is false and the app shows only its background, so it never
  * flashes the wrong language or theme on launch.
  */
 class SettingsViewModel(application: Application) : AndroidViewModel(application) {
     private val repository = SettingsRepository(application)
     private val database = MutableStateFlow<DatabaseStatus>(DatabaseStatus.Checking)
 
-    private val initial: AppSettings = runBlocking { repository.settings.first() }
-
     val uiState: StateFlow<SettingsUiState> = combine(repository.settings, database) { s, db -> SettingsUiState(s, db) }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, SettingsUiState(initial, DatabaseStatus.Checking))
+        .stateIn(viewModelScope, SharingStarted.Eagerly, SettingsUiState(AppSettings(), DatabaseStatus.Checking, loaded = false))
 
     init {
         verifyDatabase()

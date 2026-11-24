@@ -111,8 +111,23 @@ fun rememberEchoPlayer(): ExoPlayer {
         lifecycleOwner.lifecycle.addObserver(observer)
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
+    // Paused while a screen covers the cockpit (Settings), resumed afterwards if it was playing.
+    val suspended = LocalPlaybackSuspended.current
+    val resumeAfterSuspend = remember { booleanArrayOf(false) }
+    LaunchedEffect(player, suspended) {
+        if (suspended) {
+            resumeAfterSuspend[0] = player.playWhenReady
+            player.pause()
+        } else if (resumeAfterSuspend[0]) {
+            resumeAfterSuspend[0] = false
+            player.play()
+        }
+    }
     return player
 }
+
+/** True while another full screen (Settings) covers the cine loops: their players pause. */
+val LocalPlaybackSuspended = staticCompositionLocalOf { false }
 
 /** Observable playback state of the current cine loop. */
 @Stable

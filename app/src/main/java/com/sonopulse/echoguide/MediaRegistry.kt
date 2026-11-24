@@ -1,6 +1,8 @@
 package com.sonopulse.echoguide
 
 import android.content.Context
+import coil.ImageLoader
+import coil.decode.SvgDecoder
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
@@ -71,4 +73,21 @@ object MediaRegistry {
     fun assetUri(path: String): String = "file:///android_asset/${resolve(path)}"
 
     fun entry(path: String): MediaEntry? = entries[path]
+}
+
+/**
+ * One Coil [ImageLoader] (with SVG support) for every schema / atlas / gallery image: a single
+ * memory and disk cache instead of a new loader per thumbnail.
+ */
+object EchoImages {
+    @Volatile
+    private var loader: ImageLoader? = null
+
+    fun loader(context: Context): ImageLoader =
+        loader ?: synchronized(this) {
+            loader ?: ImageLoader.Builder(context.applicationContext)
+                .components { add(SvgDecoder.Factory()) }
+                .build()
+                .also { loader = it }
+        }
 }
