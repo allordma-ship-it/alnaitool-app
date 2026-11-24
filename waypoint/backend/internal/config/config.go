@@ -119,6 +119,10 @@ func (c *Config) validate() error {
 	}
 	if len(c.JWTSecret) < 32 {
 		errs = append(errs, errors.New("JWT_SECRET must be at least 32 characters"))
+	} else if strings.Contains(strings.ToLower(c.JWTSecret), "change-me") {
+		// The placeholder from .env.example is long enough to pass the length check, but it is public:
+		// anyone could sign their own login tokens with it.
+		errs = append(errs, errors.New("JWT_SECRET is still the placeholder from .env.example; generate one with: openssl rand -hex 32 (or run make env)"))
 	}
 	switch c.RoutingProvider {
 	case "osrm", "valhalla":
