@@ -1,6 +1,6 @@
 # Notiva
 
-Handschriftliche Notizen und PDF-Annotation als offline-fähige Web-App (PWA) –
+Handschriftliche Notizen und PDF-Annotation als offline-fähige Android-App (Capacitor) –
 optimiert für das **Lenovo Idea Tab Pro mit Lenovo Tab Pen Plus**.
 
 تطبيق ملاحظات بخط اليد وقارئ PDF للدراسة، مصمَّم لجهاز Lenovo Idea Tab Pro مع قلم Pen Plus.
@@ -75,12 +75,6 @@ Der Schlüssel liegt **nicht** im Repository, sondern in den GitHub-Secrets (Set
 > und gilt als kompromittiert. Der Build verweigert ihn. Wer noch eine Version ≤ 1.0.11 installiert hat: Notizen sichern
 > (`.notiva`), App deinstallieren, aktuelle Version installieren, Sicherung wiederherstellen.
 
-## Als Web-App installieren (Alternative)
-
-1. Die veröffentlichte Seite (GitHub Pages, siehe unten) in **Chrome** auf dem Idea Tab Pro öffnen.
-2. Menü ⋮ → **„App installieren“** bzw. „Zum Startbildschirm hinzufügen“.
-3. Die App startet danach im Vollbild und funktioniert auch ohne Internet.
-
 > Tipp: In den Lenovo-Einstellungen kann die Stifttaste mit einer Systemfunktion belegt sein.
 > Falls die Taste in der App nichts tut, im Stifttest prüfen, was ankommt, und ggf. die Systembelegung deaktivieren.
 
@@ -92,11 +86,6 @@ npm run dev      # Dev-Server, im LAN erreichbar (--host) → direkt auf dem Tab
 npm test         # Unit-Tests (Geometrie: Radierer, Lasso)
 npm run build    # Produktions-Build nach dist/ inkl. Service Worker
 ```
-
-## Veröffentlichung
-
-`.github/workflows/deploy.yml` baut und veröffentlicht bei jedem Push auf `main` auf GitHub Pages.
-Einmalig nötig: Repository → Settings → Pages → Source: **GitHub Actions**.
 
 ## Aufbau
 
