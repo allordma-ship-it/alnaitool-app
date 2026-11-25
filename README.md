@@ -68,6 +68,8 @@ optimiert für das **Lenovo Idea Tab Pro mit Lenovo Tab Pen Plus**.
   (Actions → Lauf → Artifacts). Es wird nichts veröffentlicht und kein Signaturschlüssel benutzt.
 
 Auf dem Tablet das APK aus dem neuesten Release herunterladen, öffnen, „Aus dieser Quelle installieren“ erlauben.
+Das APK enthält nur 64-Bit-ARM-Bibliotheken (`arm64-v8a`, z. B. Lenovo Idea Tab Pro, Galaxy S25). Geräte mit 32-Bit-Android
+(manche günstigen Handys) können es nicht installieren – dafür in `android/app/build.gradle` `armeabi-v7a` wieder hinzufügen.
 Alle Releases ab 1.0.14 sind mit demselben Schlüssel signiert – neue Versionen installieren sich als Update, die Notizen bleiben erhalten.
 Der Schlüssel liegt **nicht** im Repository, sondern in den GitHub-Secrets (Settings → Secrets and variables → Actions):
 `ANDROID_KEYSTORE_BASE64` (Keystore als Base64), `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD`.
