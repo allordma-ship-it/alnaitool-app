@@ -140,3 +140,18 @@ test('a backup brings back a deleted notebook', async ({ page }) => {
   await expect(page.locator('.card-title', { hasText: 'Untitled notebook' })).toBeVisible();
   expect(await strokeCount(page)).toBe(1);
 });
+
+test.describe('on a phone', () => {
+  test.use({ viewport: { width: 360, height: 780 }, hasTouch: true, isMobile: true });
+
+  test('every editor button stays on screen (tool bar wraps, undo/redo reachable)', async ({ page }) => {
+    await newNotebook(page);
+    const outside = await page.evaluate(() => [...document.querySelectorAll('.topbar button, .dock button, .nav-pill button')]
+      .filter((b) => (b as HTMLElement).offsetParent)
+      .filter((b) => { const r = b.getBoundingClientRect(); return r.left < -1 || r.right > innerWidth + 1; })
+      .map((b) => b.getAttribute('aria-label') ?? b.className));
+    expect(outside).toEqual([]);
+    await expect(page.getByRole('button', { name: 'Undo' })).toBeInViewport();
+    await expect(page.getByRole('button', { name: 'Redo' })).toBeInViewport();
+  });
+});

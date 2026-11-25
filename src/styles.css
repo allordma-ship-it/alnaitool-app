@@ -694,6 +694,23 @@ details[open] > summary .pv-caret::before { transform: rotate(90deg); }
   .topbar .toggle-group { display: none; }
 }
 
+/* phone width: the tool bar wraps onto two centred rows instead of running off the screen (undo/redo stay
+   reachable), and the pages bar drops the zoom buttons – two fingers zoom on a phone. --dock-h follows the
+   new height, so the options popover and toasts stay above the bars. */
+@container pane (max-width: 520px) {
+  .dock { flex-wrap: wrap; justify-content: center; overflow-x: visible; row-gap: 4px; }
+  .dock .tool-group { flex: 1 1 100%; justify-content: center; }
+  .dock > .tool-group + .sep { display: none; }
+  .nav-pill .zoom-btn { display: none; }
+  .nav-pill .page-label { min-width: 56px; padding: 0 6px; }
+}
+/* the narrowest phones (≈ 360 px): a little less room around every button */
+@container pane (max-width: 380px) {
+  .dock .icon-btn, .nav-pill .icon-btn { width: 32px; height: 32px; }
+  .dock .tool-group { gap: 1px; }
+  .dock-wrap { padding: 0 4px; gap: 4px; }
+}
+
 /* ---------------------------------------------------------------- links in PDFs */
 .page .links { position: absolute; inset: 0; pointer-events: none; }
 .plink { position: absolute; display: block; border-radius: 2px; }
