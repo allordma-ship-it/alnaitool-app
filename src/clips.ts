@@ -1,4 +1,3 @@
-import { PDFDocument } from 'pdf-lib';
 import type { Clip, DocMeta, PageData } from './types';
 import { uid, A4 } from './types';
 import { listClips, putClip, deleteClip, putFile, getFile } from './db';
@@ -361,6 +360,8 @@ export async function exportSummary(clips: Clip[], title: string) {
   toast(t('preparing'));
   const S = 2.5;
   const W = A4.w - 72;
+  // pdf-lib (~300 KB) is loaded only when a PDF is made
+  const { PDFDocument } = await import('pdf-lib');
   const out = await PDFDocument.create();
   let page = out.addPage([A4.w, A4.h]);
   let y = 36;

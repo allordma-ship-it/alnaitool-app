@@ -1,7 +1,6 @@
 import { Capacitor } from '@capacitor/core';
 import type { DocMeta, PageData } from './types';
 import { getFile } from './db';
-import { exportDocToPdf } from './exportPdf';
 import { renderPageToCanvas, canvasToBytes } from './render';
 import { icons } from './icons';
 import { t, type Key } from './i18n';
@@ -58,7 +57,7 @@ type Format = 'pdf' | 'images' | 'image' | 'text' | 'original';
 
 export async function convertDoc(meta: DocMeta, pages: PageData[], format: Format, current = 0): Promise<OutFile[]> {
   const base = safeName(meta.title);
-  if (format === 'pdf') return [{ name: `${base}.pdf`, bytes: await exportDocToPdf(meta, pages), mime: 'application/pdf' }];
+  if (format === 'pdf') return [{ name: `${base}.pdf`, bytes: await (await import('./exportPdf')).exportDocToPdf(meta, pages), mime: 'application/pdf' }];
   if (format === 'original') {
     const buf = await getFile(meta.id);
     if (!buf) throw new Error(t('fileError'));

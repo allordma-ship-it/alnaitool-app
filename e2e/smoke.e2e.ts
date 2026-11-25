@@ -6,6 +6,8 @@
  *   npm run build && npm run e2e
  */
 import { test, expect, type Page } from '@playwright/test';
+import { readFile, writeFile } from 'node:fs/promises';
+import { PDFDocument } from 'pdf-lib';
 
 /** Total number of strokes on every page, read straight from the app's database. */
 const strokeCount = (page: Page) => page.evaluate(() => new Promise<number>((resolve, reject) => {
@@ -78,6 +80,37 @@ test('settings open and show the backup section', async ({ page }) => {
   await page.getByRole('button', { name: 'Settings' }).click();
   await expect(page.getByRole('button', { name: 'Create backup' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Restore backup' })).toBeVisible();
+});
+
+test('a PDF opens, takes ink, and exports with it as a PDF', async ({ page }, info) => {
+  // pdf.js and pdf-lib are loaded only when needed: watch that they really arrive
+  const scripts: string[] = [];
+  page.on('request', (r) => { if (r.resourceType() === 'script') scripts.push(new URL(r.url()).pathname); });
+
+  const src = await PDFDocument.create();
+  for (let i = 0; i < 2; i++) src.addPage([595, 842]).drawText(`Lungenfunktion ${i + 1}`, { x: 60, y: 760, size: 24 });
+  const file = info.outputPath('Lecture.pdf');
+  await writeFile(file, await src.save());
+
+  // one imported file opens straight away, in reading mode
+  await page.locator('input[type=file][multiple]').first().setInputFiles(file);
+  const reading = page.getByRole('button', { name: 'Reading mode' });
+  await expect(reading).toBeVisible();
+  await expect(page.locator('.page-label')).toHaveText('1 / 2');
+  await expect.poll(() => scripts.some((s) => /\/assets\/pdf-[^/]+\.js$/.test(s)), { message: 'pdf.js loaded' }).toBe(true);
+
+  // reading mode lets nothing draw: switch it off, then write on the page
+  await reading.click();
+  await expect(page.getByRole('button', { name: 'Undo' })).toBeVisible();
+  await draw(page);
+  await expect.poll(() => strokeCount(page)).toBe(1);
+
+  await page.getByRole('button', { name: 'Share / convert' }).click();
+  const download = page.waitForEvent('download');
+  await page.locator('dialog[open] button[value=pdf]').click();
+  const out = await readFile(await (await download).path());
+  expect(out.subarray(0, 5).toString()).toBe('%PDF-');
+  expect((await PDFDocument.load(out)).getPageCount()).toBe(2);
 });
 
 test('a backup brings back a deleted notebook', async ({ page }) => {
