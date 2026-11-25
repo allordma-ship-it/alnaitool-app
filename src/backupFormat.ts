@@ -26,6 +26,8 @@ export interface BackupMeta<D = unknown, P = unknown, C = unknown, F = unknown> 
   folders: F[];
   /** custom page templates (older backups have none) */
   templates?: unknown[];
+  /** keys of locked (encrypted) documents, each wrapped with its recovery code only (older backups have none) */
+  keys?: { id: string; rec: unknown }[];
 }
 
 export interface BackupContent<D = unknown, P = unknown, C = unknown, F = unknown> extends BackupMeta<D, P, C, F> {
@@ -36,6 +38,7 @@ export interface BackupHeader extends BackupMeta {
   version: 1;
   createdAt: number;
   templates: unknown[];
+  keys: { id: string; rec: unknown }[];
   files: FileEntry[];
 }
 
@@ -50,7 +53,7 @@ export class BackupError extends Error {}
 export function encodeHeader(b: BackupMeta, files: FileEntry[], createdAt = Date.now()): Uint8Array {
   const header = {
     version: 1, createdAt,
-    docs: b.docs, pages: b.pages, clips: b.clips, folders: b.folders, templates: b.templates ?? [],
+    docs: b.docs, pages: b.pages, clips: b.clips, folders: b.folders, templates: b.templates ?? [], keys: b.keys ?? [],
     files: files.map((f) => ({ id: f.id, len: f.len })),
   };
   const json = new TextEncoder().encode(JSON.stringify(header));
@@ -103,6 +106,12 @@ export function parseHeader(json: Uint8Array, totalSize: number): BackupHeader {
   if (!docs.every((d) => Array.isArray((d as { pageIds?: unknown }).pageIds) && ((d as { pageIds: unknown[] }).pageIds).every((p) => typeof p === 'string'))) {
     throw new BackupError('docs: page list missing');
   }
+  const keys = list('keys', true).map((k) => {
+    const r = (k as { rec?: Record<string, unknown> }).rec;
+    const okRec = !!r && ['salt', 'iv', 'ct'].every((f) => typeof r[f] === 'string') && Number.isSafeInteger(r.iter);
+    if (!hasId(k) || !okRec) throw new BackupError('keys: bad entry');
+    return k as { id: string; rec: unknown };
+  });
   const files = list('files').map((f) => {
     if (!hasId(f) || !Number.isSafeInteger((f as { len?: unknown }).len) || (f as { len: number }).len < 0) throw new BackupError('files: bad entry');
     return { id: (f as FileEntry).id, len: (f as FileEntry).len };
@@ -111,7 +120,7 @@ export function parseHeader(json: Uint8Array, totalSize: number): BackupHeader {
   if (end > totalSize) throw new BackupError('truncated');
   return {
     version: 1, createdAt: typeof h.createdAt === 'number' ? h.createdAt : 0,
-    docs, pages, clips, folders, templates, files,
+    docs, pages, clips, folders, templates, keys, files,
   };
 }
 

@@ -5,7 +5,7 @@ import { drawPenSegments } from './ink';
 import { createBackup, restoreBackup, lastBackup, lastAutoBackup, autoBackupError, maybeAutoBackup } from './backup';
 import type { AutoBackupEvery } from './backupPlan';
 import { Capacitor } from '@capacitor/core';
-import { lockEnabled, bioEnabled, setBio, changePin, turnOffLock, biometricAvailable } from './lock';
+import { lockEnabled, bioEnabled, setBio, changePin, turnOffLock, biometricAvailable, renewRecoveryCode } from './lock';
 
 function select<T extends string>(label: Key, value: T, options: [T, string][], onChange: (v: T) => void) {
   const sel = h('select');
@@ -108,9 +108,11 @@ function lockSection() {
     }
     const change = h('button', { type: 'button' }, t('changePin'));
     change.addEventListener('click', () => void changePin());
+    const renew = h('button', { type: 'button' }, t('newRecoveryCode'));
+    renew.addEventListener('click', () => void renewRecoveryCode());
     const off = h('button', { type: 'button', class: 'danger-text' }, t('lockOff'));
     off.addEventListener('click', async () => { if (await turnOffLock()) void render(); });
-    box.append(h('div', { class: 'actions start' }, change, off));
+    box.append(h('div', { class: 'actions start' }, change, renew, off));
   };
   void render();
   return box;

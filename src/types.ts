@@ -83,6 +83,8 @@ export interface DocMeta {
   tags?: string[];
   /** needs fingerprint or PIN to open */
   locked?: boolean;
+  /** its pages, files, clips and text are stored encrypted with this key (see vault.ts); the thumbnail is dropped */
+  sealed?: { k: string };
   /** notifications that open this document at a page */
   reminders?: Reminder[];
   /** new pages use this picture as their paper instead of a built-in template */
@@ -168,6 +170,8 @@ export interface Clip {
   audioMime?: string;
   duration?: number;
   createdAt: number;
+  /** read while its document's key was not unlocked: picture, text and note are still encrypted here (cannot be saved) */
+  sealed?: unknown;
 }
 
 export const A4 = { w: 595.28, h: 841.89 };

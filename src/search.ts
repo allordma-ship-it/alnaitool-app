@@ -46,7 +46,12 @@ export function indexDoc(doc: DocMeta): Promise<TextIndex | null> {
 /** Documents whose text has not been extracted yet. */
 export async function unindexed(docs: DocMeta[]): Promise<DocMeta[]> {
   const out: DocMeta[] = [];
-  for (const d of docs) if (d.kind === 'pdf' && !(await getTextIndex(d.id))) out.push(d);
+  for (const d of docs) {
+    if (d.kind !== 'pdf') continue;
+    try {
+      if (!(await getTextIndex(d.id))) out.push(d);
+    } catch { /* locked and its key not open: indexed later, once it is */ }
+  }
   return out;
 }
 

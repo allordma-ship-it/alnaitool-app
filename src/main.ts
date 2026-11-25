@@ -11,6 +11,7 @@ import { Capacitor } from '@capacitor/core';
 import { ensureUnlocked } from './lock';
 import { reconcileReminders, onReminderTap } from './reminders';
 import { maybeAutoBackup } from './backup';
+import { documentOpened, documentClosed } from './vault';
 
 applyLang();
 applyTheme();
@@ -135,7 +136,10 @@ async function openDoc(doc: DocMeta) {
     // the back gesture already left this page's history entry: put it back when you chose to stay
     if (!left) history.pushState({ doc: doc.id }, '', '');
   });
+  // keys stay in memory while a document is open, so it can still save after the app is hidden
+  documentOpened();
   const ed = new Editor(doc, async () => {
+    documentClosed();
     editor = null;
     window.removeEventListener('popstate', onPop);
     if (side) await side.close();
@@ -166,7 +170,8 @@ async function openSide(doc: DocMeta) {
   if (!editor) return;
   if (!(await ensureUnlocked(doc))) return;
   if (side && !(await side.close())) return;
-  const ed = new Editor(doc, () => closeSide(ed), undefined, { side: true });
+  documentOpened();
+  const ed = new Editor(doc, () => { documentClosed(); closeSide(ed); }, undefined, { side: true });
   if (!splitRoot) {
     const divider = h('div', { class: 'split-divider', role: 'separator', 'aria-orientation': 'vertical', tabindex: 0 });
     splitRoot = h('div', { class: 'split-root' }, editor.root, divider);
