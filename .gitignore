@@ -5,3 +5,7 @@ dist
 # signing keys never go into the repository
 *.jks
 *.keystore
+
+# Playwright output
+test-results/
+playwright-report/

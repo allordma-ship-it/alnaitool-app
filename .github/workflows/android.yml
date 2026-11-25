@@ -37,6 +37,9 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run build
+      # smoke test of the built app in Chromium: starts, draws, saves, reopens, backs up and restores
+      - run: npx playwright install --with-deps chromium
+      - run: npm run e2e
       - run: npx cap sync android
       - name: Build debug APK
         working-directory: android
@@ -89,6 +92,9 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run build
+      # smoke test of the built app in Chromium: starts, draws, saves, reopens, backs up and restores
+      - run: npx playwright install --with-deps chromium
+      - run: npm run e2e
       - run: npx cap sync android
       - name: Write the signing key from the repository secrets
         env:

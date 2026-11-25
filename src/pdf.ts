@@ -1,16 +1,22 @@
-import * as pdfjs from 'pdfjs-dist';
 import workerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 import type { PDFDocumentProxy } from 'pdfjs-dist';
 import { getFile } from './db';
 
-pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
+let lib: Promise<typeof import('pdfjs-dist')> | null = null;
+/** pdf.js is large (~430 KB): it is loaded the first time a PDF is needed, not when the app starts. */
+function pdfjs() {
+  return lib ??= import('pdfjs-dist').then((m) => {
+    m.GlobalWorkerOptions.workerSrc = workerUrl;
+    return m;
+  });
+}
 
 const cache = new Map<string, Promise<PDFDocumentProxy>>();
 const tasks = new WeakMap<PDFDocumentProxy, { destroy(): Promise<void> }>();
 
 export async function loadPdf(data: ArrayBuffer): Promise<PDFDocumentProxy> {
   // pdf.js transfers the buffer to its worker, so hand it a copy.
-  const task = pdfjs.getDocument({ data: new Uint8Array(data.slice(0)) });
+  const task = (await pdfjs()).getDocument({ data: new Uint8Array(data.slice(0)) });
   const doc = await task.promise;
   tasks.set(doc, task);
   return doc;
@@ -89,10 +95,11 @@ async function itemsOf(doc: PDFDocumentProxy, pageNo: number): Promise<Item[]> {
   const page = await doc.getPage(pageNo);
   const vp = page.getViewport({ scale: 1 });
   const content = await page.getTextContent();
+  const { Util } = await pdfjs();
   const out: Item[] = [];
   for (const it of content.items) {
     if (!('str' in it) || !it.str.trim()) continue;
-    const m = pdfjs.Util.transform(vp.transform, it.transform);
+    const m = Util.transform(vp.transform, it.transform);
     const h = Math.hypot(m[2], m[3]) || Math.abs(it.height) || 10;
     // horizontal text only (rotated labels in figures are skipped)
     if (Math.abs(m[1]) > Math.abs(m[0]) * 0.2) continue;
