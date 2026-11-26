@@ -382,7 +382,8 @@ input[type='range'] { accent-color: var(--accent); }
 .actions button, .menu button {
   height: 42px; padding: 0 18px; border: 1px solid var(--line-2); border-radius: 12px; background: var(--surface-2); font-weight: 600;
 }
-.actions button.primary { background: var(--grad); border-color: transparent; color: #fff; box-shadow: 0 6px 18px rgb(37 99 235 / .35); }
+/* the main button keeps its colour inside menus too (.menu button would otherwise give it the plain background, white text on light) */
+.actions button.primary, .menu button.primary { background: var(--grad); border-color: transparent; color: #fff; box-shadow: 0 6px 18px rgb(37 99 235 / .35); }
 .menu button.danger { color: var(--danger); }
 .menu-item { display: flex; align-items: center; gap: 12px; text-align: start; }
 .menu-item svg { color: var(--accent); }

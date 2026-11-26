@@ -402,7 +402,7 @@ const dict = {
   done: { ar: 'تم', de: 'Fertig', en: 'Done' },
   saveChangesTitle: { ar: 'حفظ التغييرات؟', de: 'Änderungen speichern?', en: 'Save changes?' },
   saveChanges: { ar: 'حفظ', de: 'Speichern', en: 'Save' },
-  discardChanges: { ar: 'عدم الحفظ (الرجوع إلى ما كان عند الفتح)', de: 'Nicht speichern (zurück zum Stand beim Öffnen)', en: "Don't save (back to how it was when opened)" },
+  discardChanges: { ar: 'عدم الحفظ', de: 'Nicht speichern', en: "Don't save" },
   askSave: { ar: 'السؤال عن حفظ التغييرات عند الخروج من الملف', de: 'Beim Verlassen nach dem Speichern fragen', en: 'Ask to save changes when leaving a document' },
   scanTitle: { ar: 'مسح ضوئي', de: 'Scan', en: 'Scan' },
   scanHint: {
