@@ -656,6 +656,14 @@ details[open] > summary .pv-caret::before { transform: rotate(90deg); }
 .lock-mark svg { width: 30px; height: 30px; }
 .pin-input { font-size: 24px; letter-spacing: .4em; text-align: center; height: 52px !important; }
 .pin-err { margin: 0; min-height: 1.2em; color: var(--danger); font-size: 13.5px; }
+/* recovery code: large, monospaced, selectable, never split across lines in the middle of a group */
+.recovery-dlg { width: min(440px, calc(100vw - 24px)); }
+.recovery-code {
+  margin: 4px 0; padding: 12px 10px; border-radius: 12px; background: var(--surface-2); border: 1px solid var(--line-2);
+  font: 600 clamp(15px, 4.6vw, 20px)/1.5 ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace; letter-spacing: .04em;
+  color: var(--text); user-select: all; -webkit-user-select: all; word-spacing: -.1em; overflow-wrap: anywhere;
+}
+.recovery-input { font-family: ui-monospace, Menlo, Consolas, monospace; text-transform: uppercase; text-align: center; }
 .danger-text { color: var(--danger); }
 
 /* ---------------------------------------------------------------- reminders */

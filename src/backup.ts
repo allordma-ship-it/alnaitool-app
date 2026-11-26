@@ -1,5 +1,5 @@
 import { Capacitor } from '@capacitor/core';
-import { dumpMeta, getFile, putFile, restoreMeta, libraryOutline } from './db';
+import { dumpMeta, getFileRaw, putFileRaw, restoreMeta, libraryOutline } from './db';
 import { encodeHeader, readBackupHeader, chunks, BackupError, type FileEntry } from './backupFormat';
 import { autoBackupDue, autoBackupName, librarySignature, toPrune, AUTO_DIR, type AutoState } from './backupPlan';
 import { settings } from './settings';
@@ -7,6 +7,7 @@ import { toBase64 } from './share';
 import type { DocMeta, PageData, Clip, Folder, CustomTemplate } from './types';
 import { t } from './i18n';
 import { toast } from './ui';
+import { backupKeys, addBackupKeys, type BackupKey } from './lock';
 
 const LAST = 'alnai-last-backup';
 const AUTO = 'notiva-auto-backup';
@@ -54,13 +55,15 @@ type Sink = (bytes: Uint8Array) => Promise<void>;
 async function writeLibrary(sink: Sink): Promise<{ docs: number }> {
   const meta = await dumpMeta();
   const files: FileEntry[] = [];
+  // raw: files of locked documents stay encrypted in the backup, and no key is needed to write it
   for (const id of meta.fileIds) {
-    const b = await getFile(id);
+    const b = await getFileRaw(id);
     if (b) files.push({ id, len: b.byteLength });
   }
-  await sink(encodeHeader(meta, files));
+  // the keys of locked documents travel wrapped with their recovery code only (a PIN could be guessed offline)
+  await sink(encodeHeader({ ...meta, keys: backupKeys() }, files));
   for (const f of files) {
-    const b = await getFile(f.id);
+    const b = await getFileRaw(f.id);
     // edited while the backup ran: the header would not match, so start again later
     if (!b || b.byteLength !== f.len) throw new BackupError('library changed during the backup');
     await sink(new Uint8Array(b));
@@ -190,10 +193,12 @@ export async function restoreBackup(file: File): Promise<boolean> {
       const f = b.files[i];
       const bytes = await file.slice(off, off + f.len).arrayBuffer();
       if (bytes.byteLength !== f.len) throw new BackupError('truncated');
-      await putFile(f.id, bytes);
+      await putFileRaw(f.id, bytes);
       off += f.len;
       if (i % 10 === 9) toast(`${t('loading')} ${i + 1}/${b.files.length}`);
     }
+    // locked documents arrive encrypted: remember their keys, which that backup's recovery code opens
+    addBackupKeys(b.keys as BackupKey[]);
     await restoreMeta({
       docs: b.docs as DocMeta[], pages: b.pages as PageData[], clips: b.clips as Clip[], folders: b.folders as Folder[],
       templates: b.templates as CustomTemplate[],

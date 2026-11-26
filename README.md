@@ -44,7 +44,7 @@ optimiert für das **Lenovo Idea Tab Pro mit Lenovo Tab Pen Plus**.
 - **Texterkennung (OCR)** offline auf dem Gerät (Tesseract, Arabisch/Deutsch/Englisch): gescannte Seiten werden durchsuchbar, Ausschnitte bekommen ihren Text, „als Text teilen“
 - **PDF-Text ändern**: Zeile antippen → Original wird abgedeckt, korrigierter Text an seiner Stelle (Bildschirm und Export)
 - **Beim Verlassen fragen**: Speichern / Nicht speichern / Abbrechen (abschaltbar)
-- **Sperre** (optional) für Dokumente und Ordner per Fingerabdruck oder PIN; verschlüsselt keine Dateien
+- **Sperre** (optional) für Dokumente und Ordner per PIN oder Fingerabdruck. Gesperrte Dokumente sind **verschlüsselt** (AES-256-GCM): Seiten, PDFs, Bilder, Sprachnotizen, Ausschnitte und Suchtext – auf dem Gerät und in Sicherungen; Titel bleiben sichtbar. Der Schlüssel liegt auf dem Gerät mit der PIN verschlüsselt, in Sicherungen nur mit dem **Wiederherstellungscode** (wird beim Einrichten einmal angezeigt; eine 4–8-stellige PIN ließe sich an einer kopierten Datei durchprobieren). Ohne PIN und Code sind gesperrte Dokumente nicht zu öffnen. Der Fingerabdruck entsperrt, sobald die PIN seit dem Öffnen der App einmal eingegeben wurde; geht die App in den Hintergrund, wird der Schlüssel vergessen (nach dem Schließen eines offenen Dokuments)
 
 ## Stift-Unterstützung (Pen Plus)
 

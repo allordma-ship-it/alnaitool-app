@@ -7,7 +7,7 @@ import { templateFromFile, templateRef, pageFromTemplate } from './templates';
 import { imageUrl } from './pageImages';
 import { listTemplates, deleteTemplate } from './db';
 import type { CustomTemplate } from './types';
-import { setLockedFolders, isLocked, isHidden, folderHidden, ensureFolderUnlocked, toggleDocLock, toggleFolderLock, lockEnabled } from './lock';
+import { setLockedFolders, isLocked, isHidden, folderHidden, ensureFolderUnlocked, ensureUnlocked, toggleDocLock, toggleFolderLock, lockEnabled, reconcileAll } from './lock';
 import { A4, uid, DOC_COLORS, type DocMeta, type PageData, type Template, type PaperColor, type Folder, type DocColor } from './types';
 import { sortDocs, allTags, cleanTags, SORT_MODES, type SortMode } from './libraryOrder';
 import { importFiles } from './importFiles';
@@ -196,6 +196,8 @@ export class Library {
       h('button', { value: 'cancel' }, t('cancel')),
     );
     modal(form).closed.then(async (v) => {
+      // these read the content: a locked document asks for the PIN first
+      if ((v === 'share' || v === 'ocr') && !(await ensureUnlocked(d))) return;
       if (v === 'share') {
         toast(t('preparing'));
         try {
@@ -472,6 +474,7 @@ export class Library {
         await toggleFolderLock(f);
       } else if (v === 'delete' && confirm(t('confirmDeleteFolder'))) {
         await deleteFolder(f.id);
+        await reconcileAll(); // its documents left a locked folder: decrypt them (if the key is open)
         this.setFolder(null);
       }
       await this.refresh();

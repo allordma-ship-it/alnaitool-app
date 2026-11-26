@@ -86,7 +86,12 @@ describe('backup format', () => {
       { ...ok, files: [{ id: 'f', len: -1 }] },
       { ...ok, files: [{ id: 'f', len: 1.5 }] },
       { ...ok, files: [{ id: 'f', len: 10 }] }, // bytes missing after the header
+      { ...ok, keys: [{ id: 'k1', rec: { salt: 'a', iv: 'b' } }] }, // key without its wrapped bytes
+      { ...ok, keys: [{ rec: { salt: 'a', iv: 'b', ct: 'c', iter: 1 } }] }, // key without id
     ];
+    const withKey = await readBackupHeader(withHeader({ ...ok, keys: [{ id: 'k1', rec: { salt: 'a', iv: 'b', ct: 'c', iter: 100000 } }] }));
+    expect(withKey.header.keys.map((k) => k.id)).toEqual(['k1']);
+    expect((await readBackupHeader(withHeader(ok))).header.keys).toEqual([]); // older backups have none
     for (const h of bad) await expect(readBackupHeader(withHeader(h)), JSON.stringify(h)).rejects.toThrow(BackupError);
     const notJson = new Uint8Array(await withHeader(ok).arrayBuffer());
     notJson[12] = 0x7b + 1; // '{' → '|'
