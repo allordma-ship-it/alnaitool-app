@@ -39,7 +39,8 @@ export class Library {
 
   async mount() {
     const btn = (icon: string, label: string, fn: () => void, cls = '') => {
-      const b = h('button', { class: `btn ${cls}` });
+      // named even when a phone shows only the icon
+      const b = h('button', { class: `btn ${cls}`, 'aria-label': label, title: label });
       b.innerHTML = icon;
       b.append(h('span', {}, label));
       b.addEventListener('click', fn);

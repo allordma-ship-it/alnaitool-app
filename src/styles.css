@@ -455,6 +455,31 @@ input[type='range'] { accent-color: var(--accent); }
   .hero-thumb { width: 84px; }
 }
 
+/* phone: the library header in two rows instead of four (it stays on screen while scrolling, so every row counts):
+   logo + import, scan, settings as icons / search + new notebook. Smaller "continue" card, two columns of documents. */
+@media (max-width: 560px) {
+  .library { padding-inline: 14px; }
+  .lib-head { margin: 0 -14px; padding: 10px 14px; gap: 8px 6px; }
+  .lib-actions { display: contents; }
+  .brand { order: 1; min-width: 0; flex: 1 1 auto; gap: 10px; }
+  .brand h1 { font-size: 19px; }
+  .brand-mark.big { width: 38px; height: 38px; border-radius: 11px; }
+  .brand-mark.big svg { width: 20px; height: 20px; }
+  .lib-actions > .btn:not(.primary) { order: 2; width: 42px; padding: 0; justify-content: center; }
+  .lib-actions > .btn:not(.primary) span { display: none; }
+  .lib-actions > .icon-btn { order: 3; }
+  .lib-actions > .search { order: 4; flex: 1 1 120px; width: auto; height: 42px; }
+  .lib-actions > .btn.primary { order: 5; padding: 0 14px; }
+  .stats { margin: 12px 0 10px; gap: 6px; }
+  .stat.accent { display: none; }
+  .hero { gap: 14px; padding: 12px; margin-bottom: 18px; border-radius: 16px; }
+  .hero-thumb { width: 72px; }
+  .hero-body h2 { font-size: 17px; }
+  .hero-body p { margin-bottom: 4px; font-size: 13.5px; }
+  .hero-body .btn { height: 38px; padding: 0 14px; font-size: 14px; }
+  .grid { gap: 12px; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+}
+
 /* ---------------------------------------------------------------- folders, content search, backup */
 .folders { display: flex; gap: 8px; overflow-x: auto; padding: 2px 2px 14px; scrollbar-width: none; }
 .folders::-webkit-scrollbar { display: none; }
