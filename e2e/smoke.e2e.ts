@@ -48,7 +48,11 @@ async function newNotebook(page: Page) {
 async function back(page: Page) {
   await page.getByRole('button', { name: 'Back' }).click();
   const save = page.locator('dialog[open] button[value=save]');
-  if (await save.isVisible({ timeout: 1000 }).catch(() => false)) await save.click();
+  if (await save.isVisible({ timeout: 1000 }).catch(() => false)) {
+    // the main button keeps its coloured background (white text on the plain one could not be read)
+    expect(await save.evaluate((e) => getComputedStyle(e).backgroundImage)).toContain('gradient');
+    await save.click();
+  }
   await expect(page.getByRole('button', { name: 'New notebook' })).toBeVisible();
 }
 
