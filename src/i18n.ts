@@ -2,11 +2,6 @@ import { settings } from './settings';
 
 const dict = {
   appName: { ar: 'Notiva', de: 'Notiva', en: 'Notiva' },
-  tagline: {
-    ar: 'دفتر وقارئ PDF مُعاير لقلم Lenovo Tab Pen Plus',
-    de: 'Notizbuch & PDF-Reader, abgestimmt auf den Lenovo Tab Pen Plus',
-    en: 'Notebook & PDF reader tuned for the Lenovo Tab Pen Plus',
-  },
   library: { ar: 'المكتبة', de: 'Bibliothek', en: 'Library' },
   newNotebook: { ar: 'دفتر جديد', de: 'Neues Notizbuch', en: 'New notebook' },
   importPdf: { ar: 'استيراد PDF', de: 'PDF importieren', en: 'Import PDF' },

@@ -69,7 +69,7 @@ export class Library {
     mark.innerHTML = icons.logo;
     this.root.append(
       h('header', { class: 'lib-head' },
-        h('div', { class: 'brand' }, mark, h('div', {}, h('h1', {}, t('appName')), h('p', { class: 'tagline' }, t('tagline')))),
+        h('div', { class: 'brand' }, mark, h('h1', {}, t('appName'))),
         h('div', { class: 'lib-actions' },
           search,
           btn(icons.plus, t('newNotebook'), () => void this.newNotebookDialog(), 'primary'),
@@ -125,7 +125,6 @@ export class Library {
       h('span', { class: 'stat' }, h('b', {}, String(all.length)), ` ${t('documents')}`),
       h('span', { class: 'stat' }, h('b', {}, String(clips.length)), ` ${t('clipsCount')}`),
       backupBtn,
-      h('span', { class: 'stat accent' }, 'Lenovo Idea Tab Pro · Pen Plus'),
     );
     this.hero.replaceChildren();
     this.hero.hidden = !!this.query || !all.length || !!this.folderId;
