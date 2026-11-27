@@ -41,6 +41,8 @@ export interface Settings {
   askSave: boolean;
   /** Android app: write a backup into Documents/Notiva by itself */
   autoBackup: AutoBackupEvery;
+  /** the indicator was switched off once for existing installs (so turning it back on sticks) */
+  hudOffOnce: boolean;
 }
 
 const DEFAULTS: Settings = {
@@ -64,10 +66,11 @@ const DEFAULTS: Settings = {
   eyeCare: false,
   spread: 'single',
   theme: 'dark',
-  showHud: true,
+  showHud: false,
   notesPanel: false,
   askSave: true,
   autoBackup: 'weekly',
+  hudOffOnce: true,
   palette: ['#0f172a', '#06b6d4', '#2563eb', '#ef4444', '#10b981', '#8b5cf6', '#f59e0b', '#ffe14d'],
 };
 
@@ -78,6 +81,8 @@ function load(): Settings {
     const raw = localStorage.getItem(KEY);
     if (raw) {
       const s = JSON.parse(raw);
+      // the pressure/tilt indicator was on by default and found not useful: off once for everyone (it can be turned on again)
+      if (!s.hudOffOnce) { s.showHud = false; s.hudOffOnce = true; try { localStorage.setItem(KEY, JSON.stringify(s)); } catch { /* ignore */ } }
       return {
         ...DEFAULTS, ...s,
         colors: { ...DEFAULTS.colors, ...s.colors },
