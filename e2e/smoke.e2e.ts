@@ -327,3 +327,24 @@ test.describe('locked documents', () => {
     await expect(page.getByRole('button', { name: 'Reading mode' })).toBeVisible(); // no PIN asked any more
   });
 });
+
+test.describe('pressure and tilt indicator', () => {
+  test('is off after the update even when it was saved on, and stays on once turned on again', async ({ browser }) => {
+    const ctx = await browser.newContext({ viewport: { width: 1280, height: 800 } });
+    const page = await ctx.newPage();
+    // an install from before: settings saved with the indicator on
+    await page.addInitScript(() => { if (!localStorage.getItem('alnai-settings')) localStorage.setItem('alnai-settings', JSON.stringify({ lang: 'en', showHud: true })); });
+    await page.goto('/');
+    await newNotebook(page);
+    await expect(page.locator('.hud')).toBeHidden();
+    await expect(page.locator('.topbar')).not.toContainText('Pen Plus');
+    // turned on again in the settings: survives a restart
+    await page.getByRole('button', { name: 'Settings' }).click();
+    await page.locator('dialog[open] label.row', { hasText: 'Pressure and tilt indicator' }).locator('input[type=checkbox]').check();
+    await page.locator('dialog[open] button[value=ok]').click();
+    await page.reload();
+    await page.locator('.card-title').first().click();
+    await expect(page.locator('.hud')).toBeVisible();
+    await ctx.close();
+  });
+});

@@ -217,7 +217,6 @@ export class Editor {
       btn: h('span', { class: 'hud-btn' }),
     };
     this.hud.el.append(
-      h('span', { class: 'hud-pen' }, 'Pen Plus'),
       h('span', { class: 'hud-k' }, t('pressureLabel')), h('span', { class: 'hud-meter' }, hudBar), this.hud.val,
       h('span', { class: 'hud-k' }, t('tiltLabel')), this.hud.tilt, this.hud.btn,
     );
