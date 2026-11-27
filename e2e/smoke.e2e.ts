@@ -159,6 +159,18 @@ test('a backup brings back a deleted notebook', async ({ page }) => {
 test.describe('on a phone', () => {
   test.use({ viewport: { width: 360, height: 780 }, hasTouch: true, isMobile: true });
 
+  test('the library header stays small (two rows) and nothing runs off the screen', async ({ page }) => {
+    const head = (await page.locator('.lib-head').boundingBox())!;
+    expect(head.height, 'header height on a 780 px tall phone').toBeLessThan(780 * 0.18);
+    const outside = await page.evaluate(() => [...document.querySelectorAll('.library button, .library input:not([hidden])')]
+      .filter((b) => (b as HTMLElement).offsetParent)
+      .filter((b) => { const r = b.getBoundingClientRect(); return r.left < -1 || r.right > innerWidth + 1; }).length);
+    expect(outside).toBe(0);
+    // icon-only buttons still have a name
+    await expect(page.getByRole('button', { name: 'Import file' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Scan' })).toBeVisible();
+  });
+
   test('every editor button stays on screen (tool bar wraps, undo/redo reachable)', async ({ page }) => {
     await newNotebook(page);
     const outside = await page.evaluate(() => [...document.querySelectorAll('.topbar button, .dock button, .nav-pill button')]
